@@ -1,0 +1,6 @@
+.next
+.gitignore
+.eslintrc.json
+.vscode
+dist
+node_modules
