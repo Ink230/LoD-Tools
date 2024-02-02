@@ -1,7 +1,7 @@
 <div class="tabs">
-  @for (tab of tabs; track tab.id) {
-    <div class="">
-      {{ tab.id }}
+  @for (tab of getNavigationTabs(); track tab.id) {
+    <div class="tab" [ngClass]="{ tabSelected: isSelectedTab(tab.id) }" (click)="updateSelectedTab(tab.id)">
+      {{ tab.title }}
     </div>
   }
 </div>
