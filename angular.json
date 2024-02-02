@@ -60,10 +60,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "lodtools:build:production"
+              "buildTarget": "lodtools:build:production"
             },
             "development": {
-              "browserTarget": "lodtools:build:development"
+              "buildTarget": "lodtools:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -71,7 +71,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "lodtools:build"
+            "buildTarget": "lodtools:build"
           }
         },
         "test": {
