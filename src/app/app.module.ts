@@ -4,11 +4,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { IrongoonComponent } from './components/irongoon/irongoon.component';
+import { IrongoonService } from './services/iroongoon.service';
 
 @NgModule({
   declarations: [AppComponent, IrongoonComponent],
   imports: [BrowserModule, AppRoutingModule],
-  providers: [],
+  providers: [IrongoonService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
