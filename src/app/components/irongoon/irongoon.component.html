@@ -1,1 +1,5 @@
-<p>irongoon works!</p>
+<div class="tabs flex flex-row flex-nowrap content-between">
+  @for (tab of tabs; track tab.id) {
+    <div class="t">{{ tab.id }}</div>
+  }
+</div>
