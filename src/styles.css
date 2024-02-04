@@ -1,4 +1,4 @@
-/* Custom Reset */
+/* == Custom Reset == */
 * {
   min-width: 0;
 }
@@ -8,19 +8,7 @@ img {
   object-fit: cover;
 }
 
-html,
-body {
-  font-size: 16px;
-  font-family: 'Roboto';
-  font-weight: 400;
-  font-style: normal;
-  color: #fff;
-  letter-spacing: 0.02rem;
-  line-height: 1.2rem;
-  background-color: rgb(46, 46, 46);
-}
-
-/* Reset */
+/* == Reset == */
 *:where(:not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)) {
   all: unset;
   display: revert;
@@ -124,4 +112,36 @@ meter {
 /* Remove details summary webkit styles */
 ::-webkit-details-marker {
   display: none;
+}
+
+/* == LoD Tools == */
+:root {
+  --primary-color: rgb(16, 16, 16);
+  --secondary-color: rgb(21, 21, 21);
+  --tertiary-color: rgb(35, 35, 36);
+  --primary-accent-color: rgb(96, 135, 66);
+  --secondary-accent-color: rgb(131, 156, 107);
+  --tertiary-accent-color: rgb(145, 253, 43);
+  --primary-font-color: rgb(207, 207, 207);
+  --primary-font-hover-color: grey;
+
+  --randomizer-container-width: 81rem;
+}
+html,
+body {
+  font-size: 16px;
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-style: normal;
+  color: var(--primary-font-color);
+  letter-spacing: 0.02rem;
+  line-height: 1.2rem;
+  background-color: var(--primary-color);
+}
+
+@media screen and (max-width: 1280px) {
+  html,
+  body {
+    font-size: 14px;
+  }
 }

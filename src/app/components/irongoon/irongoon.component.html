@@ -1,9 +1,11 @@
-<div class="tabs">
-  @for (tab of getNavigationTabs(); track tab.id) {
-    <div class="tab" [ngClass]="{ tabSelected: isSelectedTab(tab.id) }" (click)="updateSelectedTab(tab.id)">
-      {{ tab.title }}
-    </div>
-  }
-</div>
+<div class="irongoon">
+  <div class="tabs">
+    @for (tab of getNavigationTabs(); track tab.id) {
+      <div class="tab" [ngClass]="{ tabSelected: isSelectedTab(tab.id) }" (click)="updateSelectedTab(tab.id)">
+        {{ tab.title }}
+      </div>
+    }
+  </div>
 
-<ng-container *ngComponentOutlet="displayTabComponent()"></ng-container>
+  <ng-container *ngComponentOutlet="displayTabComponent()"></ng-container>
+</div>

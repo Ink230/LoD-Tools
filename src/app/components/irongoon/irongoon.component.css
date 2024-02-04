@@ -1,29 +1,41 @@
+.irongoon {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  min-width: var(--randomizer-container-width);
+  max-width: var(--randomizer-container-width);
+}
+
 .tabs {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-
-  column-gap: 5rem;
-  border: solid 0px red;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .tab {
-  border: solid 0px green;
-  text-transform: capitalize;
   font-weight: 900;
   font-size: 1.2rem;
-  letter-spacing: 0.1rem;
+  letter-spacing: 0.13rem;
+  text-transform: capitalize;
   cursor: pointer;
 }
 
 .tab:hover {
-  color: grey;
+  color: var(--primary-font-hover-color);
 }
 
 .tabSelected {
-  color: green;
+  color: var(--primary-accent-color);
 }
 
 .tabSelected:hover {
-  color: green;
+  color: var(--primary-font-hover-color);
+}
+
+::ng-deep .randomizer-container {
+  min-width: var(--randomizer-container-width);
+  background-color: var(--secondary-color);
 }
