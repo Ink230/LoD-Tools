@@ -119,11 +119,12 @@ meter {
   --primary-color: rgb(16, 16, 16);
   --secondary-color: rgb(21, 21, 21);
   --tertiary-color: rgb(35, 35, 36);
-  --primary-accent-color: rgb(96, 135, 66);
-  --secondary-accent-color: rgb(131, 156, 107);
-  --tertiary-accent-color: rgb(145, 253, 43);
+  --primary-accent-color: rgb(58, 105, 23);
+  --secondary-accent-color: rgb(54, 87, 35);
+  --tertiary-accent-color: rgb(183, 225, 144);
   --primary-font-color: rgb(207, 207, 207);
-  --primary-font-hover-color: grey;
+  --secondary-font-color: rgb(182, 182, 182);
+  --primary-font-hover-color: rgb(182, 182, 182);
 
   --randomizer-container-width: 81rem;
 }

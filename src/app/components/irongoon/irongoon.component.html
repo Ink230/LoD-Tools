@@ -2,10 +2,18 @@
   <div class="tabs">
     @for (tab of getNavigationTabs(); track tab.id) {
       <div class="tab" [ngClass]="{ tabSelected: isSelectedTab(tab.id) }" (click)="updateSelectedTab(tab.id)">
-        {{ tab.title }}
+        <div>{{ tab.title }}</div>
       </div>
     }
   </div>
 
   <ng-container *ngComponentOutlet="displayTabComponent()"></ng-container>
+
+  <div class="configOutputContainer">
+    <div class="copyButton" (click)="copyConfigOutputToClipboard()">Copy</div>
+    <div class="configOutput" #configOutputElement>
+      sdsdsd <br />
+      sfsdsd
+    </div>
+  </div>
 </div>
