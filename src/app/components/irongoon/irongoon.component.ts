@@ -23,4 +23,8 @@ export class IrongoonComponent {
   isSelectedTab(id: number): boolean {
     return id == this.selectedTab;
   }
+
+  displayTabComponent() {
+    return this.irongoonService.settingCategories[this.selectedTab].component;
+  }
 }
