@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  justify-content: space-evenly;
+  justify-content: space-between;
   column-gap: 0.4rem;
   align-items: center;
   width: 100%;
@@ -22,7 +22,7 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
-  width: 100%;
+  width: var(--randomizer-container-width);
   position: relative;
   padding: 0.3rem 0rem 0.3rem 0rem;
   border-radius: 0.3rem 0.3rem 0rem 0rem;
@@ -34,6 +34,7 @@
   text-transform: capitalize;
   text-align: center;
   cursor: pointer;
+  box-shadow: inset 0px 0px 20px 1px #173d0b00;
 }
 
 .tab:hover {
@@ -84,6 +85,34 @@
   min-height: 600px;
 }
 
+.macroOptions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}
+
+.macroOption {
+  border: solid 1px var(--secondary-accent-color);
+  border-radius: 0.3rem;
+  background: var(--secondary-accent-color);
+  padding: 1rem;
+  width: 20rem;
+  text-align: center;
+  font-weight: 900;
+  font-size: 1.2rem;
+  letter-spacing: 0.06rem;
+  text-transform: capitalize;
+}
+
+.macroOption:hover {
+  background: var(--primary-accent-color);
+  border-color: var(--primary-accent-color);
+  cursor: pointer;
+}
+
 .configOutputContainer {
   display: flex;
   flex-direction: column;
@@ -91,6 +120,7 @@
   row-gap: 0.4rem;
   justify-content: center;
   align-items: flex-start;
+  padding: 1rem 0rem 1rem 0rem;
 }
 
 .copyButton {
@@ -109,4 +139,25 @@
   background: var(--secondary-color);
   width: var(--randomizer-container-width);
   border-radius: 0.3rem;
+  padding: 1rem 0.8rem 1rem 0.8rem;
+}
+
+.support {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  padding: 3rem 0.2rem 1rem 0.2rem;
+  row-gap: 3rem;
+}
+
+.supportSection {
+}
+
+.supportTitle {
+  font-weight: 900;
+  font-size: 1.2rem;
+  letter-spacing: 0.06rem;
 }

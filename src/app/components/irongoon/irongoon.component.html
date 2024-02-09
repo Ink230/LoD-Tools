@@ -9,6 +9,12 @@
 
   <ng-container *ngComponentOutlet="displayTabComponent()"></ng-container>
 
+  <div class="macroOptions">
+    <div class="macroOption">Generate Seed</div>
+    <div class="macroOption">Randomize</div>
+    <div class="macroOption">Reset</div>
+  </div>
+
   <div class="configOutputContainer">
     <div class="copyButton" (click)="copyConfigOutputToClipboard()">
       <img src="assets/copy-icon.svg" />
@@ -16,6 +22,17 @@
     <div class="configOutput" #configOutputElement>
       sdsdsd <br />
       sfsdsd
+    </div>
+  </div>
+
+  <div class="support">
+    <div class="supportSection">
+      <div class="supportTitle">What you need</div>
+      <div></div>
+    </div>
+    <div class="supportSection">
+      <div class="supportTitle">FAQ</div>
+      <div></div>
     </div>
   </div>
 </div>
