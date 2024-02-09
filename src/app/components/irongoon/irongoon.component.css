@@ -149,15 +149,20 @@
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
-  padding: 3rem 0.2rem 1rem 0.2rem;
-  row-gap: 3rem;
+  padding: 2rem 0.2rem 1rem 0.2rem;
+  row-gap: 1rem;
 }
 
 .supportSection {
 }
 
+.supportArticle {
+  padding: 1.5rem 0rem 1.5rem 1rem;
+}
+
 .supportTitle {
   font-weight: 900;
-  font-size: 1.2rem;
+  font-size: 2rem;
   letter-spacing: 0.06rem;
+  padding: 2rem 0rem 2rem 0rem;
 }
