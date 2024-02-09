@@ -3,7 +3,6 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  row-gap: 1rem;
   min-width: var(--randomizer-container-width);
   max-width: var(--randomizer-container-width);
 }
@@ -25,7 +24,7 @@
   width: 100%;
   position: relative;
   padding: 0.3rem 0rem 0.3rem 0rem;
-  border-radius: 0.5rem;
+  border-radius: 0.5rem 0.5rem 0rem 0rem;
   border-bottom: solid 1px var(--secondary-accent-color);
   background-color: var(--secondary-accent-color);
   font-weight: 900;
@@ -39,18 +38,17 @@
 .tab:hover {
   color: var(--primary-font-color);
   background: var(--primary-accent-color);
-  border-bottom: solid 1px var(--primary-accent-color);
-  margin-top: -0.2rem;
 }
 
 .tabSelected {
-  color: var(--primary-font-color);
-  background: var(--primary-accent-color);
+  color: var(--tertiary-font-color);
+  background: var(--tertiary-accent-color);
   border-bottom: solid 1px var(--tertiary-accent-color);
 }
 
 .tabSelected:hover {
-  color: var(--primary-font-color);
+  color: var(--tertiary-font-color);
+  background: var(--tertiary-accent-color);
   border-bottom: solid 1px var(--tertiary-accent-color);
   margin-top: 0rem;
 }
@@ -63,7 +61,9 @@
   align-items: flex-start;
   column-gap: 1rem;
   min-width: var(--randomizer-container-width);
+  border-top: solid 2px var(--tertiary-accent-color);
   padding-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 ::ng-deep .randomizer-column {
@@ -76,21 +76,32 @@
   min-height: 100%;
   background-color: var(--secondary-color);
   padding: 0.3rem;
+  border-radius: 0.3rem;
 }
 
 .configOutputContainer {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
+  row-gap: 0.4rem;
   justify-content: center;
   align-items: flex-start;
 }
+
 .copyButton {
   align-self: flex-end;
   cursor: pointer;
+  border: solid 0px red;
+  min-width: 1.6rem;
+  padding: 0.1rem;
+  margin-right: 0.5rem;
+  border: solid 1px rgb(213, 226, 200);
+  border-radius: 0.2rem;
+  background: rgb(56, 57, 55);
 }
 
 .configOutput {
   background: var(--secondary-color);
   width: var(--randomizer-container-width);
+  border-radius: 0.3rem;
 }

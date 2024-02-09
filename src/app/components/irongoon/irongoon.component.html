@@ -10,7 +10,9 @@
   <ng-container *ngComponentOutlet="displayTabComponent()"></ng-container>
 
   <div class="configOutputContainer">
-    <div class="copyButton" (click)="copyConfigOutputToClipboard()">Copy</div>
+    <div class="copyButton" (click)="copyConfigOutputToClipboard()">
+      <img src="assets/copy-icon.svg" />
+    </div>
     <div class="configOutput" #configOutputElement>
       sdsdsd <br />
       sfsdsd

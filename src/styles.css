@@ -124,6 +124,7 @@ meter {
   --tertiary-accent-color: rgb(183, 225, 144);
   --primary-font-color: rgb(207, 207, 207);
   --secondary-font-color: rgb(182, 182, 182);
+  --tertiary-font-color: rgb(35, 35, 35);
   --primary-font-hover-color: rgb(182, 182, 182);
 
   --randomizer-container-width: 81rem;
