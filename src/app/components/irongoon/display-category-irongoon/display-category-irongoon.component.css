@@ -64,5 +64,9 @@
 }
 
 .inputSelected {
+  background: rgb(136, 204, 73);
+}
+
+.custom-thumb::-webkit-slider-thumb {
   background: var(--tertiary-accent-color);
 }

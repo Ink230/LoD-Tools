@@ -8,7 +8,7 @@
             <div class="option">
               @if (option.inputType == irongoonInput.Slider) {
                 <div class="sliderContainer" (click)="onSliderClicked($event, option)">
-                  <input type="range" min="1" max="2" value="{{ option.value }}" [ngClass]="{'inputSelected' : option.value == 2 }" />
+                  <input type="range" min="1" max="2" value="{{ option.value }}" [ngClass]="{'inputSelected custom-thumb' : option.value == 2 }" class="custom-thumb" />
                 </div>
               }
               <div class="optionText">{{ option.name }}</div>
