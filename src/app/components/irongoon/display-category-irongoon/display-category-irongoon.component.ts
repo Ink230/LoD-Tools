@@ -3,11 +3,11 @@ import { IrongoonInputs } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 
 @Component({
-  selector: 'app-presets-irongoon',
-  templateUrl: './presets-irongoon.component.html',
-  styleUrl: './presets-irongoon.component.css',
+  selector: 'app-display-category-irongoon',
+  templateUrl: './display-category-irongoon.component.html',
+  styleUrl: './display-category-irongoon.component.css',
 })
-export class PresetsIrongoonComponent {
+export class DisplayCategoryIrongoonComponent {
   @Input() tabName = 'Presets';
   @Input() selectedTab = 0;
 
