@@ -161,23 +161,17 @@ input[type='range'] {
   background: #d3d3d3;
   -webkit-transition: 20.4s;
   transition: opacity 20.4s;
+  border-radius: 1rem;
 }
 
 input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 25px;
-  height: 25px;
-  background: #4caf50;
+  width: 21px;
+  height: 21px;
+  background: var(--primary-accent-color);
   cursor: pointer;
   border-radius: 100%;
-}
-
-input[type='range']::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  background: #eeeeee;
-  cursor: pointer;
 }
 
 @media screen and (max-width: 1280px) {

@@ -14,3 +14,39 @@ export enum IroongoonPresets {
   StandardRandomizer = 'Standard Randomizer',
   RandomRandom = 'Random Random',
 }
+
+export enum IrongoonInputs {
+  Checkbox,
+  Slider,
+  Number,
+}
+
+export interface IrongoonNavigationTab {
+  id: number;
+  title: string;
+}
+
+export interface IrongoonCategories {
+  id: number;
+  name: string;
+  columns: IrongoonColumns[];
+}
+
+export interface IrongoonColumns {
+  id: number;
+  name: string;
+  settings: IrongoonSettings[];
+}
+
+export interface IrongoonSettings {
+  id: number;
+  name: string;
+  options: IrongoonOption[];
+}
+
+export interface IrongoonOption {
+  id: number;
+  name: string;
+  value: number;
+  inputType: IrongoonInputs;
+}

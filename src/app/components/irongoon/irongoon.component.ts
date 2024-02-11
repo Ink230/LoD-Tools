@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ClipboardService } from 'ngx-clipboard';
-import { IrongoonSettingCategories } from 'src/app/models/irongoon.model';
-import { IrongoonService } from 'src/app/services/iroongoon.service';
+import { IrongoonNavigationTab } from 'src/app/models/irongoon.model';
+import { IrongoonService } from 'src/app/services/irongoon.service';
 
 @Component({
   selector: 'app-irongoon',
@@ -18,8 +18,8 @@ export class IrongoonComponent {
     private clipboardService: ClipboardService
   ) {}
 
-  getNavigationTabs(): IrongoonSettingCategories[] {
-    return this.irongoonService.settingCategories;
+  getNavigationTabs(): IrongoonNavigationTab[] {
+    return this.irongoonService.optionCategories.map((entry) => ({ id: entry.id, title: entry.name }));
   }
 
   updateSelectedTab(id: number): void {
@@ -28,10 +28,6 @@ export class IrongoonComponent {
 
   isSelectedTab(id: number): boolean {
     return id == this.selectedTab;
-  }
-
-  displayTabComponent() {
-    return this.irongoonService.settingCategories[this.selectedTab].component;
   }
 
   copyConfigOutputToClipboard() {
