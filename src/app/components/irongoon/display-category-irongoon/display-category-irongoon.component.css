@@ -29,18 +29,40 @@
 }
 
 .optionCategory {
+  width: 100%;
+  margin-bottom: 2rem;
 }
 
 .optionCategoryTitle {
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 0.05rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.7rem;
 }
 
 .option {
+  text-indent: 0.3rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
 }
 
 .sliderContainer {
-  width: 2.3rem;
-  height: 0.8rem;
+  width: 2rem;
+  height: 0.6rem;
+  margin-top: 0.08rem;
+}
+
+.optionText {
+  padding-left: 0.5rem;
+}
+
+.inputSelected {
+  background: var(--tertiary-accent-color);
 }

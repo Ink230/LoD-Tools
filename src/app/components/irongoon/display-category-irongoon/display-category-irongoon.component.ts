@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { IrongoonInputs } from 'src/app/models/irongoon.model';
+import { IrongoonInputs, IrongoonOption } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 
 @Component({
@@ -17,5 +17,16 @@ export class DisplayCategoryIrongoonComponent {
 
   getCategory() {
     return this.irongoonService.optionCategories[this.selectedTab]?.columns;
+  }
+
+  onSliderClicked(event: MouseEvent, option: IrongoonOption) {
+    const clickedValue = parseInt((event.target as HTMLInputElement).value);
+
+    if (option.value == clickedValue) {
+      option.value = option.value == 1 ? 2 : 1;
+      return;
+    }
+      
+    option.value = clickedValue;
   }
 }

@@ -19,6 +19,7 @@ export enum IrongoonInputs {
   Checkbox,
   Slider,
   Number,
+  Dropdown,
 }
 
 export interface IrongoonNavigationTab {
