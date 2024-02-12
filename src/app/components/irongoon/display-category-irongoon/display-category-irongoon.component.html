@@ -10,9 +10,21 @@
                 <div class="sliderContainer" (click)="onSliderClicked($event, option)">
                   <input type="range" min="1" max="2" value="{{ option.value }}" [ngClass]="{'inputSelected custom-thumb' : option.value == 2 }" class="custom-thumb" />
                 </div>
+                <div class="optionText">{{ option.name }}</div>
+              } @else if(option.inputType == irongoonInput.Dropdown) {
+                <div class="dropdownContainer">
+                  <div class="dropdownCustom">
+                    <select id="option.id" name="option.name" class="dropdownElement" [(ngModel)]="option.data">
+                      @for (selection of option.dataList; track selection) {
+                          <option [ngValue]="selection">{{ selection.name }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="optionText no-padding">{{ option.name }}</div>
+                </div>
               }
-              <div class="optionText">{{ option.name }}</div>
             </div>
+            {{ option.data?.value }}
           }
         </div>
       }

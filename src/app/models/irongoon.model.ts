@@ -49,5 +49,12 @@ export interface IrongoonOption {
   id: number;
   name: string;
   value: number;
+  data?: DropdownOption;
+  dataList?: DropdownOption[];
   inputType: IrongoonInputs;
+}
+
+export interface DropdownOption {
+  value: string;
+  name: string;
 }
