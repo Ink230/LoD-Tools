@@ -1,1 +1,10 @@
-<p>irongoon-dropdown works!</p>
+<div class="dropdown-container">
+  <div class="selection">
+    <div class="selected-option">{{ selected.name }}</div>
+  </div>
+  <div class="dropdown">
+    @for (item of list; track item.id) {
+      <div class="dropdown-option">{{ item.name }}</div>
+    }
+  </div>
+</div>
