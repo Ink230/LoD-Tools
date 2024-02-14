@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { IrongoonInputs, IrongoonOption } from 'src/app/models/irongoon.model';
+import { DropdownOption, IrongoonInputs, IrongoonOption } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 
 @Component({
@@ -28,5 +28,11 @@ export class DisplayCategoryIrongoonComponent {
     }
       
     option.value = clickedValue;
+  }
+
+  onSelectionEvent(selected: DropdownOption, dropdownOptions: IrongoonOption) {
+    if (!selected) return;
+
+    dropdownOptions.data = selected;
   }
 }

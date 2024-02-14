@@ -6,11 +6,14 @@
   @if (this.displayDropdown) {
     <div class="dropdown-perimeter">
       <div class="dropdown">
-      @for (item of list; track item.id) {
-        <div class="dropdown-option" (click)="updateSelectedOption(item);closeDropdown();">{{ item.name }}</div>
+      @for (item of dropdownOptions; track item.value) {
+        <div class="dropdown-option" (click)="updateSelectedOption(item);closeDropdown()">{{ item.name }}</div>
       }
       </div>
     </div>
-    <div class="dropdown-anti-container" id='{{ dropdownIdentifier }}' (click)="closeDropdown()"></div>
+    @if (displayDropdownIdentifier) {
+      <div class="dropdown-anti-container" id='{{ dropdownIdentifier }}' (click)="closeDropdown()"></div>
+    }
+    
   }
 </div>

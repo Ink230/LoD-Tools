@@ -69,6 +69,7 @@
 
 .selected-option {
   width: 100%;
+  cursor: pointer;
 }
 
 .selection::after {
@@ -85,4 +86,5 @@
 
 .dropdown-option {
   width: 100%;
+  z-index: 22;
 }

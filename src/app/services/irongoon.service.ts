@@ -41,7 +41,7 @@ export class IrongoonService {
                   id: 3,
                   name: 'Solo',
                   value: 1,
-                  data: { value: 'option1', name: 'Option 1'},
+                  data: { value: 'option1', name: 'Option 1' },
                   dataList: [
                     { value: 'option1', name: 'Option 1' },
                     { value: 'option2', name: 'Option 2' },
@@ -63,7 +63,21 @@ export class IrongoonService {
             {
               id: 0,
               name: 'Community',
-              options: [{ id: 0, name: 'Suggest some!', value: 1, inputType: IrongoonInputs.Slider }],
+              options: [
+                { id: 0, name: 'Suggest some!', value: 1, inputType: IrongoonInputs.Slider },
+                {
+                  id: 1,
+                  name: 'Solo',
+                  value: 1,
+                  data: { value: 'option1', name: 'Option 1' },
+                  dataList: [
+                    { value: 'option1', name: 'Option 1' },
+                    { value: 'option2', name: 'Option 2' },
+                    { value: 'option3', name: 'Option 3' },
+                  ],
+                  inputType: IrongoonInputs.Dropdown,
+                },
+              ],
             },
           ],
         },
