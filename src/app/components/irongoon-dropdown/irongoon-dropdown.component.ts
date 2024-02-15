@@ -12,36 +12,30 @@ export class IrongoonDropdownComponent {
 
   selected!: DropdownOption;
   displayDropdown = false;
-  displayDropdownIdentifier = false;
   dropdownIdentifier!: string;
+  selectionIdentifier!: string;
 
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
-    if ((event.target as HTMLElement).id === this.dropdownIdentifier) {
-      const nested = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement;
-      if (nested) {
-        nested.click();
-      }
-    }
+    const target = event.target as HTMLElement;
+
+    if (!this.displayDropdown || target.id == this.selectionIdentifier) return;
+
+    this.displayDropdown = false;
   }
 
   ngOnInit() {
     this.selected = this.dropdownOptions[0];
     this.dropdownIdentifier = `dropdown-identifier-${this.generateUUID()}`;
+    this.selectionIdentifier = `selection-identifier-${this.generateUUID()}`;
   }
 
   toggleDropdown() {
     this.displayDropdown = !this.displayDropdown;
-    this.displayDropdownIdentifier = true;
   }
 
   closeDropdown() {
-    this.displayDropdownIdentifier = false;
     this.displayDropdown = false;
-  }
-
-  showDropdownIdentifier() {
-    this.displayDropdownIdentifier = true;
   }
 
   updateSelectedOption(item: any) {

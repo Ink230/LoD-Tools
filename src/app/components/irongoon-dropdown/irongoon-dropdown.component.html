@@ -1,19 +1,19 @@
 
 <div class="dropdown-container">
-  <div class="selection">
-    <div class="selected-option" (click)="toggleDropdown()">{{ selected.name }}</div>
+  <div class="selection" id="{{ selectionIdentifier }}" (click)="toggleDropdown()">
+    <div class="selected-option" id="{{ selectionIdentifier }}">
+      {{ selected.name }}
+    </div>
   </div>
   @if (this.displayDropdown) {
-    <div class="dropdown-perimeter">
-      <div class="dropdown">
+    <div class="menu-container" id="{{ dropdownIdentifier }}">
+      <div class="menu">
       @for (item of dropdownOptions; track item.value) {
-        <div class="dropdown-option" (click)="updateSelectedOption(item);closeDropdown()">{{ item.name }}</div>
+        <div class="menu-option" (click)="updateSelectedOption(item);closeDropdown()">
+          {{ item.name }}
+        </div>
       }
       </div>
     </div>
-    @if (displayDropdownIdentifier) {
-      <div class="dropdown-anti-container" id='{{ dropdownIdentifier }}' (click)="closeDropdown()"></div>
-    }
-    
   }
 </div>
