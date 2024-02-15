@@ -24,7 +24,10 @@
                 </div>
               } @else if(option.inputType == irongoonInput.Dropdown) {
                 <div class="dropdownContainer">
-                  <app-irongoon-dropdown *ngIf="option.dataList && option.data" [dropdownOptions]="option.dataList" [defaultOption]="option.data" (selectionEvent)="onSelectionEvent($event, option)"></app-irongoon-dropdown>
+                  <div>{{ option.name }} </div>
+                  <div class="dropdownContainer">
+                    <app-irongoon-dropdown [dropdownOptions]="option.dataList" [defaultOption]="option.data" [isDropdownDisabled]="option.disabled" (selectionEvent)="onSelectionEvent($event, option)"></app-irongoon-dropdown>
+                  </div>
                 </div>
               }
             </div>

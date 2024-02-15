@@ -81,6 +81,28 @@
 
 }
 
-.highlight-option:Hover {
+.highlight-option:hover {
   font-weight: 700;
+}
+
+.disabled {
+  background: rgb(87, 87, 87);
+  cursor: default;
+}
+
+.disabled:hover {
+  background:rgb(87, 87, 87);
+  color: unset;
+  font-weight: unset;
+  cursor: default;
+}
+
+.disabled > .highlight-option {
+  color: unset;
+  font-weight: unset;
+}
+
+.disabled > .highlight-option:hover {
+  color: unset;
+  font-weight: unset;
 }

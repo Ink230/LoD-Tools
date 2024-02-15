@@ -52,6 +52,7 @@ export interface IrongoonOption {
   data?: DropdownOption;
   dataList?: DropdownOption[];
   inputType: IrongoonInputs;
+  disabled?: boolean;
 }
 
 export interface DropdownOption {

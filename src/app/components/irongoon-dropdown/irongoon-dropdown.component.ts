@@ -7,14 +7,15 @@ import { DropdownOption } from 'src/app/models/irongoon.model';
   styleUrl: './irongoon-dropdown.component.css',
 })
 export class IrongoonDropdownComponent {
-  @Input() dropdownOptions!: DropdownOption[];
-  @Input() defaultOption!: DropdownOption;
+  @Input() dropdownOptions: DropdownOption[];
+  @Input() defaultOption: DropdownOption;
+  @Input() isDropdownDisabled = false;
   @Output() selectionEvent = new EventEmitter<DropdownOption>();
 
-  selected!: DropdownOption;
+  selected: DropdownOption;
   displayDropdown = false;
-  dropdownIdentifier!: string;
-  selectionIdentifier!: string;
+  dropdownIdentifier: string;
+  selectionIdentifier: string;
 
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
@@ -40,6 +41,8 @@ export class IrongoonDropdownComponent {
   }
 
   updateSelectedOption(item: any) {
+    if (this.isDropdownDisabled) return;
+    
     this.selected = item;
     this.selectionEvent.emit(this.selected);
   }

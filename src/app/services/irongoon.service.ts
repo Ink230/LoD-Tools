@@ -48,6 +48,7 @@ export class IrongoonService {
                     { value: 'option3', name: 'Option 3' },
                   ],
                   inputType: IrongoonInputs.Dropdown,
+                  disabled: true,
                 },
                 { id: 4, name: 'No Shops', value: 1, inputType: IrongoonInputs.Slider },
                 { id: 5, name: 'Randomizer+', value: 1, inputType: IrongoonInputs.Number },
