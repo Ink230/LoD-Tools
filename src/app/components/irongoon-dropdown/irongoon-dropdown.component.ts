@@ -8,6 +8,7 @@ import { DropdownOption } from 'src/app/models/irongoon.model';
 })
 export class IrongoonDropdownComponent {
   @Input() dropdownOptions!: DropdownOption[];
+  @Input() defaultOption!: DropdownOption;
   @Output() selectionEvent = new EventEmitter<DropdownOption>();
 
   selected!: DropdownOption;
@@ -25,7 +26,7 @@ export class IrongoonDropdownComponent {
   }
 
   ngOnInit() {
-    this.selected = this.dropdownOptions[0];
+    this.selected = this.defaultOption;
     this.dropdownIdentifier = `dropdown-identifier-${this.generateUUID()}`;
     this.selectionIdentifier = `selection-identifier-${this.generateUUID()}`;
   }
