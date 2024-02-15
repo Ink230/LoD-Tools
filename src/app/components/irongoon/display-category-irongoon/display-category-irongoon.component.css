@@ -49,7 +49,11 @@
   flex-wrap: wrap;
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
+}
 
+.disabled {
+  background: rgb(70, 70, 70);
+  cursor: default;
 }
 
 .sliderContainer {
@@ -84,3 +88,12 @@
 .custom-thumb::-webkit-slider-thumb {
   background: var(--tertiary-accent-color);
 }
+
+.disabled-thumb::-webkit-slider-thumb {
+  background: rgb(87, 87, 87);
+}
+
+input[type='range'].disabled{
+  cursor: default;
+}
+

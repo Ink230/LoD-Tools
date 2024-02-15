@@ -22,6 +22,8 @@ export class DisplayCategoryIrongoonComponent {
   onSliderClicked(event: MouseEvent, option: IrongoonOption) {
     const clickedValue = parseInt((event.target as HTMLInputElement).value);
 
+    if (option.disabled) return;
+
     if (option.value == clickedValue) {
       option.value = option.value == 1 ? 2 : 1;
       return;

@@ -168,7 +168,6 @@ input[type='range']::-webkit-slider-thumb {
   width: 18px;
   height: 18px;
   background: var(--primary-accent-color);
-  cursor: pointer;
   border-radius: 100%;
 }
 

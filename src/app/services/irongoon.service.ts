@@ -21,7 +21,7 @@ export class IrongoonService {
                 { id: 0, name: 'Irongoon', value: 1, inputType: IrongoonInputs.Slider },
                 { id: 1, name: 'Ultimate', value: 1, inputType: IrongoonInputs.Slider },
                 { id: 2, name: 'Kaizo', value: 1, inputType: IrongoonInputs.Slider },
-                { id: 3, name: '108th', value: 1, inputType: IrongoonInputs.Slider },
+                { id: 3, name: '108th', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
               ],
             },
           ],
