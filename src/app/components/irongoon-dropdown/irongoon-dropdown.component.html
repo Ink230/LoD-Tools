@@ -1,15 +1,15 @@
 
 <div class="dropdown-container">
-  <div class="selection" id="{{ selectionIdentifier }}" (click)="toggleDropdown()">
+  <div class="selection" id="{{ selectionIdentifier }}" (click)="toggleDropdown()" [ngClass]="{'selection-clicked': displayDropdown}">
     <div class="selected-option" id="{{ selectionIdentifier }}">
       {{ selected.name }}
     </div>
   </div>
   @if (this.displayDropdown) {
     <div class="menu-container" id="{{ dropdownIdentifier }}">
-      <div class="menu">
+      <div class="menu" id="menu">
       @for (item of dropdownOptions; track item.value) {
-        <div class="menu-option" (click)="updateSelectedOption(item);closeDropdown()">
+        <div class="menu-option" (click)="updateSelectedOption(item);closeDropdown()" [ngClass]="{'highlight-option': selected.value == item.value }">
           {{ item.name }}
         </div>
       }
