@@ -72,8 +72,9 @@
 }
 
 .optionText {
-  padding-left: 0.5rem;
-  margin-top:0.123rem;
+  padding-left: 0.3rem;
+  margin-top: 0.123rem;
+  margin-left: 6px;
 }
 
 .no-padding {
