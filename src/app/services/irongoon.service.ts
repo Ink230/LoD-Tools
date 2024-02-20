@@ -73,7 +73,41 @@ export class IrongoonService {
     {
       id: 1,
       name: 'Entities',
-      columns: [],
+      columns: [
+        {
+          id: 0,
+          name: 'Characters',
+          settings: [
+            {
+              id: 0,
+              name: 'Characters',
+              options: [{ id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider }],
+            },
+          ],
+        },
+        {
+          id: 1,
+          name: 'Enemies',
+          settings: [
+            {
+              id: 0,
+              name: 'Enemies',
+              options: [{ id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider }],
+            },
+          ],
+        },
+        {
+          id: 2,
+          name: '???',
+          settings: [
+            {
+              id: 0,
+              name: '???',
+              options: [{ id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider, disabled: true }],
+            },
+          ],
+        },
+      ],
     },
     {
       id: 2,
