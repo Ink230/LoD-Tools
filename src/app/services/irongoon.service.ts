@@ -81,7 +81,26 @@ export class IrongoonService {
             {
               id: 0,
               name: 'Characters',
-              options: [{ id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider }],
+              options: [
+                {
+                  id: 0,
+                  name: 'Body Stats',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'RANDOMIZE_BOUNDS_PER_LEVEL', name: 'Randomize per level' },
+                  dataList: [
+                    { value: 'RANDOMIZE_BOUNDS_PER_LEVEL', name: 'Randomize per level' },
+                    { value: 'MAINTAIN_STOCK', name: 'Randomize stock stats per level' },
+                    { value: 'AVERAGE_ALL_CHARACTERS', name: 'Randomize average stats per level' },
+                    { value: 'Stock', name: 'Stock' }
+                  ],
+                },
+                { id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider },
+                { id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider },
+                { id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider },
+                { id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider },
+                { id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider },
+              ],
             },
           ],
         },
