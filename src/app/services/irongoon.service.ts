@@ -123,7 +123,24 @@ export class IrongoonService {
             {
               id: 0,
               name: 'Enemies',
-              options: [{ id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider }],
+              options: [
+                {
+                  id: 0,
+                  name: 'Monster Stats',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'RANDOMIZE_BOUNDS_PER_LEVEL', name: 'Randomize' },
+                  dataList: [
+                    { value: 'RANDOMIZE_BOUNDS', name: 'Randomize' },
+                    { value: 'RANDOMIZE_STOCK_BOUNDS', name: 'Randomize with bounds' },
+                    { value: 'MAINTAIN_STOCK', name: 'Stock' },
+                  ],
+                },
+                { id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider },
+                { id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider },
+                { id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider },
+                { id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider },
+              ],
             },
           ],
         },
