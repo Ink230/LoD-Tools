@@ -17,6 +17,7 @@
   padding: 0.4rem 0rem;
   background: var(--secondary-accent-color);
   border-radius: 0.4rem;
+  z-index: 1;
 }
 
 .selected-option {
@@ -57,6 +58,7 @@
   padding: 0.5rem 0rem;
   background: rgb(39 69 22);
   border-radius: 0rem 0rem 0.4rem 0.4rem;
+  z-index: 99;
 }
 
 .menu-option {
