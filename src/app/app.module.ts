@@ -11,9 +11,9 @@ import { IrongoonComponent } from './components/irongoon/irongoon.component';
 import { IrongoonService } from './services/irongoon.service';
 
 @NgModule({
-  declarations: [AppComponent, IrongoonComponent, DisplayCategoryIrongoonComponent, IrongoonDropdownComponent],
-  imports: [BrowserModule, AppRoutingModule, ClipboardModule, FormsModule],
-  providers: [IrongoonService],
-  bootstrap: [AppComponent],
+    declarations: [AppComponent],
+    imports: [BrowserModule, AppRoutingModule, ClipboardModule, FormsModule, IrongoonComponent, DisplayCategoryIrongoonComponent, IrongoonDropdownComponent],
+    providers: [IrongoonService],
+    bootstrap: [AppComponent],
 })
 export class AppModule {}

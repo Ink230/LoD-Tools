@@ -8,8 +8,8 @@ describe('IrongoonComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [IrongoonComponent]
-    });
+    imports: [IrongoonComponent]
+});
     fixture = TestBed.createComponent(IrongoonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

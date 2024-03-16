@@ -2,11 +2,15 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ClipboardService } from 'ngx-clipboard';
 import { IrongoonNavigationTab } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
+import { DisplayCategoryIrongoonComponent } from './display-category-irongoon/display-category-irongoon.component';
+import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'app-irongoon',
-  templateUrl: './irongoon.component.html',
-  styleUrls: ['./irongoon.component.css'],
+    selector: 'app-irongoon',
+    templateUrl: './irongoon.component.html',
+    styleUrls: ['./irongoon.component.css'],
+    standalone: true,
+    imports: [NgClass, DisplayCategoryIrongoonComponent],
 })
 export class IrongoonComponent {
   @ViewChild('configOutputElement') configOutputElement!: ElementRef;

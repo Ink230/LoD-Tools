@@ -1,10 +1,13 @@
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { DropdownOption } from 'src/app/models/irongoon.model';
+import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'app-irongoon-dropdown',
-  templateUrl: './irongoon-dropdown.component.html',
-  styleUrl: './irongoon-dropdown.component.css',
+    selector: 'app-irongoon-dropdown',
+    templateUrl: './irongoon-dropdown.component.html',
+    styleUrl: './irongoon-dropdown.component.css',
+    standalone: true,
+    imports: [NgClass],
 })
 export class IrongoonDropdownComponent {
   @Input() dropdownOptions: DropdownOption[];
