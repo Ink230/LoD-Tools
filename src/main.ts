@@ -1,19 +1,22 @@
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { Routes, provideRouter } from '@angular/router';
+import { AppComponent } from './app/components/app-default/app.component';
 
+const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./app/components/irongoon/irongoon.component')
+        .then(m => m.IrongoonComponent),
+  },
+  {
+    path: 'irongoon',
+    redirectTo: '',
+  },
+];
 
-import { importProvidersFrom } from '@angular/core';
-import { AppComponent } from './app/app.component';
-import { FormsModule } from '@angular/forms';
-import { ClipboardModule } from 'ngx-clipboard';
-import { AppRoutingModule } from './app/app-routing.module';
-import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
-import { IrongoonService } from './app/services/irongoon.service';
-
-
-bootstrapApplication(AppComponent, {
+bootstrapApplication(AppComponent, 
+    {
     providers: [
-        importProvidersFrom(BrowserModule, AppRoutingModule, ClipboardModule, FormsModule),
-        IrongoonService
+        provideRouter(routes)
     ]
-})
-  .catch(err => console.error(err));
+}).catch(err => console.error(err));

@@ -9,7 +9,7 @@
     <div class="menu-container" id="{{ dropdownIdentifier }}" [ngClass]="{'disabled': isDropdownDisabled}">
       <div class="menu" id="menu" [ngClass]="{'disabled': isDropdownDisabled}">
       @for (item of dropdownOptions; track item.value) {
-        <div class="menu-option" (click)="updateSelectedOption(item);closeDropdown()" [ngClass]="{'highlight-option': selected.value == item.value, 'disabled': isDropdownDisabled }">
+        <div class="menu-option" (click)="updateSelectedOption(item);closeDropdown()" [ngClass]="{'highlight-option': selected.value === item.value, 'disabled': isDropdownDisabled }">
           {{ item.name }}
         </div>
       }

@@ -1,6 +1,6 @@
+import { NgClass } from '@angular/common';
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { DropdownOption } from 'src/app/models/irongoon.model';
-import { NgClass } from '@angular/common';
 
 @Component({
     selector: 'app-irongoon-dropdown',
@@ -43,6 +43,7 @@ export class IrongoonDropdownComponent {
     this.displayDropdown = false;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateSelectedOption(item: any) {
     if (this.isDropdownDisabled) return;
     
