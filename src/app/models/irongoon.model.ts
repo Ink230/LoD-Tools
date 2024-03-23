@@ -3,6 +3,8 @@ import { Type } from '@angular/core';
 export interface IrongoonSettingCategories {
   id: number;
   title: string;
+  // fun issue with typescript component typing
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: Type<any>;
 }
 
