@@ -39,4 +39,8 @@ export class IrongoonComponent {
   copyConfigOutputToClipboard() {
     this.clipboardService.copyFromContent(this.configOutputElement.nativeElement.innerText);
   }
+
+  resetRandomizer() {
+    this.irongoonService.resetOptionCategories();
+  }
 }

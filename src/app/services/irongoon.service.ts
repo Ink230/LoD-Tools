@@ -5,7 +5,7 @@ import { IrongoonCategories, IrongoonInputs } from '../models/irongoon.model';
   providedIn: 'root',
 })
 export class IrongoonService {
-  optionCategories: IrongoonCategories[] = [
+  public optionCategories: IrongoonCategories[] = [
     {
       id: 0,
       name: 'Presets',
@@ -173,4 +173,10 @@ export class IrongoonService {
       columns: [],
     },
   ];
+
+  private baseOptionCategories = JSON.parse(JSON.stringify(this.optionCategories));
+
+  resetOptionCategories() {
+    this.optionCategories = JSON.parse(JSON.stringify(this.baseOptionCategories));
+  }
 }
