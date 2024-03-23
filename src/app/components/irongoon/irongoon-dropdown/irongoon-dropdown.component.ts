@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 import { DropdownOption } from 'src/app/models/irongoon.model';
 
 @Component({
@@ -9,7 +9,7 @@ import { DropdownOption } from 'src/app/models/irongoon.model';
     standalone: true,
     imports: [NgClass],
 })
-export class IrongoonDropdownComponent {
+export class IrongoonDropdownComponent implements OnInit {
   @Input() dropdownOptions: DropdownOption[];
   @Input() defaultOption: DropdownOption;
   @Input() isDropdownDisabled = false;
