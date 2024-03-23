@@ -176,6 +176,10 @@ export class IrongoonService {
 
   private baseOptionCategories = JSON.parse(JSON.stringify(this.optionCategories));
 
+  randomizeOptionCategories() {
+
+  }
+
   resetOptionCategories() {
     this.optionCategories = JSON.parse(JSON.stringify(this.baseOptionCategories));
   }

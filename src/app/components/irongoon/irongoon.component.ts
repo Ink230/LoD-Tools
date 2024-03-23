@@ -40,6 +40,10 @@ export class IrongoonComponent {
     this.clipboardService.copyFromContent(this.configOutputElement.nativeElement.innerText);
   }
 
+  randomizeRandomizer() {
+    this.irongoonService.randomizeOptionCategories();
+  }
+
   resetRandomizer() {
     this.irongoonService.resetOptionCategories();
   }
