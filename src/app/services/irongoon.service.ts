@@ -94,9 +94,24 @@ export class IrongoonService {
                     { value: 'AVERAGE_ALL_CHARACTERS', name: 'Randomize average stats per level' },
                     { value: 'Stock', name: 'Stock' },
                   ],
+                  descriptor: 'bodyTotalStatsPerLevel',
                 },
                 {
                   id: 1,
+                  name: 'Body Stats Distribution',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'RANDOMIZE', name: 'Randomize' },
+                  dataList: [
+                    { value: 'RANDOMIZE', name: 'Randomize' },
+                    { value: 'DABAS_FIXED', name: 'Fixed' },
+                    { value: 'DABAS_PER_LEVEL', name: 'Shuffle' },
+                    { value: 'Stock', name: 'Stock' },
+                  ],
+                  descriptor: 'bodyTotalStatsDistributionPerLevel',
+                },
+                {
+                  id: 2,
                   name: 'Dragoon Stats',
                   value: 1,
                   inputType: IrongoonInputs.Dropdown,
@@ -107,6 +122,21 @@ export class IrongoonService {
                     { value: 'AVERAGE_ALL_CHARACTERS', name: 'Randomize average stats per level' },
                     { value: 'Stock', name: 'Stock' },
                   ],
+                  descriptor: 'dragoonTotalStatsPerLevel',
+                },
+                {
+                  id: 3,
+                  name: 'Dragoon Stats Distribution',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'RANDOMIZE_BOUNDS_PER_LEVEL', name: 'Randomize' },
+                  dataList: [
+                    { value: 'RANDOMIZE', name: 'Randomize' },
+                    { value: 'DABAS_FIXED', name: 'Fixed' },
+                    { value: 'DABAS_PER_LEVEL', name: 'Shuffle' },
+                    { value: 'Stock', name: 'Stock' },
+                  ],
+                  descriptor: 'dragoonTotalStatsDistributionPerLevel',
                 },
                 { id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider },
                 { id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider },
@@ -135,6 +165,7 @@ export class IrongoonService {
                     { value: 'RANDOMIZE_STOCK_BOUNDS', name: 'Randomize with bounds' },
                     { value: 'MAINTAIN_STOCK', name: 'Stock' },
                   ],
+                  descriptor: 'monsterTotalStatsPerLevel',
                 },
                 { id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider },
                 { id: 0, name: 'test', value: 1, inputType: IrongoonInputs.Slider },
@@ -176,9 +207,7 @@ export class IrongoonService {
 
   private baseOptionCategories = JSON.parse(JSON.stringify(this.optionCategories));
 
-  randomizeOptionCategories() {
-
-  }
+  randomizeOptionCategories() {}
 
   resetOptionCategories() {
     this.optionCategories = JSON.parse(JSON.stringify(this.baseOptionCategories));
