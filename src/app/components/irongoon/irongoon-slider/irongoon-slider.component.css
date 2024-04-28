@@ -1,0 +1,36 @@
+.slider-parent {
+  display: flex;
+}
+
+.slider-container {
+  width: 2rem;
+  height: 0.6rem;
+  margin-top: 0.08rem;
+}
+
+.input-selected {
+  background: rgb(136, 204, 73);
+}
+
+.custom-thumb::-webkit-slider-thumb {
+  background: var(--tertiary-accent-color);
+}
+
+.disabled-thumb::-webkit-slider-thumb {
+  background: rgb(87, 87, 87);
+}
+
+input[type='range'].disabled {
+  cursor: default;
+}
+
+.option-text {
+  padding-left: 0.3rem;
+  margin-top: 0.123rem;
+  margin-left: 6px;
+}
+
+.disabled {
+  background: rgb(70, 70, 70);
+  cursor: default;
+}

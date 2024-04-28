@@ -1,0 +1,14 @@
+<div class="slider-parent">
+  <div class="slider-container" (click)="onSliderClicked($event)">
+    <input
+      type="range"
+      min="1"
+      max="2"
+      value="{{ option().value }}"
+      [ngClass]="{ 'input-selected custom-thumb': option().value === 2, 'disabled disabled-thumb': option().disabled }"
+      class="custom-thumb"
+      [disabled]="option().disabled"
+    />
+  </div>
+  <div class="option-text">{{ option().name }}</div>
+</div>

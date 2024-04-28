@@ -7,18 +7,7 @@
           @for (option of setting.options; track option.id) {
             <div class="option">
               @if (option.inputType === irongoonInput.Slider) {
-                <div class="slider-container" (click)="onSliderClicked($event, option)">
-                  <input
-                    type="range"
-                    min="1"
-                    max="2"
-                    value="{{ option.value }}"
-                    [ngClass]="{ 'input-selected custom-thumb': option.value === 2, 'disabled disabled-thumb': option.disabled }"
-                    class="custom-thumb"
-                    [disabled]="option.disabled"
-                  />
-                </div>
-                <div class="option-text">{{ option.name }}</div>
+                <app-irongoon-slider [option]="option"></app-irongoon-slider>
               } @else if (option.inputType === irongoonInput.Dropdown) {
                 <app-irongoon-dropdown [option]="option"></app-irongoon-dropdown>
               } @else if (option.inputType === irongoonInput.Number) {
