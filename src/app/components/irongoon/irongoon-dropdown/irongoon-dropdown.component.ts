@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
-import { Component, HostListener, OnInit, effect, input, signal } from '@angular/core';
-import { DropdownOption, IrongoonOption } from 'src/app/models/irongoon.model';
+import { Component, HostListener, OnInit, input, signal } from '@angular/core';
+import { IrongoonOption } from 'src/app/models/irongoon.model';
 
 @Component({
   selector: 'app-irongoon-dropdown',
@@ -11,20 +11,9 @@ import { DropdownOption, IrongoonOption } from 'src/app/models/irongoon.model';
 })
 export class IrongoonDropdownComponent implements OnInit {
   option = input<IrongoonOption>();
-
-  selected = signal<DropdownOption>(null);
   displayDropdown = signal(false);
   dropdownIdentifier = signal<string>(null);
   selectionIdentifier = signal<string>(null);
-
-  constructor() {
-    effect(
-      () => {
-        this.selected.set(this.option().data);
-      },
-      { allowSignalWrites: true }
-    );
-  }
 
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
@@ -36,7 +25,6 @@ export class IrongoonDropdownComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.selected.set(this.option().data);
     this.dropdownIdentifier.set(`dropdown-identifier-${this.generateUUID()}`);
     this.selectionIdentifier.set(`selection-identifier-${this.generateUUID()}`);
   }
@@ -53,8 +41,7 @@ export class IrongoonDropdownComponent implements OnInit {
   updateSelectedOption(item: any) {
     if (this.option().disabled) return;
 
-    this.selected.set(item);
-    this.option().data = this.selected();
+    this.option().data = item;
   }
 
   generateUUID(): string {
