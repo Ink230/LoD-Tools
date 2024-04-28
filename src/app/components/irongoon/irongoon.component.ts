@@ -5,13 +5,14 @@ import { ClipboardModule, ClipboardService } from 'ngx-clipboard';
 import { IrongoonNavigationTab } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 import { IrongoonCategoryComponent } from './irongoon-category/irongoon-category.component';
+import { IrongoonSupportComponent } from './irongoon-support/irongoon-support.component';
 
 @Component({
   selector: 'app-irongoon',
   templateUrl: './irongoon.component.html',
   styleUrls: ['./irongoon.component.css'],
   standalone: true,
-  imports: [NgClass, ClipboardModule, FormsModule, IrongoonCategoryComponent],
+  imports: [NgClass, ClipboardModule, FormsModule, IrongoonCategoryComponent, IrongoonSupportComponent],
   providers: [IrongoonService],
 })
 export class IrongoonComponent {

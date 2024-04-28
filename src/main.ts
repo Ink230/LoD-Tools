@@ -5,8 +5,7 @@ import { AppComponent } from './app/components/app-default/app.component';
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./app/components/irongoon/irongoon.component')
-        .then(m => m.IrongoonComponent),
+    loadComponent: () => import('./app/components/irongoon/irongoon.component').then((m) => m.IrongoonComponent),
   },
   {
     path: 'irongoon',
@@ -14,9 +13,6 @@ const routes: Routes = [
   },
 ];
 
-bootstrapApplication(AppComponent, 
-    {
-    providers: [
-        provideRouter(routes)
-    ]
-}).catch(err => console.error(err));
+bootstrapApplication(AppComponent, {
+  providers: [provideRouter(routes)],
+}).catch((err) => console.error(err));

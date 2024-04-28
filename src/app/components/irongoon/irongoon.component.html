@@ -17,7 +17,7 @@
 
   <div class="configOutputContainer">
     <div class="copyButton" (click)="copyConfigOutputToClipboard()">
-      <img src="assets/copy-icon.svg" alt="Copy Text"/>
+      <img src="assets/copy-icon.svg" alt="Copy Text" />
     </div>
     <div class="configOutput" #configOutputElement>
       sdsdsd <br />
@@ -25,44 +25,5 @@
     </div>
   </div>
 
-  <div class="support">
-    <div class="supportSection">
-      <div class="supportTitle">What you need</div>
-      <div class="supportArticle">
-        <h2>Severed Chains</h2>
-        <p>
-          <a href="https://github.com/Legend-of-Dragoon-Modding/Severed-Chains" target="_blank">Severed Chains</a> is the native PC port that makes all of the mods for Legend of Dragoon possible.
-          <br />
-          <br />
-          Follow the instructions in the <a href="https://legendofdragoon.org/guides/setup-severed-chains/" target="_blank">setup guide</a>.
-        </p>
-      </div>
-      <div class="supportArticle">
-        <h2>Irongoon</h2>
-        <p>
-          <a href="https://github.com/Ink230/irongoon" target="_blank">Irongoon</a> is the mod that receives the config file generated above to customize the
-          <a href="https://gist.github.com/Ink230/76197fd8251de5e0927d99077e0c1124" target="_blank">Iroongoon ruleset</a>.
-          <br />
-          <br />
-          Unzip the contents from the latest release of the mod 'as is' into the Severed Chain's /mods folder.<br /><br />
-          Then, open the /mods/irongoon/config.yaml file and paste in the copied contents of the generated config above.
-        </p>
-      </div>
-    </div>
-    <div class="supportSection">
-      <div class="supportTitle">FAQ</div>
-      <div class="supportArticle">
-        <h2>What can it do now?</h2>
-        <p>The Irongoon mod is currently a glorified character and enemy stat randomizer.</p>
-      </div>
-      <div class="supportArticle">
-        <h2>What is next?</h2>
-        <p>When more modding APIs become available, the rest of the Irongoon ruleset will be added.</p>
-      </div>
-      <div class="supportArticle">
-        <h2>I died...? I am stuck?</h2>
-        <p>Irongoon aims to be a challenge run where if you game over your playthrough ends. You will need to play skillfully.<br /><br />Not all seeds will be completable.</p>
-      </div>
-    </div>
-  </div>
+  <app-irongoon-support></app-irongoon-support>
 </div>

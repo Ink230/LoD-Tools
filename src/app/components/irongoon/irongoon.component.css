@@ -1,8 +1,4 @@
 .irongoon {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
   min-width: var(--randomizer-container-width);
   max-width: var(--randomizer-container-width);
   padding-top: 2rem;
@@ -110,29 +106,4 @@
   width: var(--randomizer-container-width);
   border-radius: 0.3rem;
   padding: 1rem 0.8rem 1rem 0.8rem;
-}
-
-.support {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-items: flex-start;
-  width: 100%;
-  padding: 2rem 0.2rem 1rem 0.2rem;
-  row-gap: 1rem;
-}
-
-.supportSection {
-}
-
-.supportArticle {
-  padding: 1.5rem 0rem 1.5rem 1rem;
-}
-
-.supportTitle {
-  font-weight: 900;
-  font-size: 2rem;
-  letter-spacing: 0.06rem;
-  padding: 2rem 0rem 2rem 0rem;
 }
