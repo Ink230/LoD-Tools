@@ -171,6 +171,34 @@ input[type='range']::-webkit-slider-thumb {
   border-radius: 100%;
 }
 
+input[type='text'] {
+  all: unset;
+  appearance: none;
+  -webkit-appearance: none;
+  background: #d3d3d3;
+  caret-color: #d3d3d3;
+  color: var(--tertiary-font-color);
+  border: solid 1px var(--primary-color);
+  text-align: center;
+  margin: 0;
+  padding: 0.2rem;
+  padding-left: 0rem;
+  min-width: 4rem;
+  max-width: 4rem;
+  border-radius: 0.3rem;
+  font-size: 1.1rem;
+}
+
+input[type='text']:focus {
+  color: var(--primary-accent-color);
+  font-weight: bold;
+}
+
+input[type='text']::selection {
+  all: unset;
+  background: var(--primary-accent-color);
+}
+
 @media screen and (max-width: 1280px) {
   html,
   body {

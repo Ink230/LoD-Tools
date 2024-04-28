@@ -1,0 +1,14 @@
+.text-input-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-input {
+  margin-left: 0.2rem;
+}
+
+label {
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+  margin-left: -0.1rem;
+}

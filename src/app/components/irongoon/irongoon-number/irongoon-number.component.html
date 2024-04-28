@@ -1,1 +1,4 @@
-<p>irongoon-number works!</p>
+<div class="text-input-container">
+  <label for="option().name">{{ option().name }}</label>
+  <input type="text" id="option().name" value="{{ option().value }}" maxlength="3" class="text-input" (focus)="onFocusHighlightText(inputField)" #inputField NumericInput />
+</div>
