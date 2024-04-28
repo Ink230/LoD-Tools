@@ -11,7 +11,7 @@
   padding-top: 1rem;
   margin-bottom: 1rem;
   background: var(--secondary-color);
-  min-height: 300px;
+  min-height: 640px;
   border-radius: 0rem 0rem 0.5rem 0.5rem;
 }
 
@@ -62,7 +62,6 @@
   margin-top: 0.08rem;
 }
 
-
 .dropdownContainer {
   display: flex;
   flex-direction: column;
@@ -94,7 +93,6 @@
   background: rgb(87, 87, 87);
 }
 
-input[type='range'].disabled{
+input[type='range'].disabled {
   cursor: default;
 }
-
