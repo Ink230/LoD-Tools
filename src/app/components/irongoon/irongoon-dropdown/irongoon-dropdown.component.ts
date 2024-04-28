@@ -1,18 +1,16 @@
 import { NgClass } from '@angular/common';
 import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
-import { DropdownOption } from 'src/app/models/irongoon.model';
+import { DropdownOption, IrongoonOption } from 'src/app/models/irongoon.model';
 
 @Component({
-    selector: 'app-irongoon-dropdown',
-    templateUrl: './irongoon-dropdown.component.html',
-    styleUrl: './irongoon-dropdown.component.css',
-    standalone: true,
-    imports: [NgClass],
+  selector: 'app-irongoon-dropdown',
+  templateUrl: './irongoon-dropdown.component.html',
+  styleUrl: './irongoon-dropdown.component.css',
+  standalone: true,
+  imports: [NgClass],
 })
 export class IrongoonDropdownComponent implements OnInit {
-  @Input() dropdownOptions: DropdownOption[];
-  @Input() defaultOption: DropdownOption;
-  @Input() isDropdownDisabled = false;
+  @Input() option: IrongoonOption;
   @Output() selectionEvent = new EventEmitter<DropdownOption>();
 
   selected: DropdownOption;
@@ -30,7 +28,7 @@ export class IrongoonDropdownComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.selected = this.defaultOption;
+    this.selected = this.option.data;
     this.dropdownIdentifier = `dropdown-identifier-${this.generateUUID()}`;
     this.selectionIdentifier = `selection-identifier-${this.generateUUID()}`;
   }
@@ -45,10 +43,10 @@ export class IrongoonDropdownComponent implements OnInit {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateSelectedOption(item: any) {
-    if (this.isDropdownDisabled) return;
-    
+    if (this.option.disabled) return;
+
     this.selected = item;
-    this.selectionEvent.emit(this.selected);
+    this.option.data = this.selected;
   }
 
   generateUUID(): string {

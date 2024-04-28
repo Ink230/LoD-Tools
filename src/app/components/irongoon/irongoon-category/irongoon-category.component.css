@@ -29,12 +29,12 @@
   border: solid 0px red;
 }
 
-.optionCategory {
+.option-category {
   width: 100%;
   margin-bottom: 2rem;
 }
 
-.optionCategoryTitle {
+.option-category-title {
   font-size: 1.2rem;
   font-weight: 900;
   letter-spacing: 0.05rem;
@@ -56,21 +56,13 @@
   cursor: default;
 }
 
-.sliderContainer {
+.slider-container {
   width: 2rem;
   height: 0.6rem;
   margin-top: 0.08rem;
 }
 
-.dropdownContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-
-.optionText {
+.option-text {
   padding-left: 0.3rem;
   margin-top: 0.123rem;
   margin-left: 6px;
@@ -81,7 +73,7 @@
   padding-bottom: 0.12rem;
 }
 
-.inputSelected {
+.input-selected {
   background: rgb(136, 204, 73);
 }
 

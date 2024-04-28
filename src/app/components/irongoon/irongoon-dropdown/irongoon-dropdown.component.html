@@ -1,19 +1,21 @@
-
-<div class="dropdown-container">
-  <div class="selection" id="{{ selectionIdentifier }}" (click)="toggleDropdown()" [ngClass]="{'selection-clicked': displayDropdown, 'disabled': isDropdownDisabled}">
-    <div class="selected-option" id="{{ selectionIdentifier }}">
-      {{ selected.name }}
-    </div>
-  </div>
-  @if (displayDropdown) {
-    <div class="menu-container" id="{{ dropdownIdentifier }}" [ngClass]="{'disabled': isDropdownDisabled}">
-      <div class="menu" id="menu" [ngClass]="{'disabled': isDropdownDisabled}">
-      @for (item of dropdownOptions; track item.value) {
-        <div class="menu-option" (click)="updateSelectedOption(item);closeDropdown()" [ngClass]="{'highlight-option': selected.value === item.value, 'disabled': isDropdownDisabled }">
-          {{ item.name }}
-        </div>
-      }
+<div class="dropdown-parent">
+  <div class="option-text">{{ option.name }}</div>
+  <div class="dropdown-container">
+    <div class="selection" id="{{ selectionIdentifier }}" (click)="toggleDropdown()" [ngClass]="{ 'selection-clicked': displayDropdown, disabled: option.disabled }">
+      <div class="selected-option" id="{{ selectionIdentifier }}">
+        {{ selected.name }}
       </div>
     </div>
-  }
+    @if (displayDropdown) {
+      <div class="menu-container" id="{{ dropdownIdentifier }}" [ngClass]="{ disabled: option.disabled }">
+        <div class="menu" id="menu" [ngClass]="{ disabled: option.disabled }">
+          @for (item of option.dataList; track item.value) {
+            <div class="menu-option" (click)="updateSelectedOption(item); closeDropdown()" [ngClass]="{ 'highlight-option': selected.value === item.value, disabled: option.disabled }">
+              {{ item.name }}
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
 </div>

@@ -18,7 +18,6 @@ export enum IroongoonPresets {
 }
 
 export enum IrongoonInputs {
-  Checkbox,
   Slider,
   Number,
   Dropdown,

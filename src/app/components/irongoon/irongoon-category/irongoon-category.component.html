@@ -2,22 +2,27 @@
   @for (column of getCategory(); track column.id) {
     <div class="randomizer-column">
       @for (setting of column.settings; track setting.id) {
-        <div class="optionCategory">
-          <div class="optionCategoryTitle">{{ setting.name }}</div>
+        <div class="option-category">
+          <div class="option-category-title">{{ setting.name }}</div>
           @for (option of setting.options; track option.id) {
             <div class="option">
               @if (option.inputType === irongoonInput.Slider) {
-                <div class="sliderContainer" (click)="onSliderClicked($event, option)">
-                  <input type="range" min="1" max="2" value="{{ option.value }}" [ngClass]="{'inputSelected custom-thumb': option.value === 2, 'disabled disabled-thumb': option.disabled }" class="custom-thumb" [disabled]="option.disabled" />
+                <div class="slider-container" (click)="onSliderClicked($event, option)">
+                  <input
+                    type="range"
+                    min="1"
+                    max="2"
+                    value="{{ option.value }}"
+                    [ngClass]="{ 'input-selected custom-thumb': option.value === 2, 'disabled disabled-thumb': option.disabled }"
+                    class="custom-thumb"
+                    [disabled]="option.disabled"
+                  />
                 </div>
-                <div class="optionText">{{ option.name }}</div>
-              } @else if(option.inputType === irongoonInput.Dropdown) {
-                <div class="dropdownContainer">
-                  <div>{{ option.name }}</div>
-                  <div class="dropdownContainer">
-                    <app-irongoon-dropdown [dropdownOptions]="option.dataList" [defaultOption]="option.data" [isDropdownDisabled]="option.disabled" (selectionEvent)="onSelectionEvent($event, option)"></app-irongoon-dropdown>
-                  </div>
-                </div>
+                <div class="option-text">{{ option.name }}</div>
+              } @else if (option.inputType === irongoonInput.Dropdown) {
+                <app-irongoon-dropdown [option]="option"></app-irongoon-dropdown>
+              } @else if (option.inputType === irongoonInput.Number) {
+                <app-irongoon-number [option]="option"></app-irongoon-number>
               }
             </div>
           }

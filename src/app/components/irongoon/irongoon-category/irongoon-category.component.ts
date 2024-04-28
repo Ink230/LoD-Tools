@@ -1,15 +1,16 @@
 import { NgClass } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { DropdownOption, IrongoonInputs, IrongoonOption } from 'src/app/models/irongoon.model';
+import { IrongoonInputs, IrongoonOption } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 import { IrongoonDropdownComponent } from '../irongoon-dropdown/irongoon-dropdown.component';
+import { IrongoonNumberComponent } from '../irongoon-number/irongoon-number.component';
 
 @Component({
-    selector: 'app-irongoon-category',
-    templateUrl: './irongoon-category.component.html',
-    styleUrl: './irongoon-category.component.css',
-    standalone: true,
-    imports: [NgClass, IrongoonDropdownComponent],
+  selector: 'app-irongoon-category',
+  templateUrl: './irongoon-category.component.html',
+  styleUrl: './irongoon-category.component.css',
+  standalone: true,
+  imports: [NgClass, IrongoonDropdownComponent, IrongoonNumberComponent],
 })
 export class IrongoonCategoryComponent {
   @Input() tabName = 'Presets';
@@ -32,13 +33,7 @@ export class IrongoonCategoryComponent {
       option.value = option.value == 1 ? 2 : 1;
       return;
     }
-      
+
     option.value = clickedValue;
-  }
-
-  onSelectionEvent(selected: DropdownOption, dropdownOptions: IrongoonOption) {
-    if (!selected) return;
-
-    dropdownOptions.data = selected;
   }
 }

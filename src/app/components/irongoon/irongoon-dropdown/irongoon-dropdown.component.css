@@ -1,3 +1,11 @@
+.dropdown-parent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
 .dropdown-container {
   display: flex;
   flex-direction: column;
@@ -25,7 +33,7 @@
 }
 
 .selection::after {
-  content: "";
+  content: '';
   position: absolute;
   right: 1rem;
   top: 40%;
@@ -80,7 +88,6 @@
   color: var(--tertiary-font-color);
   font-weight: 700;
   background: var(--primary-font-color);
-
 }
 
 .highlight-option:hover {
@@ -93,7 +100,7 @@
 }
 
 .disabled:hover {
-  background:rgb(87, 87, 87);
+  background: rgb(87, 87, 87);
   color: unset;
   font-weight: unset;
   cursor: default;
@@ -107,4 +114,8 @@
 .disabled > .highlight-option:hover {
   color: unset;
   font-weight: unset;
+}
+
+.option-text {
+  margin-bottom: 0.25rem;
 }
