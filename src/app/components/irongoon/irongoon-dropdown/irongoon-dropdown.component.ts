@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
+import { Component, HostListener, OnInit, effect, input, signal } from '@angular/core';
 import { DropdownOption, IrongoonOption } from 'src/app/models/irongoon.model';
 
 @Component({
@@ -10,43 +10,51 @@ import { DropdownOption, IrongoonOption } from 'src/app/models/irongoon.model';
   imports: [NgClass],
 })
 export class IrongoonDropdownComponent implements OnInit {
-  @Input() option: IrongoonOption;
-  @Output() selectionEvent = new EventEmitter<DropdownOption>();
+  option = input<IrongoonOption>();
 
-  selected: DropdownOption;
-  displayDropdown = false;
-  dropdownIdentifier: string;
-  selectionIdentifier: string;
+  selected = signal<DropdownOption>(null);
+  displayDropdown = signal(false);
+  dropdownIdentifier = signal<string>(null);
+  selectionIdentifier = signal<string>(null);
+
+  constructor() {
+    effect(
+      () => {
+        this.selected.set(this.option().data);
+      },
+      { allowSignalWrites: true }
+    );
+  }
 
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
 
-    if (!this.displayDropdown || target.id == this.selectionIdentifier) return;
+    if (!this.displayDropdown() || target.id == this.selectionIdentifier()) return;
 
-    this.displayDropdown = false;
+    this.displayDropdown.set(false);
   }
 
   ngOnInit() {
-    this.selected = this.option.data;
-    this.dropdownIdentifier = `dropdown-identifier-${this.generateUUID()}`;
-    this.selectionIdentifier = `selection-identifier-${this.generateUUID()}`;
+    this.selected.set(this.option().data);
+    this.dropdownIdentifier.set(`dropdown-identifier-${this.generateUUID()}`);
+    this.selectionIdentifier.set(`selection-identifier-${this.generateUUID()}`);
   }
 
   toggleDropdown() {
-    this.displayDropdown = !this.displayDropdown;
+    this.displayDropdown.set(!this.displayDropdown());
   }
 
   closeDropdown() {
-    this.displayDropdown = false;
+    this.displayDropdown.set(false);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateSelectedOption(item: any) {
-    if (this.option.disabled) return;
+    if (this.option().disabled) return;
 
-    this.selected = item;
-    this.option.data = this.selected;
+    this.selected.set(item);
+    this.option().data = this.selected();
   }
 
   generateUUID(): string {

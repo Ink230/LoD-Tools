@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { IrongoonInputs } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 import { IrongoonDropdownComponent } from '../irongoon-dropdown/irongoon-dropdown.component';
@@ -14,14 +14,12 @@ import { IrongoonSliderComponent } from '../irongoon-slider/irongoon-slider.comp
   imports: [NgClass, IrongoonDropdownComponent, IrongoonNumberComponent, IrongoonSliderComponent],
 })
 export class IrongoonCategoryComponent {
-  @Input() tabName = 'Presets';
-  @Input() selectedTab = 0;
-
+  selectedTab = input<number>(0);
   irongoonInput = IrongoonInputs;
 
   constructor(private irongoonService: IrongoonService) {}
 
   getCategory() {
-    return this.irongoonService.optionCategories[this.selectedTab]?.columns;
+    return this.irongoonService.optionCategories[this.selectedTab()]?.columns;
   }
 }

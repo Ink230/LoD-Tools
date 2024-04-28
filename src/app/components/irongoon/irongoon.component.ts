@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ClipboardModule, ClipboardService } from 'ngx-clipboard';
 import { IrongoonNavigationTab } from 'src/app/models/irongoon.model';
@@ -18,7 +18,7 @@ import { IrongoonSupportComponent } from './irongoon-support/irongoon-support.co
 export class IrongoonComponent {
   @ViewChild('configOutputElement') configOutputElement!: ElementRef;
 
-  selectedTab = 0;
+  selectedTab = signal(0);
 
   constructor(
     private irongoonService: IrongoonService,
@@ -30,11 +30,11 @@ export class IrongoonComponent {
   }
 
   updateSelectedTab(id: number): void {
-    this.selectedTab = id;
+    this.selectedTab.set(id);
   }
 
   isSelectedTab(id: number): boolean {
-    return id == this.selectedTab;
+    return id == this.selectedTab();
   }
 
   copyConfigOutputToClipboard() {
