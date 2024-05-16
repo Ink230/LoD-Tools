@@ -78,32 +78,3 @@
   border-color: var(--primary-accent-color);
   cursor: pointer;
 }
-
-.configOutputContainer {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  row-gap: 0.4rem;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 1rem 0rem 1rem 0rem;
-}
-
-.copyButton {
-  align-self: flex-end;
-  cursor: pointer;
-  border: solid 0px red;
-  min-width: 1.6rem;
-  padding: 0.1rem;
-  margin-right: 0.5rem;
-  border: solid 1px rgb(213, 226, 200);
-  border-radius: 0.2rem;
-  background: rgb(56, 57, 55);
-}
-
-.configOutput {
-  background: var(--secondary-color);
-  width: var(--randomizer-container-width);
-  border-radius: 0.3rem;
-  padding: 1rem 0.8rem 1rem 0.8rem;
-}

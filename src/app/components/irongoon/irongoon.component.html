@@ -15,16 +15,7 @@
     <div class="macroOption" (click)="resetRandomizer()">Reset</div>
   </div>
 
-  <div class="configOutputContainer">
-    <div class="copyButton" (click)="copyConfigOutputToClipboard()">
-      <img src="assets/copy-icon.svg" alt="Copy Text" />
-    </div>
-    <div class="configOutput" #configOutputElement>
-      @for (config of displayConfigList(); track config) {
-        {{ config }} <br />
-      }
-    </div>
-  </div>
+  <app-irongoon-config></app-irongoon-config>
 
   <app-irongoon-support></app-irongoon-support>
 </div>
