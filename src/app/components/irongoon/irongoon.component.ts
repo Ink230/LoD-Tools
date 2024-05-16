@@ -5,6 +5,7 @@ import { IrongoonNavigationTab } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 import { IrongoonCategoryComponent } from './irongoon-category/irongoon-category.component';
 import { IrongoonConfigComponent } from './irongoon-config/irongoon-config.component';
+import { IrongoonMacroComponent } from './irongoon-macro/irongoon-macro.component';
 import { IrongoonSupportComponent } from './irongoon-support/irongoon-support.component';
 
 @Component({
@@ -12,7 +13,7 @@ import { IrongoonSupportComponent } from './irongoon-support/irongoon-support.co
   templateUrl: './irongoon.component.html',
   styleUrls: ['./irongoon.component.css'],
   standalone: true,
-  imports: [NgClass, FormsModule, IrongoonCategoryComponent, IrongoonSupportComponent, IrongoonConfigComponent],
+  imports: [NgClass, FormsModule, IrongoonCategoryComponent, IrongoonSupportComponent, IrongoonConfigComponent, IrongoonMacroComponent],
   providers: [IrongoonService],
 })
 export class IrongoonComponent {
@@ -30,13 +31,5 @@ export class IrongoonComponent {
 
   isSelectedTab(id: number): boolean {
     return id == this.selectedTab();
-  }
-
-  randomizeRandomizer() {
-    this.irongoonService.randomizeOptionCategories();
-  }
-
-  resetRandomizer() {
-    this.irongoonService.resetOptionCategories();
   }
 }

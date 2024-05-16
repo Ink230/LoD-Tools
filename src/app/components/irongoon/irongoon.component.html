@@ -6,16 +6,8 @@
       </div>
     }
   </div>
-
   <app-irongoon-category [selectedTab]="selectedTab()"></app-irongoon-category>
-
-  <div class="macroOptions">
-    <div class="macroOption">Generate Seed</div>
-    <div class="macroOption" (click)="randomizeRandomizer()">Randomize</div>
-    <div class="macroOption" (click)="resetRandomizer()">Reset</div>
-  </div>
-
+  <app-irongoon-macro></app-irongoon-macro>
   <app-irongoon-config></app-irongoon-config>
-
   <app-irongoon-support></app-irongoon-support>
 </div>

@@ -50,31 +50,3 @@
   border-bottom: solid 1px var(--tertiary-accent-color);
   margin-top: 0rem;
 }
-
-.macroOptions {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-around;
-  align-items: center;
-  width: 100%;
-}
-
-.macroOption {
-  border: solid 1px var(--secondary-accent-color);
-  border-radius: 0.3rem;
-  background: var(--secondary-accent-color);
-  padding: 1rem;
-  width: 20rem;
-  text-align: center;
-  font-weight: 900;
-  font-size: 1.2rem;
-  letter-spacing: 0.06rem;
-  text-transform: capitalize;
-}
-
-.macroOption:hover {
-  background: var(--primary-accent-color);
-  border-color: var(--primary-accent-color);
-  cursor: pointer;
-}
