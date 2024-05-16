@@ -2,7 +2,7 @@
   <div class="copyButton" (click)="copyConfigOutputToClipboard()">
     <img src="assets/copy-icon.svg" alt="Copy Text" />
   </div>
-  <div class="configOutput" #configOutputElement>
+  <div class="configOutput" #configOutputElement (dblclick)="onDblClick($event)">
     @for (config of configList(); track config) {
       {{ config }} <br />
     }

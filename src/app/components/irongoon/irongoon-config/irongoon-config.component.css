@@ -25,4 +25,9 @@
   width: var(--randomizer-container-width);
   border-radius: 0.3rem;
   padding: 1rem 0.8rem 1rem 0.8rem;
+  cursor: text;
+  user-select: text; /* Allows text selection */
+  -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
 }

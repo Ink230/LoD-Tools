@@ -36,6 +36,16 @@ export class IrongoonConfigComponent implements OnInit, OnDestroy {
     return this.irongoonService.getConfigList();
   }
 
+  onDblClick(event: MouseEvent) {
+    const div = event.target as HTMLElement;
+    const selection = window.getSelection();
+    const range = document.createRange();
+
+    range.selectNodeContents(div);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
   ngOnDestroy() {
     this.irongoonOptionSubscription.unsubscribe();
   }
