@@ -20,7 +20,9 @@
       <img src="assets/copy-icon.svg" alt="Copy Text" />
     </div>
     <div class="configOutput" #configOutputElement>
-      {{ displayConfigList() }}
+      @for (config of displayConfigList(); track config) {
+        {{ config }} <br />
+      }
     </div>
   </div>
 

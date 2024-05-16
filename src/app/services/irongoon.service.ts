@@ -332,11 +332,41 @@ export class IrongoonService {
 
   private baseOptionCategories = JSON.parse(JSON.stringify(this.optionCategories));
 
-  public configList: string = 'test';
-
   randomizeOptionCategories() {}
 
   resetOptionCategories() {
     this.optionCategories = JSON.parse(JSON.stringify(this.baseOptionCategories));
+  }
+
+  getConfigList() {
+    let configList = [];
+
+    this.optionCategories.forEach((category) => {
+      if (category.id === 0) return;
+
+      category.columns.forEach((column) => {
+        column.settings.forEach((setting) => {
+          setting.options.forEach((option) => {
+            if (option.disabled) return;
+            let result: any;
+
+            switch (option.inputType) {
+              case IrongoonInputs.Dropdown:
+                result = option.data.value;
+                break;
+              case IrongoonInputs.Slider:
+                result = option.value;
+                break;
+              case IrongoonInputs.Number:
+                result = option.value;
+                break;
+            }
+
+            configList.push(`${option.descriptor}: ${result}`);
+          });
+        });
+      });
+    });
+    return configList;
   }
 }

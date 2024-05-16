@@ -50,6 +50,6 @@ export class IrongoonComponent {
   }
 
   displayConfigList() {
-    return this.irongoonService.configList;
+    return this.irongoonService.getConfigList();
   }
 }
