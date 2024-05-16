@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, viewChild } from '@angular/core';
 import { ClipboardModule, ClipboardService } from 'ngx-clipboard';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 
@@ -11,7 +11,7 @@ import { IrongoonService } from 'src/app/services/irongoon.service';
   providers: [IrongoonService],
 })
 export class IrongoonConfigComponent {
-  @ViewChild('configOutputElement') configOutputElement!: ElementRef;
+  configOutputElement = viewChild<ElementRef>('configOutputElement');
 
   constructor(
     private irongoonService: IrongoonService,
@@ -19,7 +19,7 @@ export class IrongoonConfigComponent {
   ) {}
 
   copyConfigOutputToClipboard() {
-    this.clipboardService.copyFromContent(this.configOutputElement.nativeElement.innerText);
+    this.clipboardService.copyFromContent(this.configOutputElement().nativeElement.innerText);
   }
 
   displayConfigList() {
