@@ -1,12 +1,5 @@
 <div class="irongoon">
-  <div class="tabs">
-    @for (tab of getNavigationTabs(); track tab.id) {
-      <div class="tab" [ngClass]="{ tabSelected: isSelectedTab(tab.id) }" (click)="updateSelectedTab(tab.id)">
-        <div>{{ tab.title }}</div>
-      </div>
-    }
-  </div>
-  <app-irongoon-category [selectedTab]="selectedTab()"></app-irongoon-category>
+  <app-irongoon-navigation></app-irongoon-navigation>
   <app-irongoon-macro></app-irongoon-macro>
   <app-irongoon-config></app-irongoon-config>
   <app-irongoon-support></app-irongoon-support>
