@@ -11,6 +11,10 @@ import { IrongoonService } from 'src/app/services/irongoon.service';
 export class IrongoonMacroComponent {
   constructor(private irongoonService: IrongoonService) {}
 
+  generateSeed() {
+    this.irongoonService.generatePublicSeed();
+  }
+
   randomizeRandomizer() {
     this.irongoonService.randomizeOptionCategories();
   }

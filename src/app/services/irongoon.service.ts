@@ -332,6 +332,8 @@ export class IrongoonService {
     },
   ];
 
+  private publicSeed = 'AF51FA7B';
+
   private baseOptionCategories = JSON.parse(JSON.stringify(this.optionCategories));
 
   private optionNotifier = new Subject<any>();
@@ -350,6 +352,19 @@ export class IrongoonService {
     return this.optionNotifier.asObservable();
   }
 
+  generatePublicSeed() {
+    let randomInt = Math.floor(Math.random() * Math.pow(2, 32));
+
+    let hexString = randomInt.toString(16).toUpperCase();
+
+    while (hexString.length < 8) {
+      hexString = '0' + hexString;
+    }
+
+    this.publicSeed = hexString;
+    this.sendOptionUpdate();
+  }
+
   randomizeOptionCategories() {}
 
   resetOptionCategories() {
@@ -360,6 +375,8 @@ export class IrongoonService {
   getConfigList() {
     let configList: IrongoonConfigOption[] = [];
 
+    configList.push({ name: `# Seed`, value: `` });
+    configList.push({ name: `publicSeed:`, value: this.publicSeed });
     this.optionCategories.forEach((category) => {
       if (category.id === 0) return;
 
