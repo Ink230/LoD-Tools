@@ -365,7 +365,37 @@ export class IrongoonService {
     this.sendOptionUpdate();
   }
 
-  randomizeOptionCategories() {}
+  randomizeOptionCategories() {
+    this.optionCategories.forEach((category) => {
+      if (category.id === 0) return;
+
+      category.columns.forEach((column) => {
+        column.settings.forEach((setting) => {
+          setting.options.forEach((option) => {
+            if (option.disabled) return;
+
+            switch (option.inputType) {
+              case IrongoonInputs.Dropdown:
+                let length = option.dataList.length;
+                let choiceDropdown = this.getRandomInt(0, length - 1);
+                option.data = option.dataList[choiceDropdown];
+                break;
+              case IrongoonInputs.Slider:
+                let choiceSlider = this.getRandomInt(1, 2);
+                option.value = choiceSlider;
+                break;
+              case IrongoonInputs.Number:
+                let choiceNumber = this.getRandomInt(30, 250);
+                option.value = choiceNumber;
+                break;
+            }
+          });
+        });
+      });
+    });
+
+    this.sendOptionUpdate();
+  }
 
   resetOptionCategories() {
     this.optionCategories = JSON.parse(JSON.stringify(this.baseOptionCategories));
@@ -406,5 +436,11 @@ export class IrongoonService {
     });
 
     return configList;
+  }
+
+  private getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 }
