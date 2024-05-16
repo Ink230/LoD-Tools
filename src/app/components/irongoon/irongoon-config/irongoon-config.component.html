@@ -4,7 +4,17 @@
   </div>
   <div class="configOutput" #configOutputElement (dblclick)="onDblClick($event)">
     @for (config of configList(); track config) {
-      {{ config }} <br />
+      @if (isHeader(config.name)) {
+        <div class="option-container">
+          <div class="option-header" [ngClass]="{ 'first-header': $first }">{{ config.name }}</div>
+        </div>
+      } @else {
+        <div class="option-container">
+          <div class="option-name" [ngClass]="{ 'option-name-two': toggleColor() }">{{ config.name }}</div>
+          <div class="option-value" [ngClass]="{ 'option-value-two': toggleColor() }">{{ config.value }}</div>
+        </div>
+      }
     }
+    <div class="option-header small" (click)="toggle()"># End</div>
   </div>
 </div>

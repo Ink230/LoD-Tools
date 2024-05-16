@@ -1,7 +1,7 @@
 import { Injectable, Optional, SkipSelf } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { IrongoonComponent } from '../components/irongoon/irongoon.component';
-import { IrongoonCategories, IrongoonInputs } from '../models/irongoon.model';
+import { IrongoonCategories, IrongoonConfigOption, IrongoonInputs } from '../models/irongoon.model';
 
 @Injectable({
   providedIn: 'root',
@@ -215,11 +215,11 @@ export class IrongoonService {
         },
         {
           id: 2,
-          name: 'Enemies',
+          name: 'Monsters',
           settings: [
             {
               id: 0,
-              name: 'Enemies',
+              name: 'Monsters',
               options: [
                 {
                   id: 0,
@@ -358,13 +358,14 @@ export class IrongoonService {
   }
 
   getConfigList() {
-    let configList = [];
+    let configList: IrongoonConfigOption[] = [];
 
     this.optionCategories.forEach((category) => {
       if (category.id === 0) return;
 
       category.columns.forEach((column) => {
         column.settings.forEach((setting) => {
+          configList.push({ name: `# ${column.name} `, value: `` });
           setting.options.forEach((option) => {
             if (option.disabled) return;
             let result: any;
@@ -381,7 +382,7 @@ export class IrongoonService {
                 break;
             }
 
-            configList.push(`${option.descriptor}: ${result}`);
+            configList.push({ name: `${option.descriptor}:`, value: `${result}` });
           });
         });
       });

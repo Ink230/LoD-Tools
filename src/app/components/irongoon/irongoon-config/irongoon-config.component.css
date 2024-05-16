@@ -21,6 +21,9 @@
 }
 
 .configOutput {
+  display: flex;
+  flex-direction: column;
+
   background: var(--secondary-color);
   width: var(--randomizer-container-width);
   border-radius: 0.3rem;
@@ -30,4 +33,42 @@
   -moz-user-select: text;
   -webkit-user-select: text;
   -ms-user-select: text;
+  line-height: 1.4rem;
+}
+
+.option-container {
+  display: flex;
+  flex-direction: row;
+  column-gap: 0.4rem;
+}
+
+.option-name {
+  text-indent: 1rem;
+  color: var(--primary-accent-color);
+}
+
+.option-value {
+  color: var(--tertiary-accent-color);
+}
+
+.option-name-two {
+  text-indent: 1rem;
+  color: #30bb28;
+}
+
+.option-value-two {
+  color: var(--tertiary-accent-color);
+}
+
+.option-header {
+  padding-bottom: 0.3rem;
+  padding-top: 1.5rem;
+}
+
+.first-header {
+  padding-top: 0;
+}
+
+.small {
+  max-width: 3rem;
 }

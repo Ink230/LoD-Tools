@@ -61,3 +61,8 @@ export interface DropdownOption {
   value: string;
   name: string;
 }
+
+export interface IrongoonConfigOption {
+  name: string;
+  value: string | number;
+}
