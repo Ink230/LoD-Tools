@@ -48,4 +48,8 @@ export class IrongoonComponent {
   resetRandomizer() {
     this.irongoonService.resetOptionCategories();
   }
+
+  displayConfigList() {
+    return this.irongoonService.configList;
+  }
 }
