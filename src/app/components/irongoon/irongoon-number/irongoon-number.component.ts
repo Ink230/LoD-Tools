@@ -2,6 +2,7 @@ import { Component, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NumericInputDirective } from 'src/app/directives/numeric-input.directive';
 import { IrongoonOption } from 'src/app/models/irongoon.model';
+import { IrongoonService } from 'src/app/services/irongoon.service';
 
 @Component({
   selector: 'app-irongoon-number',
@@ -13,7 +14,13 @@ import { IrongoonOption } from 'src/app/models/irongoon.model';
 export class IrongoonNumberComponent {
   option = input<IrongoonOption>();
 
+  constructor(private irongoonService: IrongoonService) {}
+
   onFocusHighlightText(inputElement: HTMLInputElement) {
     inputElement.select();
+  }
+
+  updateOption() {
+    this.irongoonService.sendOptionUpdate();
   }
 }

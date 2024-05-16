@@ -1,7 +1,6 @@
 import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IrongoonService } from 'src/app/services/irongoon.service';
 import { IrongoonCategoryComponent } from './irongoon-category/irongoon-category.component';
 import { IrongoonConfigComponent } from './irongoon-config/irongoon-config.component';
 import { IrongoonMacroComponent } from './irongoon-macro/irongoon-macro.component';
@@ -14,6 +13,5 @@ import { IrongoonSupportComponent } from './irongoon-support/irongoon-support.co
   styleUrls: ['./irongoon.component.css'],
   standalone: true,
   imports: [NgClass, FormsModule, IrongoonCategoryComponent, IrongoonSupportComponent, IrongoonConfigComponent, IrongoonMacroComponent, IrongoonNavigationComponent],
-  providers: [IrongoonService],
 })
 export class IrongoonComponent {}

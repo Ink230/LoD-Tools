@@ -1,4 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional, SkipSelf } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
+import { IrongoonComponent } from '../components/irongoon/irongoon.component';
 import { IrongoonCategories, IrongoonInputs } from '../models/irongoon.model';
 
 @Injectable({
@@ -332,10 +334,27 @@ export class IrongoonService {
 
   private baseOptionCategories = JSON.parse(JSON.stringify(this.optionCategories));
 
+  private optionNotifier = new Subject<any>();
+
+  constructor(@Optional() @SkipSelf() parentModule?: IrongoonComponent) {
+    if (parentModule) {
+      throw new Error('IrongoonService is already loaded. Import it in the IrongoonComponent only');
+    }
+  }
+
+  sendOptionUpdate() {
+    this.optionNotifier.next({});
+  }
+
+  getOptionUpdate(): Observable<any> {
+    return this.optionNotifier.asObservable();
+  }
+
   randomizeOptionCategories() {}
 
   resetOptionCategories() {
     this.optionCategories = JSON.parse(JSON.stringify(this.baseOptionCategories));
+    this.sendOptionUpdate();
   }
 
   getConfigList() {
@@ -367,6 +386,7 @@ export class IrongoonService {
         });
       });
     });
+
     return configList;
   }
 }

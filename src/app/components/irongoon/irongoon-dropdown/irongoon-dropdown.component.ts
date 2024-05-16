@@ -1,6 +1,7 @@
 import { NgClass } from '@angular/common';
 import { Component, HostListener, OnInit, input, signal } from '@angular/core';
 import { IrongoonOption } from 'src/app/models/irongoon.model';
+import { IrongoonService } from 'src/app/services/irongoon.service';
 
 @Component({
   selector: 'app-irongoon-dropdown',
@@ -14,6 +15,8 @@ export class IrongoonDropdownComponent implements OnInit {
   displayDropdown = signal(false);
   dropdownIdentifier = signal<string>(null);
   selectionIdentifier = signal<string>(null);
+
+  constructor(private irongoonService: IrongoonService) {}
 
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
@@ -42,6 +45,7 @@ export class IrongoonDropdownComponent implements OnInit {
     if (this.option().disabled) return;
 
     this.option().data = item;
+    this.irongoonService.sendOptionUpdate();
   }
 
   generateUUID(): string {

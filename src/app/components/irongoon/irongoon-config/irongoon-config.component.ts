@@ -1,5 +1,6 @@
-import { Component, ElementRef, viewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { ClipboardModule, ClipboardService } from 'ngx-clipboard';
+import { Subscription } from 'rxjs';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 
 @Component({
@@ -8,21 +9,34 @@ import { IrongoonService } from 'src/app/services/irongoon.service';
   imports: [ClipboardModule],
   templateUrl: './irongoon-config.component.html',
   styleUrl: './irongoon-config.component.css',
-  providers: [IrongoonService],
 })
-export class IrongoonConfigComponent {
+export class IrongoonConfigComponent implements OnInit, OnDestroy {
   configOutputElement = viewChild<ElementRef>('configOutputElement');
+  configList = signal<string[]>(null);
+  private irongoonOptionSubscription: Subscription;
 
   constructor(
     private irongoonService: IrongoonService,
     private clipboardService: ClipboardService
-  ) {}
+  ) {
+    this.irongoonOptionSubscription = this.irongoonService.getOptionUpdate().subscribe((msg) => {
+      this.configList.set(this.getConfigList());
+    });
+  }
+
+  ngOnInit() {
+    this.configList.set(this.getConfigList());
+  }
 
   copyConfigOutputToClipboard() {
     this.clipboardService.copyFromContent(this.configOutputElement().nativeElement.innerText);
   }
 
-  displayConfigList() {
+  getConfigList() {
     return this.irongoonService.getConfigList();
+  }
+
+  ngOnDestroy() {
+    this.irongoonOptionSubscription.unsubscribe();
   }
 }
