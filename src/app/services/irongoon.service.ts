@@ -348,7 +348,7 @@ export class IrongoonService {
                   descriptor: 'speedStatMonsters',
                 },
                 { id: 2, name: 'Speed Stat Upper Bound', value: 100, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatMonstersUpperBound' },
-                { id: 3, name: 'Speed Stat Lower Bound', value: 30, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatMonstersLowerBoundedStatPerLevel' },
+                { id: 3, name: 'Speed Stat Lower Bound', value: 30, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatMonstersLowerBound' },
                 {
                   id: 8,
                   name: 'Monster Stat Variance',
@@ -689,18 +689,20 @@ export class IrongoonService {
 
             switch (option.inputType) {
               case IrongoonInputs.Dropdown:
-                let length = option.dataList.length;
-                let choiceDropdown = this.getRandomInt(0, length - 1);
+                const length = option.dataList.length;
+                const choiceDropdown = this.getRandomInt(0, length - 1);
                 option.data = option.dataList[choiceDropdown];
                 break;
               case IrongoonInputs.Slider:
-                let choiceSlider = this.getRandomInt(1, 2);
+                const choiceSlider = this.getRandomInt(1, 2);
                 option.value = choiceSlider;
                 break;
               case IrongoonInputs.Number:
-                let upper = option?.descriptor.includes('Lower') ? setting.options[index - 1].value - 1 : this.numberInputUpperBound;
-                let lower = this.numberInputLowerBound;
-                let choiceNumber = this.getRandomInt(lower, upper);
+                if (option?.descriptor.includes('Defense')) break;
+
+                const upper = option?.descriptor.includes('Lower') ? setting.options[index - 1].value - 1 : this.numberInputUpperBound;
+                const lower = this.numberInputLowerBound;
+                const choiceNumber = this.getRandomInt(lower, upper);
                 option.value = choiceNumber;
                 break;
             }
