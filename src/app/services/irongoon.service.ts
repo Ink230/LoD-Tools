@@ -682,7 +682,7 @@ export class IrongoonService {
 
       category.columns.forEach((column) => {
         column.settings.forEach((setting) => {
-          setting.options.forEach((option) => {
+          setting.options.forEach((option, index) => {
             if (option.disabled) return;
 
             switch (option.inputType) {
@@ -696,7 +696,9 @@ export class IrongoonService {
                 option.value = choiceSlider;
                 break;
               case IrongoonInputs.Number:
-                let choiceNumber = this.getRandomInt(30, 250);
+                let upper = option?.descriptor.includes('Lower') ? setting.options[index - 1].value - 1 : 250;
+                let lower = 30;
+                let choiceNumber = this.getRandomInt(lower, upper);
                 option.value = choiceNumber;
                 break;
             }
