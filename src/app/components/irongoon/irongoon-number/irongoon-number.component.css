@@ -1,6 +1,7 @@
 .text-input-container {
   display: flex;
   flex-direction: column;
+  margin-bottom: 1rem;
 }
 
 .text-input {
@@ -8,7 +9,7 @@
 }
 
 label {
-  margin-top: 0.5rem;
+  margin-top: 0.2rem;
   margin-bottom: 0.25rem;
-  margin-left: -0.1rem;
+  margin-left: 0.1rem;
 }

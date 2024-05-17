@@ -156,6 +156,37 @@ export class IrongoonService {
                 },
                 { id: 7, name: 'Speed Stat Upper Percent Bound', value: 150, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatUpperPercentBound' },
                 { id: 8, name: 'Speed Stat Lower Percent Bound', value: 50, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatLowerPercentBound' },
+                {
+                  id: 9,
+                  name: 'Character Elements',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'RANDOMIZE', name: 'Randomize' },
+                  dataList: [
+                    { value: 'RANDOMIZE', name: 'Randomize' },
+                    { value: 'RANDOMIZE_RANDOM', name: 'Random Random' },
+                    { value: 'RANDOMIZE_AND_TYPINGS', name: 'Elements and Typings' },
+                    { value: 'RANDOMIZE_RANDOM_AND_TYPINGS', name: 'Random Random Elements and Typings' },
+                    { value: 'MAINTAIN_STOCK', name: 'Stock' },
+                  ],
+                  descriptor: 'characterElements',
+                  disabled: true,
+                },
+                {
+                  id: 10,
+                  name: 'No Element',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'EXCLUDE', name: 'Exclude' },
+                  dataList: [
+                    { value: 'EXCLUDE', name: 'Exclude' },
+                    { value: 'INCLUDE', name: 'Include' },
+                    { value: 'ELEMENTS_ONLY', name: 'Elements Only' },
+                    { value: 'IMMUNITIES_ONLY', name: 'Immunities Only' },
+                  ],
+                  descriptor: 'noElementCharacters',
+                  disabled: true,
+                },
               ],
             },
           ],
@@ -207,6 +238,56 @@ export class IrongoonService {
                     { value: 'RANDOM_MODIFER_CUSTOM_UPPER_BOUND', name: 'Random modifier with custom upper bound' },
                   ],
                   descriptor: 'dragoonTotalStatsBounds',
+                  disabled: true,
+                },
+                {
+                  id: 7,
+                  name: 'Dragoon Elements',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'RANDOMIZE', name: 'Randomize' },
+                  dataList: [
+                    { value: 'RANDOMIZE', name: 'Randomize' },
+                    { value: 'RANDOMIZE_RANDOM', name: 'Random Random' },
+                    { value: 'RANDOMIZE_AND_TYPINGS', name: 'Elements and Typings' },
+                    { value: 'RANDOMIZE_RANDOM_AND_TYPINGS', name: 'Random Random Elements and Typings' },
+                    { value: 'MAINTAIN_CHARACTER_ELEMENT', name: 'Use Character Element' },
+                    { value: 'MAINTAIN_STOCK', name: 'Stock' },
+                  ],
+                  descriptor: 'dragoonElements',
+                  disabled: true,
+                },
+                {
+                  id: 8,
+                  name: 'No Element',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'EXCLUDE', name: 'Exclude' },
+                  dataList: [
+                    { value: 'EXCLUDE', name: 'Exclude' },
+                    { value: 'INCLUDE', name: 'Include' },
+                    { value: 'ELEMENTS_ONLY', name: 'Elements Only' },
+                    { value: 'IMMUNITIES_ONLY', name: 'Immunities Only' },
+                    { value: 'MAINTAIN_CHARACTER_ELEMENT_IMMUNITIES', name: 'Use Character Element Immunities' },
+                  ],
+                  descriptor: 'noElementDragoons',
+                  disabled: true,
+                },
+                {
+                  id: 8,
+                  name: 'Dragoon Spells',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: '', name: 'Randomize' },
+                  dataList: [
+                    { value: '', name: 'Randomize' },
+                    { value: '', name: 'Randomize Stats' },
+                    { value: '', name: 'Randomize Effects' },
+                    { value: '', name: 'Randomize Stats and Effects' },
+                    { value: '', name: 'Randomize All' },
+                    { value: '', name: 'Randomize Random All' },
+                  ],
+                  descriptor: 'dragoonSpells',
                   disabled: true,
                 },
               ],
@@ -318,17 +399,247 @@ export class IrongoonService {
     {
       id: 2,
       name: 'Items',
-      columns: [],
+      columns: [
+        {
+          id: 0,
+          name: 'Shops',
+          settings: [
+            {
+              id: 0,
+              name: 'Shops',
+              options: [
+                { id: 0, name: 'Disable  All Shops', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 1, name: 'Disable Item Shops', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 2, name: 'Disable Equipment Shops', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 3, name: 'Disable Service Shops', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 4, name: 'Inflation Modifier', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                {
+                  id: 5,
+                  name: 'Randomize Shops',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 's', name: 'Randomize' },
+                  dataList: [{ value: 'd', name: 'Stock' }],
+                  descriptor: '',
+                  disabled: true,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: 0,
+          name: 'Chests',
+          settings: [
+            {
+              id: 0,
+              name: 'Chests',
+              options: [
+                { id: 0, name: 'Randomize Loot', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 1, name: 'No Psyche Bomb', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 2, name: 'No Repeat Items', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 3, name: 'Include Equipment', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 4, name: 'Unique Equipment', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 5, name: 'Equipment %', value: 25, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 6, name: 'Attack Item %', value: 25, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 7, name: 'Effect Item %', value: 25, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 8, name: 'Heal Item %', value: 25, inputType: IrongoonInputs.Number, disabled: true },
+              ],
+            },
+          ],
+        },
+        {
+          id: 0,
+          name: 'Drops',
+          settings: [
+            {
+              id: 0,
+              name: 'Drops',
+              options: [
+                { id: 0, name: 'Gold Multiplier', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 1, name: 'Experience Multiplier', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 2, name: 'SP Multiplier', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                {
+                  id: 3,
+                  name: 'Drops',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 's', name: 'Randomize' },
+                  dataList: [
+                    { value: 's', name: 'Randomize' },
+                    { value: 'd', name: 'Stock' },
+                  ],
+                  descriptor: '',
+                  disabled: true,
+                },
+                { id: 4, name: 'Include Equipment', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 5, name: 'Include Attack Items', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 6, name: 'Include Effect Items', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 7, name: 'Include Heal Items', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+              ],
+            },
+            {
+              id: 0,
+              name: 'Enemies',
+              options: [
+                { id: 8, name: 'Mob Drop Count', value: 5, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 9, name: 'Mob Drop Upper Percent Bound', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 10, name: 'Mob Drop Lower Percent Bound', value: 1, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 11, name: 'Guaranteed Mob Drop Count', value: 1, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 12, name: 'Mini-Boss Drop Count', value: 5, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 13, name: 'Mini-Boss Upper Percent Bound', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 14, name: 'Mini-Boss Lower Percent Bound', value: 1, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 15, name: 'Mini-Boss Mob Drop Count', value: 1, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 16, name: 'Boss Drop Count', value: 5, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 17, name: 'Boss Upper Percent Bound', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 18, name: 'Boss Lower Percent Bound', value: 1, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 19, name: 'Boss Mob Drop Count', value: 1, inputType: IrongoonInputs.Number, disabled: true },
+              ],
+            },
+          ],
+        },
+      ],
     },
     {
       id: 3,
       name: 'Audio',
-      columns: [],
+      columns: [
+        {
+          id: 0,
+          name: 'Sound',
+          settings: [
+            {
+              id: 0,
+              name: 'Sound',
+              options: [
+                { id: 0, name: 'Randomize Music', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 1, name: 'Randomize Sound Effects', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 2, name: 'Randomize Voices', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+              ],
+            },
+          ],
+        },
+        {
+          id: 1,
+          name: 'Options',
+          settings: [
+            {
+              id: 0,
+              name: 'Options',
+              options: [
+                { id: 0, name: 'Slow Down Audio When in Peril', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 1, name: 'Boss Themes', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+              ],
+            },
+          ],
+        },
+        {
+          id: 2,
+          name: 'Custom',
+          settings: [
+            {
+              id: 0,
+              name: 'Custom',
+              options: [
+                { id: 0, name: 'Use Custom Music', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 1, name: 'Use Custom Effects', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 2, name: 'Use Custom Voices', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+              ],
+            },
+          ],
+        },
+      ],
     },
     {
       id: 4,
-      name: 'Other',
-      columns: [],
+      name: 'Gameplay',
+      columns: [
+        {
+          id: 0,
+          name: 'Scaling',
+          settings: [
+            {
+              id: 0,
+              name: 'Scaling',
+              options: [
+                { id: 0, name: 'Element Overload', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 1, name: 'Guard Limit', value: 0, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 2, name: 'Mob Stats', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 3, name: 'Mobs HP', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 4, name: 'Mini-Boss Stats', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 5, name: 'Mini-Bosses HP', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 6, name: 'Bosse Stats', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 7, name: 'Bosses HP', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 8, name: 'Mob Magic Attacks', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 9, name: 'Number of Mob M. Attacks', value: 0, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 10, name: 'Mini-Boss Magic Attacks', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 11, name: 'Number of Mini-Boss M. Attacks', value: 0, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 12, name: 'Boss Magic Attacks', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 13, name: 'Number of Boss M. Attacks', value: 0, inputType: IrongoonInputs.Number, disabled: true },
+              ],
+            },
+          ],
+        },
+        {
+          id: 1,
+          name: 'Attack',
+          settings: [
+            {
+              id: 0,
+              name: 'Additions',
+              options: [
+                { id: 0, name: 'Randomize Learn Levels', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 1, name: 'Randomize Learn Order', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 2, name: 'Randomize Across Characters (basic)', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 3, name: 'Randomize Across Characters (advanced)', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 5, name: 'Tazmans Trial', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 6, name: 'Addition Master', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 7, name: 'Minimum Number of Additions', value: 0, inputType: IrongoonInputs.Number, disabled: true },
+              ],
+            },
+          ],
+        },
+        {
+          id: 2,
+          name: 'Gameplay',
+          settings: [
+            {
+              id: 0,
+              name: 'Party',
+              options: [
+                {
+                  id: 0,
+                  name: 'Starting Character',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 's', name: 'Dart' },
+                  dataList: [
+                    { value: 's', name: 'Dart' },
+                    { value: 'a', name: 'Lavitz' },
+                    { value: 'b', name: 'Shana' },
+                    { value: 'c', name: 'Rose' },
+                    { value: 'd', name: 'Haschel' },
+                    { value: 'e', name: 'Albert' },
+                    { value: 'f', name: 'Meru' },
+                    { value: 'g', name: 'Kongol' },
+                    { value: 'h', name: 'Miranda' },
+                  ],
+                  descriptor: 'noElementMonsters',
+                  disabled: true,
+                },
+                { id: 1, name: 'Random Starting Character', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 2, name: 'Lock Party', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 3, name: 'Party Size', value: 3, inputType: IrongoonInputs.Number, disabled: true },
+              ],
+            },
+            {
+              id: 1,
+              name: 'Encounters',
+              options: [{ id: 0, name: 'Run Slow', value: 1, inputType: IrongoonInputs.Slider, disabled: true }],
+            },
+          ],
+        },
+      ],
     },
   ];
 
@@ -412,7 +723,7 @@ export class IrongoonService {
 
       category.columns.forEach((column) => {
         column.settings.forEach((setting) => {
-          configList.push({ name: `# ${column.name} `, value: `` });
+          configList.push({ name: `# ${setting.name} `, value: `` });
           setting.options.forEach((option) => {
             if (option.disabled) return;
             let result: any;
