@@ -8,6 +8,18 @@
   padding: 1rem 0rem 1rem 0rem;
 }
 
+.config-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.config-input {
+  display: flex;
+  flex-direction: row;
+}
+
 .copyButton {
   align-self: flex-end;
   cursor: pointer;

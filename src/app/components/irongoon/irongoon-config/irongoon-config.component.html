@@ -1,7 +1,14 @@
 <div class="configOutputContainer">
-  <div class="copyButton" (click)="copyConfigOutputToClipboard()">
-    <img src="assets/copy-icon.svg" alt="Copy Text" />
+  <div class="config-header">
+    <div class="config-input">
+      <div><input type="text" [(ngModel)]="inputUpperBound" (ngModelChange)="updateUpperBound($event)" (focus)="onFocusHighlightText(inputFieldUpper)" #inputFieldUpper NumericInput /></div>
+      <div><input type="text" [(ngModel)]="inputLowerBound" (ngModelChange)="updateLowerBound($event)" (focus)="onFocusHighlightText(inputFieldLower)" #inputFieldLower NumericInput /></div>
+    </div>
+    <div class="copyButton" (click)="copyConfigOutputToClipboard()">
+      <img src="assets/copy-icon.svg" alt="Copy Text" />
+    </div>
   </div>
+
   <div class="configOutput" #configOutputElement (dblclick)="onDblClick($event)">
     @for (config of configList(); track config) {
       @if (isHeader(config.name)) {

@@ -644,6 +644,8 @@ export class IrongoonService {
   ];
 
   private publicSeed = 'AF51FA7B';
+  public numberInputUpperBound = 250;
+  public numberInputLowerBound = 30;
 
   private baseOptionCategories = JSON.parse(JSON.stringify(this.optionCategories));
 
@@ -696,8 +698,8 @@ export class IrongoonService {
                 option.value = choiceSlider;
                 break;
               case IrongoonInputs.Number:
-                let upper = option?.descriptor.includes('Lower') ? setting.options[index - 1].value - 1 : 250;
-                let lower = 30;
+                let upper = option?.descriptor.includes('Lower') ? setting.options[index - 1].value - 1 : this.numberInputUpperBound;
+                let lower = this.numberInputLowerBound;
                 let choiceNumber = this.getRandomInt(lower, upper);
                 option.value = choiceNumber;
                 break;
@@ -712,6 +714,8 @@ export class IrongoonService {
 
   resetOptionCategories() {
     this.optionCategories = JSON.parse(JSON.stringify(this.baseOptionCategories));
+    this.numberInputUpperBound = 250;
+    this.numberInputLowerBound = 30;
     this.sendOptionUpdate();
   }
 
