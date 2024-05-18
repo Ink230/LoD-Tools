@@ -15,4 +15,5 @@ phases:
   post_build:
     commands:
       - cd dist/$APP_NAME
-      - aws s3 sync . s3://${S3_BUCKET} --delete
+      - find . -type f -exec gzip -9 {} \; -exec mv {}.gz {} \;
+      - aws s3 sync . s3://${S3_BUCKET} --delete --content-encoding gzip --exclude "*.map" --cache-control max-age=31536000

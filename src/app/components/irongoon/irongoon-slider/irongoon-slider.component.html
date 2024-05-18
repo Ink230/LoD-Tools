@@ -1,6 +1,7 @@
 <div class="slider-parent">
   <div class="slider-container" (click)="onSliderClicked()">
     <input
+      [id]="option().name"
       type="range"
       min="1"
       max="2"
@@ -10,5 +11,7 @@
       [disabled]="option().disabled"
     />
   </div>
-  <div class="option-text">{{ option().name }}</div>
+  <div class="option-text">
+    <label [for]="option().name">{{ option().name }}</label>
+  </div>
 </div>

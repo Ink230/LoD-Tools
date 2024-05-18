@@ -35,7 +35,6 @@ export class IrongoonConfigComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.configList.set(this.getConfigList());
-    this.toggleColor.set(JSON.parse(localStorage.getItem('config-color')) ?? false);
   }
 
   copyConfigOutputToClipboard() {
@@ -71,11 +70,6 @@ export class IrongoonConfigComponent implements OnInit, OnDestroy {
 
   onFocusHighlightText(inputElement: HTMLInputElement) {
     inputElement.select();
-  }
-
-  toggle() {
-    this.toggleColor.set(!this.toggleColor());
-    localStorage.setItem('config-color', JSON.stringify(this.toggleColor()));
   }
 
   ngOnDestroy() {

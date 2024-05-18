@@ -1,11 +1,17 @@
 <div class="configOutputContainer">
   <div class="config-header">
     <div class="config-input">
-      <div><input type="text" [(ngModel)]="inputUpperBound" (ngModelChange)="updateUpperBound($event)" (focus)="onFocusHighlightText(inputFieldUpper)" #inputFieldUpper NumericInput /></div>
-      <div><input type="text" [(ngModel)]="inputLowerBound" (ngModelChange)="updateLowerBound($event)" (focus)="onFocusHighlightText(inputFieldLower)" #inputFieldLower NumericInput /></div>
+      <div>
+        <label for="upper" class="label first">Upper</label>
+        <input type="text" [(ngModel)]="inputUpperBound" (ngModelChange)="updateUpperBound($event)" (focus)="onFocusHighlightText(inputFieldUpper)" #inputFieldUpper NumericInput id="upper" />
+      </div>
+      <div>
+        <label for="lower" class="label">Lower</label>
+        <input type="text" [(ngModel)]="inputLowerBound" (ngModelChange)="updateLowerBound($event)" (focus)="onFocusHighlightText(inputFieldLower)" #inputFieldLower NumericInput id="lower" />
+      </div>
     </div>
     <div class="copyButton" (click)="copyConfigOutputToClipboard()">
-      <img src="assets/copy-icon.svg" alt="Copy Text" />
+      <img src="assets/copy-icon.svg" alt="Copy Text" width="20" height="18" />
     </div>
   </div>
 
@@ -17,11 +23,10 @@
         </div>
       } @else {
         <div class="option-container">
-          <div class="option-name" [ngClass]="{ 'option-name-two': toggleColor() }">{{ config.name }}</div>
-          <div class="option-value" [ngClass]="{ 'option-value-two': toggleColor() }">{{ config.value }}</div>
+          <div class="option-name">{{ config.name }}</div>
+          <div class="option-value">{{ config.value }}</div>
         </div>
       }
     }
-    <div class="option-header small" (click)="toggle()"># End</div>
   </div>
 </div>

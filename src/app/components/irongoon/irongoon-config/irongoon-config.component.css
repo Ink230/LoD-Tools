@@ -56,19 +56,10 @@
 
 .option-name {
   text-indent: 1rem;
-  color: var(--primary-accent-color);
-}
-
-.option-value {
-  color: var(--tertiary-accent-color);
-}
-
-.option-name-two {
-  text-indent: 1rem;
   color: #30bb28;
 }
 
-.option-value-two {
+.option-value {
   color: var(--tertiary-accent-color);
 }
 
@@ -83,4 +74,12 @@
 
 .small {
   max-width: 3rem;
+}
+
+.label {
+  padding: 0rem 0.4rem 0rem 1rem;
+}
+
+.first {
+  padding-left: 0rem;
 }
