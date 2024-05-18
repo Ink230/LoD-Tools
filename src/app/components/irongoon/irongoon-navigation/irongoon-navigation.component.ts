@@ -12,7 +12,7 @@ import { IrongoonCategoryComponent } from '../irongoon-category/irongoon-categor
   styleUrl: './irongoon-navigation.component.css',
 })
 export class IrongoonNavigationComponent {
-  selectedTab = signal(0);
+  selectedTab = signal(1);
 
   constructor(private irongoonService: IrongoonService) {}
 
