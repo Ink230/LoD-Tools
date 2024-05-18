@@ -200,9 +200,88 @@ input[type='text']::selection {
   background: var(--primary-accent-color);
 }
 
-@media screen and (max-width: 1280px) {
+@media screen and (min-width: 1px) {
   html,
   body {
-    font-size: 14px;
+    font-size: 3px;
+  }
+}
+
+@media screen and (min-width: 330px) {
+  html,
+  body {
+    font-size: 4px;
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    width: 4px;
+    height: 4px;
+  }
+}
+
+@media screen and (min-width: 400px) {
+  html,
+  body {
+    font-size: 5px;
+  }
+}
+
+@media screen and (min-width: 900px) {
+  html,
+  body {
+    font-size: 10px;
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  html,
+  body {
+    font-size: 12px;
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media screen and (min-width: 1600px) {
+  html,
+  body {
+    font-size: 16px;
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media screen and (min-width: 2200px) {
+  html,
+  body {
+    font-size: 24px;
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+@media screen and (min-width: 3200px) {
+  html,
+  body {
+    font-size: 32px;
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    width: 30px;
+    height: 30px;
   }
 }

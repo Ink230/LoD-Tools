@@ -50,3 +50,13 @@
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
 }
+
+@media screen and (max-width: 900px) {
+  .randomizer-container {
+    min-height: 350px;
+  }
+
+  .randomizer-column {
+    min-height: 350px;
+  }
+}
