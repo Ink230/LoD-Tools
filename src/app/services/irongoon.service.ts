@@ -592,6 +592,11 @@ export class IrongoonService {
           settings: [
             {
               id: 0,
+              name: 'Randomizer',
+              options: [{ id: 0, name: 'Use New Seed on Campaign Start', value: 1, inputType: IrongoonInputs.Slider, descriptor: 'useRandomSeedOnNewCampaign', disabled: false }],
+            },
+            {
+              id: 1,
               name: 'Party',
               options: [
                 {
@@ -620,7 +625,7 @@ export class IrongoonService {
               ],
             },
             {
-              id: 1,
+              id: 2,
               name: 'Encounters',
               options: [{ id: 0, name: 'Run Slow', value: 1, inputType: IrongoonInputs.Slider, disabled: true }],
             },
@@ -728,7 +733,7 @@ export class IrongoonService {
                 result = option.data.value;
                 break;
               case IrongoonInputs.Slider:
-                result = option.value;
+                result = option.value == 1 ? 'FALSE' : 'TRUE';
                 break;
               case IrongoonInputs.Number:
                 result = option.value;

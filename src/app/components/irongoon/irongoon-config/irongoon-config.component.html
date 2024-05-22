@@ -9,6 +9,7 @@
         <label for="lower" class="label">Lower</label>
         <input type="text" [(ngModel)]="inputLowerBound" (ngModelChange)="updateLowerBound($event)" (focus)="onFocusHighlightText(inputFieldLower)" #inputFieldLower NumericInput id="lower" />
       </div>
+      <div class="label">v0.4</div>
     </div>
     <div class="copyButton" (click)="copyConfigOutputToClipboard()">
       <img src="assets/copy-icon.svg" alt="Copy Text" />
