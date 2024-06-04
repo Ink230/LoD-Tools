@@ -334,7 +334,7 @@ export class IrongoonService {
                   ],
                   descriptor: 'speedStatMonsters',
                 },
-                { id: 2, name: 'Speed Stat Upper Bound', value: 100, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatMonstersUpperBound' },
+                { id: 2, name: 'Speed Stat Upper Bound', value: 70, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatMonstersUpperBound' },
                 { id: 3, name: 'Speed Stat Lower Bound', value: 30, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatMonstersLowerBound' },
                 {
                   id: 8,
