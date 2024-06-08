@@ -1,21 +1,17 @@
 import { NgClass } from '@angular/common';
 import { Component, input } from '@angular/core';
-import { IrongoonInputs } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
-import { IrongoonDropdownComponent } from '../irongoon-dropdown/irongoon-dropdown.component';
-import { IrongoonNumberComponent } from '../irongoon-number/irongoon-number.component';
-import { IrongoonSliderComponent } from '../irongoon-slider/irongoon-slider.component';
+import { IrongoonFormsComponent } from '../irongoon-forms/irongoon-forms.component';
 
 @Component({
   selector: 'app-irongoon-category',
   templateUrl: './irongoon-category.component.html',
   styleUrl: './irongoon-category.component.css',
   standalone: true,
-  imports: [NgClass, IrongoonDropdownComponent, IrongoonNumberComponent, IrongoonSliderComponent],
+  imports: [NgClass, IrongoonFormsComponent],
 })
 export class IrongoonCategoryComponent {
   selectedTab = input<number>(0);
-  irongoonInput = IrongoonInputs;
 
   constructor(private irongoonService: IrongoonService) {}
 

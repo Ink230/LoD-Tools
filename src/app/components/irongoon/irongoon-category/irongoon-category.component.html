@@ -6,13 +6,7 @@
           <div class="option-category-title">{{ setting.name }}</div>
           @for (option of setting.options; track option.id) {
             <div class="option">
-              @if (option.inputType === irongoonInput.Slider) {
-                <app-irongoon-slider [option]="option"></app-irongoon-slider>
-              } @else if (option.inputType === irongoonInput.Dropdown) {
-                <app-irongoon-dropdown [option]="option"></app-irongoon-dropdown>
-              } @else if (option.inputType === irongoonInput.Number) {
-                <app-irongoon-number [option]="option"></app-irongoon-number>
-              }
+              <app-irongoon-forms [option]="option"></app-irongoon-forms>
             </div>
           }
         </div>
