@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { IrongoonOption } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 
@@ -12,6 +12,7 @@ import { IrongoonService } from 'src/app/services/irongoon.service';
 })
 export class IrongoonSliderComponent {
   option = input<IrongoonOption>();
+  isActiveTooltip = signal(false);
 
   constructor(private irongoonService: IrongoonService) {}
 

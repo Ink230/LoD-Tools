@@ -11,7 +11,10 @@
       [disabled]="option().disabled"
     />
   </div>
-  <div class="option-text">
-    <label [for]="option().name">{{ option().name }}</label>
+  <div class="option-text tooltip-container">
+    <label [for]="option().name" (mouseenter)="isActiveTooltip.set(true)">{{ option().name }}</label>
+    @if (isActiveTooltip()) {
+      <div class="tooltip" (mouseleave)="isActiveTooltip.set(false)"></div>
+    }
   </div>
 </div>
