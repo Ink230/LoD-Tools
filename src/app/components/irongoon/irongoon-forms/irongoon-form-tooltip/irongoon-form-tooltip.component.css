@@ -1,0 +1,15 @@
+.tooltip-container {
+  position: relative;
+}
+
+.tooltip {
+  position: absolute;
+  min-width: 20rem;
+  min-height: 200px;
+  background-color: rgba(0, 0, 0, 0.89);
+  top: 0;
+  left: 0;
+  font-size: 90%;
+  padding: 1rem;
+  z-index: 9999;
+}

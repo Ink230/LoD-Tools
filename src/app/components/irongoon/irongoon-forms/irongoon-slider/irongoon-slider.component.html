@@ -11,10 +11,10 @@
       [disabled]="option().disabled"
     />
   </div>
-  <div class="option-text tooltip-container">
-    <label [for]="option().name" (mouseenter)="isActiveTooltip.set(true)">{{ option().name }}</label>
+  <div class="option-text">
+    <label [for]="option().name" (mouseenter)="isActiveTooltip.set(true)" (mouseleave)="isActiveTooltip.set(false)">{{ option().name }}</label>
     @if (isActiveTooltip()) {
-      <div class="tooltip" (mouseleave)="isActiveTooltip.set(false)"></div>
+      <app-irongoon-form-tooltip [tooltip]="option().name"></app-irongoon-form-tooltip>
     }
   </div>
 </div>
