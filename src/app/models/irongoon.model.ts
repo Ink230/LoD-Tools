@@ -55,6 +55,7 @@ export interface IrongoonOption {
   inputType: IrongoonInputs;
   disabled?: boolean;
   descriptor?: string;
+  tooltip?: string;
 }
 
 export interface DropdownOption {

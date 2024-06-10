@@ -20,7 +20,14 @@ export class IrongoonService {
               id: 0,
               name: 'Irongoon',
               options: [
-                { id: 0, name: 'Irongoon', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                {
+                  id: 0,
+                  name: 'Irongoon',
+                  value: 1,
+                  inputType: IrongoonInputs.Slider,
+                  disabled: true,
+                  tooltip: `Randomizer is configured for the base Irongoon ruleset. Find the rulesets down below or on github.`,
+                },
                 { id: 1, name: 'Ultimate', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 2, name: 'Kaizo', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 3, name: '108th', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
