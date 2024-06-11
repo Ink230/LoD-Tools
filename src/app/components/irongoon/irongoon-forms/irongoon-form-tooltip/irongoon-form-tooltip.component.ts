@@ -9,4 +9,5 @@ import { Component, input } from '@angular/core';
 })
 export class IrongoonFormTooltipComponent {
   tooltip = input<string>();
+  title = input<string>();
 }

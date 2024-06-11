@@ -5,11 +5,18 @@
 .tooltip {
   position: absolute;
   min-width: 20rem;
-  background-color: rgba(0, 0, 0, 0.89);
-  top: 0;
-  left: 0;
+  min-height: 2rem;
+  background-color: rgba(0, 0, 0, 0.85);
+  top: -30px;
+  left: -1px;
   font-size: 90%;
-  padding: 1rem;
+  padding: 0.5rem;
   z-index: 9999;
   text-indent: 0ch;
+  border-radius: 10px;
+}
+
+.tooltip-title {
+  font-weight: 700;
+  margin-bottom: 0.1rem;
 }

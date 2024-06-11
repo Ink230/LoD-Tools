@@ -26,7 +26,9 @@ export class IrongoonService {
                   value: 1,
                   inputType: IrongoonInputs.Slider,
                   disabled: true,
-                  tooltip: `Randomizer is configured for the base Irongoon ruleset. Find the rulesets down below or on github.`,
+                  tooltip: `Randomizer is configured for the base Irongoon ruleset.
+                            <br /><br />
+                            Find the rulesets <a href="https://gist.github.com/Ink230/76197fd8251de5e0927d99077e0c1124" target="_blank">on github</a>.`,
                 },
                 { id: 1, name: 'Ultimate', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 2, name: 'Kaizo', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
