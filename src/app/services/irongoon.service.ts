@@ -1,12 +1,21 @@
 import { Injectable, Optional, SkipSelf } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { IrongoonComponent } from '../components/irongoon/irongoon.component';
-import { IrongoonCategories, IrongoonConfigOption, IrongoonInputs } from '../models/irongoon.model';
+import { IrongoonCategories, IrongoonConfigOption, IrongoonInputs, IrongoonTooltip } from '../models/irongoon.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class IrongoonService {
+  public optionTooltips: IrongoonTooltip[] = [
+    {
+      option: 'Irongoon',
+      message: `Randomizer is configured for the base Irongoon ruleset.
+                    <br /><br />
+                    Find the rulesets <a href="https://gist.github.com/Ink230/76197fd8251de5e0927d99077e0c1124">on github</a>.`,
+    },
+  ];
+
   public optionCategories: IrongoonCategories[] = [
     {
       id: 0,
@@ -26,11 +35,14 @@ export class IrongoonService {
                   value: 1,
                   inputType: IrongoonInputs.Slider,
                   disabled: true,
-                  tooltip: `Randomizer is configured for the base Irongoon ruleset.
-                            <br /><br />
-                            Find the rulesets <a href="https://gist.github.com/Ink230/76197fd8251de5e0927d99077e0c1124" target="_blank">on github</a>.`,
                 },
-                { id: 1, name: 'Ultimate', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                {
+                  id: 1,
+                  name: 'Ultimate',
+                  value: 1,
+                  inputType: IrongoonInputs.Slider,
+                  disabled: true,
+                },
                 { id: 2, name: 'Kaizo', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 3, name: '108th', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
               ],
@@ -656,6 +668,23 @@ export class IrongoonService {
     if (parentModule) {
       throw new Error('IrongoonService is already loaded. Import it in the IrongoonComponent only');
     }
+
+    this.initializeTooltips();
+  }
+
+  initializeTooltips() {
+    this.optionCategories.forEach((category) => {
+      category.columns.forEach((column) => {
+        column.settings.forEach((setting) => {
+          setting.options.forEach((option) => {
+            const tooltip = this.optionTooltips.find((tooltip) => tooltip.option === option.name);
+            if (tooltip) {
+              option.tooltip = tooltip.message;
+            }
+          });
+        });
+      });
+    });
   }
 
   sendOptionUpdate() {

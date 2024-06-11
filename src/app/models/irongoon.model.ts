@@ -67,3 +67,13 @@ export interface IrongoonConfigOption {
   name: string;
   value: string | number;
 }
+
+export interface IrongoonTooltipCategory {
+  name: string;
+  value: IrongoonTooltip[];
+}
+
+export interface IrongoonTooltip {
+  option: string;
+  message: string;
+}
