@@ -9,10 +9,68 @@ import { IrongoonCategories, IrongoonConfigOption, IrongoonInputs, IrongoonToolt
 export class IrongoonService {
   public optionTooltips: IrongoonTooltip[] = [
     {
+      option: '',
+      message: ``,
+    },
+    {
       option: 'Irongoon',
       message: `Randomizer is configured for the base Irongoon ruleset.
-                    <br /><br />
-                    Find the rulesets <a href="https://gist.github.com/Ink230/76197fd8251de5e0927d99077e0c1124">on github</a>.`,
+                <br><br>
+                Find the rulesets <a href="https://gist.github.com/Ink230/76197fd8251de5e0927d99077e0c1124">on github</a>.`,
+    },
+    {
+      option: 'Ultimate',
+      message: `Randomizer is configured for the Ultimate Irongoon ruleset.
+                <br><br>
+                Find the rulesets <a href="https://gist.github.com/Ink230/76197fd8251de5e0927d99077e0c1124">on github</a>.`,
+    },
+    {
+      option: 'Kaizo',
+      message: `Randomizer is configured for the Kaizo Irongoon ruleset.
+                <br><br>
+                Find the rulesets <a href="https://gist.github.com/Ink230/76197fd8251de5e0927d99077e0c1124">on github</a>.`,
+    },
+    {
+      option: '108th',
+      message: `Randomizer is configured for the special 108th Irongoon ruleset.
+                <br><br>
+                Find the rulesets <a href="https://gist.github.com/Ink230/76197fd8251de5e0927d99077e0c1124">on github</a>.`,
+    },
+    {
+      option: 'Stat Randomizer',
+      message: `Randomize character and monster stats with default upper and lower bounds.
+                <br><br>
+                An upper and lower bound of total stats per level is sourced from all characters.`,
+    },
+    {
+      option: 'Fixed Stat Randomizer',
+      message: `Randomize character and monster stats with default upper and lower bounds.
+                <br><br>
+                Each character uses their own total stats per level count.`,
+    },
+    {
+      option: 'Average Stat Randomizer',
+      message: `Randomize character and monster stats with default upper and lower bounds.
+                <br><br>
+                Each character receives the same average total stats of all characters per level.`,
+    },
+    {
+      option: 'No Shops',
+      message: `All shops are disabled. Including services, Arena, and anywhere you exchange gold or items for other items.`,
+    },
+    {
+      option: 'Randomizer+',
+      message: `Randomizes a collection of options for a true randomizer experience.`,
+    },
+    {
+      option: 'Chaos',
+      message: `Randomizes everything, often re-randomizing on action. 
+                <br><br>
+                Ex: Randomizes elements on every encounter, randomizes character stats on each load...etc.`,
+    },
+    {
+      option: 'Suggest some!',
+      message: `Open a github issue today.`,
     },
   ];
 
