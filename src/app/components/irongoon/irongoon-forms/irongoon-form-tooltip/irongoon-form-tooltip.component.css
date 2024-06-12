@@ -6,17 +6,22 @@
   position: absolute;
   min-width: 20rem;
   min-height: 2rem;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: rgba(0, 0, 0, 0.96);
   top: -30px;
   left: -1px;
-  font-size: 90%;
   padding: 0.5rem;
   z-index: 9999;
   text-indent: 0ch;
   border-radius: 10px;
+  border: solid 1px var(--compliance-font-color);
 }
 
 .tooltip-title {
   font-weight: 700;
   margin-bottom: 0.1rem;
+  color: var(--compliance-font-color);
+}
+
+.tooltip-message {
+  font-size: 90%;
 }
