@@ -2,19 +2,21 @@ import { NgClass } from '@angular/common';
 import { Component, HostListener, OnInit, input, signal } from '@angular/core';
 import { IrongoonOption } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
+import { IrongoonFormTooltipComponent } from '../irongoon-form-tooltip/irongoon-form-tooltip.component';
 
 @Component({
   selector: 'app-irongoon-dropdown',
   templateUrl: './irongoon-dropdown.component.html',
   styleUrl: './irongoon-dropdown.component.css',
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, IrongoonFormTooltipComponent],
 })
 export class IrongoonDropdownComponent implements OnInit {
   option = input<IrongoonOption>();
   displayDropdown = signal(false);
   dropdownIdentifier = signal<string>(null);
   selectionIdentifier = signal<string>(null);
+  isActiveTooltip = signal(false);
 
   constructor(private irongoonService: IrongoonService) {}
 

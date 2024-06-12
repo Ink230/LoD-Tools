@@ -1,5 +1,8 @@
 <div class="dropdown-parent">
-  <div class="option-text">{{ option().name }}</div>
+  <div class="option-text" (mouseenter)="isActiveTooltip.set(true)">{{ option().name }}</div>
+  @if (isActiveTooltip()) {
+    <app-irongoon-form-tooltip [tooltip]="option().tooltip" [title]="option().name" (mouseleave)="isActiveTooltip.set(false)"></app-irongoon-form-tooltip>
+  }
   <div class="dropdown-container">
     <div class="selection" id="{{ selectionIdentifier() }}" (click)="toggleDropdown()" [ngClass]="{ 'selection-clicked': displayDropdown(), disabled: option().disabled }">
       <div class="selected-option" id="{{ selectionIdentifier() }}">
