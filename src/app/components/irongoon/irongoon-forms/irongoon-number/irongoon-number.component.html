@@ -1,4 +1,7 @@
 <div class="text-input-container">
-  <label for="option().name">{{ option().name }}</label>
+  <label for="option().name" (mouseenter)="isActiveTooltip.set(true)">{{ option().name }}</label>
+  @if (isActiveTooltip()) {
+    <app-irongoon-form-tooltip [tooltip]="option().tooltip" [title]="option().name" (mouseleave)="isActiveTooltip.set(false)"></app-irongoon-form-tooltip>
+  }
   <input type="text" id="option().name" [(ngModel)]="option().value" maxlength="3" class="text-input" (focus)="onFocusHighlightText(inputField)" (blur)="updateOption()" #inputField NumericInput />
 </div>

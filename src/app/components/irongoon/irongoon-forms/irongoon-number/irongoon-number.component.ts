@@ -1,18 +1,20 @@
-import { Component, input } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NumericInputDirective } from 'src/app/directives/numeric-input.directive';
 import { IrongoonOption } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
+import { IrongoonFormTooltipComponent } from '../irongoon-form-tooltip/irongoon-form-tooltip.component';
 
 @Component({
   selector: 'app-irongoon-number',
   standalone: true,
-  imports: [FormsModule, NumericInputDirective],
+  imports: [FormsModule, NumericInputDirective, IrongoonFormTooltipComponent],
   templateUrl: './irongoon-number.component.html',
   styleUrl: './irongoon-number.component.css',
 })
 export class IrongoonNumberComponent {
   option = input<IrongoonOption>();
+  isActiveTooltip = signal(false);
 
   constructor(private irongoonService: IrongoonService) {}
 
