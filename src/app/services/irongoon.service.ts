@@ -72,6 +72,98 @@ export class IrongoonService {
       option: 'Suggest some!',
       message: `Open a github issue today.`,
     },
+    {
+      option: 'Body Stats',
+      message: `Includes character Attack, Defense, Magical Attack, and Magical Defense.
+                <br><br>
+                Each level has a specific increase in each specific body stat. Known as 'per level'. All settings calculate a 'total stats per level'.
+                <br><br>
+                <b>Randomize per level</b>
+                <br>
+                All characters body stats are summed per level. A minimum and maximum is retrieved from this set. A random value is generated between these bounds. This value is the total stats per level available to the character for the level in question.
+                <br><br>
+                <b>Randomize stock per level</b>
+                <br>
+                Use the vanilla total stats per level of the character in question.
+                <br><br>
+                <b>Randomize average per level</b>
+                <br>
+                Takes the average of total stat value of all characters per level. Each character then uses this value for the specific level.
+                <br><br>
+                <b>Stock</b>
+                <br>
+                The character's stock stats are used per level. There is no distribution.
+                <br><br>
+                Body Stats Distribution handles how the resulting 'total stat per level' value is distributed among the body stats.`,
+    },
+    {
+      option: 'Body Stats Distribution',
+      message: `Takes the total stats per level value calculated from the Body Stats setting and distributes the sum across the included body stats.
+               <br><br>
+               <b>Random</b>
+               <br>
+               Randomly distributes the total stats per level across the included body stats. It is possible for one stat to receive all of the total stats per level available.
+               <br><br>
+               There is no fixed pattern between levels, each level will have a different distribution applied.
+               <br><br>
+               <b>Fixed</b>
+               <br>
+               Same as Random. However, there is a fixed distribution per level.
+               <br><br>
+               If a character receives a 50%/20%/20%/10% distribution at Level 1, it will also have this distribution for all subsequent levels.
+               <br><br>
+               <b>Shuffle</b>
+               <br>
+               Same as Fixed. However, the distribution remains the same but the stats are shuffled.
+               <br><br>
+               If we have our 50%/20%/20%/10% at Level 1, then Level 2 will have the same distribution but in a different order, say 10%/20%/50%/20%.`,
+    },
+    {
+      option: 'Dragoon Stats',
+      message: `Includes the dragoon percentage modifiers for each Body Stat.
+               <br><br>
+               The settings work the same as the Body Stats option but uses these percentage points as stat points.
+               <br><br>
+               <b>Randomize per level</b>
+               <br>
+               All dragoon stats are summed per level. A minimum and maximum is retrieved from this set. A random value is generated between these bounds. This value is the total stats per level available to the dragoon for the level in question.
+               <br><br>
+               <b>Randomize stock per level</b>
+               <br>
+               Use the vanilla total stats per level of the dragoon in question.
+               <br><br>
+               <b>Randomize average per level</b>
+               <br>
+               Takes the average of total stat value of all dragoons per level. Each dragoon then uses this value for the specific level.
+               <br><br>
+               <b>Stock</b>
+               <br>
+               The dragoon's stock stats are used per level. There is no distribution.
+               <br><br>
+               Dragoon Stats Distribution handles how the resulting 'total stat per level' value is distributed among the dragoon stats.`,
+    },
+    {
+      option: 'Dragoon Stats Distribution',
+      message: `Takes the total stats per level value calculated from the Dragoon Stats setting and distributes the sum across the included dragoon stats.
+               <br><br>
+               <b>Random</b>
+               <br>
+               Randomly distributes the total stats per level across the included dragoon stats. It is possible for one stat to receive all of the total stats per level available.
+               <br><br>
+               There is no fixed pattern between levels, each level will have a different distribution applied.
+               <br><br>
+               <b>Fixed</b>
+               <br>
+               Same as Random. However, there is a fixed distribution per level.
+               <br><br>
+               If a dragoon receives a 50%/20%/20%/10% distribution at Level 1, it will also have this distribution for all subsequent levels.
+               <br><br>
+               <b>Shuffle</b>
+               <br>
+               Same as Fixed. However, the distribution remains the same but the stats are shuffled.
+               <br><br>
+               If we have our 50%/20%/20%/10% at Level 1, then Level 2 will have the same distribution but in a different order, say 10%/20%/50%/20%.`,
+    },
   ];
 
   public optionCategories: IrongoonCategories[] = [
@@ -158,8 +250,8 @@ export class IrongoonService {
                   data: { value: 'RANDOMIZE_BOUNDS_PER_LEVEL', name: 'Randomize per level' },
                   dataList: [
                     { value: 'RANDOMIZE_BOUNDS_PER_LEVEL', name: 'Randomize per level' },
-                    { value: 'MAINTAIN_STOCK', name: 'Randomize stock stats per level' },
-                    { value: 'AVERAGE_ALL_CHARACTERS', name: 'Randomize average stats per level' },
+                    { value: 'MAINTAIN_STOCK', name: 'Randomize stock per level' },
+                    { value: 'AVERAGE_ALL_CHARACTERS', name: 'Randomize average per level' },
                     { value: 'STOCK', name: 'Stock' },
                   ],
                   descriptor: 'bodyTotalStatsPerLevel',
@@ -273,8 +365,8 @@ export class IrongoonService {
                   data: { value: 'RANDOMIZE_BOUNDS_PER_LEVEL', name: 'Randomize per level' },
                   dataList: [
                     { value: 'RANDOMIZE_BOUNDS_PER_LEVEL', name: 'Randomize per level' },
-                    { value: 'MAINTAIN_STOCK', name: 'Randomize stock stats per level' },
-                    { value: 'AVERAGE_ALL_CHARACTERS', name: 'Randomize average stats per level' },
+                    { value: 'MAINTAIN_STOCK', name: 'Randomize stock per level' },
+                    { value: 'AVERAGE_ALL_CHARACTERS', name: 'Randomize average per level' },
                     { value: 'STOCK', name: 'Stock' },
                   ],
                   descriptor: 'dragoonTotalStatsPerLevel',
