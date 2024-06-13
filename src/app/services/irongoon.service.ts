@@ -530,6 +530,58 @@ export class IrongoonService {
                <br><br>
                If the stat is below 10, we apply a random addition of -3 to +3 to the value instead.`,
     },
+    {
+      option: 'Use New Seed on Campaign Start',
+      message: `While set to TRUE, this option will have the randomizer ignore the publicSeed in the config.yaml.
+               <br><br>
+               The randomizer will then create and save a campaign-specific seed in the Severed Chains campaign config file.
+               <br><br>
+               While the option is true, the randomizer will look for and only use a campaign config seed.
+               <br><br>
+               Further, when starting a new campaign, a seed is auto-generated for you and your new campaign.
+               <br><br>
+               Note
+               <br>
+               When this option is FALSE, the publicSeed in config.yaml will take priority over any other seeds.`,
+    },
+    {
+      option: 'Slow Down Audio When in Peril',
+      message: `Music will slow down when the party is at risk of defeat.`,
+    },
+    {
+      option: 'Boss Themes',
+      message: `Do not remember what this one was for.`,
+    },
+    {
+      option: 'Randomize Music',
+      message: `All music tracks are randomized on when they play.`,
+    },
+    {
+      option: 'Randomize Sound Effects',
+      message: `All sound effects are randomized on when they play.`,
+    },
+    {
+      option: 'Randomize Voices',
+      message: `All voices are randomized on when they play.`,
+    },
+    {
+      option: 'Use Custom Music',
+      message: `Custom music will be loaded from the Irongoon subfolder in /mods.
+               <br><br>
+               Please follow the format for custom music to be detected and loaded.`,
+    },
+    {
+      option: 'Use Custom Effects',
+      message: `Custom effects will be loaded from the Irongoon subfolder in /mods.
+               <br><br>
+               Please follow the format for custom effects to be detected and loaded.`,
+    },
+    {
+      option: 'Use Custom Voices',
+      message: `Custom voices will be loaded from the Irongoon subfolder in /mods.
+               <br><br>
+               Please follow the format for custom voices to be detected and loaded.`,
+    },
   ];
 
   public optionCategories: IrongoonCategories[] = [
