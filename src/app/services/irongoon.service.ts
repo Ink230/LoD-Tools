@@ -770,6 +770,199 @@ export class IrongoonService {
       option: 'Party Size',
       message: `Not implemented.`,
     },
+    {
+      option: 'Disable All Shops',
+      message: `All shops are disabled.`,
+    },
+    {
+      option: 'Disable Item Shops',
+      message: `All item shops are disabled.`,
+    },
+    {
+      option: 'Disable Equipment Shops',
+      message: `All equipment shops are disabled.`,
+    },
+    {
+      option: 'Disable Service Shops',
+      message: `All service shops are disabled.`,
+    },
+    {
+      option: 'Inflation Modifier',
+      message: `How much everything should cost.
+               <br><br>
+               100 is 100% <b>of</b> the base shop values.
+               <br>
+               250 is 250% <b>of</b> the base shop values.
+               <br><br>
+               250 would thus increase a 10 GP item to 25 GP.`,
+    },
+    {
+      option: 'Randomize Shops',
+      message: `Will randomize shop inventory.
+               <br><br>
+               Use other sliders to adjust cost values and inventory amounts.
+               <br><br>
+               <b>Randomize</b>
+               <br>
+               Shops will be randomized from all available shop items.
+               <br><br>
+               <b>Randomize All</b>
+               <br>
+               Shops will be randomized from all available items.
+               <br><br>
+               <b>Stock</b>
+               <br>
+               Vanilla .csv shop settings.`,
+    },
+    {
+      option: 'Randomize Loot',
+      message: `Loot will be randomized across all available items.`,
+    },
+    {
+      option: 'No Psyche Bomb',
+      message: `Psyche Bomb X and Psyche Bomb will not be rolled in chests.`,
+    },
+    {
+      option: 'No Repeat Items',
+      message: `Chests will not roll repeat items.`,
+    },
+    {
+      option: 'Include Equipment',
+      message: `All general equiment will be rollable in chests.`,
+    },
+    {
+      option: 'Unique Equipment',
+      message: `Unique equipment will be rollable in chests.`,
+    },
+    {
+      option: 'Equipment %',
+      message: `On the initial generation of all chests, the percentage of chests that contain equipment.`,
+    },
+    {
+      option: 'Attack Item %',
+      message: `On the initial generation of all chests, the percentage of chests that contain attack items.`,
+    },
+    {
+      option: 'Effect Item %',
+      message: `On the initial generation of all chests, the percentage of chests that contain effect items.`,
+    },
+    {
+      option: 'Heal Item %',
+      message: `On the initial generation of all chests, the percentage of chests that contain heal items.`,
+    },
+    {
+      option: 'Gold Multiplier',
+      message: `The amount of gold scaling.
+               <br><br>
+               100 is 100% <b>of</b> the base dropped GP value.
+               <br>
+               250 is 250% <b>of</b> the base dropped GP values
+               <br><br>
+               250 would thus increase a 10 GP drop to 25 GP.`,
+    },
+    {
+      option: 'Experience Multiplier',
+      message: `The amount of experience scaling.
+               <br><br>
+               100 is 100% <b>of</b> the base given experience value.
+               <br>
+               250 is 250% <b>of</b> the base given experience value.
+               <br><br>
+               250 would thus increase a given 10 experience value to a 25 experience value.`,
+    },
+    {
+      option: 'SP Multiplier',
+      message: `The amount of SP scaling.
+               <br><br>
+               100 is 100% <b>of</b> the base given SP value.
+               <br>
+               250 is 250% <b>of</b> the base given SP value.
+               <br><br>
+               250 would thus increase a 10 SP drop to 25 SP.`,
+    },
+    {
+      option: 'Drops',
+      message: `How drops are randomized.
+               <br><br>
+               <b>Randomize</b>
+               <br>
+               Randomizes drops from all default dropped items or uses the additional drop modifiers.
+               <br><br>
+               <b>Stock</b>
+               <br>
+               Use the stock drops. Other drop settings may override this.
+               <br><br>`,
+    },
+    {
+      option: 'Include Equipment',
+      message: `Include equipment in randomized drops.`,
+    },
+    {
+      option: 'Include Attack Items',
+      message: `Include attack items in randomized drops.`,
+    },
+    {
+      option: 'Include Effect Items',
+      message: `Include effect items in randomized drops.`,
+    },
+    {
+      option: 'Include Heal Items',
+      message: `Include heal items in randomized drops.`,
+    },
+    {
+      option: 'Mob Drop Count',
+      message: `The amount of drops a mob is capable of dropping
+                <br><br>
+                Each mob will have its own rolled drop chance per droppable item.
+                <br><br>
+                This drop chance is sourced from the mob Drop Upper and Lower Percent Bounds.
+                <br><br>
+                If the bounds are from 30 to 70, then a mob may have roll from 30 to 70 for their droppable items.`,
+    },
+    {
+      option: 'Mob Drop Upper Percent Bound',
+      message: `The upper percent bound a mob may have to drop a drop.`,
+    },
+    {
+      option: 'Mob Drop Lower Percent Bound',
+      message: `The lower percent bound a mob may have to drop a drop.`,
+    },
+    {
+      option: 'Mini-Boss Drop Count',
+      message: `The amount of drops a Mini-Boss is capable of dropping
+                <br><br>
+                Each Mini-Boss will have its own rolled drop chance per droppable item.
+                <br><br>
+                This drop chance is sourced from the Mini-Boss Drop Upper and Lower Percent Bounds.
+                <br><br>
+                If the bounds are from 30 to 70, then a Mini-Boss may have roll from 30 to 70 for their droppable items.`,
+    },
+    {
+      option: 'Mini-Boss Drop Upper Percent Bound',
+      message: `The upper percent bound a Mini-Boss may have to drop a drop.`,
+    },
+    {
+      option: 'Mini-Boss Drop Lower Percent Bound',
+      message: `The lower percent bound a Mini-Boss may have to drop a drop.`,
+    },
+    {
+      option: 'Boss Drop Count',
+      message: `The amount of drops a Boss is capable of dropping
+                <br><br>
+                Each Boss will have its own rolled drop chance per droppable item.
+                <br><br>
+                This drop chance is sourced from the Boss Drop Upper and Lower Percent Bounds.
+                <br><br>
+                If the bounds are from 30 to 70, then a Boss may have roll from 30 to 70 for their droppable items.`,
+    },
+    {
+      option: 'Boss Drop Upper Percent Bound',
+      message: `The upper percent bound a Boss may have to drop a drop.`,
+    },
+    {
+      option: 'Boss Drop Lower Percent Bound',
+      message: `The lower percent bound a Boss may have to drop a drop.`,
+    },
   ];
 
   public optionCategories: IrongoonCategories[] = [
@@ -1182,7 +1375,10 @@ export class IrongoonService {
                   value: 1,
                   inputType: IrongoonInputs.Dropdown,
                   data: { value: 's', name: 'Randomize' },
-                  dataList: [{ value: 'd', name: 'Stock' }],
+                  dataList: [
+                    { value: 's', name: 'Randomize' },
+                    { value: 'd', name: 'Stock' },
+                  ],
                   descriptor: '',
                   disabled: true,
                 },
@@ -1248,15 +1444,13 @@ export class IrongoonService {
                 { id: 8, name: 'Mob Drop Count', value: 5, inputType: IrongoonInputs.Number, disabled: true },
                 { id: 9, name: 'Mob Drop Upper Percent Bound', value: 100, inputType: IrongoonInputs.Number, disabled: true },
                 { id: 10, name: 'Mob Drop Lower Percent Bound', value: 1, inputType: IrongoonInputs.Number, disabled: true },
-                { id: 11, name: 'Guaranteed Mob Drop Count', value: 1, inputType: IrongoonInputs.Number, disabled: true },
-                { id: 12, name: 'Mini-Boss Drop Count', value: 5, inputType: IrongoonInputs.Number, disabled: true },
-                { id: 13, name: 'Mini-Boss Upper Percent Bound', value: 100, inputType: IrongoonInputs.Number, disabled: true },
-                { id: 14, name: 'Mini-Boss Lower Percent Bound', value: 1, inputType: IrongoonInputs.Number, disabled: true },
-                { id: 15, name: 'Mini-Boss Mob Drop Count', value: 1, inputType: IrongoonInputs.Number, disabled: true },
-                { id: 16, name: 'Boss Drop Count', value: 5, inputType: IrongoonInputs.Number, disabled: true },
-                { id: 17, name: 'Boss Upper Percent Bound', value: 100, inputType: IrongoonInputs.Number, disabled: true },
-                { id: 18, name: 'Boss Lower Percent Bound', value: 1, inputType: IrongoonInputs.Number, disabled: true },
-                { id: 19, name: 'Boss Mob Drop Count', value: 1, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 11, name: 'Mini-Boss Drop Count', value: 5, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 12, name: 'Mini-Boss Drop Upper Percent Bound', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 13, name: 'Mini-Boss Drop Lower Percent Bound', value: 1, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 14, name: 'Mini-Boss Drop Count', value: 1, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 15, name: 'Boss Drop Count', value: 5, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 16, name: 'Boss Drop Upper Percent Bound', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 17, name: 'Boss Drop Lower Percent Bound', value: 1, inputType: IrongoonInputs.Number, disabled: true },
               ],
             },
           ],
