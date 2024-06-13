@@ -164,6 +164,372 @@ export class IrongoonService {
                <br><br>
                If we have our 50%/20%/20%/10% at Level 1, then Level 2 will have the same distribution but in a different order, say 10%/20%/50%/20%.`,
     },
+    {
+      option: 'Body Total Stats Bounds',
+      message: `Not implemented.
+               <br><br>
+               Will allow you to add an upper and lower bound to the total stats per level value for any of the Body Stats options.`,
+    },
+    {
+      option: 'Dragoon Total Stats Bounds',
+      message: `Not implemented.
+               <br><br>
+               Will allow you to add an upper and lower bound to the total stats per level value for any of the Dragoon Stats options.`,
+    },
+    {
+      option: 'HP Stat Per Level',
+      message: `Defines how the HP stat of characters is randomized.
+               <br><br>
+               <b>Randomize Bounds</b>
+               <br>
+               Calculates the per level HP amount of all characters. A minimum and maximum is retrieved from this set. A random value between the minimum and maximum is generated as the additive amount of HP for that character's level.
+               <br><br/>
+               <b>Randomize Stock with Bounds</b>
+               <br>
+               Calculates the per level HP amount of the character in question. This value is adjusted by the HP Stat Upper and Lower Percent Bounds.
+               <br><br>
+               A random value between the percent bounds is chosen and is applied to the original HP per level amount.
+               <br><br/>
+               <b>Randomize Percent Bounds</b>
+               <br>
+               Same behaviour as Randomize Bounds. However, after the min and max are used to find an HP amount, this resulting value is modified by a percent value bounded by the HP Stat Upper and Lower Percent Bounds.
+               <br><br/>
+               <b>Stock</b>
+               <br>
+               HP is kept stock as sourced from the .csv files.
+               `,
+    },
+    {
+      option: 'HP Stat Upper Percent Bound',
+      message: `Upper limit of what percentage a resulting HP amount can be modified by.
+               <br><br>
+               150 indicates that the calculated HP stat can be multiplied by 1.5x or have an upper limit of 50% over the calculated HP amount.`,
+    },
+    {
+      option: 'HP Stat Lower Percent Bound',
+      message: `Lower limit of what percentage a resulting HP amount can be modified by.
+               <br><br>
+               50 indicates that the calculated HP stat can be multiplied by 0.5x or have a lower limit of 50% less that of the calculated HP amount.`,
+    },
+    {
+      option: 'Speed Stat Per Level',
+      message: `Defines how the Speed stat of characters is randomized.
+               <br><br>
+               <b>Randomize Bounds</b>
+               <br>
+               Retrieves all of the Speed stats from all characters. A minimum and maximum is retrieved from this set. A random value between the minimum and maximum is generated as the Speed stat.
+               <br><br/>
+               <b>Randomize Stock with Bounds</b>
+               <br>
+               Retrieves the Speed stat of the character. This value is modified by a value randomly selected between the given percentage bounds.
+               <br><br>
+               A random value between the percent bounds is chosen and is applied to the original Speed value.
+               <br><br/>
+               <b>Randomize Percent Bounds</b>
+               <br>
+               Note: Not implemented.
+               <br><br>
+               Same behaviour as Randomize Bounds. However, after the min and max are used to find a Speed value, this resulting value is modified by a percent value bounded by the Speed Stat Upper and Lower Percent Bounds.
+               <br><br/>
+               <b>Stock</b>
+               <br>
+               Speed is kept stock as sourced from the .csv files.
+               `,
+    },
+    {
+      option: 'Speed Stat Upper Percent Bound',
+      message: `Upper limit of what percentage a resulting speed amount can be modified by.
+               <br><br>
+               150 indicates that the calculated HP stat can be multiplied by 1.5x or have an upper limit of 50% over the calculated HP amount.
+               <br><br>
+               Note
+               <br>
+               In a 3vs3 fight, Character 1 has 30 Speed, and Character 3 has 70 Speed, and all other entities have 50 Speed.
+               <br><br>
+               Character 1 will have 11% of the turns, and Character 3 will have 25% of turns. 
+               <br>
+               Others will have 16%.
+               <br>
+               If the 70 Speed was 90, the turn share would be 32%.`,
+    },
+    {
+      option: 'Speed Stat Lower Percent Bound',
+      message: `Lower limit of what percentage a resulting HP amount can be modified by.
+               <br><br>
+               50 indicates that the calculated HP stat can be multiplied by 0.5x or have a lower limit of 50% less that of the calculated HP amount.
+               <br><br>
+               Note
+               <br>
+               In a 3vs3 fight, Character 1 has 30 Speed, and Character 3 has 70 Speed, and all other entities have 50 Speed.
+               <br><br>
+               Character 1 will have 11% of the turns, and Character 3 will have 25% of turns. 
+               <br>
+               Others will have 16%.
+               <br>
+               If the 70 Speed was 90, the turn share would be 32%.`,
+    },
+    {
+      option: 'Elements',
+      message: `Only implemented for monsters and Elements-only (no typings).
+               <br><br>
+               <b>Randomize</b>
+               <br>
+               Entity elements are randomized.
+               <br><br>
+               <b>Random Random</b>
+               <br>
+               Entity elements are randomized on every encounter.
+               <br><br>
+               <b>Randomize Typings</b>
+               <br>
+               Entity typings are randomized.
+               <br><br>
+               <b>Randomize Random Typings</b>
+               <br>
+               Entity typings are randomized on every encounter.
+               <br><br>
+               <b>Elements and Typings</b>
+               <br>
+               Entity elements and type matchups are randomized.
+               <br><br>
+               <b>Random Random Elements and Typings</b>
+               <br>
+               Entity elements and type matchups are randomized on every encounter.
+               <br><br>
+               <b>Stock</b>
+               <br>
+               Stock elements and stock typings.`,
+    },
+    {
+      option: 'No Element',
+      message: `Only implemented for monsters.
+               <br><br>
+               <b>Exclude</b>
+               <br>
+               Entity elements and typings will not contain No_Element.
+               <br><br>
+               <b>Include</b>
+               <br>
+               Entity elements and typings will contain No_Element.
+               <br><br>
+               <b>Elements Only</b>
+               <br>
+               Add No_element to the possible Elements.
+               <br><br>
+               <b>Immunities Only</b>
+               <br>
+               Add No_Element to the possible Immunities.`,
+    },
+    {
+      option: 'Dragoon Elements',
+      message: `Not implemented.
+               <br><br>
+               <b>Randomize</b>
+               <br>
+               Dragoon elements are randomized.
+               <br><br>
+               <b>Random Random</b>
+               <br>
+               Dragoon elements are randomized on every encounter.
+               <br><br>
+               <b>Randomize Typings</b>
+               <br>
+               Dragoon typings are randomized.
+               <br><br>
+               <b>Randomize Random Typings</b>
+               <br>
+               Dragoon typings are randomized on every encounter.
+               <br><br>
+               <b>Elements and Typings</b>
+               <br>
+               Dragoon elements and type matchups are randomized.
+               <br><br>
+               <b>Random Random Elements and Typings</b>
+               <br>
+               Dragoon elements and type matchups are randomized on every encounter.
+               <br><br>
+               <b>Use Character Element</b>
+               <br>
+               Use the current Character element for Dragoon.
+               <br><br>
+               <b>Stock</b>
+               <br>
+               Stock elements and stock typings.`,
+    },
+    {
+      option: 'Dragoon Spells',
+      message: `Not implemented. Will become a slider for each option.
+               <br><br>
+               <b>Randomize</b>
+               <br>
+               Randomizes stats, effects, learn order, and MP cost.
+               <br><br>
+               <b>Randomize Stats</b>
+               <br>
+               Randomize only the stats of Dragoon spells.
+               <br><br>
+               <b>Randomize Effects</b>
+               <br>
+               Randomize only the effects of Dragoon spells.
+               <br><br>
+               <b>Randomize Stats and Effects</b>
+               <br>
+               Randomize both stats and effects of Dragoon spells.
+               <br><br>
+               <b>Randomize All</b>
+               <br>
+               Randomizes stats, effects, learn order, and MP cost across all characters.
+               <br><br>
+               <b>Randomize Random All</b>
+               <br>
+               Randomizes stats, effects, learn order, and MP cost across all characters on every encounter.
+               <br><br>`,
+    },
+    {
+      option: 'Monster Stats',
+      message: `Includes monster Attack and Magic Attack, and Defense and Magic Defense as two sets.
+                <br><br>
+                <b>Randomize Bounds</b>
+                <br>
+                Attack and Magic Attack are summed.
+                <br>
+                Defense and Magic Defense are summed.
+                <br><br>
+                These two values are split by a random ratio. The resulting split of each sum is applied to the monster stats. 
+                <br><br>
+                <b>Randomize Stock w/ Fixed Bounds</b>
+                <br>
+                Each individual monster stat is modified by a random percent bounded by a lower and upper bound.
+                <br><br>
+                <b>Stock</b>
+                <br>
+                Use the vanilla monster stats.`,
+    },
+    {
+      option: 'Monster Stats Upper Percent Bound',
+      message: `Upper limit of what percentage a monsters stat may be modified by.
+               <br><br>
+               150 indicates that the calculated stat can be multiplied by 1.5x or have an upper limit of 50% over the calculated amount.`,
+    },
+    {
+      option: 'Monster Stats Lower Percent Bound',
+      message: `Lower limit of what percentage a monsters stat may be modified by.
+               <br><br>
+               50 indicates that the calculated stat can be multiplied by 0.5x or have a lower limit of 50% less that of the calculated amount.`,
+    },
+    {
+      option: 'Monster Defense Floor',
+      message: `Hard lower limit of what value a monster's Defense value can be.
+               <br><br>
+               Damage formulas are exponential. The exponential formulas are balanced around HP values.
+               <br><br>
+               Early game mobs can have 150 Defense, while difficult late game mobs (or bosses) will also have 150 Defense.
+               <br>
+               The balancing factor is the amount of HP.
+               <br><br>
+               This is what yields the very harsh few early game fights from Seles to the Cavern.
+               <br><br>
+               Consult the vanilla .csv files to get a feel for the Defense values and how they are used.`,
+    },
+    {
+      option: 'Monster Magic Defense Floor',
+      message: `Hard lower limit of what value a monster's Magic Defense value can be.
+               <br><br>
+               Damage formulas are exponential. The exponential formulas are balanced around HP values.
+               <br><br>
+               Early game mobs can have 150 Magic Defense, while difficult late game mobs (or bosses) will also have 150 Magic Defense.
+               <br>
+               The balancing factor is the amount of HP.
+               <br><br>
+               This is what yields the very harsh few early game fights from Seles to the Cavern.
+               <br><br>
+               Consult the vanilla .csv files to get a feel for the Magic Defense values and how they are used.`,
+    },
+    {
+      option: 'HP Stat Monsters',
+      message: `How the monster's HP stat is randomized.
+               <br><br>
+               <b>Randomize Bounds</b>
+               <br>
+               The stock HP of the monster is randomized by using a randomly selected modifier from a lower and upper percent bound.
+               <br><br>
+               <b>Stock</b>
+               <br>
+               Use vanilla .csv monster HP values.`,
+    },
+    {
+      option: 'HP Stat Upper Bound',
+      message: `Upper limit of what percentage a resulting HP amount can be modified by.
+               <br><br>
+               150 indicates that the calculated HP stat can be multiplied by 1.5x or have an upper limit of 50% over the calculated HP amount.`,
+    },
+    {
+      option: 'HP Stat Lower Bound',
+      message: `Lower limit of what percentage a resulting HP amount can be modified by.
+               <br><br>
+               50 indicates that the calculated HP stat can be multiplied by 0.5x or have a lower limit of 50% less that of the calculated HP amount.`,
+    },
+    {
+      option: 'Speed Stat Monsters',
+      message: `How the monster's Speed stat is randomized.
+               <br><br>
+               <b>Randomize Bounds</b>
+               <br>
+               The stock Speed of the monster is randomized by using a randomly selected value from a lower and upper bound.
+               <br><br>
+               <b>Randomize Random Bounds</b>
+               <br>
+               The stock Speed of the monster is randomized by using a randomly selected value from a lower and upper bound on every encounter.
+               <br><br>
+               <b>Stock</b>
+               <br>
+               Use vanilla .csv monster Speed values.`,
+    },
+    {
+      option: 'Speed Stat Upper Bound',
+      message: `Upper limit of what percentage a resulting Speed amount can be modified by.
+               <br><br>
+               The vanilla maximum value is 200 but the majority of mobs fall below 80.
+               <br><br>
+               Note
+               <br>
+               In a 3vs3 fight, Character 1 has 30 Speed, and Character 3 has 70 Speed, and all other entities have 50 Speed.
+               <br><br>
+               Character 1 will have 11% of the turns, and Character 3 will have 25% of turns. 
+               <br>
+               Others will have 16%.
+               <br>
+               If the 70 Speed was 90, the turn share would be 32%.`,
+    },
+    {
+      option: 'Speed Stat Lower Bound',
+      message: `Lower limit of what percentage a resulting Speed amount can be modified by.
+               <br><br>
+               The vanilla minimum value is 30 for regular mobs.
+               <br><br>
+               Note
+               <br>
+               In a 3vs3 fight, Character 1 has 30 Speed, and Character 3 has 70 Speed, and all other entities have 50 Speed.
+               <br><br>
+               Character 1 will have 11% of the turns, and Character 3 will have 25% of turns. 
+               <br>
+               Others will have 16%.
+               <br>
+               If the 70 Speed was 90, the turn share would be 32%.`,
+    },
+    {
+      option: 'Monster Stat Variance',
+      message: `Applies a variance filter on monster stats.
+                <br>
+                • The same monster across different encounters will have slightly different stats
+                • Two of the same monster in an encounter will have slightly different stats
+               <br><br>
+               <b>Randomize Percent Bounds</b>
+               <br>
+               Variance of 60 to 100 percentage points of the calculated value.
+               <br><br>
+               If the stat is below 10, we apply a random addition of -3 to +3 to the value instead.`,
+    },
   ];
 
   public optionCategories: IrongoonCategories[] = [
@@ -307,7 +673,7 @@ export class IrongoonService {
                   data: { value: 'RANDOMIZE_BOUNDS', name: 'Randomize Bounds' },
                   dataList: [
                     { value: 'RANDOMIZE_BOUNDS', name: 'Randomize Bounds' },
-                    { value: 'RANDOMIZE_RANDOM_BOUNDS', name: 'Randomize Random' },
+                    { value: 'RANDOMIZE_RANDOM_BOUNDS', name: 'Randomize Stock with Bounds' },
                     { value: 'MAINTAIN_STOCK', name: 'Stock' },
                   ],
                   descriptor: 'speedStatPerLevel',
@@ -316,7 +682,7 @@ export class IrongoonService {
                 { id: 8, name: 'Speed Stat Lower Percent Bound', value: 50, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatLowerPercentBound' },
                 {
                   id: 9,
-                  name: 'Character Elements',
+                  name: 'Elements',
                   value: 1,
                   inputType: IrongoonInputs.Dropdown,
                   data: { value: 'RANDOMIZE', name: 'Randomize' },
@@ -465,17 +831,16 @@ export class IrongoonService {
                   name: 'Monster Stats',
                   value: 1,
                   inputType: IrongoonInputs.Dropdown,
-                  data: { value: 'RANDOMIZE_BOUNDS_PER_LEVEL', name: 'Randomize Bounds Per Level' },
+                  data: { value: 'RANDOMIZE_BOUNDS', name: 'Randomize Bounds' },
                   dataList: [
-                    { value: 'RANDOMIZE_BOUNDS_PER_LEVEL', name: 'Randomize Bounds Per Level' },
                     { value: 'RANDOMIZE_BOUNDS', name: 'Randomize Bounds' },
-                    { value: 'RANDOMIZE_STOCK_BOUNDS', name: 'Randomize with bounds' },
+                    { value: 'RANDOMIZE_STOCK_BOUNDS', name: 'Randomize Stock w/ Fixed Bounds' },
                     { value: 'MAINTAIN_STOCK', name: 'Stock' },
                   ],
                   descriptor: 'monsterTotalStatsPerLevel',
                 },
-                { id: 0, name: 'Total Stats Upper Percent Bound', value: 150, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'totalStatsMonstersUpperPercentBound' },
-                { id: 1, name: 'Total Stats Lower Percent Bound', value: 50, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'totalStatsMonstersLowerPercentBound' },
+                { id: 0, name: 'Monster Stats Upper Percent Bound', value: 150, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'totalStatsMonstersUpperPercentBound' },
+                { id: 1, name: 'Monster Stats Lower Percent Bound', value: 50, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'totalStatsMonstersLowerPercentBound' },
                 { id: 2, name: 'Monster Defense Floor', value: 50, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'monsterDefenseFloor' },
                 { id: 3, name: 'Monster Magic Defense Floor', value: 50, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'monsterMagicDefenseFloor' },
                 {
@@ -505,7 +870,7 @@ export class IrongoonService {
                   ],
                   descriptor: 'speedStatMonsters',
                 },
-                { id: 2, name: 'Speed Stat Upper Bound', value: 70, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatMonstersUpperBound' },
+                { id: 2, name: 'Speed Stat Upper Bound', value: 80, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatMonstersUpperBound' },
                 { id: 3, name: 'Speed Stat Lower Bound', value: 30, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatMonstersLowerBound' },
                 {
                   id: 8,
@@ -521,7 +886,7 @@ export class IrongoonService {
                 },
                 {
                   id: 9,
-                  name: 'Monster Elements',
+                  name: 'Elements',
                   value: 1,
                   inputType: IrongoonInputs.Dropdown,
                   data: { value: 'RANDOMIZE', name: 'Randomize' },
