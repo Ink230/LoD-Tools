@@ -582,6 +582,194 @@ export class IrongoonService {
                <br><br>
                Please follow the format for custom voices to be detected and loaded.`,
     },
+    {
+      option: 'Tasmans Trial',
+      message: `Additions must be maxed out before being able to use the next unlocked addition.`,
+    },
+    {
+      option: 'Addition Master',
+      message: `Missing an addition removes 5 addition completions.`,
+    },
+    {
+      option: 'Minimum Number of Additions',
+      message: `The number of additions each character should be given.
+               <br><br>
+               If the minimum value is too high, some characters will not receive a minimum amount of additions.
+               <br><br>
+               All characters get seeded with at least one addition first.`,
+    },
+    {
+      option: 'Randomize Learn Levels',
+      message: `The levels at which characters learns additions is randomized.
+               <br><br>
+               Includes Level 1 to Level 60. 
+               <br>
+               Only one addition learned per level.`,
+    },
+    {
+      option: 'Randomize Learn Order',
+      message: `The learn order of additions for characters is randomized.
+               <br><br>
+               Master Additions are included in the randomization. 
+               <br>
+               Last addition learned is the default Master Addition.`,
+    },
+    {
+      option: 'Randomize Across Characters (basic)',
+      message: `Will randomize additions across characters.
+               <br><br>
+               Characters retain their stock number of additions.`,
+    },
+    {
+      option: 'Randomize Across Characters (advanced)',
+      message: `Will randomize additions across characters.
+               <br><br>
+               Characters do not retain their stock number of additions.
+               <br>
+               Addition hits are fully randomized.`,
+    },
+    {
+      option: 'Element Overload',
+      message: `Opposing Element typings will deal 250% damage (3.5x multiplier)
+               <br><br>
+               Same-type Element typings will deal 0% damage.
+               <br><br>
+               Thunder will deal 250% damage to all elements or Thunder will receive 250% damage from all elements.
+               <br>
+               This will be randomly selected on encounter.
+               <br><br>
+               Divine will randomly be immune to one element (per encounter), deal 250% to all elements and will receive 75% of damage from all elements.
+               <br><br>
+               No Element will use the entity's base element type.`,
+    },
+    {
+      option: 'Guard Limit',
+      message: `Number of times in a row you may Guard before Guard becomes blocked.
+               <br><br>
+               0 is infinite.`,
+    },
+    {
+      option: 'Mob Stats',
+      message: `Overall modifier on each monster stat.
+               <br><br>
+               100 is 100% of the base value.
+               <br>
+               62 * (((100-100)/100)+1 = 62 * 1 = 62
+               <br>
+               62 * (((250-100)/100)+1 = 62 * 2.5 = 155`,
+    },
+    {
+      option: 'Mobs HP',
+      message: `Overall modifier on monsters HP stat.
+               <br><br>
+               100 is 100% of the base value.
+               <br>
+               62 * (((100-100)/100)+1 = 62 * 1 = 62
+               <br>
+               62 * (((250-100)/100)+1 = 62 * 2.5 = 155`,
+    },
+    {
+      option: 'Mini-Boss Stats',
+      message: `Overall modifier on mini-boss stats.
+               <br><br>
+               100 is 100% of the base value.
+               <br>
+               62 * (((100-100)/100)+1 = 62 * 1 = 62
+               <br>
+               62 * (((250-100)/100)+1 = 62 * 2.5 = 155`,
+    },
+    {
+      option: 'Mini-Boss HP',
+      message: `Overall modifier on mini-bosses HP stat.
+               <br><br>
+               100 is 100% of the base value.
+               <br>
+               62 * (((100-100)/100)+1 = 62 * 1 = 62
+               <br>
+               62 * (((250-100)/100)+1 = 62 * 2.5 = 155`,
+    },
+    {
+      option: 'Boss Stats',
+      message: `Overall modifier on boss stats.
+               <br><br>
+               100 is 100% of the base value.
+               <br>
+               62 * (((100-100)/100)+1 = 62 * 1 = 62
+               <br>
+               62 * (((250-100)/100)+1 = 62 * 2.5 = 155`,
+    },
+    {
+      option: 'Bosses HP',
+      message: `Overall modifier on bosses HP stat.
+               <br><br>
+               100 is 100% of the base value.
+               <br>
+               62 * (((100-100)/100)+1 = 62 * 1 = 62
+               <br>
+               62 * (((250-100)/100)+1 = 62 * 2.5 = 155`,
+    },
+    {
+      option: 'Mob Magic Attacks',
+      message: `Mobs will be given at least 1 new randomly selected Item Magic, Dragoon Magic, or Monster Spell.
+               `,
+    },
+    {
+      option: 'Number of Mob M. Attacks',
+      message: `The number of magic attacks a mob will have.
+               <br><br>
+               0 or 1 is the default of 1.
+               `,
+    },
+    {
+      option: 'Mini-Boss Magic Attacks',
+      message: `Mini-Bosses will be given at least 1 new randomly selected Item Magic, Dragoon Magic, or Monster Spell.
+               `,
+    },
+    {
+      option: 'Number of Mini-Boss M. Attacks',
+      message: `The number of magic attacks a mini-boss will have.
+               <br><br>
+               0 or 1 is the default of 1.
+               `,
+    },
+    {
+      option: 'Boss Magic Attacks',
+      message: `Bosses will be given at least 1 new randomly selected Item Magic, Dragoon Magic, or Monster Spell.
+               `,
+    },
+    {
+      option: 'Number of Boss M. Attacks',
+      message: `The number of magic attacks a boss will have.
+               <br><br>
+               0 or 1 is the default of 1.
+               `,
+    },
+    {
+      option: 'Run Slow',
+      message: `Unable to run from encounters.`,
+    },
+    {
+      option: 'Starting Character',
+      message: `Select the character that will greet you in Seles.`,
+    },
+    {
+      option: 'Random Starting Character',
+      message: `A random character will be selected to start the game.
+               <br><br>
+               Overrides most other starting character settings.
+               <br><br>
+               Additional option to select from 3 rolled characters.
+               <br><br>
+               Additional configuration to allow duplicate character rolls or only provide unique characters to choose from.`,
+    },
+    {
+      option: 'Lock Party',
+      message: `Not implemented.`,
+    },
+    {
+      option: 'Party Size',
+      message: `Not implemented.`,
+    },
   ];
 
   public optionCategories: IrongoonCategories[] = [
@@ -1142,8 +1330,8 @@ export class IrongoonService {
                 { id: 2, name: 'Mob Stats', value: 100, inputType: IrongoonInputs.Number, disabled: true },
                 { id: 3, name: 'Mobs HP', value: 100, inputType: IrongoonInputs.Number, disabled: true },
                 { id: 4, name: 'Mini-Boss Stats', value: 100, inputType: IrongoonInputs.Number, disabled: true },
-                { id: 5, name: 'Mini-Bosses HP', value: 100, inputType: IrongoonInputs.Number, disabled: true },
-                { id: 6, name: 'Bosse Stats', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 5, name: 'Mini-Boss HP', value: 100, inputType: IrongoonInputs.Number, disabled: true },
+                { id: 6, name: 'Boss Stats', value: 100, inputType: IrongoonInputs.Number, disabled: true },
                 { id: 7, name: 'Bosses HP', value: 100, inputType: IrongoonInputs.Number, disabled: true },
                 { id: 8, name: 'Mob Magic Attacks', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 9, name: 'Number of Mob M. Attacks', value: 0, inputType: IrongoonInputs.Number, disabled: true },
@@ -1167,7 +1355,7 @@ export class IrongoonService {
                 { id: 1, name: 'Randomize Learn Order', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 2, name: 'Randomize Across Characters (basic)', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 3, name: 'Randomize Across Characters (advanced)', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
-                { id: 5, name: 'Tazmans Trial', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 5, name: 'Tasmans Trial', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 6, name: 'Addition Master', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 7, name: 'Minimum Number of Additions', value: 0, inputType: IrongoonInputs.Number, disabled: true },
               ],
