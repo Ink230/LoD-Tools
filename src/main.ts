@@ -11,6 +11,16 @@ const routes: Routes = [
     path: 'irongoon',
     redirectTo: '',
   },
+  {
+    path: 'data',
+    loadComponent: () => import('./app/components/game-data/game-data.component').then((m) => m.GameDataComponent),
+    children: [
+      {
+        path: 'character',
+        loadComponent: () => import('./app/components/game-data/character-data/character-data.component').then((m) => m.CharacterDataComponent),
+      },
+    ],
+  },
 ];
 
 bootstrapApplication(AppComponent, {
