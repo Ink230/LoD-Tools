@@ -22,9 +22,29 @@ export interface AdditionLevel {
   damage: number;
   sp: number;
   hitData?: AdditionHit[];
+  multiplier: AdditionMultiplier;
 }
 
-export interface AdditionHit {}
+export interface AdditionHit {
+  flag: number;
+  blueSquareFrames: number;
+  postHitPauseFrames: number;
+  actionInputFrames: number;
+  damage: number;
+  sp: number;
+  lastHit: number;
+  panningDistance: number;
+  cameraDistanceOne: number;
+  cameraDistanceTwo: number;
+  moveToMonsterFrames: number;
+  distance: number;
+  pauseFrames: number;
+}
+
+export interface AdditionMultiplier {
+  sp: number;
+  damage: number;
+}
 
 export interface Body {
   level: number;
@@ -47,10 +67,19 @@ export interface Dragoon {
 }
 
 export interface DragoonSpell {
-  id: number;
+  name: string;
+  description: string;
   element: string;
   damage: number;
+  healPercent: number;
+  mpCost: number;
+  accuracy: number;
   target: Target;
+  specialTarget: Target;
+  specialEffect: number;
+  statusChance: number;
+  statusType: number;
+  buffType: number;
 }
 
 export interface DragoonStat {
@@ -64,6 +93,9 @@ export enum Target {
   ALLY,
   ENEMY,
   ALL,
+  MINOR_ENEMIES,
+  ALL_ENEMIES,
+  ALL_ALLYS,
 }
 
 export enum Element {
