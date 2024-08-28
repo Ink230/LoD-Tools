@@ -14,14 +14,14 @@ export interface Addition {
   name: string;
   unlockLevel: number;
   unlockOrder: number;
+  damage: number;
+  sp: number;
   levels: AdditionLevel[];
+  hitData: AdditionHit[];
 }
 
 export interface AdditionLevel {
   level: number;
-  damage: number;
-  sp: number;
-  hitData?: AdditionHit[];
   multiplier: AdditionMultiplier;
 }
 
@@ -32,7 +32,7 @@ export interface AdditionHit {
   actionInputFrames: number;
   damage: number;
   sp: number;
-  lastHit: number;
+  lastHit: boolean;
   panningDistance: number;
   cameraDistanceOne: number;
   cameraDistanceTwo: number;
@@ -57,11 +57,11 @@ export interface Body {
   attackAvoid: number;
   magicHit: number;
   magicAvoid: number;
+  hp: number;
 }
 
 export interface Dragoon {
-  id: number;
-  element: string;
+  element: Element;
   spells: DragoonSpell[];
   dragoonStats: DragoonStat[];
 }
@@ -69,7 +69,7 @@ export interface Dragoon {
 export interface DragoonSpell {
   name: string;
   description: string;
-  element: string;
+  element: Element;
   damage: number;
   healPercent: number;
   mpCost: number;
