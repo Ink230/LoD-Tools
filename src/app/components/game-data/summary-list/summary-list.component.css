@@ -1,0 +1,75 @@
+.summary-list-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  column-gap: 1em;
+  row-gap: 1em;
+  width: 49%;
+  margin: 0 auto;
+  padding: 1em 0em 1em 0em;
+}
+
+.summary-card {
+  background-color: var(--secondary-accent-color);
+  font-size: 1.3em;
+  font-weight: 700;
+  line-height: 100%;
+  text-align: center;
+  width: 32%;
+  padding: 0.7em 0.3em 0.7em 0.3em;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 0.15em;
+  position: relative;
+  background: var(--disabled);
+}
+
+@keyframes shimmer {
+  100% {
+    background-position: -20%;
+  }
+  0% {
+    background-position: -100%;
+  }
+}
+
+.green-shimmer {
+  background: linear-gradient(-70deg, var(--secondary-accent-color) 10%, rgb(89, 143, 39) 23%, var(--secondary-accent-color) 36%);
+  background-size: 300%;
+  background-position: -100%;
+  animation: shimmer 10s infinite linear;
+}
+
+.purple-shimmer {
+  background: linear-gradient(-70deg, purple 10%, rgb(209, 5, 209) 23%, purple 36%);
+  background-size: 300%;
+  background-position: -100%;
+  animation: shimmer 10s infinite linear;
+}
+
+.orange-shimmer {
+  background: linear-gradient(-70deg, rgb(165, 127, 0) 10%, orange 23%, rgb(165, 127, 0) 36%);
+  background-size: 300%;
+  background-position: -100%;
+  animation: shimmer 10s infinite linear;
+}
+
+.blue-shimmer {
+  background: linear-gradient(-70deg, rgb(1, 1, 184) 10%, blue 23%, rgb(1, 1, 184) 36%);
+  background-size: 300%;
+  background-position: -100%;
+  animation: shimmer 10s infinite linear;
+}
+
+.summary-card:hover {
+  background: var(--tertiary-accent-color);
+  color: var(--primary-accent-color);
+}
+
+.disabled,
+.disabled:hover {
+  background: var(--disabled);
+  cursor: not-allowed;
+  color: lightgrey;
+}

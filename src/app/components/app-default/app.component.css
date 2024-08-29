@@ -21,10 +21,23 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  column-gap: 10em;
 }
 
 .logo {
   max-width: 15rem;
+}
+
+.nav-links-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  column-gap: 5em;
+  align-self: center;
+}
+
+.nav-link {
+  font-size: 2em;
 }
 
 .right-section {

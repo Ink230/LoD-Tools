@@ -5,16 +5,26 @@ import { AppComponent } from './app/components/app-default/app.component';
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./app/components/irongoon/irongoon.component').then((m) => m.IrongoonComponent),
+    redirectTo: 'mods/irongoon',
+    pathMatch: 'full',
   },
   {
-    path: 'irongoon',
-    redirectTo: '',
+    path: 'mods',
+    children: [
+      {
+        path: 'irongoon',
+        loadComponent: () => import('./app/components/irongoon/irongoon.component').then((m) => m.IrongoonComponent),
+      },
+    ],
   },
   {
     path: 'data',
     loadComponent: () => import('./app/components/game-data/game-data.component').then((m) => m.GameDataComponent),
     children: [
+      {
+        path: 'summary',
+        loadComponent: () => import('./app/components/game-data/summary-list/summary-list.component').then((m) => m.SummaryListComponent),
+      },
       {
         path: 'character',
         loadComponent: () => import('./app/components/game-data/character-data/character-data.component').then((m) => m.CharacterDataComponent),
