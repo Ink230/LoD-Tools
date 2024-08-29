@@ -15,6 +15,7 @@
   font-size: 1.3em;
   font-weight: 700;
   line-height: 100%;
+  letter-spacing: 0.04em;
   text-align: center;
   width: 32%;
   padding: 0.7em 0.3em 0.7em 0.3em;
@@ -72,4 +73,10 @@
   background: var(--disabled);
   cursor: not-allowed;
   color: lightgrey;
+}
+
+.fill-link {
+  color: inherit;
+  user-select: none;
+  -webkit-user-drag: none;
 }

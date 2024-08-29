@@ -146,6 +146,7 @@ body {
 a {
   color: var(--compliance-font-color);
   font-weight: 700;
+  cursor: pointer;
 }
 
 b {
