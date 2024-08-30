@@ -1,0 +1,24 @@
+<div class="dropdown-parent">
+  <div class="option-text" (mouseenter)="isActiveTooltip.set(true)">{{ option().name }}</div>
+  @if (isActiveTooltip()) {
+    <app-irongoon-form-tooltip [tooltip]="option().tooltip" [title]="" (mouseleave)="isActiveTooltip.set(false)"></app-irongoon-form-tooltip>
+  }
+  <div class="dropdown-container">
+    <div class="selection" id="{{ selectionIdentifier() }}" (click)="toggleDropdown()" [ngClass]="{ 'selection-clicked': displayDropdown(), disabled: option().disabled }">
+      <div class="selected-option" id="{{ selectionIdentifier() }}">
+        {{ option().data.name }}
+      </div>
+    </div>
+    @if (displayDropdown()) {
+      <div class="menu-container" id="{{ dropdownIdentifier() }}" [ngClass]="{ disabled: option().disabled }">
+        <div class="menu" id="menu" [ngClass]="{ disabled: option().disabled }">
+          @for (item of option().dataList; track item.value) {
+            <div class="menu-option" (click)="updateSelectedOption(item); closeDropdown()" [ngClass]="{ 'highlight-option': option().data.value === item.value, disabled: option().disabled }">
+              {{ item.name }}
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,121 @@
+.dropdown-parent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.dropdown-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 19rem;
+  text-indent: 1.1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.selection {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  position: relative;
+  width: 100%;
+  padding: 0.4rem 0rem;
+  background: var(--secondary-accent-color);
+  border-radius: 0.4rem;
+  z-index: 1;
+}
+
+.selected-option {
+  width: 100%;
+}
+
+.selection::after {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  top: 40%;
+  --size: 0.4rem;
+  border-left: var(--size) solid transparent;
+  border-right: var(--size) solid transparent;
+  border-top: var(--size) solid white;
+}
+
+.selection-clicked {
+  border-radius: 0.4rem 0.4rem 0rem 0rem;
+}
+
+.menu-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: default;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  position: absolute;
+  width: 100%;
+  padding: 0.5rem 0rem;
+  background: rgb(39 69 22);
+  border-radius: 0rem 0rem 0.4rem 0.4rem;
+  z-index: 99;
+}
+
+.menu-option {
+  text-indent: 0;
+  width: 90%;
+  padding: 0.3rem;
+  margin: 0.1rem 0rem;
+  border-radius: 0.2rem;
+  cursor: pointer;
+}
+
+.menu-option:hover {
+  color: var(--tertiary-font-color);
+  font-weight: 500;
+  background: var(--tertiary-accent-color);
+}
+
+.highlight-option {
+  color: var(--tertiary-font-color);
+  font-weight: 700;
+  background: var(--primary-font-color);
+}
+
+.highlight-option:hover {
+  font-weight: 700;
+}
+
+.disabled {
+  background: rgb(87, 87, 87);
+  cursor: default;
+}
+
+.disabled:hover {
+  background: rgb(87, 87, 87);
+  color: unset;
+  font-weight: unset;
+  cursor: default;
+}
+
+.disabled > .highlight-option {
+  color: unset;
+  font-weight: unset;
+}
+
+.disabled > .highlight-option:hover {
+  color: unset;
+  font-weight: unset;
+}
+
+.option-text {
+  margin-bottom: 0.25rem;
+}

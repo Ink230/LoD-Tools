@@ -4,7 +4,7 @@
       @for (setting of column.settings; track setting.id) {
         <div class="option-category">
           <div class="option-category-title">{{ setting.name }}</div>
-          @for (option of setting.options; track option.id) {
+          @for (option of setting.options; track option.name) {
             <div class="option">
               <app-irongoon-forms [option]="option"></app-irongoon-forms>
             </div>

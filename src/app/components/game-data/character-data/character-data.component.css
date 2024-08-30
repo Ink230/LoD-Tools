@@ -1,0 +1,29 @@
+.character-data-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 70%;
+  margin: 0 auto;
+  border: solid 0px red;
+}
+
+.character-headline {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  border: solid 0px red;
+  min-height: 15em;
+}
+
+.character-head {
+  width: 30%;
+}
+
+.character-summary {
+}
+
+.card-bg {
+  background-color: var(--secondary-color);
+  border-radius: 0.4em;
+}

@@ -115,3 +115,8 @@ export enum Species {
   GIGANTO,
   WINGLY,
 }
+
+export interface GameDataOption {
+  id: number;
+  name: string;
+}

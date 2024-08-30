@@ -1,6 +1,7 @@
 import { Injectable, Optional, SkipSelf } from '@angular/core';
 import { GameDataComponent } from '../components/game-data/game-data.component';
 import { Character, Element, Species } from '../models/game-data.model';
+import { IrongoonOption } from '../models/irongoon.model';
 
 @Injectable({
   providedIn: 'root',
@@ -276,9 +277,39 @@ export class GameDataService {
     },
   ];
 
+  public characterOptions: IrongoonOption;
+
   constructor(@Optional() @SkipSelf() parentModule?: GameDataComponent) {
     if (parentModule) {
       throw new Error('GameDataService is already loaded. Import it in the GameDataComponent only');
     }
+
+    this.initCharacterOptions();
+  }
+
+  public getCharacterById(id: number = 0): Character {
+    return this.characterData.find((character) => character.id === id);
+  }
+
+  public getCharacterByName(firstName = 'dart'): Character {
+    return this.characterData.find((character) => character.firstName.toLowerCase() === firstName.toLowerCase());
+  }
+
+  public initCharacterOptions(): void {
+    const dataList = this.characterData.map((character) => ({
+      value: character.id.toString(),
+      name: `${character.firstName} ${character.lastName ?? ''}`,
+    }));
+
+    this.characterOptions = {
+      id: 0,
+      name: 'Select Character',
+      value: 99,
+      inputType: null,
+      data: dataList[0],
+      dataList: dataList,
+      descriptor: 'Select Character',
+      tooltip: null,
+    };
   }
 }

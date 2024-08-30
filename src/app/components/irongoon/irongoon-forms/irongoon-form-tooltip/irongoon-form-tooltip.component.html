@@ -1,6 +1,9 @@
-<div class="tooltip-container">
-  <div class="tooltip">
-    <div class="tooltip-title">{{ title() }}</div>
-    <div class="tooltip-message" [innerHTML]="tooltip()"></div>
+@if (tooltip() || title()) {
+  <div class="tooltip-container">
+    <div class="tooltip">
+      <div class="tooltip-title">{{ title() }}</div>
+
+      <div class="tooltip-message" [innerHTML]="tooltip()"></div>
+    </div>
   </div>
-</div>
+}

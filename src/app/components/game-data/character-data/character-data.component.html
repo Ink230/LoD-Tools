@@ -1,1 +1,10 @@
-<p>character-data works!</p>
+<div class="character-data-container">
+  <div class="character-select-container">
+    <app-game-data-dropdown [option]="characterOptions()" (selection)="onCharacterSelected($event)"></app-game-data-dropdown>
+  </div>
+  <div class="character-headline">
+    <div class="character-head card-bg">{{ character.firstName }}</div>
+    <div class="character-head card-bg">{{ character.firstName }}</div>
+    <div class="character-head card-bg">{{ character.firstName }}</div>
+  </div>
+</div>
