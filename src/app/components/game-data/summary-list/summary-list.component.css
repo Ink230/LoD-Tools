@@ -5,7 +5,7 @@
   flex-wrap: wrap;
   column-gap: 1em;
   row-gap: 1em;
-  width: 49%;
+  width: 70%;
   margin: 0 auto;
   padding: 1em 0em 1em 0em;
 }
@@ -17,7 +17,7 @@
   line-height: 100%;
   letter-spacing: 0.04em;
   text-align: center;
-  width: 32%;
+  width: 18%;
   padding: 0.7em 0.3em 0.7em 0.3em;
   cursor: pointer;
   user-select: none;
@@ -28,18 +28,18 @@
 
 @keyframes shimmer {
   100% {
-    background-position: -20%;
+    background-position: -1%;
   }
   0% {
-    background-position: -100%;
+    background-position: -75%;
   }
 }
 
 .green-shimmer {
   background: linear-gradient(-70deg, var(--secondary-accent-color) 10%, rgb(89, 143, 39) 23%, var(--secondary-accent-color) 36%);
-  background-size: 300%;
-  background-position: -100%;
-  animation: shimmer 10s infinite linear;
+  background-size: 500%;
+  background-position: -75%;
+  animation: shimmer 8s infinite linear;
 }
 
 .purple-shimmer {
@@ -66,6 +66,10 @@
 .summary-card:hover {
   background: var(--tertiary-accent-color);
   color: var(--primary-accent-color);
+  background: linear-gradient(-70deg, rgb(248, 105, 248) 10%, rgb(209, 5, 209) 23%, rgb(248, 105, 248) 36%);
+  background-size: 500%;
+  background-position: -75%;
+  animation: shimmer 8s infinite linear;
 }
 
 .disabled,
@@ -79,4 +83,10 @@
   color: inherit;
   user-select: none;
   -webkit-user-drag: none;
+}
+
+.flex {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }

@@ -3,7 +3,9 @@
     <app-game-data-dropdown [option]="characterOptions()" (selection)="onCharacterSelected($event)"></app-game-data-dropdown>
   </div> -->
   <div class="character-headline">
-    <div class="character-head card-bg">{{ character.firstName }}</div>
+    <div class="character-head card-bg">
+      <img src="{{ 'assets/character/' + character.firstName.toLowerCase() + '.png' }}" />
+    </div>
     <div class="character-head card-bg">{{ character.firstName }}</div>
     <div class="character-head card-bg">{{ character.firstName }}</div>
   </div>
