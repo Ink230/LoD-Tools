@@ -2,7 +2,7 @@
   @for (character of characters; track character.id) {
     <a fastRouterLink="{{ '/data/character/' + character.firstName }}" class="summary-card green-shimmer fill-link flex">
       <div><img src="{{ 'assets/character/' + character.firstName.toLowerCase() + '.png' }}" /></div>
-      <div>{{ character.firstName }}</div>
+      <div class="flex-end">{{ character.firstName }}</div>
     </a>
   }
 </div>

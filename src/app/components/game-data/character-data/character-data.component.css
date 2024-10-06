@@ -18,6 +18,7 @@
 
 .character-head {
   width: 30%;
+  padding: 0.4em;
 }
 
 .character-summary {
@@ -26,4 +27,17 @@
 .card-bg {
   background-color: var(--secondary-color);
   border-radius: 0.4em;
+}
+
+.character-portrait-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 28em;
+  max-height: 28em;
+}
+
+.character-portrait-img {
+  object-fit: cover;
 }

@@ -1,12 +1,24 @@
 <div class="character-data-container">
-  <!-- <div class="character-select-container">
-    <app-game-data-dropdown [option]="characterOptions()" (selection)="onCharacterSelected($event)"></app-game-data-dropdown>
-  </div> -->
   <div class="character-headline">
-    <div class="character-head card-bg">
-      <img src="{{ 'assets/character/' + character.firstName.toLowerCase() + '.png' }}" />
+    <div class="character-head card-bg character-portrait-container">
+      <img src="{{ 'assets/character/' + character.firstName.toLowerCase() + '.png' }}" class="character-portrait-img" />
     </div>
-    <div class="character-head card-bg">{{ character.firstName }}</div>
-    <div class="character-head card-bg">{{ character.firstName }}</div>
+    <div class="character-head card-bg">
+      <div>
+        <b>{{ character.firstName }}</b>
+      </div>
+      <div>{{ character.species | species }}</div>
+      <div>Element: {{ character.element }}</div>
+      <div>Hometown: Hometown</div>
+      <div>Acquired: {{ character.firstName }}</div>
+      <div># of Additions: {{ character.firstName }}</div>
+    </div>
+    <div class="character-head card-bg">
+      <div>
+        <p>background</p>
+        <p>battle general</p>
+        <p>common strategies</p>
+      </div>
+    </div>
   </div>
 </div>
