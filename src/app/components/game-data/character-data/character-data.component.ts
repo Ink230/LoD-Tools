@@ -1,7 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { Character } from 'src/app/models/game-data.model';
-import { IrongoonOption } from 'src/app/models/irongoon.model';
 import { GameDataService } from 'src/app/services/game-data.service';
 import { GameDataDropdownComponent } from '../game-data-forms/game-data-dropdown/game-data-dropdown.component';
 
@@ -14,20 +14,35 @@ import { GameDataDropdownComponent } from '../game-data-forms/game-data-dropdown
 })
 export class CharacterDataComponent {
   gameDataService = inject(GameDataService);
+  router = inject(Router);
+  route = inject(ActivatedRoute);
 
   characterSelected = new BehaviorSubject<number>(0);
   character: Character;
-  characterOptions = signal<IrongoonOption>(null);
+  // characterOptions = signal<IrongoonOption>(null);
 
   constructor() {
     this.characterSelected.subscribe((value: number) => {
       this.character = this.gameDataService.getCharacterById(value);
+
+      if (value) {
+        this.router.navigate(['/data/character', this.character.firstName.toLowerCase()]);
+      }
     });
 
-    this.characterOptions.set(this.gameDataService.characterOptions);
+    // this.characterOptions.set(this.gameDataService.characterOptions);
   }
 
-  onCharacterSelected(event: string): void {
-    this.characterSelected.next(parseInt(event));
+  ngOnInit(): void {
+    this.route.paramMap.subscribe((params) => {
+      const characterName = params.get('selectedCharacter');
+      if (characterName) {
+        this.characterSelected.next(this.gameDataService.getCharacterByName(characterName).id);
+      }
+    });
   }
+
+  // onCharacterSelected(event: string): void {
+  //   this.characterSelected.next(parseInt(event));
+  // }
 }

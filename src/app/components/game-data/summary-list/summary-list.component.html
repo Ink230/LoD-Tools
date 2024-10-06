@@ -1,7 +1,11 @@
 <div class="summary-list-container">
-  <a fastRouterLink="/data/character" class="summary-card green-shimmer fill-link">
-    <div>Characters</div>
-  </a>
+  @for (character of characters; track character.id) {
+    <a fastRouterLink="{{ '/data/character/' + character.firstName }}" class="summary-card green-shimmer fill-link">
+      <div>{{ character.firstName }}</div>
+    </a>
+  }
+</div>
+<div class="summary-list-container">
   <div class="summary-card green-shimmer">Dragoons</div>
   <div class="summary-card green-shimmer">Additions</div>
   <div class="summary-card green-shimmer">Spells</div>
@@ -9,4 +13,5 @@
   <div class="summary-card disabled">Submaps</div>
   <div class="summary-card disabled">Stages</div>
   <div class="summary-card disabled">Encounters</div>
+  <div class="summary-card disabled">Enemies</div>
 </div>

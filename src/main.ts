@@ -27,6 +27,10 @@ const routes: Routes = [
       },
       {
         path: 'character',
+        redirectTo: 'character/dart',
+      },
+      {
+        path: 'character/:selectedCharacter',
         loadComponent: () => import('./app/components/game-data/character-data/character-data.component').then((m) => m.CharacterDataComponent),
       },
     ],
