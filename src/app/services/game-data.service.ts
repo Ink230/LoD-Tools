@@ -14,6 +14,8 @@ export class GameDataService {
       lastName: 'Feld',
       element: Element.FIRE,
       species: Species.HUMAN,
+      hometown: 'Neet, Seles',
+      acquired: 1,
       additions: [
         {
           id: 0,
@@ -194,6 +196,14 @@ export class GameDataService {
           ],
         },
       ],
+      flavour: {
+        background: 'Orphaned in Neet by the Black Monster. Son of Zieg and Claire. Grandson to Haschel.',
+        dragoonSpirit: ['Red-Eyed Dragoon Spirit', 'Divine Dragoon Spirit'],
+        commonStrategies: {
+          pros: [{ desc: 'Jack of all Trades' }, { desc: 'Fire Special for Lenus Battles' }],
+          cons: [{ desc: 'No standout qualities' }, { desc: 'Locked party slot' }],
+        },
+      },
     },
     {
       id: 1,
@@ -201,9 +211,29 @@ export class GameDataService {
       lastName: 'Slambert',
       element: Element.WIND,
       species: Species.HUMAN,
+      hometown: 'Bale',
+      acquired: 3,
       additions: null,
       bodyStats: null,
       dragoons: null,
+      flavour: {
+        background: 'Commander of the First Knighthood of Basil. Childhood friend of King Albert. Son of Servi. Survived by Mother.',
+        dragoonSpirit: ['Jade Dragoon Spirit'],
+        commonStrategies: {
+          pros: [
+            {
+              desc: 'Blossom Storm w/ Low Speed',
+            },
+            {
+              desc: 'High Physical Damage',
+            },
+            {
+              desc: 'High HP',
+            },
+          ],
+          cons: [{ desc: 'Low Magical Defense' }, { desc: 'Low Speed' }, { desc: 'Speed gear reduces utility' }],
+        },
+      },
     },
     {
       id: 2,
@@ -211,9 +241,19 @@ export class GameDataService {
       lastName: null,
       element: Element.LIGHT,
       species: Species.HUMAN,
+      hometown: 'Mille Seseau, Seles',
+      acquired: 4,
       additions: null,
       bodyStats: null,
       dragoons: null,
+      flavour: {
+        background: 'The Moon Child, saviour of Endiness. Daugher of Queen Theresa, twin sister to Princess Louvia. ',
+        dragoonSpirit: ['White-Silver Dragoon Spirit'],
+        commonStrategies: {
+          pros: [{ desc: 'Highest M. Attack, and High Speed' }, { desc: 'Healing & Status Utility Unmatched' }, { desc: 'Strong enough to solo the entire campaign' }],
+          cons: [{ desc: 'Low HP and Physical Defense' }],
+        },
+      },
     },
     {
       id: 3,
@@ -221,9 +261,19 @@ export class GameDataService {
       lastName: null,
       element: Element.DARK,
       species: Species.HUMAN,
+      hometown: 'Gloriano',
+      acquired: 7,
       additions: null,
       bodyStats: null,
       dragoons: null,
+      flavour: {
+        background: "The Black Monster. Zieg's love. Participated in the Dragon Campaign. Alive for ~11,000 years. Wingly Conspirator.",
+        dragoonSpirit: ['Dark Dragoon Spirit'],
+        commonStrategies: {
+          pros: [{ desc: 'Strongest Disc 1 & 2 Stat Scaling' }, { desc: 'Early Game Healing Utility' }, { desc: 'Has Fear weapon option' }],
+          cons: [{ desc: 'Underwhelming Disc 3 & 4 Stats' }, { desc: 'No standout qualities Late-Game' }, { desc: 'Weak Dragoon Spells' }],
+        },
+      },
     },
     {
       id: 4,
@@ -231,9 +281,19 @@ export class GameDataService {
       lastName: null,
       element: Element.THUNDER,
       species: Species.HUMAN,
+      hometown: 'Rouge',
+      acquired: 14,
       additions: null,
       bodyStats: null,
       dragoons: null,
+      flavour: {
+        background: 'Master of the Rouge School of Martial Arts. Father of Claire, Grandfather of Dart. Lost a Daughter.',
+        dragoonSpirit: [''],
+        commonStrategies: {
+          pros: [{ desc: 'Faster Physical Dart' }, { desc: 'Good equipment options' }],
+          cons: [{ desc: 'Dragoon Magic Lacks Utility' }, { desc: 'Dart-Locked parties may bench Haschel from Role Overlap' }],
+        },
+      },
     },
     {
       id: 5,
@@ -241,9 +301,29 @@ export class GameDataService {
       lastName: null,
       element: Element.WIND,
       species: Species.HUMAN,
+      hometown: 'Bale',
+      acquired: null,
       additions: null,
       bodyStats: null,
       dragoons: null,
+      flavour: {
+        background: 'King of Bale, inheritor of Serdio Royalship. Childhood friend of Lavitz. Nephew to Emporer Doel. Son of King Carlo.',
+        dragoonSpirit: ['Jade Dragoon Spirit'],
+        commonStrategies: {
+          pros: [
+            {
+              desc: 'Rose Storm w/ Low Speed',
+            },
+            {
+              desc: 'High Physical Damage',
+            },
+            {
+              desc: 'High HP',
+            },
+          ],
+          cons: [{ desc: 'Low Magical Defense' }, { desc: 'Low Speed' }, { desc: 'Speed gear reduces utility' }],
+        },
+      },
     },
     {
       id: 6,
@@ -251,9 +331,19 @@ export class GameDataService {
       lastName: null,
       element: Element.WATER,
       species: Species.WINGLY,
+      hometown: 'Forest of Winglies',
+      acquired: 17,
       additions: null,
       bodyStats: null,
       dragoons: null,
+      flavour: {
+        background: 'Wingly deserter. Champion of Wingly-Human cooperation. Dancer.',
+        dragoonSpirit: ['Blue-Sea Dragoon Spirit'],
+        commonStrategies: {
+          pros: [{ desc: 'High M. Attack and Highest Speed' }, { desc: 'Dragoon Magic High Utility' }, { desc: 'High Addition Damage Scaling' }],
+          cons: [{ desc: 'Low HP and Physical Defense' }, { desc: 'Takes a bit to ramp up' }, { desc: 'If used immediately, will be down 2 Dragoons in Disc 2' }],
+        },
+      },
     },
     {
       id: 7,
@@ -261,9 +351,19 @@ export class GameDataService {
       lastName: null,
       element: Element.EARTH,
       species: Species.GIGANTO,
+      hometown: 'Home of Gigantos',
+      acquired: 19,
       additions: null,
       bodyStats: null,
       dragoons: null,
+      flavour: {
+        background: 'Loyal Giganto. Brother to Indora. Often lacks a dimension and not to scale.',
+        dragoonSpirit: ['Golden Dragoon Spirit'],
+        commonStrategies: {
+          pros: [{ desc: 'Very high Physical Damage and HP' }],
+          cons: [{ desc: 'A sneeze from Lloyd would one shot Kongol' }, { desc: 'D-Additions over D-Magic' }],
+        },
+      },
     },
     {
       id: 8,
@@ -271,9 +371,19 @@ export class GameDataService {
       lastName: null,
       element: Element.LIGHT,
       species: Species.HUMAN,
+      hometown: 'Deningrad',
+      acquired: null,
       additions: null,
       bodyStats: null,
       dragoons: null,
+      flavour: {
+        background: 'Sacred Sister Prime. Best Character in the Game.',
+        dragoonSpirit: ['White-Silver Dragoon Spirit'],
+        commonStrategies: {
+          pros: [{ desc: 'Highest M. Attack, and High Speed' }, { desc: 'Healing & Status Utility Unmatched' }, { desc: 'Strong enough to solo the entire campaign' }],
+          cons: [{ desc: 'Low HP and Physical Defense' }],
+        },
+      },
     },
   ];
 

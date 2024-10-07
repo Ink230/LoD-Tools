@@ -8,18 +8,39 @@
         <b>{{ character.firstName }}</b>
       </div>
       <div>{{ character.species | species }}</div>
+      <div>{{ character.hometown }}</div>
+      <br />
+      <div>{{ character.acquired !== null ? 'Acquired at Level ' + character.acquired : 'Force Acquired' }}</div>
       <br />
       <div>{{ character.element | element }}</div>
+      @for (dSpirit of character.flavour.dragoonSpirit; track character.id) {
+        <div>
+          {{ dSpirit }}
+        </div>
+      }
+      <div>{{ character.additions?.length ? character.additions.length : 0 }} Additions</div>
       <br />
-      <div>Hometown</div>
-      <div>Acquired at Level {{ character.firstName }}</div>
-      <div>Has {{ character.firstName }} Additions</div>
     </div>
-    <div class="character-head card-bg">
+    <div class="character-head card-bg flex">
       <div>
-        <p>background</p>
-        <p>battle general</p>
-        <p>common strategies</p>
+        <p><b>Bio</b></p>
+        <p>{{ character.flavour.background }}</p>
+      </div>
+      <div>
+        <ul>
+          <b>Pros</b>
+          @for (pros of character.flavour.commonStrategies.pros; track character.id) {
+            <li>• {{ pros.desc }}</li>
+          }
+        </ul>
+      </div>
+      <div>
+        <ul>
+          <b>Cons</b>
+          @for (cons of character.flavour.commonStrategies.cons; track character.id) {
+            <li>• {{ cons.desc }}</li>
+          }
+        </ul>
       </div>
     </div>
   </div>

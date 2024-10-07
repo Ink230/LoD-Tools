@@ -4,9 +4,12 @@ export interface Character {
   lastName: string;
   element: Element;
   species: Species;
+  hometown: string;
+  acquired: number;
   additions: Addition[];
   bodyStats: Body[];
   dragoons: Dragoon[];
+  flavour: FlavourText;
 }
 
 export interface Addition {
@@ -87,6 +90,21 @@ export interface DragoonStat {
   defense: number;
   magicAttack: number;
   magicDefense: number;
+}
+
+export interface FlavourText {
+  background: string;
+  dragoonSpirit: string[];
+  commonStrategies: StrategyList;
+}
+
+export interface StrategyList {
+  pros: StrategyPoint[];
+  cons: StrategyPoint[];
+}
+
+export interface StrategyPoint {
+  desc: string;
 }
 
 export enum Target {

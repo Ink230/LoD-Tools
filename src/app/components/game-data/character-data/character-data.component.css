@@ -18,7 +18,7 @@
 
 .character-head {
   width: 30%;
-  padding: 0.4em;
+  padding: 0.8em;
 }
 
 .character-summary {
@@ -40,4 +40,14 @@
 
 .character-portrait-img {
   object-fit: cover;
+}
+
+.flex {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  row-gap: 2em;
+}
+
+.character-bio {
 }
