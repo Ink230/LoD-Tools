@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, skip } from 'rxjs';
 import { Character } from 'src/app/models/game-data.model';
 import { SpeciesPipe } from 'src/app/pipes/species.pipe';
 import { GameDataService } from 'src/app/services/game-data.service';
@@ -22,12 +22,8 @@ export class CharacterDataComponent {
   character: Character;
 
   constructor() {
-    this.characterSelected.subscribe((value: number) => {
+    this.characterSelected.pipe(skip(1)).subscribe((value: number) => {
       this.character = this.gameDataService.getCharacterById(value);
-
-      if (value) {
-        this.router.navigate(['/data/character', this.character.firstName.toLowerCase()]);
-      }
     });
   }
 
