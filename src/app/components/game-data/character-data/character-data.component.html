@@ -9,11 +9,11 @@
       </div>
       <div>{{ character.species | species }}</div>
       <br />
-      <div>Element: {{ character.element }}</div>
+      <div>{{ character.element | element }}</div>
       <br />
-      <div>Hometown: Hometown</div>
-      <div>Acquired: {{ character.firstName }}</div>
-      <div>Additions: {{ character.firstName }}</div>
+      <div>Hometown</div>
+      <div>Acquired at Level {{ character.firstName }}</div>
+      <div>Has {{ character.firstName }} Additions</div>
     </div>
     <div class="character-head card-bg">
       <div>
