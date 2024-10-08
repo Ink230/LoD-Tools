@@ -19,6 +19,7 @@
     "@angular/platform-browser": "^18.2.1",
     "@angular/platform-browser-dynamic": "^18.2.1",
     "@angular/router": "^18.2.1",
+    "ag-grid-angular": "^32.2.2",
     "ngx-clipboard": "^16.0.0",
     "rxjs": "~7.8.1",
     "tslib": "^2.7.0",

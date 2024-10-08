@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  row-gap: 2em;
   width: 70%;
   margin: 0 auto;
   border: solid 0px red;
@@ -50,4 +51,24 @@
 }
 
 .character-bio {
+}
+
+.checkbox-label {
+  cursor: pointer;
+  user-select: none;
+  font-size: 85%;
+}
+
+.checkbox-flex {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.checkbox-inner-label {
+  margin-top: 1px;
+}
+
+.body-stats {
 }

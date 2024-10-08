@@ -9,7 +9,7 @@ img {
 }
 
 /* == Reset == */
-*:where(:not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)) {
+*:where(:not(html, iframe, canvas, img, svg, video, audio, input[type='checkbox']):not(svg *, symbol *)) {
   all: unset;
   display: revert;
 }
@@ -114,6 +114,13 @@ meter {
   display: none;
 }
 
+/* == AG Grid == */
+
+@import 'ag-grid-community/styles/ag-grid.css';
+
+@import 'ag-grid-community/styles/ag-theme-quartz.css';
+@import 'ag-grid-community/styles/ag-theme-balham.css';
+
 /* == LoD Tools == */
 :root {
   --primary-color: rgb(16, 16, 16);
@@ -205,6 +212,44 @@ input[type='text']:focus {
 input[type='text']::selection {
   all: unset;
   background: var(--primary-accent-color);
+}
+
+input[type='checkbox'] {
+  -webkit-appearance: none; /* For Chrome/Safari */
+  -moz-appearance: none; /* For Firefox */
+  appearance: none; /* For other browsers */
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  border: solid 1px black;
+  cursor: pointer;
+  background-color: var(--tertiary-font-color);
+}
+
+input[type='checkbox']:checked {
+  -webkit-appearance: none; /* For Chrome/Safari */
+  -moz-appearance: none; /* For Firefox */
+  appearance: none; /* For other browsers */
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: solid 1px black;
+  background-color: var(--tertiary-font-color);
+}
+
+input[type='checkbox']:checked::before {
+  content: '';
+  display: block;
+  width: 12px;
+  height: 12px;
+  background-color: var(--secondary-accent-color);
+  border: solid 1px black;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  border-radius: 2px;
 }
 
 @media screen and (min-width: 1px) {
