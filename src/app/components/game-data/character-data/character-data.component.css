@@ -50,6 +50,14 @@
   row-gap: 2em;
 }
 
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  column-gap: 2em;
+}
+
 .character-bio {
 }
 

@@ -2,18 +2,19 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ColDef } from 'ag-grid-community';
-import { BehaviorSubject, skip } from 'rxjs';
+import { BehaviorSubject, combineLatest, skip } from 'rxjs';
 import { Character } from 'src/app/models/game-data.model';
 import { ElementPipe } from 'src/app/pipes/element.pipe';
 import { SpeciesPipe } from 'src/app/pipes/species.pipe';
 import { GameDataService } from 'src/app/services/game-data.service';
+import { GraphDisplayComponent } from '../../graph-display/graph-display.component';
 import { GridDisplayComponent } from '../../grid-display/grid-display.component';
 import { GameDataDropdownComponent } from '../game-data-forms/game-data-dropdown/game-data-dropdown.component';
 
 @Component({
   selector: 'app-character-data',
   standalone: true,
-  imports: [CommonModule, GameDataDropdownComponent, SpeciesPipe, ElementPipe, GridDisplayComponent],
+  imports: [CommonModule, GameDataDropdownComponent, SpeciesPipe, ElementPipe, GridDisplayComponent, GraphDisplayComponent],
   templateUrl: './character-data.component.html',
   styleUrl: './character-data.component.css',
 })
@@ -26,6 +27,7 @@ export class CharacterDataComponent {
   character: Character;
   characterColumnDefinitions: ColDef[] = [{ field: 'level' }, { field: 'speed' }, { field: 'attack' }, { field: 'defense' }, { field: 'magicAttack' }, { field: 'magicDefense' }, { field: 'hp' }];
   includeTensOnly = new BehaviorSubject<boolean>(false);
+  includeFivesOnly = new BehaviorSubject<boolean>(false);
   filteredCharacterBodyStats = new BehaviorSubject<any[]>([]);
 
   constructor() {
@@ -34,15 +36,16 @@ export class CharacterDataComponent {
       this.filteredCharacterBodyStats.next(this.character.bodyStats);
     });
 
-    this.includeTensOnly.subscribe(() => {
+    combineLatest([this.includeTensOnly, this.includeFivesOnly]).subscribe(([isTensOnly, isFivesOnly]) => {
       if (!this.character) return;
 
       const allStats = this.character.bodyStats;
-      const isTensOnly = this.includeTensOnly.getValue();
 
-      const filteredData = isTensOnly
-        ? allStats.filter((stat) => stat.level % 10 === 0) // Filter for levels divisible by 10
-        : allStats; // No filtering
+      const filteredData = allStats.filter((stat) => {
+        const isLevelTens = isTensOnly ? stat.level % 10 === 0 : true;
+        const isLevelFives = isFivesOnly ? stat.level % 5 === 0 : true;
+        return isLevelTens && isLevelFives;
+      });
 
       this.filteredCharacterBodyStats.next(filteredData);
     });
@@ -58,6 +61,15 @@ export class CharacterDataComponent {
   }
 
   onFilterCharacterLevelChange(event: any): void {
-    this.includeTensOnly.next(event.target.checked);
+    const isChecked = event.target.checked;
+    const labelText = event.target.nextElementSibling.textContent;
+
+    if (labelText.includes('10s')) {
+      this.includeTensOnly.next(isChecked);
+      this.includeFivesOnly.next(false);
+    } else if (labelText.includes('5s')) {
+      this.includeTensOnly.next(false);
+      this.includeFivesOnly.next(isChecked);
+    }
   }
 }

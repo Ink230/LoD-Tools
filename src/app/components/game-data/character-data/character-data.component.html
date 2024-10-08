@@ -45,14 +45,25 @@
     </div>
   </div>
   <div class="body-stats">
-    <div>
-      <label class="checkbox-label flex checkbox-flex" (change)="onFilterCharacterLevelChange($event)">
-        <input type="checkbox" (change)="onFilterCharacterLevelChange($event)" />
-        <div class="checkbox-inner-label">Include 10s only</div>
-      </label>
+    <div class="flex-row">
+      <div>
+        <label class="checkbox-label flex checkbox-flex" (change)="onFilterCharacterLevelChange($event)">
+          <input type="checkbox" [checked]="includeTensOnly.getValue()" (change)="onFilterCharacterLevelChange($event)" />
+          <div class="checkbox-inner-label">By 10s</div>
+        </label>
+      </div>
+      <div>
+        <label class="checkbox-label flex checkbox-flex" (change)="onFilterCharacterLevelChange($event)">
+          <input type="checkbox" [checked]="includeFivesOnly.getValue()" (change)="onFilterCharacterLevelChange($event)" />
+          <div class="checkbox-inner-label">By 5s</div>
+        </label>
+      </div>
     </div>
     <div>
       <app-grid-display [rowData]="filteredCharacterBodyStats | async" [colDefs]="characterColumnDefinitions"></app-grid-display>
+    </div>
+    <div>
+      <app-graph-display></app-graph-display>
     </div>
   </div>
 </div>
