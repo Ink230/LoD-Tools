@@ -45,6 +45,7 @@
     </div>
   </div>
   <div class="body-stats">
+    <div class="flex-row">Body Stats</div>
     <div class="flex-row">
       <div>
         <label class="checkbox-label flex checkbox-flex" (change)="onFilterCharacterLevelChange($event)">
@@ -62,8 +63,45 @@
     <div>
       <app-grid-display [rowData]="filteredCharacterBodyStats | async" [colDefs]="characterColumnDefinitions"></app-grid-display>
     </div>
+  </div>
+  <div class="body-stats">
+    <div class="flex-row">
+      <div>Body Stats Growth</div>
+    </div>
+    <div class="flex-row">
+      <div>
+        <label class="checkbox-label flex checkbox-flex" (change)="onFilterCharacterLevelChange($event)">
+          <input type="checkbox" [checked]="includeAttack.getValue()" (change)="onFilterCharacterLevelChange($event)" />
+          <div class="checkbox-inner-label">Attack</div>
+        </label>
+      </div>
+      <div>
+        <label class="checkbox-label flex checkbox-flex" (change)="onFilterCharacterLevelChange($event)">
+          <input type="checkbox" [checked]="includeDefense.getValue()" (change)="onFilterCharacterLevelChange($event)" />
+          <div class="checkbox-inner-label">Defense</div>
+        </label>
+      </div>
+      <div>
+        <label class="checkbox-label flex checkbox-flex" (change)="onFilterCharacterLevelChange($event)">
+          <input type="checkbox" [checked]="includeMagicAttack.getValue()" (change)="onFilterCharacterLevelChange($event)" />
+          <div class="checkbox-inner-label">Magic Attack</div>
+        </label>
+      </div>
+      <div>
+        <label class="checkbox-label flex checkbox-flex" (change)="onFilterCharacterLevelChange($event)">
+          <input type="checkbox" [checked]="includeMagicDefense.getValue()" (change)="onFilterCharacterLevelChange($event)" />
+          <div class="checkbox-inner-label">Magic Defense</div>
+        </label>
+      </div>
+      <div>
+        <label class="checkbox-label flex checkbox-flex" (change)="onFilterCharacterLevelChange($event)">
+          <input type="checkbox" [checked]="includeHP.getValue()" (change)="onFilterCharacterLevelChange($event)" />
+          <div class="checkbox-inner-label">HP</div>
+        </label>
+      </div>
+    </div>
     <div>
-      <app-graph-display></app-graph-display>
+      <app-graph-display [chartOptionsData]="filteredCharacterBodyStatsChartOptionsData" [chartOptionsSeries]="filteredCharacterBodyStatsChartOptionsSeries"></app-graph-display>
     </div>
   </div>
 </div>

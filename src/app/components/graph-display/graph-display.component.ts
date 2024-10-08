@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
 import { AgCharts } from 'ag-charts-angular';
 import { AgChartOptions } from 'ag-charts-community';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-graph-display',
@@ -9,20 +10,37 @@ import { AgChartOptions } from 'ag-charts-community';
   templateUrl: './graph-display.component.html',
   styleUrl: './graph-display.component.css',
 })
-export class GraphDisplayComponent {
-  public chartOptions: AgChartOptions;
-  constructor() {
-    this.chartOptions = {
-      data: [
-        { month: 'Jan', avgTemp: 2.3, iceCreamSales: 162000 },
-        { month: 'Mar', avgTemp: 6.3, iceCreamSales: 302000 },
-        { month: 'May', avgTemp: 16.2, iceCreamSales: 800000 },
-        { month: 'Jul', avgTemp: 22.8, iceCreamSales: 1254000 },
-        { month: 'Sep', avgTemp: 14.5, iceCreamSales: 950000 },
-        { month: 'Nov', avgTemp: 8.9, iceCreamSales: 200000 },
-      ],
+export class GraphDisplayComponent implements OnInit {
+  chartOptionsData = input<BehaviorSubject<any>>();
+  chartOptionsSeries = input<BehaviorSubject<any>>();
+  chartOptions: AgChartOptions = {};
 
-      series: [{ type: 'bar', xKey: 'month', yKey: 'iceCreamSales' }],
+  subscriptions: Subscription = new Subscription();
+
+  ngOnInit(): void {
+    this.subscriptions.add(
+      this.chartOptionsData().subscribe((data) => {
+        this.updateChartOptions(data, this.chartOptionsSeries().getValue());
+      })
+    );
+
+    this.subscriptions.add(
+      this.chartOptionsSeries().subscribe((series) => {
+        this.updateChartOptions(this.chartOptionsData().getValue(), series);
+      })
+    );
+
+    this.updateChartOptions(this.chartOptionsData().getValue(), this.chartOptionsSeries().getValue());
+  }
+
+  private updateChartOptions(data: any, series: any): void {
+    this.chartOptions = {
+      theme: 'ag-material-dark',
+      data: data,
+      series: series,
+      background: {
+        fill: '#262c2e',
+      },
     };
   }
 }
