@@ -43,18 +43,40 @@ export class CharacterComparisonComponent implements OnInit {
     }, {});
     this.characterSelections = this.formBuilder.group(characterFormControls);
 
-    this.rowData.next([
-      { level: 0, attack: 2, defense: 4, speed: 40, magicAttack: 4, magicDefense: 2, magicAvoid: 0, magicHit: 0, attackHit: 0, attackAvoid: 0, hp: 500 },
-      { level: 1, attack: 5, defense: 4, speed: 40, magicAttack: 4, magicDefense: 2, magicAvoid: 0, magicHit: 0, attackHit: 0, attackAvoid: 0, hp: 500 },
-    ]);
-    this.seriesData.next([{ type: 'line', xKey: 'level', yKey: 'attack' }]);
-
     this.characterSelections.valueChanges.pipe().subscribe((c) => {
-      console.log(c);
-      // loop through controls
-      // pull char data for any control on
-      // build rowData
-      // build series
+      const enabledCharacters = Object.keys(c)
+        .map((key) => parseInt(key, 10))
+        .filter((index) => c[index]?.mainControl);
+
+      const allBodyStats: Body[] = [];
+      const series = [];
+
+      const attributes = ['attack', 'defense', 'magicattack', 'magicdefense'];
+
+      enabledCharacters.forEach((index) => {
+        const characterBodyStatsData = this.gameDataService.getCharacterById(index).bodyStats;
+        const characterControls = c[index];
+
+        attributes.forEach((attribute) => {
+          if (characterControls[attribute]) {
+            series.push({
+              type: 'line',
+              xKey: 'level',
+              yKey: `characterindex${index}-${attribute}`,
+              name: `Character ${index} ${attribute.charAt(0).toUpperCase() + attribute.slice(1)}`,
+            });
+
+            characterBodyStatsData.forEach((bodyStat) => {
+              bodyStat[`characterindex${index}-${attribute}`] = bodyStat[attribute];
+            });
+          }
+        });
+
+        allBodyStats.push(...characterBodyStatsData);
+      });
+
+      this.rowData.next(allBodyStats);
+      this.seriesData.next(series);
     });
   }
 
