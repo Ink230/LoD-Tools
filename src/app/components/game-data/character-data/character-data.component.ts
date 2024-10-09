@@ -1,7 +1,7 @@
+import { ColDef } from '@ag-grid-community/core';
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ColDef } from 'ag-grid-community';
 import { BehaviorSubject, combineLatest, skip } from 'rxjs';
 import { Body, Character } from 'src/app/models/game-data.model';
 import { ElementPipe } from 'src/app/pipes/element.pipe';

@@ -1,6 +1,6 @@
+import { GridOptions } from '@ag-grid-community/core';
 import { Component, OnInit, input } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
-import { ColDef, GridOptions } from 'ag-grid-community';
 
 @Component({
   selector: 'app-grid-display',
@@ -11,8 +11,8 @@ import { ColDef, GridOptions } from 'ag-grid-community';
 })
 export class GridDisplayComponent implements OnInit {
   rowData = input<any>();
-  colDefs = input<ColDef[]>();
-  gridOptions = input<GridOptions>();
+  colDefs = input<any>();
+  gridOptions = input<any>();
   gridOptionsDefault: GridOptions = {
     defaultColDef: {
       resizable: true,
