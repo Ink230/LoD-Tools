@@ -1,0 +1,17 @@
+<div class="character-comparison-container">
+  <div class="character-selection-options" [formGroup]="characterSelections">
+    @for (character of getCharacterNames(); track character.id) {
+      <div class="character-selection-option" [class.active]="characterSelections.get(character.id.toString()).get('mainControl').value" (click)="toggleCharacterControl($index)">
+        {{ $index }} {{ character.firstName }}
+      </div>
+      <div class="attributes" [formGroupName]="character.id.toString()">
+        @for (attr of characterAttributes; track attr) {
+          <label>
+            <input type="checkbox" [formControlName]="attr" (click)="$event.stopPropagation()" />
+            {{ attributeLabels[attr] }}
+          </label>
+        }
+      </div>
+    }
+  </div>
+</div>

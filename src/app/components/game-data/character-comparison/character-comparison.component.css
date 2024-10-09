@@ -1,0 +1,39 @@
+.character-comparison-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 70%;
+  margin: 0 auto;
+}
+
+.character-selection-options {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  row-gap: 2em;
+  column-gap: 2em;
+}
+
+.character-selection-option {
+  padding: 10px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.character-selection-option.active {
+  background-color: lightgreen;
+}
+
+/* input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+}
+
+input[type='checkbox']:checked {
+  width: 20px;
+  height: 20px;
+  border: solid 1px green;
+} */

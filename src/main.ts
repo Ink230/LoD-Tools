@@ -33,6 +33,10 @@ const routes: Routes = [
         path: 'character/:selectedCharacter',
         loadComponent: () => import('./app/components/game-data/character-data/character-data.component').then((m) => m.CharacterDataComponent),
       },
+      {
+        path: 'character-comparison',
+        loadComponent: () => import('./app/components/game-data/character-comparison/character-comparison.component').then((m) => m.CharacterComparisonComponent),
+      },
     ],
   },
 ];
