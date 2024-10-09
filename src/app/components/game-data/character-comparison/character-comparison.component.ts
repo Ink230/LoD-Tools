@@ -50,6 +50,7 @@ export class CharacterComparisonComponent implements OnInit {
     this.seriesData.next([{ type: 'line', xKey: 'level', yKey: 'attack' }]);
 
     this.characterSelections.valueChanges.pipe().subscribe((c) => {
+      console.log(c);
       // loop through controls
       // pull char data for any control on
       // build rowData
@@ -89,5 +90,8 @@ export class CharacterComparisonComponent implements OnInit {
     const characterGroup = this.characterSelections.get(characterId.toString()) as FormGroup;
     const control = characterGroup.get(controlName);
     control.setValue(!control.value);
+    if (control.value) {
+      characterGroup.get('mainControl').setValue(true);
+    }
   }
 }
