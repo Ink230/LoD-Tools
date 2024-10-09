@@ -3,3 +3,7 @@
   flex-direction: column;
   justify-content: flex-start;
 }
+
+.ag-grid-prime {
+  height: 34em;
+}
