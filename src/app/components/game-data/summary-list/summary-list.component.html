@@ -1,4 +1,9 @@
 <div class="summary-list-container">
+  <a fastRouterLink="/data/character-comparison/" class="summary-card green-shimmer fill-link flex">
+    <div>Character Comparison</div>
+  </a>
+</div>
+<div class="summary-list-container">
   @for (character of characters; track character.id) {
     <a fastRouterLink="{{ '/data/character/' + character.firstName.toLowerCase() }}" class="summary-card green-shimmer fill-link flex">
       <div><img src="{{ 'assets/character/' + character.firstName.toLowerCase() + '.png' }}" /></div>
@@ -7,15 +12,12 @@
   }
 </div>
 <div class="summary-list-container">
-  <div class="summary-card green-shimmer">Dragoons</div>
-  <div class="summary-card green-shimmer">Additions</div>
-  <div class="summary-card green-shimmer">Spells</div>
+  <div class="summary-card disabled">Dragoons</div>
+  <div class="summary-card disabled">Additions</div>
+  <div class="summary-card disabled">Spells</div>
   <div class="summary-card disabled">Items</div>
   <div class="summary-card disabled">Submaps</div>
   <div class="summary-card disabled">Stages</div>
   <div class="summary-card disabled">Encounters</div>
   <div class="summary-card disabled">Enemies</div>
-  <a fastRouterLink="/data/character-comparison/" class="summary-card green-shimmer fill-link flex">
-    <div>Character Comparison</div>
-  </a>
 </div>
