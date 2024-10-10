@@ -17,13 +17,13 @@ export class CharacterComparisonComponent implements OnInit {
   formBuilder = inject(FormBuilder);
   characterSelections: FormGroup;
 
-  characterAttributes = ['attack', 'defense', 'magicattack', 'magicdefense', 'HP'];
+  characterAttributes = ['attack', 'defense', 'magicAttack', 'magicDefense', 'hp'];
   attributeLabels = {
     attack: 'Attack',
     defense: 'Defense',
-    magicattack: 'Magic Attack',
-    magicdefense: 'Magic Defense',
-    HP: 'HP',
+    magicAttack: 'Magic Attack',
+    magicDefense: 'Magic Defense',
+    hp: 'HP',
   };
 
   rowData = new BehaviorSubject<Body[]>([]);
@@ -35,9 +35,9 @@ export class CharacterComparisonComponent implements OnInit {
         mainControl: new FormControl(false),
         attack: new FormControl(false),
         defense: new FormControl(false),
-        magicattack: new FormControl(false),
-        magicdefense: new FormControl(false),
-        HP: new FormControl(false),
+        magicAttack: new FormControl(false),
+        magicDefense: new FormControl(false),
+        hp: new FormControl(false),
       });
       return controls;
     }, {});
@@ -51,10 +51,11 @@ export class CharacterComparisonComponent implements OnInit {
       const allBodyStats: Body[] = [];
       const series = [];
 
-      const attributes = ['attack', 'defense', 'magicattack', 'magicdefense'];
+      const attributes = ['attack', 'defense', 'magicAttack', 'magicDefense', 'hp'];
 
       enabledCharacters.forEach((index) => {
-        const characterBodyStatsData = this.gameDataService.getCharacterById(index).bodyStats;
+        const character = this.gameDataService.getCharacterById(index);
+        const characterBodyStatsData = character.bodyStats;
         const characterControls = c[index];
 
         attributes.forEach((attribute) => {
@@ -62,12 +63,12 @@ export class CharacterComparisonComponent implements OnInit {
             series.push({
               type: 'line',
               xKey: 'level',
-              yKey: `characterindex${index}-${attribute}`,
+              yKey: `${character.firstName}-${attribute}`,
               name: `Character ${index} ${attribute.charAt(0).toUpperCase() + attribute.slice(1)}`,
             });
 
             characterBodyStatsData.forEach((bodyStat) => {
-              bodyStat[`characterindex${index}-${attribute}`] = bodyStat[attribute];
+              bodyStat[`${character.firstName}-${attribute}`] = bodyStat[attribute];
             });
           }
         });
@@ -93,17 +94,17 @@ export class CharacterComparisonComponent implements OnInit {
       characterGroup.patchValue({
         attack: true,
         defense: true,
-        magicattack: true,
-        magicdefense: true,
-        HP: false,
+        magicAttack: true,
+        magicDefense: true,
+        hp: false,
       });
     } else {
       characterGroup.patchValue({
         attack: false,
         defense: false,
-        magicattack: false,
-        magicdefense: false,
-        HP: false,
+        magicAttack: false,
+        magicDefense: false,
+        Hhp: false,
       });
     }
   }
