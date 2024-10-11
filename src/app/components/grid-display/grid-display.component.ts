@@ -19,7 +19,7 @@ export class GridDisplayComponent implements OnInit {
     },
     autoSizeStrategy: {
       type: 'fitGridWidth',
-      defaultMinWidth: 100,
+      defaultMinWidth: 40,
     },
   };
 

@@ -104,4 +104,24 @@
       <app-graph-display [chartOptionsData]="filteredCharacterBodyStatsChartOptionsData" [chartOptionsSeries]="filteredCharacterBodyStatsChartOptionsSeries"></app-graph-display>
     </div>
   </div>
+  <div class="body-stats">
+    <div class="flex-row">Additions</div>
+    <div class="flex-row">
+      <label class="checkbox-label flex checkbox-flex">
+        <input type="checkbox" [formControl]="includeMaxAdditions" />
+        <div class="checkbox-inner-label">Max Level Only</div>
+      </label>
+    </div>
+    <div>
+      <app-grid-display [rowData]="filteredCharacterAdditionBasicStats | async" [colDefs]="characterAdditionColumnDefinitions"></app-grid-display>
+    </div>
+  </div>
+  <div class="body-stats">
+    <div class="flex-row">Addition Hits</div>
+    <div class="flex-row small-text">(Initial Pause | Move to Enemy | Distance) > Hit [Blue Squares > Action Frames > Post Hit Pause] > Start Next Hit</div>
+    <div class="flex-row small-text">*Most columns are number of frames</div>
+    <div>
+      <app-grid-display [rowData]="flattenAdditionHits(character.additions)" [colDefs]="characterAdditionHitColumnDefinitions"></app-grid-display>
+    </div>
+  </div>
 </div>

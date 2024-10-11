@@ -28,7 +28,35 @@ export interface AdditionLevel {
   multiplier: AdditionMultiplier;
 }
 
+export interface FlattenedAddition {
+  id: number;
+  name: string;
+  unlockLevel: number;
+  unlockOrder: number;
+  level: number;
+  damage: number;
+  sp: number;
+}
+
 export interface AdditionHit {
+  flag: number;
+  blueSquareFrames: number;
+  postHitPauseFrames: number;
+  actionInputFrames: number;
+  damage: number;
+  sp: number;
+  lastHit: boolean;
+  panningDistance: number;
+  cameraDistanceOne: number;
+  cameraDistanceTwo: number;
+  moveToMonsterFrames: number;
+  distance: number;
+  pauseFrames: number;
+}
+
+export interface FlattenedAdditionHit {
+  id: number;
+  name: string;
   flag: number;
   blueSquareFrames: number;
   postHitPauseFrames: number;
