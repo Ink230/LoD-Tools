@@ -177,7 +177,7 @@ export class CharacterDataComponent {
         unlockLevel: index === 0 ? addition.unlockLevel : null,
         unlockOrder: index === 0 ? addition.unlockOrder : null,
         level: level.level,
-        damage: addition.damage * (1 + level.multiplier.damage / 100),
+        damage: Math.floor(addition.damage * (1 + level.multiplier.damage / 100)),
         sp: addition.sp * (1 + level.multiplier.sp / 100),
       }))
     );
@@ -187,13 +187,14 @@ export class CharacterDataComponent {
     return additions.flatMap((addition) => {
       const addy = addition.levels[4];
 
+      if (!addy?.multiplier) return null;
       return {
         id: addition.id,
         name: addition.name,
         unlockLevel: addition.unlockLevel,
         unlockOrder: addition.unlockOrder,
         level: 5,
-        damage: addition.damage * (1 + addy.multiplier.damage / 100),
+        damage: Math.floor(addition.damage * (1 + addy.multiplier.damage / 100)),
         sp: addition.sp * (1 + addy.multiplier.sp / 100),
       };
     });
