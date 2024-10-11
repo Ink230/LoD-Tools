@@ -51,14 +51,12 @@ export class CharacterComparisonComponent implements OnInit {
       const allBodyStats: Body[] = [];
       const series = [];
 
-      const attributes = ['attack', 'defense', 'magicAttack', 'magicDefense', 'hp'];
-
       enabledCharacters.forEach((index) => {
         const character = this.gameDataService.getCharacterById(index);
         const characterBodyStatsData = character.bodyStats;
         const characterControls = c[index];
 
-        attributes.forEach((attribute) => {
+        this.characterAttributes.forEach((attribute) => {
           if (characterControls[attribute]) {
             series.push({
               type: 'line',
