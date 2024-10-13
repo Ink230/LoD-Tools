@@ -177,8 +177,8 @@ export class CharacterDataComponent {
         unlockLevel: index === 0 ? addition.unlockLevel : null,
         unlockOrder: index === 0 ? addition.unlockOrder : null,
         level: level.level,
-        damage: Math.floor(addition.damage * (1 + level.multiplier.damage / 100)),
-        sp: addition.sp * (1 + level.multiplier.sp / 100),
+        damage: addition.hitData.reduce((sum, obj) => sum + Math.floor(obj.damage * (1 + level.multiplier.damage / 100)), 0),
+        sp: addition.hitData.reduce((sum, obj) => sum + Math.floor(obj.sp * (1 + level.multiplier.sp / 100)), 0),
       }))
     );
   }
@@ -194,15 +194,19 @@ export class CharacterDataComponent {
         unlockLevel: addition.unlockLevel,
         unlockOrder: addition.unlockOrder,
         level: 5,
-        damage: Math.floor(addition.damage * (1 + addy.multiplier.damage / 100)),
-        sp: Math.floor(addition.sp * (1 + addy.multiplier.sp / 100)),
+        damage: addition.hitData.reduce((sum, obj) => sum + Math.floor(obj.damage * (1 + addy.multiplier.damage / 100)), 0),
+        sp: addition.hitData.reduce((sum, obj) => sum + Math.floor(obj.sp * (1 + addy.multiplier.sp / 100)), 0),
       };
     });
   }
 
   flattenAdditionHits(additions: Addition[]): FlattenedAdditionHit[] {
-    return additions.flatMap((addition) =>
-      addition.hitData.map((row) => ({
+    return additions.flatMap((addition) => {
+      const lastHitIndex = addition.hitData.findIndex((row) => row.lastHit === true);
+
+      const processedHitData = lastHitIndex !== -1 ? addition.hitData.slice(0, lastHitIndex + 1) : addition.hitData;
+
+      return processedHitData.map((row) => ({
         id: addition.id,
         name: addition.name,
         flag: row.flag,
@@ -218,7 +222,7 @@ export class CharacterDataComponent {
         moveToMonsterFrames: row.moveToMonsterFrames,
         distance: row.distance,
         pauseFrames: row.pauseFrames,
-      }))
-    );
+      }));
+    });
   }
 }
