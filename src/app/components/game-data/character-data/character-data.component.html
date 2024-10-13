@@ -111,6 +111,14 @@
         <input type="checkbox" [formControl]="includeMaxAdditions" />
         <div class="checkbox-inner-label">Max Level Only</div>
       </label>
+      <label class="checkbox-label flex checkbox-flex">
+        <input type="checkbox" [formControl]="includeMaxAdditions" />
+        <div class="checkbox-inner-label">Min Level Only</div>
+      </label>
+      <label class="checkbox-label flex checkbox-flex">
+        <input type="checkbox" [formControl]="includeMaxAdditions" />
+        <div class="checkbox-inner-label">Filter By Addition for Each Addition</div>
+      </label>
     </div>
     <div>
       <app-grid-display [rowData]="filteredCharacterAdditionBasicStats | async" [colDefs]="characterAdditionColumnDefinitions"></app-grid-display>

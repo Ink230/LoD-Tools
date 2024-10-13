@@ -147,7 +147,43 @@ export class GameDataService {
           unlockOrder: 3,
           damage: 150,
           sp: 30,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 50,
+                damage: 0,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 100,
+                damage: 0,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 150,
+                damage: 0,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 240,
+                damage: 0,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -157,7 +193,43 @@ export class GameDataService {
           unlockOrder: 4,
           damage: 150,
           sp: 50,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 25,
+                damage: 15,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 50,
+                damage: 30,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 75,
+                damage: 45,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 100,
+                damage: 67,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -167,7 +239,43 @@ export class GameDataService {
           unlockOrder: 5,
           damage: 100,
           sp: 60,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 50,
+                damage: 0,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 100,
+                damage: 0,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 150,
+                damage: 0,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 240,
+                damage: 0,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -177,7 +285,43 @@ export class GameDataService {
           unlockOrder: 6,
           damage: 200,
           sp: 20,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 20,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 40,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 60,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 75,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -187,7 +331,43 @@ export class GameDataService {
           unlockOrder: 7,
           damage: 250,
           sp: 100,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 10,
+                damage: 20,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 20,
+                damage: 40,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 30,
+                damage: 60,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 50,
+                damage: 80,
+              },
+            },
+          ],
           hitData: [],
         },
       ],
@@ -317,7 +497,43 @@ export class GameDataService {
           unlockOrder: 1,
           damage: 100,
           sp: 35,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 10,
+                damage: 10,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 20,
+                damage: 20,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 30,
+                damage: 30,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 45,
+                damage: 50,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -327,7 +543,43 @@ export class GameDataService {
           unlockOrder: 2,
           damage: 100,
           sp: 35,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 25,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 50,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 75,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 100,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -337,7 +589,43 @@ export class GameDataService {
           unlockOrder: 3,
           damage: 150,
           sp: 30,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 50,
+                damage: 8,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 100,
+                damage: 16,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 150,
+                damage: 24,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 240,
+                damage: 35,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -347,7 +635,43 @@ export class GameDataService {
           unlockOrder: 4,
           damage: 200,
           sp: 35,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 20,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 40,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 60,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 75,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -355,9 +679,45 @@ export class GameDataService {
           name: 'Flower Storm',
           unlockLevel: null,
           unlockOrder: 5,
-          damage: 310,
+          damage: 300,
           sp: 60,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 50,
+                damage: 8,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 100,
+                damage: 16,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 150,
+                damage: 24,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 240,
+                damage: 35,
+              },
+            },
+          ],
           hitData: [],
         },
       ],
@@ -2006,7 +2366,43 @@ export class GameDataService {
           unlockOrder: 1,
           damage: 100,
           sp: 35,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 25,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 50,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 75,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 100,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -2016,7 +2412,43 @@ export class GameDataService {
           unlockOrder: 2,
           damage: 150,
           sp: 30,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 50,
+                damage: 0,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 100,
+                damage: 0,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 150,
+                damage: 0,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 240,
+                damage: 0,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -2026,17 +2458,89 @@ export class GameDataService {
           unlockOrder: 3,
           damage: 100,
           sp: 35,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 50,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 100,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 150,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 200,
+              },
+            },
+          ],
           hitData: [],
         },
         {
           id: 17,
-          name: "Demon's Blade",
+          name: "Demon's Dance",
           unlockLevel: null,
           unlockOrder: 4,
           damage: 200,
           sp: 100,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 40,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 80,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 120,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 150,
+              },
+            },
+          ],
           hitData: [],
         },
       ],
@@ -2861,7 +3365,43 @@ export class GameDataService {
           unlockOrder: 1,
           damage: 100,
           sp: 35,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 10,
+                damage: 10,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 20,
+                damage: 20,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 30,
+                damage: 30,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 45,
+                damage: 50,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -2871,7 +3411,43 @@ export class GameDataService {
           unlockOrder: 2,
           damage: 150,
           sp: 20,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 8,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 16,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 24,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 35,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -2881,7 +3457,43 @@ export class GameDataService {
           unlockOrder: 3,
           damage: 100,
           sp: 50,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 25,
+                damage: 0,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 50,
+                damage: 0,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 75,
+                damage: 0,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 102,
+                damage: 0,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -2891,7 +3503,43 @@ export class GameDataService {
           unlockOrder: 4,
           damage: 150,
           sp: 35,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 10,
+                damage: 25,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 20,
+                damage: 50,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 30,
+                damage: 75,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 45,
+                damage: 100,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -2901,7 +3549,43 @@ export class GameDataService {
           unlockOrder: 5,
           damage: 200,
           sp: 15,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 25,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 50,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 75,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 100,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -2911,7 +3595,43 @@ export class GameDataService {
           unlockOrder: 6,
           damage: 300,
           sp: 50,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 50,
+                damage: 15,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 100,
+                damage: 30,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 150,
+                damage: 45,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 200,
+                damage: 67,
+              },
+            },
+          ],
           hitData: [],
         },
       ],
@@ -3736,7 +4456,43 @@ export class GameDataService {
           unlockOrder: 1,
           damage: 100,
           sp: 35,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 10,
+                damage: 10,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 20,
+                damage: 20,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 30,
+                damage: 30,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 45,
+                damage: 50,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -3746,7 +4502,43 @@ export class GameDataService {
           unlockOrder: 2,
           damage: 100,
           sp: 35,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 25,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 50,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 75,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 100,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -3756,7 +4548,43 @@ export class GameDataService {
           unlockOrder: 3,
           damage: 150,
           sp: 30,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 50,
+                damage: 8,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 100,
+                damage: 16,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 150,
+                damage: 24,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 240,
+                damage: 35,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -3766,7 +4594,43 @@ export class GameDataService {
           unlockOrder: 4,
           damage: 200,
           sp: 35,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 20,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 40,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 60,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 75,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -3774,9 +4638,45 @@ export class GameDataService {
           name: 'Flower Storm',
           unlockLevel: null,
           unlockOrder: 5,
-          damage: 310,
+          damage: 300,
           sp: 60,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 50,
+                damage: 8,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 100,
+                damage: 16,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 150,
+                damage: 24,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 240,
+                damage: 35,
+              },
+            },
+          ],
           hitData: [],
         },
       ],
@@ -4611,7 +5511,43 @@ export class GameDataService {
           unlockOrder: 1,
           damage: 100,
           sp: 20,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 20,
+                damage: 10,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 40,
+                damage: 20,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 60,
+                damage: 30,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 75,
+                damage: 50,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -4621,7 +5557,43 @@ export class GameDataService {
           unlockOrder: 2,
           damage: 150,
           sp: 35,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 25,
+                damage: 8,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 50,
+                damage: 16,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 75,
+                damage: 24,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 100,
+                damage: 35,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -4631,7 +5603,43 @@ export class GameDataService {
           unlockOrder: 3,
           damage: 100,
           sp: 60,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 50,
+                damage: 0,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 100,
+                damage: 0,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 150,
+                damage: 0,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 240,
+                damage: 0,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -4641,7 +5649,43 @@ export class GameDataService {
           unlockOrder: 4,
           damage: 150,
           sp: 20,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 30,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 60,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 90,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 134,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -4651,7 +5695,43 @@ export class GameDataService {
           unlockOrder: 5,
           damage: 200,
           sp: 100,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 50,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 100,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 150,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 200,
+              },
+            },
+          ],
           hitData: [],
         },
       ],
@@ -5476,7 +6556,43 @@ export class GameDataService {
           unlockOrder: 1,
           damage: 100,
           sp: 35,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 10,
+                damage: 10,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 20,
+                damage: 20,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 30,
+                damage: 30,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 45,
+                damage: 50,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -5486,7 +6602,43 @@ export class GameDataService {
           unlockOrder: 2,
           damage: 100,
           sp: 20,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 25,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 50,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 75,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 100,
+              },
+            },
+          ],
           hitData: [],
         },
         {
@@ -5496,7 +6648,43 @@ export class GameDataService {
           unlockOrder: 3,
           damage: 200,
           sp: 100,
-          levels: [],
+          levels: [
+            {
+              level: 1,
+              multiplier: {
+                sp: 0,
+                damage: 0,
+              },
+            },
+            {
+              level: 2,
+              multiplier: {
+                sp: 0,
+                damage: 10,
+              },
+            },
+            {
+              level: 3,
+              multiplier: {
+                sp: 0,
+                damage: 20,
+              },
+            },
+            {
+              level: 4,
+              multiplier: {
+                sp: 0,
+                damage: 30,
+              },
+            },
+            {
+              level: 5,
+              multiplier: {
+                sp: 0,
+                damage: 50,
+              },
+            },
+          ],
           hitData: [],
         },
       ],

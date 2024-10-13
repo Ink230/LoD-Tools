@@ -41,10 +41,10 @@ export class CharacterDataComponent {
   includeMaxAdditions = new FormControl(false);
 
   characterAdditionColumnDefinitions: ColDef[] = [
-    { field: 'id' },
-    { field: 'name' },
-    { field: 'unlockLevel' },
-    { field: 'unlockOrder' },
+    { field: 'id', width: 40 },
+    { field: 'name', width: 140 },
+    { field: 'unlockLevel', headerName: 'Unlocked', width: 70 },
+    { field: 'unlockOrder', headerName: 'Order', width: 70 },
     { field: 'level', headerName: 'Addition Level' },
     { field: 'damage', headerName: 'Damage %' },
     { field: 'sp', headerName: 'SP' },
@@ -195,7 +195,7 @@ export class CharacterDataComponent {
         unlockOrder: addition.unlockOrder,
         level: 5,
         damage: Math.floor(addition.damage * (1 + addy.multiplier.damage / 100)),
-        sp: addition.sp * (1 + addy.multiplier.sp / 100),
+        sp: Math.floor(addition.sp * (1 + addy.multiplier.sp / 100)),
       };
     });
   }
