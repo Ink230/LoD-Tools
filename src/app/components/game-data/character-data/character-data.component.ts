@@ -39,6 +39,7 @@ export class CharacterDataComponent {
   includeHP = new BehaviorSubject<boolean>(false);
   filteredCharacterAdditionBasicStats = new BehaviorSubject<FlattenedAddition[]>([]);
   includeMaxAdditions = new FormControl(false);
+  includeMinAdditions = new FormControl(false);
 
   characterAdditionColumnDefinitions: ColDef[] = [
     { field: 'id', width: 40 },
@@ -120,10 +121,20 @@ export class CharacterDataComponent {
 
     this.includeMaxAdditions.valueChanges.subscribe((value) => {
       if (value) {
-        this.filteredCharacterAdditionBasicStats.next(this.flattenMaxAdditions(this.character.additions));
+        this.filteredCharacterAdditionBasicStats.next(this.flattenSpecificAdditions(this.character.additions, 4));
+        this.includeMinAdditions.setValue(false, { emitEvent: false });
         return;
       }
 
+      this.filteredCharacterAdditionBasicStats.next(this.flattenAdditionAndAdditionLevels(this.character.additions));
+    });
+
+    this.includeMinAdditions.valueChanges.subscribe((value) => {
+      if (value) {
+        this.filteredCharacterAdditionBasicStats.next(this.flattenSpecificAdditions(this.character.additions, 0));
+        this.includeMaxAdditions.setValue(false, { emitEvent: false });
+        return;
+      }
       this.filteredCharacterAdditionBasicStats.next(this.flattenAdditionAndAdditionLevels(this.character.additions));
     });
   }
@@ -183,9 +194,9 @@ export class CharacterDataComponent {
     );
   }
 
-  flattenMaxAdditions(additions: Addition[]): FlattenedAddition[] {
+  flattenSpecificAdditions(additions: Addition[], index): FlattenedAddition[] {
     return additions.flatMap((addition) => {
-      const addy = addition.levels[4];
+      const addy = addition.levels[index];
 
       if (!addy?.multiplier) return null;
       return {
@@ -193,7 +204,7 @@ export class CharacterDataComponent {
         name: addition.name,
         unlockLevel: addition.unlockLevel,
         unlockOrder: addition.unlockOrder,
-        level: 5,
+        level: index + 1,
         damage: addition.hitData.reduce((sum, obj) => sum + Math.floor(obj.damage * (1 + addy.multiplier.damage / 100)), 0),
         sp: addition.hitData.reduce((sum, obj) => sum + Math.floor(obj.sp * (1 + addy.multiplier.sp / 100)), 0),
       };
