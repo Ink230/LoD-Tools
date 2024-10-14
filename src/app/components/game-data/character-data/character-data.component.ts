@@ -43,6 +43,7 @@ export class CharacterDataComponent {
   includeMinAdditions = new FormControl(false);
   selectedAdditions = new FormControl([]);
   minOrMax: 'min' | 'max' | null = null;
+  lastClickedMinOrMax = null;
 
   characterAdditionColumnDefinitions: ColDef[] = [
     { field: 'id', width: 40 },
@@ -135,25 +136,23 @@ export class CharacterDataComponent {
       let filteredAdditions: FlattenedAddition[] = this.flattenAdditionAndAdditionLevels(this.character?.additions);
       let filteredAdditionHits: FlattenedAdditionHit[] = this.flattenAdditionHits(this.character?.additions);
 
-      if (this.minOrMax === 'min' && includeMax) {
-        this.includeMinAdditions.setValue(false, { emitEvent: false });
-        includeMin = false;
-      } else if (this.minOrMax === 'max' && includeMin) {
+      if (this.lastClickedMinOrMax === 'min') {
         this.includeMaxAdditions.setValue(false, { emitEvent: false });
         includeMax = false;
       }
 
+      if (this.lastClickedMinOrMax === 'max') {
+        this.includeMinAdditions.setValue(false, { emitEvent: false });
+        includeMin = false;
+      }
+
       if (includeMin) {
-        this.includeMaxAdditions.setValue(false, { emitEvent: false });
         filteredAdditions = this.flattenSpecificAdditions(this.character.additions, 0);
         this.filteredCharacterAdditionBasicStats.next(filteredAdditions);
-        this.minOrMax = 'min';
       }
       if (includeMax) {
-        this.includeMinAdditions.setValue(false, { emitEvent: false });
         filteredAdditions = this.flattenSpecificAdditions(this.character.additions, 4);
         this.filteredCharacterAdditionBasicStats.next(this.flattenSpecificAdditions(this.character.additions, 4));
-        this.minOrMax = 'max';
       }
 
       if (selectedNames.length > 0) {
@@ -167,6 +166,8 @@ export class CharacterDataComponent {
         });
         this.filteredCharacterAdditionHitStats.next(filteredSelectedAdditionHits);
       }
+
+      this.lastClickedMinOrMax = null;
     });
   }
 
@@ -266,6 +267,10 @@ export class CharacterDataComponent {
         pauseFrames: row.pauseFrames,
       }));
     });
+  }
+
+  lastClickedMinOrMaxAddition(checkboxName: string) {
+    this.lastClickedMinOrMax = checkboxName;
   }
 
   onAdditionChange(name: string, event: Event): void {
