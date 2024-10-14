@@ -115,6 +115,15 @@
         <input type="checkbox" [formControl]="includeMinAdditions" />
         <div class="checkbox-inner-label">Min Level Only</div>
       </label>
+      <label for="additionFilter" title="Hold control to select multiple">Select Additions:</label>
+      <div id="additionFilter" class="addition-filter">
+        <div *ngFor="let addition of character.additions" class="addition-filter">
+          <label class="checkbox-label addition-filter">
+            <input type="checkbox" [value]="addition.name" [checked]="selectedAdditions.value.includes(addition.name)" (change)="onAdditionChange(addition.name, $event)" />
+            <div (change)="onAdditionChange(addition.name, $event)">{{ addition.name }}</div>
+          </label>
+        </div>
+      </div>
     </div>
     <div>
       <app-grid-display [rowData]="filteredCharacterAdditionBasicStats | async" [colDefs]="characterAdditionColumnDefinitions"></app-grid-display>
@@ -125,7 +134,7 @@
     <div class="flex-row small-text">(Initial Pause | Move to Enemy | Distance) > Hit [Blue Squares > Action Frames > Post Hit Pause] > Start Next Hit</div>
     <div class="flex-row small-text">*Most columns are number of frames</div>
     <div>
-      <app-grid-display [rowData]="flattenAdditionHits(character.additions)" [colDefs]="characterAdditionHitColumnDefinitions"></app-grid-display>
+      <app-grid-display [rowData]="filteredCharacterAdditionHitStats | async" [colDefs]="characterAdditionHitColumnDefinitions"></app-grid-display>
     </div>
   </div>
 </div>

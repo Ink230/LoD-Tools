@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, combineLatest, skip } from 'rxjs';
+import { BehaviorSubject, combineLatest, skip, startWith } from 'rxjs';
 import { Addition, Body, Character, FlattenedAddition, FlattenedAdditionHit } from 'src/app/models/game-data.model';
 import { ElementPipe } from 'src/app/pipes/element.pipe';
 import { SpeciesPipe } from 'src/app/pipes/species.pipe';
@@ -38,8 +38,11 @@ export class CharacterDataComponent {
   includeMagicDefense = new BehaviorSubject<boolean>(true);
   includeHP = new BehaviorSubject<boolean>(false);
   filteredCharacterAdditionBasicStats = new BehaviorSubject<FlattenedAddition[]>([]);
+  filteredCharacterAdditionHitStats = new BehaviorSubject<FlattenedAdditionHit[]>([]);
   includeMaxAdditions = new FormControl(false);
   includeMinAdditions = new FormControl(false);
+  selectedAdditions = new FormControl([]);
+  minOrMax: 'min' | 'max' | null = null;
 
   characterAdditionColumnDefinitions: ColDef[] = [
     { field: 'id', width: 40 },
@@ -80,6 +83,7 @@ export class CharacterDataComponent {
         { type: 'line', xKey: 'level', yKey: 'magicDefense' },
       ]);
       this.filteredCharacterAdditionBasicStats.next(this.flattenAdditionAndAdditionLevels(this.character.additions));
+      this.filteredCharacterAdditionHitStats.next(this.flattenAdditionHits(this.character.additions));
     });
 
     combineLatest([this.includeTensOnly, this.includeFivesOnly, this.includeAttack, this.includeDefense, this.includeMagicAttack, this.includeMagicDefense, this.includeHP]).subscribe(
@@ -119,23 +123,50 @@ export class CharacterDataComponent {
       }
     );
 
-    this.includeMaxAdditions.valueChanges.subscribe((value) => {
-      if (value) {
-        this.filteredCharacterAdditionBasicStats.next(this.flattenSpecificAdditions(this.character.additions, 4));
+    combineLatest([
+      this.includeMinAdditions.valueChanges.pipe(startWith(false)), // Start with false
+      this.includeMaxAdditions.valueChanges.pipe(startWith(false)), // Start with false
+      this.selectedAdditions.valueChanges.pipe(startWith([])),
+    ]).subscribe(([includeMin, includeMax, selectedNames]) => {
+      if (!this?.character?.additions) return;
+      this.filteredCharacterAdditionBasicStats.next(this.flattenAdditionAndAdditionLevels(this.character?.additions));
+      this.filteredCharacterAdditionHitStats.next(this.flattenAdditionHits(this.character?.additions));
+
+      let filteredAdditions: FlattenedAddition[] = this.flattenAdditionAndAdditionLevels(this.character?.additions);
+      let filteredAdditionHits: FlattenedAdditionHit[] = this.flattenAdditionHits(this.character?.additions);
+
+      if (this.minOrMax === 'min' && includeMax) {
         this.includeMinAdditions.setValue(false, { emitEvent: false });
-        return;
-      }
-
-      this.filteredCharacterAdditionBasicStats.next(this.flattenAdditionAndAdditionLevels(this.character.additions));
-    });
-
-    this.includeMinAdditions.valueChanges.subscribe((value) => {
-      if (value) {
-        this.filteredCharacterAdditionBasicStats.next(this.flattenSpecificAdditions(this.character.additions, 0));
+        includeMin = false;
+      } else if (this.minOrMax === 'max' && includeMin) {
         this.includeMaxAdditions.setValue(false, { emitEvent: false });
-        return;
+        includeMax = false;
       }
-      this.filteredCharacterAdditionBasicStats.next(this.flattenAdditionAndAdditionLevels(this.character.additions));
+
+      if (includeMin) {
+        this.includeMaxAdditions.setValue(false, { emitEvent: false });
+        filteredAdditions = this.flattenSpecificAdditions(this.character.additions, 0);
+        this.filteredCharacterAdditionBasicStats.next(filteredAdditions);
+        this.minOrMax = 'min';
+      }
+      if (includeMax) {
+        this.includeMinAdditions.setValue(false, { emitEvent: false });
+        filteredAdditions = this.flattenSpecificAdditions(this.character.additions, 4);
+        this.filteredCharacterAdditionBasicStats.next(this.flattenSpecificAdditions(this.character.additions, 4));
+        this.minOrMax = 'max';
+      }
+
+      if (selectedNames.length > 0) {
+        const selectedFilteredAdditions = filteredAdditions.filter((addition) => {
+          return selectedNames?.includes(addition.name);
+        });
+        this.filteredCharacterAdditionBasicStats.next(selectedFilteredAdditions);
+
+        const filteredSelectedAdditionHits = filteredAdditionHits.filter((additionHits) => {
+          return selectedNames?.includes(additionHits.name);
+        });
+        this.filteredCharacterAdditionHitStats.next(filteredSelectedAdditionHits);
+      }
     });
   }
 
@@ -184,7 +215,7 @@ export class CharacterDataComponent {
     return additions.flatMap((addition) =>
       addition.levels.map((level, index) => ({
         id: index === 0 ? addition.id : null,
-        name: index === 0 ? addition.name : null,
+        name: addition.name,
         unlockLevel: index === 0 ? addition.unlockLevel : null,
         unlockOrder: index === 0 ? addition.unlockOrder : null,
         level: level.level,
@@ -235,5 +266,17 @@ export class CharacterDataComponent {
         pauseFrames: row.pauseFrames,
       }));
     });
+  }
+
+  onAdditionChange(name: string, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const isChecked = input.checked;
+    const selected = this.selectedAdditions.value || [];
+
+    if (isChecked) {
+      this.selectedAdditions.setValue([...selected, name]);
+    } else {
+      this.selectedAdditions.setValue(selected.filter((item: string) => item !== name));
+    }
   }
 }

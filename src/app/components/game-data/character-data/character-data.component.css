@@ -84,3 +84,13 @@
 .small-text {
   font-size: 80%;
 }
+
+.addition-filter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.column-md {
+  column-gap: 0.5em;
+}
