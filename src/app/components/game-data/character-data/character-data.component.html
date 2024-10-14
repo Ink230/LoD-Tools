@@ -115,14 +115,16 @@
         <input type="checkbox" [formControl]="includeMinAdditions" (click)="lastClickedMinOrMaxAddition('min')" />
         <div class="checkbox-inner-label" (click)="lastClickedMinOrMaxAddition('min')">Min Level Only</div>
       </label>
-      <label for="additionFilter" title="Hold control to select multiple">Select Additions:</label>
-      <div id="additionFilter" class="addition-filter">
-        <div *ngFor="let addition of character.additions" class="addition-filter">
-          <label class="checkbox-label addition-filter" (click)="lastClickedMinOrMaxAddition(null)">
-            <input type="checkbox" [value]="addition.name" [checked]="selectedAdditions.value.includes(addition.name)" (change)="onAdditionChange(addition.name, $event)" />
-            <div (change)="onAdditionChange(addition.name, $event)">{{ addition.name }}</div>
-          </label>
-        </div>
+
+      <div id="additionFilter" class="addition-filter column-md">
+        @for (addition of character.additions; track addition.id) {
+          <div class="addition-filter">
+            <label class="checkbox-label addition-filter" (click)="lastClickedMinOrMaxAddition(null)">
+              <input type="checkbox" [value]="addition.name" [checked]="selectedAdditions.value.includes(addition.name)" (change)="onAdditionChange(addition.name, $event)" />
+              <div (change)="onAdditionChange(addition.name, $event)">{{ addition.name }}</div>
+            </label>
+          </div>
+        }
       </div>
     </div>
     <div>

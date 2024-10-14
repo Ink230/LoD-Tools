@@ -125,8 +125,8 @@ export class CharacterDataComponent {
     );
 
     combineLatest([
-      this.includeMinAdditions.valueChanges.pipe(startWith(false)), // Start with false
-      this.includeMaxAdditions.valueChanges.pipe(startWith(false)), // Start with false
+      this.includeMinAdditions.valueChanges.pipe(startWith(false)),
+      this.includeMaxAdditions.valueChanges.pipe(startWith(false)),
       this.selectedAdditions.valueChanges.pipe(startWith([])),
     ]).subscribe(([includeMin, includeMax, selectedNames]) => {
       if (!this?.character?.additions) return;
