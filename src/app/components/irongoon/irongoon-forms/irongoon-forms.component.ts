@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { IrongoonInputs, IrongoonOption } from 'src/app/models/irongoon.model';
 import { IrongoonDropdownComponent } from './irongoon-dropdown/irongoon-dropdown.component';
@@ -6,10 +5,10 @@ import { IrongoonNumberComponent } from './irongoon-number/irongoon-number.compo
 import { IrongoonSliderComponent } from './irongoon-slider/irongoon-slider.component';
 
 @Component({
-    selector: 'app-irongoon-forms',
-    imports: [NgClass, IrongoonDropdownComponent, IrongoonNumberComponent, IrongoonSliderComponent],
-    templateUrl: './irongoon-forms.component.html',
-    styleUrl: './irongoon-forms.component.css'
+  selector: 'app-irongoon-forms',
+  imports: [IrongoonDropdownComponent, IrongoonNumberComponent, IrongoonSliderComponent],
+  templateUrl: './irongoon-forms.component.html',
+  styleUrl: './irongoon-forms.component.css',
 })
 export class IrongoonFormsComponent {
   option = input<IrongoonOption>();

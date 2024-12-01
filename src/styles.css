@@ -1,3 +1,8 @@
+/* == AG Grid == */
+@import 'ag-grid-community/styles/ag-grid.css';
+@import 'ag-grid-community/styles/ag-theme-quartz.css';
+@import 'ag-grid-community/styles/ag-theme-balham.css';
+
 /* == Custom Reset == */
 * {
   min-width: 0;
@@ -113,13 +118,6 @@ meter {
 ::-webkit-details-marker {
   display: none;
 }
-
-/* == AG Grid == */
-
-@import 'ag-grid-community/styles/ag-grid.css';
-
-@import 'ag-grid-community/styles/ag-theme-quartz.css';
-@import 'ag-grid-community/styles/ag-theme-balham.css';
 
 /* == LoD Tools == */
 :root {

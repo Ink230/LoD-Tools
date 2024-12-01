@@ -10,13 +10,12 @@ import { SpeciesPipe } from 'src/app/pipes/species.pipe';
 import { GameDataService } from 'src/app/services/game-data.service';
 import { GraphDisplayComponent } from '../../graph-display/graph-display.component';
 import { GridDisplayComponent } from '../../grid-display/grid-display.component';
-import { GameDataDropdownComponent } from '../game-data-forms/game-data-dropdown/game-data-dropdown.component';
 
 @Component({
-    selector: 'app-character-data',
-    imports: [CommonModule, GameDataDropdownComponent, SpeciesPipe, ElementPipe, GridDisplayComponent, GraphDisplayComponent, ReactiveFormsModule],
-    templateUrl: './character-data.component.html',
-    styleUrl: './character-data.component.css'
+  selector: 'app-character-data',
+  imports: [CommonModule, SpeciesPipe, ElementPipe, GridDisplayComponent, GraphDisplayComponent, ReactiveFormsModule],
+  templateUrl: './character-data.component.html',
+  styleUrl: './character-data.component.css',
 })
 export class CharacterDataComponent {
   gameDataService = inject(GameDataService);
