@@ -4,11 +4,10 @@ import { AgChartOptions } from 'ag-charts-community';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-graph-display',
-  standalone: true,
-  imports: [AgCharts],
-  templateUrl: './graph-display.component.html',
-  styleUrl: './graph-display.component.css',
+    selector: 'app-graph-display',
+    imports: [AgCharts],
+    templateUrl: './graph-display.component.html',
+    styleUrl: './graph-display.component.css'
 })
 export class GraphDisplayComponent implements OnInit {
   chartOptionsData = input<BehaviorSubject<any>>();

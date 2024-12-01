@@ -3,11 +3,10 @@ import { FastRouterLinkDirective } from 'src/app/directives/fast-router-link.dir
 import { GameDataService } from 'src/app/services/game-data.service';
 
 @Component({
-  selector: 'app-summary-list',
-  standalone: true,
-  imports: [FastRouterLinkDirective],
-  templateUrl: './summary-list.component.html',
-  styleUrl: './summary-list.component.css',
+    selector: 'app-summary-list',
+    imports: [FastRouterLinkDirective],
+    templateUrl: './summary-list.component.html',
+    styleUrl: './summary-list.component.css'
 })
 export class SummaryListComponent {
   gameDataService = inject(GameDataService);

@@ -6,11 +6,10 @@ import { IrongoonNumberComponent } from './irongoon-number/irongoon-number.compo
 import { IrongoonSliderComponent } from './irongoon-slider/irongoon-slider.component';
 
 @Component({
-  selector: 'app-irongoon-forms',
-  standalone: true,
-  imports: [NgClass, IrongoonDropdownComponent, IrongoonNumberComponent, IrongoonSliderComponent],
-  templateUrl: './irongoon-forms.component.html',
-  styleUrl: './irongoon-forms.component.css',
+    selector: 'app-irongoon-forms',
+    imports: [NgClass, IrongoonDropdownComponent, IrongoonNumberComponent, IrongoonSliderComponent],
+    templateUrl: './irongoon-forms.component.html',
+    styleUrl: './irongoon-forms.component.css'
 })
 export class IrongoonFormsComponent {
   option = input<IrongoonOption>();

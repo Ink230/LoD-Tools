@@ -4,11 +4,10 @@ import { IrongoonFormTooltipComponent } from 'src/app/components/irongoon/irongo
 import { IrongoonOption } from 'src/app/models/irongoon.model';
 
 @Component({
-  selector: 'app-game-data-dropdown',
-  standalone: true,
-  imports: [NgClass, IrongoonFormTooltipComponent],
-  templateUrl: './game-data-dropdown.component.html',
-  styleUrl: './game-data-dropdown.component.css',
+    selector: 'app-game-data-dropdown',
+    imports: [NgClass, IrongoonFormTooltipComponent],
+    templateUrl: './game-data-dropdown.component.html',
+    styleUrl: './game-data-dropdown.component.css'
 })
 export class GameDataDropdownComponent {
   option = input<IrongoonOption>();

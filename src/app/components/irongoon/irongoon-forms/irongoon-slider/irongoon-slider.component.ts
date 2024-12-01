@@ -5,11 +5,10 @@ import { IrongoonService } from 'src/app/services/irongoon.service';
 import { IrongoonFormTooltipComponent } from '../irongoon-form-tooltip/irongoon-form-tooltip.component';
 
 @Component({
-  selector: 'app-irongoon-slider',
-  standalone: true,
-  imports: [NgClass, IrongoonFormTooltipComponent],
-  templateUrl: './irongoon-slider.component.html',
-  styleUrl: './irongoon-slider.component.css',
+    selector: 'app-irongoon-slider',
+    imports: [NgClass, IrongoonFormTooltipComponent],
+    templateUrl: './irongoon-slider.component.html',
+    styleUrl: './irongoon-slider.component.css'
 })
 export class IrongoonSliderComponent {
   option = input<IrongoonOption>();

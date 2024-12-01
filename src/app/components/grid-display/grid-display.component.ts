@@ -3,11 +3,10 @@ import { Component, OnInit, input } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 
 @Component({
-  selector: 'app-grid-display',
-  standalone: true,
-  imports: [AgGridAngular],
-  templateUrl: './grid-display.component.html',
-  styleUrl: './grid-display.component.css',
+    selector: 'app-grid-display',
+    imports: [AgGridAngular],
+    templateUrl: './grid-display.component.html',
+    styleUrl: './grid-display.component.css'
 })
 export class GridDisplayComponent implements OnInit {
   rowData = input<any>();

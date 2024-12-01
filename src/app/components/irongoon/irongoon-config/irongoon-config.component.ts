@@ -8,11 +8,10 @@ import { IrongoonConfigOption } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 
 @Component({
-  selector: 'app-irongoon-config',
-  standalone: true,
-  imports: [ClipboardModule, CommonModule, FormsModule, NumericInputDirective],
-  templateUrl: './irongoon-config.component.html',
-  styleUrl: './irongoon-config.component.css',
+    selector: 'app-irongoon-config',
+    imports: [ClipboardModule, CommonModule, FormsModule, NumericInputDirective],
+    templateUrl: './irongoon-config.component.html',
+    styleUrl: './irongoon-config.component.css'
 })
 export class IrongoonConfigComponent implements OnInit, OnDestroy {
   configOutputElement = viewChild<ElementRef>('configOutputElement');

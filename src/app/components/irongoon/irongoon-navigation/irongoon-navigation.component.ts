@@ -5,11 +5,10 @@ import { IrongoonService } from 'src/app/services/irongoon.service';
 import { IrongoonCategoryComponent } from '../irongoon-category/irongoon-category.component';
 
 @Component({
-  selector: 'app-irongoon-navigation',
-  standalone: true,
-  imports: [NgClass, IrongoonCategoryComponent],
-  templateUrl: './irongoon-navigation.component.html',
-  styleUrl: './irongoon-navigation.component.css',
+    selector: 'app-irongoon-navigation',
+    imports: [NgClass, IrongoonCategoryComponent],
+    templateUrl: './irongoon-navigation.component.html',
+    styleUrl: './irongoon-navigation.component.css'
 })
 export class IrongoonNavigationComponent {
   selectedTab = signal(1);

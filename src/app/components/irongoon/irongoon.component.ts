@@ -8,10 +8,9 @@ import { IrongoonNavigationComponent } from './irongoon-navigation/irongoon-navi
 import { IrongoonSupportComponent } from './irongoon-support/irongoon-support.component';
 
 @Component({
-  selector: 'app-irongoon',
-  templateUrl: './irongoon.component.html',
-  styleUrls: ['./irongoon.component.css'],
-  standalone: true,
-  imports: [NgClass, FormsModule, IrongoonCategoryComponent, IrongoonSupportComponent, IrongoonConfigComponent, IrongoonMacroComponent, IrongoonNavigationComponent],
+    selector: 'app-irongoon',
+    templateUrl: './irongoon.component.html',
+    styleUrls: ['./irongoon.component.css'],
+    imports: [NgClass, FormsModule, IrongoonCategoryComponent, IrongoonSupportComponent, IrongoonConfigComponent, IrongoonMacroComponent, IrongoonNavigationComponent]
 })
 export class IrongoonComponent {}

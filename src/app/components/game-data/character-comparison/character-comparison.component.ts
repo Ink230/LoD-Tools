@@ -6,11 +6,10 @@ import { GameDataService } from 'src/app/services/game-data.service';
 import { GraphDisplayComponent } from '../../graph-display/graph-display.component';
 
 @Component({
-  selector: 'app-character-comparison',
-  standalone: true,
-  imports: [ReactiveFormsModule, GraphDisplayComponent],
-  templateUrl: './character-comparison.component.html',
-  styleUrl: './character-comparison.component.css',
+    selector: 'app-character-comparison',
+    imports: [ReactiveFormsModule, GraphDisplayComponent],
+    templateUrl: './character-comparison.component.html',
+    styleUrl: './character-comparison.component.css'
 })
 export class CharacterComparisonComponent implements OnInit {
   gameDataService = inject(GameDataService);

@@ -6,11 +6,10 @@ import { IrongoonService } from 'src/app/services/irongoon.service';
 import { IrongoonFormTooltipComponent } from '../irongoon-form-tooltip/irongoon-form-tooltip.component';
 
 @Component({
-  selector: 'app-irongoon-number',
-  standalone: true,
-  imports: [FormsModule, NumericInputDirective, IrongoonFormTooltipComponent],
-  templateUrl: './irongoon-number.component.html',
-  styleUrl: './irongoon-number.component.css',
+    selector: 'app-irongoon-number',
+    imports: [FormsModule, NumericInputDirective, IrongoonFormTooltipComponent],
+    templateUrl: './irongoon-number.component.html',
+    styleUrl: './irongoon-number.component.css'
 })
 export class IrongoonNumberComponent {
   option = input<IrongoonOption>();
