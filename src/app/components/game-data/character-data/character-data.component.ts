@@ -126,7 +126,7 @@ export class CharacterDataComponent {
       this.includeMinAdditions.valueChanges.pipe(startWith(false)),
       this.includeMaxAdditions.valueChanges.pipe(startWith(false)),
       this.selectedAdditions.valueChanges.pipe(startWith([])),
-    ]).subscribe(([includeMin, includeMax, selectedNames]) => {
+    ]).subscribe(([includeMin, includeMax, selectedAdditions]: [boolean, boolean, string[]]) => {
       if (!this?.character?.additions) return;
       this.filteredCharacterAdditionBasicStats.next(this.flattenAdditionAndAdditionLevels(this.character?.additions));
       this.filteredCharacterAdditionHitStats.next(this.flattenAdditionHits(this.character?.additions));
@@ -153,14 +153,14 @@ export class CharacterDataComponent {
         this.filteredCharacterAdditionBasicStats.next(this.flattenSpecificAdditions(this.character.additions, 4));
       }
 
-      if (selectedNames.length > 0) {
+      if (selectedAdditions?.length > 0) {
         const selectedFilteredAdditions = filteredAdditions.filter((addition) => {
-          return selectedNames?.includes(addition.name);
+          return selectedAdditions.includes(addition.name);
         });
         this.filteredCharacterAdditionBasicStats.next(selectedFilteredAdditions);
 
         const filteredSelectedAdditionHits = filteredAdditionHits.filter((additionHits) => {
-          return selectedNames?.includes(additionHits.name);
+          return selectedAdditions.includes(additionHits.name);
         });
         this.filteredCharacterAdditionHitStats.next(filteredSelectedAdditionHits);
       }
