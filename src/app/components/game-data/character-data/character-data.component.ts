@@ -242,7 +242,7 @@ export class CharacterDataComponent {
   }
 
   flattenAdditionAndAdditionLevels(additions: Addition[]): FlattenedAddition[] {
-    return additions.flatMap((addition) =>
+    return additions?.flatMap((addition) =>
       addition.levels.map((level, index) => ({
         id: index === 0 ? addition.id : null,
         name: addition.name,
@@ -256,7 +256,7 @@ export class CharacterDataComponent {
   }
 
   flattenSpecificAdditions(additions: Addition[], index): FlattenedAddition[] {
-    return additions.flatMap((addition) => {
+    return additions?.flatMap((addition) => {
       const addy = addition.levels[index];
 
       if (!addy?.multiplier) return null;
@@ -273,7 +273,7 @@ export class CharacterDataComponent {
   }
 
   flattenAdditionHits(additions: Addition[]): FlattenedAdditionHit[] {
-    return additions.flatMap((addition) => {
+    return additions?.flatMap((addition) => {
       const lastHitIndex = addition.hitData.findIndex((row) => row.lastHit === true);
 
       const processedHitData = lastHitIndex !== -1 ? addition.hitData.slice(0, lastHitIndex + 1) : addition.hitData;
