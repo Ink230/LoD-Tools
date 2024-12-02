@@ -97,20 +97,28 @@ export interface Dragoon {
   dragoonStats: DragoonStat[];
 }
 
+export interface DragoonSpellRaw {
+  name: string;
+  description: string;
+  // raw data values vanilla
+  element: number;
+  damage: number;
+  multiplier: number;
+  mpCost: number;
+  accuracy: number;
+  target: number;
+  specialTarget: number;
+  specialEffect: number;
+  statusChance: number;
+  statusType: number;
+  buffType: number;
+}
+
 export interface DragoonSpell {
   name: string;
   description: string;
   element: Element;
   damage: number;
-  healPercent: number;
-  mpCost: number;
-  accuracy: number;
-  target: Target;
-  specialTarget: Target;
-  specialEffect: number;
-  statusChance: number;
-  statusType: number;
-  buffType: number;
 }
 
 export interface DragoonStat {

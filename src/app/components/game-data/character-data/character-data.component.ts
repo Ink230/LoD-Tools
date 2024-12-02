@@ -37,6 +37,7 @@ export class CharacterDataComponent {
   includeHP = new BehaviorSubject<boolean>(false);
   filteredCharacterAdditionBasicStats = new BehaviorSubject<FlattenedAddition[]>([]);
   filteredCharacterAdditionHitStats = new BehaviorSubject<FlattenedAdditionHit[]>([]);
+  selectedNames = new FormControl();
   includeMaxAdditions = new FormControl(false);
   includeMinAdditions = new FormControl(false);
   selectedAdditions = new FormControl([]);
@@ -52,6 +53,7 @@ export class CharacterDataComponent {
     { field: 'damage', headerName: 'Damage %' },
     { field: 'sp', headerName: 'SP' },
   ];
+
   characterAdditionHitColumnDefinitions: ColDef[] = [
     { field: 'id', headerName: 'Id', width: 10 },
     { field: 'name' },
@@ -68,6 +70,35 @@ export class CharacterDataComponent {
     { field: 'moveToMonsterFrames', headerName: 'Move to Enemy' },
     { field: 'distance', width: 140 },
     { field: 'pauseFrames', headerName: 'Initial Pause' },
+  ];
+
+  characterDragoonStatsColumnDefinitions: ColDef[] = [
+    {
+      field: 'level',
+      valueGetter: (params) => {
+        return params.node?.rowIndex !== undefined ? params.node.rowIndex + 1 : null;
+      },
+    },
+    { field: 'attack' },
+    { field: 'defense' },
+    { field: 'magicAttack' },
+    { field: 'magicDefense' },
+  ];
+
+  characterDragoonSpellsColumnDefinitions: ColDef[] = [
+    { field: 'name', headerName: 'Name' },
+    { field: 'description', headerName: 'Description' },
+    { field: 'element', headerName: 'Element' },
+    { field: 'damage', headerName: 'Damage' },
+    { field: 'healPercent', headerName: 'Heal %' },
+    { field: 'mpCost', headerName: 'MP Cost' },
+    { field: 'accuracy', headerName: 'Accuracy' },
+    { field: 'target', headerName: 'Target' },
+    { field: 'specialTarget', headerName: 'Special Target' },
+    { field: 'specialEffect', headerName: 'Special Effect' },
+    { field: 'statusChance', headerName: 'Status Chance' },
+    { field: 'statusType', headerName: 'Status Type' },
+    { field: 'buffType', headerName: 'Buff Type' },
   ];
 
   constructor() {

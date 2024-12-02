@@ -139,4 +139,22 @@
       <app-grid-display [rowData]="filteredCharacterAdditionHitStats | async" [colDefs]="characterAdditionHitColumnDefinitions"></app-grid-display>
     </div>
   </div>
+  <div class="body-stats">
+    <div class="flex-row">Dragoon Stats</div>
+    <div class="flex-row small-text"></div>
+    <div>
+      @for (dragoon of character?.dragoons; track dragoon) {
+        <app-grid-display [rowData]="dragoon.dragoonStats" [colDefs]="characterDragoonStatsColumnDefinitions"></app-grid-display>
+      }
+    </div>
+  </div>
+  <div class="body-stats">
+    <div class="flex-row">Dragoon Stats</div>
+    <div class="flex-row small-text"></div>
+    <div>
+      @for (dragoon of character?.dragoons; track dragoon) {
+        <app-grid-display [rowData]="dragoon.spells" [colDefs]="characterDragoonSpellsColumnDefinitions"></app-grid-display>
+      }
+    </div>
+  </div>
 </div>

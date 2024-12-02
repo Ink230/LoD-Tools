@@ -1257,33 +1257,33 @@ export class GameDataService {
           dragoonStats: [
             {
               attack: 150,
-              defense: 150,
-              magicAttack: 200,
+              defense: 200,
+              magicAttack: 150,
               magicDefense: 200,
             },
             {
               attack: 155,
-              defense: 155,
-              magicAttack: 210,
+              defense: 210,
+              magicAttack: 155,
               magicDefense: 210,
             },
             {
               attack: 160,
-              defense: 160,
-              magicAttack: 220,
+              defense: 220,
+              magicAttack: 160,
               magicDefense: 220,
             },
             {
               attack: 165,
-              defense: 165,
-              magicAttack: 230,
+              defense: 230,
+              magicAttack: 165,
               magicDefense: 230,
             },
             {
               attack: 170,
-              defense: 170,
-              magicAttack: 240,
-              magicDefense: 240,
+              defense: 250,
+              magicAttack: 170,
+              magicDefense: 250,
             },
           ],
         },
@@ -2937,7 +2937,44 @@ export class GameDataService {
           magicAvoid: 0,
         },
       ],
-      dragoons: null,
+      dragoons: [
+        {
+          element: Element.WIND,
+          spells: null,
+          dragoonStats: [
+            {
+              attack: 150,
+              defense: 200,
+              magicAttack: 200,
+              magicDefense: 200,
+            },
+            {
+              attack: 155,
+              defense: 210,
+              magicAttack: 205,
+              magicDefense: 210,
+            },
+            {
+              attack: 160,
+              defense: 220,
+              magicAttack: 210,
+              magicDefense: 220,
+            },
+            {
+              attack: 165,
+              defense: 230,
+              magicAttack: 215,
+              magicDefense: 230,
+            },
+            {
+              attack: 170,
+              defense: 250,
+              magicAttack: 220,
+              magicDefense: 250,
+            },
+          ],
+        },
+      ],
       flavour: {
         background: 'Commander of the First Knighthood of Basil. Childhood friend of King Albert. Son of Servi. Survived by Mother.',
         dragoonSpirit: ['Jade Dragoon Spirit'],
@@ -3761,7 +3798,44 @@ export class GameDataService {
           magicAvoid: 0,
         },
       ],
-      dragoons: null,
+      dragoons: [
+        {
+          element: Element.LIGHT,
+          spells: null,
+          dragoonStats: [
+            {
+              attack: 200,
+              defense: 200,
+              magicAttack: 150,
+              magicDefense: 200,
+            },
+            {
+              attack: 205,
+              defense: 210,
+              magicAttack: 155,
+              magicDefense: 210,
+            },
+            {
+              attack: 210,
+              defense: 220,
+              magicAttack: 160,
+              magicDefense: 220,
+            },
+            {
+              attack: 215,
+              defense: 230,
+              magicAttack: 165,
+              magicDefense: 230,
+            },
+            {
+              attack: 220,
+              defense: 250,
+              magicAttack: 170,
+              magicDefense: 250,
+            },
+          ],
+        },
+      ],
       flavour: {
         background: 'The Moon Child, saviour of Endiness. Daugher of Queen Theresa, twin sister to Princess Louvia. ',
         dragoonSpirit: ['White-Silver Dragoon Spirit'],
@@ -5244,7 +5318,44 @@ export class GameDataService {
           magicAvoid: 0,
         },
       ],
-      dragoons: null,
+      dragoons: [
+        {
+          element: Element.DARK,
+          spells: null,
+          dragoonStats: [
+            {
+              attack: 150,
+              defense: 200,
+              magicAttack: 150,
+              magicDefense: 200,
+            },
+            {
+              attack: 155,
+              defense: 210,
+              magicAttack: 155,
+              magicDefense: 210,
+            },
+            {
+              attack: 160,
+              defense: 220,
+              magicAttack: 160,
+              magicDefense: 220,
+            },
+            {
+              attack: 165,
+              defense: 230,
+              magicAttack: 165,
+              magicDefense: 230,
+            },
+            {
+              attack: 170,
+              defense: 250,
+              magicAttack: 170,
+              magicDefense: 250,
+            },
+          ],
+        },
+      ],
       flavour: {
         background: "The Black Monster. Zieg's love. Participated in the Dragon Campaign. Alive for ~11,000 years. Wingly Conspirator.",
         dragoonSpirit: ['Dark Dragoon Spirit'],
@@ -7061,7 +7172,44 @@ export class GameDataService {
           magicAvoid: 0,
         },
       ],
-      dragoons: null,
+      dragoons: [
+        {
+          element: Element.THUNDER,
+          spells: null,
+          dragoonStats: [
+            {
+              attack: 150,
+              defense: 200,
+              magicAttack: 200,
+              magicDefense: 200,
+            },
+            {
+              attack: 155,
+              defense: 210,
+              magicAttack: 205,
+              magicDefense: 210,
+            },
+            {
+              attack: 160,
+              defense: 220,
+              magicAttack: 210,
+              magicDefense: 220,
+            },
+            {
+              attack: 165,
+              defense: 230,
+              magicAttack: 215,
+              magicDefense: 230,
+            },
+            {
+              attack: 170,
+              defense: 250,
+              magicAttack: 220,
+              magicDefense: 250,
+            },
+          ],
+        },
+      ],
       flavour: {
         background: 'Master of the Rouge School of Martial Arts. Father of Claire, Grandfather of Dart. Lost a Daughter.',
         dragoonSpirit: [''],
@@ -8711,7 +8859,44 @@ export class GameDataService {
           magicAvoid: 0,
         },
       ],
-      dragoons: null,
+      dragoons: [
+        {
+          element: Element.WIND,
+          spells: null,
+          dragoonStats: [
+            {
+              attack: 150,
+              defense: 200,
+              magicAttack: 200,
+              magicDefense: 200,
+            },
+            {
+              attack: 155,
+              defense: 210,
+              magicAttack: 205,
+              magicDefense: 210,
+            },
+            {
+              attack: 160,
+              defense: 220,
+              magicAttack: 210,
+              magicDefense: 220,
+            },
+            {
+              attack: 165,
+              defense: 230,
+              magicAttack: 215,
+              magicDefense: 230,
+            },
+            {
+              attack: 170,
+              defense: 250,
+              magicAttack: 220,
+              magicDefense: 250,
+            },
+          ],
+        },
+      ],
       flavour: {
         background: 'King of Bale, inheritor of Serdio Royalship. Childhood friend of Lavitz. Nephew to Emporer Doel. Son of King Carlo.',
         dragoonSpirit: ['Jade Dragoon Spirit'],
@@ -10371,7 +10556,44 @@ export class GameDataService {
           magicAvoid: 0,
         },
       ],
-      dragoons: null,
+      dragoons: [
+        {
+          element: Element.WATER,
+          spells: null,
+          dragoonStats: [
+            {
+              attack: 200,
+              defense: 200,
+              magicAttack: 150,
+              magicDefense: 200,
+            },
+            {
+              attack: 205,
+              defense: 210,
+              magicAttack: 155,
+              magicDefense: 210,
+            },
+            {
+              attack: 210,
+              defense: 220,
+              magicAttack: 160,
+              magicDefense: 220,
+            },
+            {
+              attack: 215,
+              defense: 230,
+              magicAttack: 165,
+              magicDefense: 230,
+            },
+            {
+              attack: 220,
+              defense: 250,
+              magicAttack: 170,
+              magicDefense: 250,
+            },
+          ],
+        },
+      ],
       flavour: {
         background: 'Wingly deserter. Champion of Wingly-Human cooperation. Dancer.',
         dragoonSpirit: ['Blue-Sea Dragoon Spirit'],
@@ -11687,7 +11909,44 @@ export class GameDataService {
           magicAvoid: 0,
         },
       ],
-      dragoons: null,
+      dragoons: [
+        {
+          element: Element.EARTH,
+          spells: null,
+          dragoonStats: [
+            {
+              attack: 150,
+              defense: 200,
+              magicAttack: 200,
+              magicDefense: 200,
+            },
+            {
+              attack: 155,
+              defense: 210,
+              magicAttack: 205,
+              magicDefense: 210,
+            },
+            {
+              attack: 160,
+              defense: 220,
+              magicAttack: 210,
+              magicDefense: 220,
+            },
+            {
+              attack: 165,
+              defense: 230,
+              magicAttack: 215,
+              magicDefense: 230,
+            },
+            {
+              attack: 170,
+              defense: 250,
+              magicAttack: 220,
+              magicDefense: 250,
+            },
+          ],
+        },
+      ],
       flavour: {
         background: 'Loyal Giganto. Brother to Indora. Often lacks a dimension and not to scale.',
         dragoonSpirit: ['Golden Dragoon Spirit'],
@@ -12501,7 +12760,44 @@ export class GameDataService {
           magicAvoid: 0,
         },
       ],
-      dragoons: null,
+      dragoons: [
+        {
+          element: Element.LIGHT,
+          spells: null,
+          dragoonStats: [
+            {
+              attack: 200,
+              defense: 200,
+              magicAttack: 150,
+              magicDefense: 200,
+            },
+            {
+              attack: 205,
+              defense: 210,
+              magicAttack: 155,
+              magicDefense: 210,
+            },
+            {
+              attack: 210,
+              defense: 220,
+              magicAttack: 160,
+              magicDefense: 220,
+            },
+            {
+              attack: 215,
+              defense: 230,
+              magicAttack: 165,
+              magicDefense: 230,
+            },
+            {
+              attack: 220,
+              defense: 250,
+              magicAttack: 170,
+              magicDefense: 250,
+            },
+          ],
+        },
+      ],
       flavour: {
         background: 'Sacred Sister Prime. Best Character in the Game.',
         dragoonSpirit: ['White-Silver Dragoon Spirit'],
