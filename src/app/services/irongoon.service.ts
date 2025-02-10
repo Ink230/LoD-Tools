@@ -911,7 +911,7 @@ export class IrongoonService {
     },
     {
       option: 'Mob Drop Count',
-      message: `The amount of drops a mob is capable of dropping
+      message: `The amount of drops a mob is capable of dropping.
                 <br><br>
                 Each mob will have its own rolled drop chance per droppable item.
                 <br><br>
@@ -929,7 +929,7 @@ export class IrongoonService {
     },
     {
       option: 'Mini-Boss Drop Count',
-      message: `The amount of drops a Mini-Boss is capable of dropping
+      message: `The amount of drops a Mini-Boss is capable of dropping.
                 <br><br>
                 Each Mini-Boss will have its own rolled drop chance per droppable item.
                 <br><br>
@@ -947,7 +947,7 @@ export class IrongoonService {
     },
     {
       option: 'Boss Drop Count',
-      message: `The amount of drops a Boss is capable of dropping
+      message: `The amount of drops a Boss is capable of dropping.
                 <br><br>
                 Each Boss will have its own rolled drop chance per droppable item.
                 <br><br>
@@ -962,6 +962,82 @@ export class IrongoonService {
     {
       option: 'Boss Drop Lower Percent Bound',
       message: `The lower percent bound a Boss may have to drop a drop.`,
+    },
+    {
+      option: 'Battle Stage',
+      message: `How battle stages are selected.
+                <br><br>
+                <b>Randomize</b>
+                <br>
+                Every encounter generates a newly randomized stage.
+                <br><br>
+                <b>Randomize per Encounter</b>
+                <br>
+                Each encounter ID gets a fixed randomized stage.
+                <br><br>
+                <b>Randomize per Submap</b>
+                <br>
+                Each encounter ID on a submap gets a fixed randomized stage.
+                <br><br>
+                <b>Stock</b>
+                <br>
+                Vanilla behaviour.
+                <br><br>
+                <b>Note</b>
+                <br>
+                Music will be randomized.`,
+    },
+    {
+      option: 'Battle Stage List',
+      message: `A comma separated list of stage IDs to select from.
+                <br><br>
+                <b>Format</b>
+                <br>
+                [2,5,7]
+                <br><br>
+                <b>Note</b>
+                <br>
+                Not currently shown in the website config below but is supported.`,
+    },
+    {
+      option: 'Escape Chance',
+      message: `How escape chance is randomized.
+                <br><br>
+                <b>Random Bounds</b>
+                <br>
+                Every encounter randomly selects from the Upper and Lower bounds.
+                <br><br>
+                99 is ninety-nine percent chance to escapce.
+                <br>
+                1% is one percent chance to escape.
+                <br><br>
+                <b>Randomize per Encounter</b>
+                <br>
+                Same as Random Bounds but fixed per encounter ID.
+                <br><br>
+                <b>Randomize per Submap</b>
+                <br>
+                Same as Random Bounds but fixed per submap.
+                <br><br>
+                <b>Run Slow</b>
+                <br>
+                No escape.
+                <br><br>
+                <b>Coward</b>
+                <br>
+                Always escape.
+                <br><br>
+                <b>Stock</b>
+                <br>
+                Vanilla behaviour.`,
+    },
+    {
+      option: 'Escape Chance Upper Bound',
+      message: `The upper limit that can be rolled for escape percent chance.`,
+    },
+    {
+      option: 'Escape Chance Lower Bound',
+      message: `The lower limit that can be rolled for escape percent chance.`,
     },
   ];
 
@@ -1597,7 +1673,43 @@ export class IrongoonService {
             {
               id: 2,
               name: 'Encounters',
-              options: [{ id: 0, name: 'Run Slow', value: 1, inputType: IrongoonInputs.Slider, disabled: true }],
+              options: [
+                {
+                  id: 0,
+                  name: 'Battle Stage',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'RANDOM', name: 'Random' },
+                  dataList: [
+                    { value: 'RANDOM', name: 'Random' },
+                    { value: 'RANDOM_FIXED_ENCOUNTER', name: 'Randomize per Encounter' },
+                    { value: 'RANDOM_FIXED_SUBMAP', name: 'Randomize per Submap' },
+                    { value: 'STOCK', name: 'Stock' },
+                  ],
+                  descriptor: 'battleStage',
+                  disabled: false,
+                },
+                { id: 1, name: 'Battle Stage List', value: 0, inputType: IrongoonInputs.Number, descriptor: 'battleStageList', disabled: true },
+                {
+                  id: 2,
+                  name: 'Escape Chance',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'RANDOMIZE_BOUNDS', name: 'Random Bounds' },
+                  dataList: [
+                    { value: 'RANDOMIZE_BOUNDS', name: 'Random Bounds' },
+                    { value: 'RANDOMIZE_BOUNDS_FIXED_ENCOUNTER', name: 'Random Bounds per Encounter' },
+                    { value: 'RANDOMIZE_BOUNDS_FIXED_SUBMAP', name: 'Random Bounds per Submap' },
+                    { value: 'NO_ESCAPE', name: 'Run Slow' },
+                    { value: 'COWARD', name: 'Coward' },
+                    { value: 'STOCK', name: 'Stock' },
+                  ],
+                  descriptor: 'escapeChance',
+                  disabled: false,
+                },
+                { id: 3, name: 'Escape Chance Upper Bound', value: 99, inputType: IrongoonInputs.Number, descriptor: 'escapeChanceUpperBound', disabled: false },
+                { id: 4, name: 'Escape Chance Lower Bound', value: 1, inputType: IrongoonInputs.Number, descriptor: 'escapeChanceLowerBound', disabled: false },
+              ],
             },
           ],
         },
