@@ -4,11 +4,12 @@ import { IrongoonConfigComponent } from './irongoon-config/irongoon-config.compo
 import { IrongoonMacroComponent } from './irongoon-macro/irongoon-macro.component';
 import { IrongoonNavigationComponent } from './irongoon-navigation/irongoon-navigation.component';
 import { IrongoonSupportComponent } from './irongoon-support/irongoon-support.component';
+import { IrongoonToggleComponent } from './irongoon-toggle/irongoon-toggle.component';
 
 @Component({
   selector: 'app-irongoon',
   templateUrl: './irongoon.component.html',
   styleUrls: ['./irongoon.component.css'],
-  imports: [FormsModule, IrongoonSupportComponent, IrongoonConfigComponent, IrongoonMacroComponent, IrongoonNavigationComponent],
+  imports: [FormsModule, IrongoonSupportComponent, IrongoonConfigComponent, IrongoonMacroComponent, IrongoonNavigationComponent, IrongoonToggleComponent],
 })
 export class IrongoonComponent {}

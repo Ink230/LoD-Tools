@@ -2,4 +2,7 @@
   min-width: var(--randomizer-container-width);
   max-width: var(--randomizer-container-width);
   padding-top: 2rem;
+
+  display: flex;
+  flex-direction: column;
 }

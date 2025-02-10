@@ -5,10 +5,10 @@ import { IrongoonService } from 'src/app/services/irongoon.service';
 import { IrongoonFormTooltipComponent } from '../irongoon-form-tooltip/irongoon-form-tooltip.component';
 
 @Component({
-    selector: 'app-irongoon-dropdown',
-    templateUrl: './irongoon-dropdown.component.html',
-    styleUrl: './irongoon-dropdown.component.css',
-    imports: [NgClass, IrongoonFormTooltipComponent]
+  selector: 'app-irongoon-dropdown',
+  templateUrl: './irongoon-dropdown.component.html',
+  styleUrl: './irongoon-dropdown.component.css',
+  imports: [NgClass, IrongoonFormTooltipComponent],
 })
 export class IrongoonDropdownComponent implements OnInit {
   option = input<IrongoonOption>();
@@ -55,5 +55,9 @@ export class IrongoonDropdownComponent implements OnInit {
         v = c == 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
+  }
+
+  toggleTooltips() {
+    return this.irongoonService.toggleTooltips();
   }
 }

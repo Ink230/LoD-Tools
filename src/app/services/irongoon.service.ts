@@ -1,4 +1,4 @@
-import { Injectable, Optional, SkipSelf } from '@angular/core';
+import { Injectable, Optional, SkipSelf, signal } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { IrongoonComponent } from '../components/irongoon/irongoon.component';
 import { IrongoonCategories, IrongoonConfigOption, IrongoonInputs, IrongoonTooltip } from '../models/irongoon.model';
@@ -1716,6 +1716,8 @@ export class IrongoonService {
       ],
     },
   ];
+
+  public toggleTooltips = signal(true);
 
   private publicSeed = 'AF51FA7B';
   public numberInputUpperBound = 250;
