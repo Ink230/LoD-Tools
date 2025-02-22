@@ -1389,7 +1389,7 @@ export class IrongoonService {
                   data: { value: 'RANDOM_PERCENT_BOUNDS', name: 'Randomize Percent Bounds' },
                   dataList: [
                     { value: 'RANDOM_PERCENT_BOUNDS', name: 'Randomize Percent Bounds' },
-                    { value: 'MAINTAIN_STOCK', name: 'Stock' },
+                    { value: 'STOCK', name: 'Stock' },
                   ],
                   descriptor: 'statsVarianceMonsters',
                 },
