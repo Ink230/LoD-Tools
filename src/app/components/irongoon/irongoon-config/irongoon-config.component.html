@@ -9,7 +9,7 @@
         <label for="lower" class="label">Lower</label>
         <input type="text" [(ngModel)]="inputLowerBound" (ngModelChange)="updateLowerBound($event)" (focus)="onFocusHighlightText(inputFieldLower)" #inputFieldLower NumericInput id="lower" />
       </div>
-      <div class="label">v0.4.2</div>
+      <div class="label">v0.4.15</div>
     </div>
     <div class="copyButton" (click)="copyConfigOutputToClipboard()">
       <img src="assets/copy-icon.svg" alt="Copy Text" />
@@ -17,7 +17,7 @@
   </div>
 
   <div class="configOutput" #configOutputElement (dblclick)="onDblClick($event)">
-    @for (config of configList(); track config) {
+    @for (config of configList(); track $index) {
       @if (isHeader(config.name)) {
         <div class="option-container">
           <div class="option-header" [ngClass]="{ 'first-header': $first }">{{ config.name }}</div>

@@ -1141,6 +1141,8 @@ export class IrongoonService {
                     { value: 'RANDOM', name: 'Random' },
                     { value: 'DABAS_FIXED', name: 'Fixed' },
                     { value: 'DABAS_PER_LEVEL', name: 'Shuffle' },
+                    { value: 'DABAS_FIXED_CUSTOM', name: 'Fixed Custom' },
+                    { value: 'DABAS_PER_LEVEL_CUSTOM', name: 'Shuffle Custom' },
                   ],
                   descriptor: 'bodyTotalStatsDistributionPerLevel',
                 },
@@ -1153,7 +1155,7 @@ export class IrongoonService {
                   dataList: [
                     { value: 'STOCK', name: 'Stock' },
                     { value: 'RANDOM_MODIFIER', name: 'Random modifier' },
-                    { value: 'RANDOM_MODIFER_CUSTOM_UPPER_BOUND', name: 'Random modifier with custom upper bound' },
+                    { value: 'RANDOM_MODIFIER_CUSTOM_UPPER_BOUND', name: 'Random modifier with custom upper bound' },
                   ],
                   descriptor: 'bodyTotalStatsBounds',
                   disabled: true,
@@ -1167,13 +1169,14 @@ export class IrongoonService {
                   dataList: [
                     { value: 'RANDOMIZE_BOUNDS_PER_LEVEL', name: 'Randomize Bounds' },
                     { value: 'RANDOMIZE_STOCK_BOUNDS', name: 'Randomize Stock with Bounds' },
-                    { value: 'RANDOMIZE_BOUND_PERCENT_MODIFIED_PER_LEVEL', name: 'Randomize Percent Bounds' },
+                    { value: 'RANDOMIZE_RANDOM_STOCK_BOUNDS', name: 'Randomize Random Stock Bounds' },
+                    { value: 'RANDOMIZE_BOUNDS_PERCENT_MODIFIED_PER_LEVEL', name: 'Randomize Percent Bounds' },
                     { value: 'MAINTAIN_STOCK', name: 'Stock' },
                   ],
                   descriptor: 'hpStatPerLevel',
                 },
                 { id: 4, name: 'HP Stat Upper Percent Bound', value: 150, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'hpStatUpperPercentBound' },
-                { id: 5, name: 'HP Stat Lower Percent Bound', value: 50, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'hpStatLowerPercentBound' },
+                { id: 5, name: 'HP Stat Lower Percent Bound', value: 75, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'hpStatLowerPercentBound' },
                 {
                   id: 6,
                   name: 'Speed Stat Per Level',
@@ -1188,37 +1191,26 @@ export class IrongoonService {
                   descriptor: 'speedStatPerLevel',
                 },
                 { id: 7, name: 'Speed Stat Upper Percent Bound', value: 150, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatUpperPercentBound' },
-                { id: 8, name: 'Speed Stat Lower Percent Bound', value: 50, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatLowerPercentBound' },
+                { id: 8, name: 'Speed Stat Lower Percent Bound', value: 30, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatLowerPercentBound' },
                 {
                   id: 9,
                   name: 'Elements',
                   value: 1,
                   inputType: IrongoonInputs.Dropdown,
-                  data: { value: 'RANDOMIZE', name: 'Randomize' },
+                  data: { value: 'RANDOM_CAMPAIGN', name: 'Randomize per Campaign' },
                   dataList: [
-                    { value: 'RANDOMIZE', name: 'Randomize' },
-                    { value: 'RANDOMIZE_RANDOM', name: 'Random Random' },
-                    { value: 'RANDOMIZE_AND_TYPINGS', name: 'Elements and Typings' },
-                    { value: 'RANDOMIZE_RANDOM_AND_TYPINGS', name: 'Random Random Elements and Typings' },
-                    { value: 'MAINTAIN_STOCK', name: 'Stock' },
+                    { value: 'RANDOM_CAMPAIGN', name: 'Randomize per Campaign' },
+                    { value: 'RANDOM_BATTLE', name: 'Randomize per Battle' },
+                    { value: 'STOCK', name: 'Stock' },
                   ],
                   descriptor: 'characterElements',
-                  disabled: true,
                 },
                 {
                   id: 10,
                   name: 'No Element',
                   value: 1,
-                  inputType: IrongoonInputs.Dropdown,
-                  data: { value: 'EXCLUDE', name: 'Exclude' },
-                  dataList: [
-                    { value: 'EXCLUDE', name: 'Exclude' },
-                    { value: 'INCLUDE', name: 'Include' },
-                    { value: 'ELEMENTS_ONLY', name: 'Elements Only' },
-                    { value: 'IMMUNITIES_ONLY', name: 'Immunities Only' },
-                  ],
-                  descriptor: 'noElementCharacters',
-                  disabled: true,
+                  inputType: IrongoonInputs.Slider,
+                  descriptor: 'characterNoElement',
                 },
               ],
             },
@@ -1256,6 +1248,8 @@ export class IrongoonService {
                     { value: 'RANDOM', name: 'Random' },
                     { value: 'DABAS_FIXED', name: 'Fixed' },
                     { value: 'DABAS_PER_LEVEL', name: 'Shuffle' },
+                    { value: 'DABAS_FIXED_CUSTOM', name: 'Fixed Custom' },
+                    { value: 'DABAS_PER_LEVEL_CUSTOM', name: 'Shuffle Custom' },
                   ],
                   descriptor: 'dragoonTotalStatsDistributionPerLevel',
                 },
@@ -1268,7 +1262,7 @@ export class IrongoonService {
                   dataList: [
                     { value: 'STOCK', name: 'Stock' },
                     { value: 'RANDOM_MODIFIER', name: 'Random modifier' },
-                    { value: 'RANDOM_MODIFER_CUSTOM_UPPER_BOUND', name: 'Random modifier with custom upper bound' },
+                    { value: 'RANDOM_MODIFIER_CUSTOM_UPPER_BOUND', name: 'Random modifier with custom upper bound' },
                   ],
                   descriptor: 'dragoonTotalStatsBounds',
                   disabled: true,
@@ -1379,7 +1373,7 @@ export class IrongoonService {
                   ],
                   descriptor: 'speedStatMonsters',
                 },
-                { id: 2, name: 'Speed Stat Upper Bound', value: 80, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatMonstersUpperBound' },
+                { id: 2, name: 'Speed Stat Upper Bound', value: 70, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatMonstersUpperBound' },
                 { id: 3, name: 'Speed Stat Lower Bound', value: 30, inputType: IrongoonInputs.Number, disabled: false, descriptor: 'speedStatMonstersLowerBound' },
                 {
                   id: 8,
@@ -1446,6 +1440,74 @@ export class IrongoonService {
                 { id: 3, name: 'Disable Service Shops', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 4, name: 'Inflation Modifier', value: 100, inputType: IrongoonInputs.Number, disabled: true },
                 {
+                  id: 6,
+                  name: 'Shop Availability',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'STOCK', name: 'Stock' },
+                  dataList: [
+                    { value: 'STOCK', name: 'Stock' },
+                    { value: 'RANDOM', name: 'Random' },
+                    { value: 'NO_SHOPS', name: 'No Shops' },
+                    { value: 'NO_ITEMS', name: 'No Item Shops' },
+                    { value: 'NO_EQUIPMENT', name: 'No Equipment Shops' },
+                  ],
+                  descriptor: 'shopAvailability',
+                },
+                {
+                  id: 7,
+                  name: 'Shop Quantity',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'RANDOMIZE_BOUNDS', name: 'Randomize Bounds' },
+                  dataList: [
+                    { value: 'RANDOMIZE_BOUNDS', name: 'Randomize Bounds' },
+                    { value: 'STOCK', name: 'Stock' },
+                  ],
+                  descriptor: 'shopQuantity',
+                },
+                { id: 8, name: 'Shop Quantity Upper Bound', value: 8, inputType: IrongoonInputs.Number, descriptor: 'shopQuantityUpperBound' },
+                { id: 9, name: 'Shop Quantity Lower Bound', value: 1, inputType: IrongoonInputs.Number, descriptor: 'shopQuantityLowerBound' },
+                {
+                  id: 10,
+                  name: 'Shop Quantity Logic',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'RESPECT_SHOP_CONTENTS', name: 'Respect Shop Contents' },
+                  dataList: [
+                    { value: 'RESPECT_SHOP_CONTENTS', name: 'Respect Shop Contents' },
+                    { value: 'FILL_ALL', name: 'Fill All Shops' },
+                  ],
+                  descriptor: 'shopQuantityLogic',
+                },
+                {
+                  id: 11,
+                  name: 'Shop Contents',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'RANDOMIZE_ALL', name: 'Randomize Items and Equipment' },
+                  dataList: [
+                    { value: 'RANDOMIZE_ALL', name: 'Randomize Items and Equipment' },
+                    { value: 'RANDOMIZE_ALL_MIXED', name: 'Randomize Mixed Items and Equipment' },
+                    { value: 'RANDOMIZE_ITEMS', name: 'Randomize Items' },
+                    { value: 'RANDOMIZE_EQUIPMENT', name: 'Randomize Equipment' },
+                    { value: 'STOCK', name: 'Stock' },
+                  ],
+                  descriptor: 'shopContents',
+                },
+                {
+                  id: 12,
+                  name: 'Shop Duplicates',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'NONE', name: 'None' },
+                  dataList: [
+                    { value: 'NONE', name: 'None' },
+                    { value: 'ANY', name: 'Any' },
+                  ],
+                  descriptor: 'shopDuplicates',
+                },
+                {
                   id: 5,
                   name: 'Randomize Shops',
                   value: 1,
@@ -1475,6 +1537,7 @@ export class IrongoonService {
                 { id: 2, name: 'No Repeat Items', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 3, name: 'Include Equipment', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 4, name: 'Unique Equipment', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                { id: 9, name: 'Item Carry Limit', value: 2, inputType: IrongoonInputs.Number, descriptor: 'itemCarryLimit' },
                 { id: 5, name: 'Equipment %', value: 25, inputType: IrongoonInputs.Number, disabled: true },
                 { id: 6, name: 'Attack Item %', value: 25, inputType: IrongoonInputs.Number, disabled: true },
                 { id: 7, name: 'Effect Item %', value: 25, inputType: IrongoonInputs.Number, disabled: true },
@@ -1548,6 +1611,18 @@ export class IrongoonService {
                 { id: 0, name: 'Randomize Music', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 1, name: 'Randomize Sound Effects', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 2, name: 'Randomize Voices', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
+                {
+                  id: 3,
+                  name: 'Battle Music',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'RANDOM', name: 'Random' },
+                  dataList: [
+                    { value: 'RANDOM', name: 'Random' },
+                    { value: 'STOCK', name: 'Stock' },
+                  ],
+                  descriptor: 'battleMusic',
+                },
               ],
             },
           ],
@@ -1639,7 +1714,10 @@ export class IrongoonService {
             {
               id: 0,
               name: 'Randomizer',
-              options: [{ id: 0, name: 'Use New Seed on Campaign Start', value: 1, inputType: IrongoonInputs.Slider, descriptor: 'useRandomSeedOnNewCampaign', disabled: false }],
+              options: [
+                { id: 0, name: 'Use New Seed on Campaign Start', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'useRandomSeedOnNewCampaign', disabled: false },
+                { id: 1, name: 'CSV Data Overrides', value: 1, inputType: IrongoonInputs.Slider, descriptor: 'csvDataOverrides', disabled: false },
+              ],
             },
             {
               id: 1,
@@ -1668,6 +1746,34 @@ export class IrongoonService {
                 { id: 1, name: 'Random Starting Character', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 2, name: 'Lock Party', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
                 { id: 3, name: 'Party Size', value: 3, inputType: IrongoonInputs.Number, disabled: true },
+                {
+                  id: 4,
+                  name: 'Enable All Characters',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'PERMANENTLY', name: 'Permanently' },
+                  dataList: [
+                    { value: 'PERMANENTLY', name: 'Permanently' },
+                    { value: 'STORY_CONTROLLED', name: 'Story Controlled' },
+                    { value: 'STOCK', name: 'Stock' },
+                  ],
+                  descriptor: 'enableAllCharacters',
+                },
+                {
+                  id: 5,
+                  name: 'Battle Party',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'RANDOM_BATTLE', name: 'Randomize per Battle' },
+                  dataList: [
+                    { value: 'RANDOM_BATTLE', name: 'Randomize per Battle' },
+                    { value: 'RANDOM_CAMPAIGN', name: 'Randomize per Campaign' },
+                    { value: 'STOCK', name: 'Stock' },
+                  ],
+                  descriptor: 'battleParty',
+                },
+                { id: 6, name: 'Battle Party Size', value: 3, inputType: IrongoonInputs.Number, descriptor: 'battlePartySize' },
+                { id: 7, name: 'Allow Battle Party Duplicates', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'battlePartyDuplicates' },
               ],
             },
             {
@@ -1719,7 +1825,7 @@ export class IrongoonService {
 
   public toggleTooltips = signal(true);
 
-  private publicSeed = 'AF51FA7B';
+  private publicSeed = '2F055604';
   public numberInputUpperBound = 250;
   public numberInputLowerBound = 30;
 
@@ -1815,16 +1921,13 @@ export class IrongoonService {
   }
 
   getConfigList() {
-    let configList: IrongoonConfigOption[] = [];
+    const configValues = new Map<string, string | number>();
 
-    configList.push({ name: `# Seed`, value: `` });
-    configList.push({ name: `publicSeed:`, value: this.publicSeed });
     this.optionCategories.forEach((category) => {
       if (category.id === 0) return;
 
       category.columns.forEach((column) => {
         column.settings.forEach((setting) => {
-          configList.push({ name: `# ${setting.name} `, value: `` });
           setting.options.forEach((option) => {
             if (option.disabled) return;
             let result: any;
@@ -1841,11 +1944,91 @@ export class IrongoonService {
                 break;
             }
 
-            configList.push({ name: `${option.descriptor}:`, value: `${result}` });
+            configValues.set(option.descriptor, result);
           });
         });
       });
     });
+    configValues.set('publicSeed', this.publicSeed);
+    configValues.set('characterElementOverride', '[]');
+    configValues.set('battlePartyOverride', '[]');
+    configValues.set('battlePartyPool', '[]');
+    configValues.set('shopContentsItemPool', '[]');
+    configValues.set('shopContentsEquipmentPool', '[]');
+    configValues.set(
+      'shopContentsRecalled',
+      `["lod:sachet", "lod:enemy_healing_potion", "lod:psyche_bomb", "lod:psyche_bomb_x", "lod:soul_eater", "lod:ultimate_wargod", "lod:legend_casque", "lod:armor_of_legend", "lod:phantom_shield"]`,
+    );
+    configValues.set('battleStageList', '[]');
+
+    const configLayout = [
+      ['# Seed', 'publicSeed'],
+      [
+        '# Characters',
+        'bodyTotalStatsPerLevel',
+        'bodyTotalStatsDistributionPerLevel',
+        'hpStatPerLevel',
+        'hpStatUpperPercentBound',
+        'hpStatLowerPercentBound',
+        'speedStatPerLevel',
+        'speedStatUpperPercentBound',
+        'speedStatLowerPercentBound',
+        'characterElements',
+        'characterNoElement',
+        'characterElementOverride',
+      ],
+      ['# Party', 'enableAllCharacters', 'battleParty', 'battlePartyOverride', 'battlePartySize', 'battlePartyPool', 'battlePartyDuplicates'],
+      ['# Dragoons', 'dragoonTotalStatsPerLevel', 'dragoonTotalStatsDistributionPerLevel'],
+      [
+        '# Monsters',
+        'monsterTotalStatsPerLevel',
+        'totalStatsMonstersUpperPercentBound',
+        'totalStatsMonstersLowerPercentBound',
+        'monsterDefenseFloor',
+        'monsterMagicDefenseFloor',
+        'hpStatMonsters',
+        'hpStatMonstersUpperPercentBound',
+        'hpStatMonstersLowerPercentBound',
+        'speedStatMonsters',
+        'speedStatMonstersUpperBound',
+        'speedStatMonstersLowerBound',
+        'statsVarianceMonsters',
+        'monsterElements',
+        'noElementMonsters',
+      ],
+      [
+        '# Shops',
+        'shopAvailability',
+        'shopQuantity',
+        'shopQuantityUpperBound',
+        'shopQuantityLowerBound',
+        'shopQuantityLogic',
+        'shopContents',
+        'shopContentsItemPool',
+        'shopContentsEquipmentPool',
+        'shopContentsRecalled',
+        'shopDuplicates',
+      ],
+      ['# Chests'],
+      ['# Drops'],
+      ['# Items', 'itemCarryLimit'],
+      ['# Enemies'],
+      ['# Sound'],
+      ['# Data sources', 'csvDataOverrides'],
+      ['# Options'],
+      ['# Custom'],
+      ['# Scaling'],
+      ['# Additions'],
+      ['# Randomizer', 'useRandomSeedOnNewCampaign'],
+      ['# Encounters', 'battleStage', 'battleStageList', 'battleMusic', 'escapeChance', 'escapeChanceUpperBound', 'escapeChanceLowerBound'],
+    ];
+    const configList: IrongoonConfigOption[] = [];
+
+    configLayout.forEach(([header, ...keys]) => {
+      configList.push({ name: header, value: `` });
+      keys.forEach((key) => configList.push({ name: `${key}:`, value: configValues.get(key) }));
+    });
+
 
     return configList;
   }
