@@ -1,4 +1,4 @@
-import { Injectable, Optional, SkipSelf } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { GameDataComponent } from '../components/game-data/game-data.component';
 import { Character, Element, Species } from '../models/game-data.model';
 import { IrongoonOption } from '../models/irongoon.model';
@@ -12811,7 +12811,9 @@ export class GameDataService {
 
   public characterOptions: IrongoonOption;
 
-  constructor(@Optional() @SkipSelf() parentModule?: GameDataComponent) {
+  constructor() {
+    const parentModule = inject(GameDataComponent, { optional: true, skipSelf: true });
+
     if (parentModule) {
       throw new Error('GameDataService is already loaded. Import it in the GameDataComponent only');
     }

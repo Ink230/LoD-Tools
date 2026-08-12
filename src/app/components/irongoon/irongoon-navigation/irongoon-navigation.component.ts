@@ -1,19 +1,19 @@
 import { NgClass } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { IrongoonNavigationTab } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 import { IrongoonCategoryComponent } from '../irongoon-category/irongoon-category.component';
 
 @Component({
-    selector: 'app-irongoon-navigation',
-    imports: [NgClass, IrongoonCategoryComponent],
-    templateUrl: './irongoon-navigation.component.html',
-    styleUrl: './irongoon-navigation.component.css'
+  selector: 'app-irongoon-navigation',
+  imports: [NgClass, IrongoonCategoryComponent],
+  templateUrl: './irongoon-navigation.component.html',
+  styleUrl: './irongoon-navigation.component.css',
 })
 export class IrongoonNavigationComponent {
-  selectedTab = signal(1);
+  private irongoonService = inject(IrongoonService);
 
-  constructor(private irongoonService: IrongoonService) {}
+  selectedTab = signal(1);
 
   getNavigationTabs(): IrongoonNavigationTab[] {
     return this.irongoonService.optionCategories.map((entry) => ({ id: entry.id, title: entry.name }));

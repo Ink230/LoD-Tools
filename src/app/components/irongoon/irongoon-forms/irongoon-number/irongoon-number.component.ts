@@ -1,4 +1,4 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, input, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NumericInputDirective } from 'src/app/directives/numeric-input.directive';
 import { IrongoonOption } from 'src/app/models/irongoon.model';
@@ -12,10 +12,10 @@ import { IrongoonFormTooltipComponent } from '../irongoon-form-tooltip/irongoon-
   styleUrl: './irongoon-number.component.css',
 })
 export class IrongoonNumberComponent {
+  private irongoonService = inject(IrongoonService);
+
   option = input<IrongoonOption>();
   isActiveTooltip = signal(false);
-
-  constructor(private irongoonService: IrongoonService) {}
 
   onFocusHighlightText(inputElement: HTMLInputElement) {
     inputElement.select();

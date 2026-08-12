@@ -1,4 +1,4 @@
-import { GridOptions } from '@ag-grid-community/core';
+import { GridOptions } from 'ag-grid-community';
 import { Component, OnInit, input } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 

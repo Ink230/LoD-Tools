@@ -1,4 +1,4 @@
-import { ColDef } from '@ag-grid-community/core';
+import { ColDef } from 'ag-grid-community';
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -42,7 +42,7 @@ export class CharacterDataComponent {
   includeMinAdditions = new FormControl(false);
   selectedAdditions = new FormControl([]);
   minOrMax: 'min' | 'max' | null = null;
-  lastClickedMinOrMax = null;
+  lastClickedMinOrMax: 'min' | 'max' | null = null;
 
   characterAdditionColumnDefinitions: ColDef[] = [
     { field: 'id', width: 40 },
@@ -255,7 +255,7 @@ export class CharacterDataComponent {
     );
   }
 
-  flattenSpecificAdditions(additions: Addition[], index): FlattenedAddition[] {
+  flattenSpecificAdditions(additions: Addition[], index: number): FlattenedAddition[] {
     return additions?.flatMap((addition) => {
       const addy = addition.levels[index];
 
@@ -298,7 +298,7 @@ export class CharacterDataComponent {
     });
   }
 
-  lastClickedMinOrMaxAddition(checkboxName: string) {
+  lastClickedMinOrMaxAddition(checkboxName: 'min' | 'max') {
     this.lastClickedMinOrMax = checkboxName;
   }
 

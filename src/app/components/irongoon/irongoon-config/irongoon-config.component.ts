@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, signal, viewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ClipboardModule, ClipboardService } from 'ngx-clipboard';
 import { Subscription } from 'rxjs';
@@ -8,12 +8,15 @@ import { IrongoonConfigOption } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 
 @Component({
-    selector: 'app-irongoon-config',
-    imports: [ClipboardModule, CommonModule, FormsModule, NumericInputDirective],
-    templateUrl: './irongoon-config.component.html',
-    styleUrl: './irongoon-config.component.css'
+  selector: 'app-irongoon-config',
+  imports: [ClipboardModule, CommonModule, FormsModule, NumericInputDirective],
+  templateUrl: './irongoon-config.component.html',
+  styleUrl: './irongoon-config.component.css',
 })
 export class IrongoonConfigComponent implements OnInit, OnDestroy {
+  private irongoonService = inject(IrongoonService);
+  private clipboardService = inject(ClipboardService);
+
   configOutputElement = viewChild<ElementRef>('configOutputElement');
   configList = signal<IrongoonConfigOption[]>(null);
   toggleColor = signal<boolean>(false);
@@ -21,10 +24,7 @@ export class IrongoonConfigComponent implements OnInit, OnDestroy {
   inputLowerBound = signal<number>(this.irongoonService.numberInputLowerBound);
   private irongoonOptionSubscription: Subscription;
 
-  constructor(
-    private irongoonService: IrongoonService,
-    private clipboardService: ClipboardService
-  ) {
+  constructor() {
     this.irongoonOptionSubscription = this.irongoonService.getOptionUpdate().subscribe((msg) => {
       this.configList.set(this.getConfigList());
       this.inputUpperBound.set(this.irongoonService.numberInputUpperBound);

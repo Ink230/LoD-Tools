@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, HostListener, OnInit, input, signal } from '@angular/core';
+import { Component, HostListener, OnInit, input, signal, inject } from '@angular/core';
 import { IrongoonOption } from 'src/app/models/irongoon.model';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 import { IrongoonFormTooltipComponent } from '../irongoon-form-tooltip/irongoon-form-tooltip.component';
@@ -11,13 +11,13 @@ import { IrongoonFormTooltipComponent } from '../irongoon-form-tooltip/irongoon-
   imports: [NgClass, IrongoonFormTooltipComponent],
 })
 export class IrongoonDropdownComponent implements OnInit {
+  private irongoonService = inject(IrongoonService);
+
   option = input<IrongoonOption>();
   displayDropdown = signal(false);
   dropdownIdentifier = signal<string>(null);
   selectionIdentifier = signal<string>(null);
   isActiveTooltip = signal(false);
-
-  constructor(private irongoonService: IrongoonService) {}
 
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {

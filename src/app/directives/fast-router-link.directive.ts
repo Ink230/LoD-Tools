@@ -1,4 +1,4 @@
-import { Directive, HostListener, Input } from '@angular/core';
+import { Directive, HostListener, Input, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
 @Directive({
@@ -12,6 +12,8 @@ import { Router, RouterLink } from '@angular/router';
   ],
 })
 export class FastRouterLinkDirective {
+  private router = inject(Router);
+
   @Input() fastRouterLink = '';
 
   @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
@@ -19,6 +21,4 @@ export class FastRouterLinkDirective {
     event.stopImmediatePropagation();
     this.router.navigate([this.fastRouterLink]);
   }
-
-  constructor(private router: Router) {}
 }

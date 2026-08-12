@@ -1,4 +1,4 @@
-import { Injectable, Optional, SkipSelf, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { IrongoonComponent } from '../components/irongoon/irongoon.component';
 import { IrongoonCategories, IrongoonConfigOption, IrongoonInputs, IrongoonTooltip } from '../models/irongoon.model';
@@ -1833,7 +1833,9 @@ export class IrongoonService {
 
   private optionNotifier = new Subject<any>();
 
-  constructor(@Optional() @SkipSelf() parentModule?: IrongoonComponent) {
+  constructor() {
+    const parentModule = inject(IrongoonComponent, { optional: true, skipSelf: true });
+
     if (parentModule) {
       throw new Error('IrongoonService is already loaded. Import it in the IrongoonComponent only');
     }
@@ -1957,7 +1959,7 @@ export class IrongoonService {
     configValues.set('shopContentsEquipmentPool', '[]');
     configValues.set(
       'shopContentsRecalled',
-      `["lod:sachet", "lod:enemy_healing_potion", "lod:psyche_bomb", "lod:psyche_bomb_x", "lod:soul_eater", "lod:ultimate_wargod", "lod:legend_casque", "lod:armor_of_legend", "lod:phantom_shield"]`,
+      `["lod:sachet", "lod:enemy_healing_potion", "lod:psyche_bomb", "lod:psyche_bomb_x", "lod:soul_eater", "lod:ultimate_wargod", "lod:legend_casque", "lod:armor_of_legend", "lod:phantom_shield"]`
     );
     configValues.set('battleStageList', '[]');
 
@@ -2029,11 +2031,10 @@ export class IrongoonService {
       keys.forEach((key) => configList.push({ name: `${key}:`, value: configValues.get(key) }));
     });
 
-
     return configList;
   }
 
-  private getRandomInt(min, max) {
+  private getRandomInt(min: number, max: number): number {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;

@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, inject } from '@angular/core';
 import { IrongoonService } from 'src/app/services/irongoon.service';
 import { IrongoonFormsComponent } from '../irongoon-forms/irongoon-forms.component';
 
@@ -9,9 +9,9 @@ import { IrongoonFormsComponent } from '../irongoon-forms/irongoon-forms.compone
   imports: [IrongoonFormsComponent],
 })
 export class IrongoonCategoryComponent {
-  selectedTab = input<number>(0);
+  private irongoonService = inject(IrongoonService);
 
-  constructor(private irongoonService: IrongoonService) {}
+  selectedTab = input<number>(0);
 
   getCategory() {
     return this.irongoonService.optionCategories[this.selectedTab()]?.columns;
