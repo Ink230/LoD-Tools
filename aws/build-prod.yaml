@@ -8,10 +8,10 @@ phases:
       nodejs: 22.2.0
     commands:
       - npm config set legacy-peer-deps true
-      - npm install && npm install -g @angular/cli
+      - npm ci
   build:
     commands:
-      - ng build --configuration=production
+      - npm run build -- --configuration=production
   post_build:
     commands:
       - cd dist/$APP_NAME
