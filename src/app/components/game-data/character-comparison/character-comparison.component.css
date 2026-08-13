@@ -49,5 +49,5 @@
 
 .comparison-chart {
   display: grid;
-  width: min(80vw, 1200px);
+  width: 90vw;
 }
