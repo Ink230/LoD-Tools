@@ -3,7 +3,6 @@ import { Species } from '../models/game-data.model';
 
 @Pipe({
   name: 'species',
-  standalone: true,
 })
 export class SpeciesPipe implements PipeTransform {
   transform(value: Species): string {

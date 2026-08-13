@@ -3,7 +3,6 @@ import { Router, RouterLink } from '@angular/router';
 
 @Directive({
   selector: '[fastRouterLink]',
-  standalone: true,
   hostDirectives: [
     {
       directive: RouterLink,

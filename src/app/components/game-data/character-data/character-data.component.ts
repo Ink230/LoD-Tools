@@ -1,5 +1,5 @@
 import { ColDef } from 'ag-grid-community';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,7 +13,7 @@ import { GridDisplayComponent } from '../../grid-display/grid-display.component'
 
 @Component({
   selector: 'app-character-data',
-  imports: [CommonModule, SpeciesPipe, ElementPipe, GridDisplayComponent, GraphDisplayComponent, ReactiveFormsModule],
+  imports: [AsyncPipe, SpeciesPipe, ElementPipe, GridDisplayComponent, GraphDisplayComponent, ReactiveFormsModule],
   templateUrl: './character-data.component.html',
   styleUrl: './character-data.component.css',
 })

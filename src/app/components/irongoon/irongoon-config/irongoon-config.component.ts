@@ -1,7 +1,7 @@
-import { CommonModule } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, signal, viewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ClipboardModule, ClipboardService } from 'ngx-clipboard';
+import { ClipboardService } from 'ngx-clipboard';
 import { Subscription } from 'rxjs';
 import { NumericInputDirective } from 'src/app/directives/numeric-input.directive';
 import { IrongoonConfigOption } from 'src/app/models/irongoon.model';
@@ -9,7 +9,7 @@ import { IrongoonService } from 'src/app/services/irongoon.service';
 
 @Component({
   selector: 'app-irongoon-config',
-  imports: [ClipboardModule, CommonModule, FormsModule, NumericInputDirective],
+  imports: [NgClass, FormsModule, NumericInputDirective],
   templateUrl: './irongoon-config.component.html',
   styleUrl: './irongoon-config.component.css',
 })

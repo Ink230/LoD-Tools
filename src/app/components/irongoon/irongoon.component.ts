@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { IrongoonConfigComponent } from './irongoon-config/irongoon-config.component';
 import { IrongoonMacroComponent } from './irongoon-macro/irongoon-macro.component';
 import { IrongoonNavigationComponent } from './irongoon-navigation/irongoon-navigation.component';
@@ -10,6 +9,6 @@ import { IrongoonToggleComponent } from './irongoon-toggle/irongoon-toggle.compo
   selector: 'app-irongoon',
   templateUrl: './irongoon.component.html',
   styleUrls: ['./irongoon.component.css'],
-  imports: [FormsModule, IrongoonSupportComponent, IrongoonConfigComponent, IrongoonMacroComponent, IrongoonNavigationComponent, IrongoonToggleComponent],
+  imports: [IrongoonSupportComponent, IrongoonConfigComponent, IrongoonMacroComponent, IrongoonNavigationComponent, IrongoonToggleComponent],
 })
 export class IrongoonComponent {}

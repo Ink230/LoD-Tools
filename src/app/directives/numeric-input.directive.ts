@@ -2,7 +2,6 @@ import { Directive, ElementRef, HostListener, inject } from '@angular/core';
 
 @Directive({
   selector: '[NumericInput]',
-  standalone: true,
 })
 export class NumericInputDirective {
   private element = inject(ElementRef);
