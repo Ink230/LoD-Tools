@@ -1,7 +1,9 @@
 import { Component, OnInit, input } from '@angular/core';
 import { AgCharts } from 'ag-charts-angular';
-import { AgChartOptions } from 'ag-charts-community';
+import { AgChartOptions, AllCommunityModule, ModuleRegistry } from 'ag-charts-community';
 import { BehaviorSubject, Subscription } from 'rxjs';
+
+ModuleRegistry.registerModules(AllCommunityModule);
 
 @Component({
     selector: 'app-graph-display',
