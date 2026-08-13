@@ -1,6 +1,8 @@
-import { GridOptions } from 'ag-grid-community';
+import { AllCommunityModule, GridOptions, ModuleRegistry } from 'ag-grid-community';
 import { Component, OnInit, input } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
+
+ModuleRegistry.registerModules([AllCommunityModule]);
 
 @Component({
     selector: 'app-grid-display',

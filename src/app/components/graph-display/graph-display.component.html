@@ -1,3 +1,3 @@
-<div style="display: grid">
-  <ag-charts [options]="chartOptions" class="ag-graph-prime"> </ag-charts>
+<div class="graph-container" [class.graph-container-large]="large()">
+  <ag-charts [options]="chartOptions()" class="ag-graph-prime"> </ag-charts>
 </div>

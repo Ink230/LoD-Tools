@@ -46,3 +46,8 @@
   user-select: none;
   cursor: pointer;
 }
+
+.comparison-chart {
+  display: grid;
+  width: min(80vw, 1200px);
+}

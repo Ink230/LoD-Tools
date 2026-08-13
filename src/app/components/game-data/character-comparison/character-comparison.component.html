@@ -8,7 +8,7 @@
         <div class="attributes" [formGroupName]="character.id.toString()">
           @for (attr of characterAttributes; track attr) {
             <label class="label-comparator">
-              <input type="checkbox" [formControlName]="attr" (click)="$event.stopPropagation(); toggleSubControl(character.id, attr)" />
+          <input type="checkbox" [formControlName]="attr" (click)="$event.stopPropagation()" (change)="activateCharacter(character.id)" />
               {{ attributeLabels[attr] }}
             </label>
           }
@@ -16,8 +16,8 @@
       </div>
     }
   </div>
-  <div style="display: grid; width: 100%">
+  <div class="comparison-chart">
     <div>Selected Comparisons</div>
-    <app-graph-display [chartOptionsData]="rowData" [chartOptionsSeries]="seriesData"></app-graph-display>
+    <app-graph-display [chartOptionsData]="rowData" [chartOptionsSeries]="seriesData" [large]="true"></app-graph-display>
   </div>
 </div>

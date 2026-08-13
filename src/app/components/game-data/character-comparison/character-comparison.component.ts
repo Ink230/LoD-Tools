@@ -48,12 +48,11 @@ export class CharacterComparisonComponent implements OnInit {
         .map((key) => parseInt(key, 10))
         .filter((index) => c[index]?.mainControl);
 
-      const allBodyStats: ChartBody[] = [];
+      const bodyStatsByLevel = new Map<number, ChartBody>();
       const series: AgLineSeriesOptions<ChartBody>[] = [];
 
       enabledCharacters.forEach((index) => {
         const character = this.gameDataService.getCharacterById(index);
-        const characterBodyStatsData = character.bodyStats as ChartBody[];
         const characterControls = c[index];
 
         this.characterAttributes.forEach((attribute) => {
@@ -62,19 +61,25 @@ export class CharacterComparisonComponent implements OnInit {
               type: 'line',
               xKey: 'level',
               yKey: `${character.firstName}-${attribute}`,
-              yName: `Character ${index} ${attribute.charAt(0).toUpperCase() + attribute.slice(1)}`,
-            });
-
-            characterBodyStatsData.forEach((bodyStat) => {
-              bodyStat[`${character.firstName}-${attribute}`] = bodyStat[attribute];
+              yName: `${character.firstName} ${this.attributeLabels[attribute]}`,
             });
           }
         });
 
-        allBodyStats.push(...characterBodyStatsData);
+        character.bodyStats.forEach((bodyStat) => {
+          const chartBody = bodyStatsByLevel.get(bodyStat.level) ?? ({ level: bodyStat.level } as ChartBody);
+
+          this.characterAttributes.forEach((attribute) => {
+            if (characterControls[attribute]) {
+              chartBody[`${character.firstName}-${attribute}`] = bodyStat[attribute];
+            }
+          });
+
+          bodyStatsByLevel.set(bodyStat.level, chartBody);
+        });
       });
 
-      this.rowData.next(allBodyStats);
+      this.rowData.next(Array.from(bodyStatsByLevel.values()));
       this.seriesData.next(series);
     });
   }
@@ -102,16 +107,16 @@ export class CharacterComparisonComponent implements OnInit {
         defense: false,
         magicAttack: false,
         magicDefense: false,
-        Hhp: false,
+        hp: false,
       });
     }
   }
 
-  toggleSubControl(characterId: number, controlName: string) {
+  activateCharacter(characterId: number): void {
     const characterGroup = this.characterSelections.get(characterId.toString()) as FormGroup;
-    const control = characterGroup.get(controlName);
-    control.setValue(!control.value);
-    if (control.value) {
+    const hasSelectedAttribute = this.characterAttributes.some((attribute) => characterGroup.get(attribute).value);
+
+    if (hasSelectedAttribute) {
       characterGroup.get('mainControl').setValue(true);
     }
   }
