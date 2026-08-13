@@ -322,39 +322,26 @@ export class IrongoonService {
     },
     {
       option: 'Dragoon Elements',
-      message: `Not implemented.
+      message: `Defines when each Dragoon's element is randomized independently from the character's normal element.
                <br><br>
-               <b>Randomize</b>
+        <b>Randomize per Campaign</b>
                <br>
-               Dragoon elements are randomized.
+        Uses one seeded Dragoon element assignment throughout the campaign.
                <br><br>
-               <b>Random Random</b>
+        <b>Randomize per Battle</b>
                <br>
-               Dragoon elements are randomized on every encounter.
+        Creates one Dragoon element assignment for each battle.
                <br><br>
-               <b>Randomize Typings</b>
+        <b>Randomize per Transform</b>
                <br>
-               Dragoon typings are randomized.
-               <br><br>
-               <b>Randomize Random Typings</b>
-               <br>
-               Dragoon typings are randomized on every encounter.
-               <br><br>
-               <b>Elements and Typings</b>
-               <br>
-               Dragoon elements and type matchups are randomized.
-               <br><br>
-               <b>Random Random Elements and Typings</b>
-               <br>
-               Dragoon elements and type matchups are randomized on every encounter.
-               <br><br>
-               <b>Use Character Element</b>
-               <br>
-               Use the current Character element for Dragoon.
+        Rolls an element when that character transforms and keeps it until detransformation.
                <br><br>
                <b>Stock</b>
-               <br>
-               Stock elements and stock typings.`,
+               <br>Uses Severed Chains' stock Dragoon element.`,
+    },
+    {
+      option: 'Dragoon No Element',
+      message: `Allows No Element to participate in Dragoon element randomization.`,
     },
     {
       option: 'Dragoon Spells',
@@ -1272,33 +1259,21 @@ export class IrongoonService {
                   name: 'Dragoon Elements',
                   value: 1,
                   inputType: IrongoonInputs.Dropdown,
-                  data: { value: 'RANDOMIZE', name: 'Randomize' },
+                  data: { value: 'RANDOM_CAMPAIGN', name: 'Randomize per Campaign' },
                   dataList: [
-                    { value: 'RANDOMIZE', name: 'Randomize' },
-                    { value: 'RANDOMIZE_RANDOM', name: 'Random Random' },
-                    { value: 'RANDOMIZE_AND_TYPINGS', name: 'Elements and Typings' },
-                    { value: 'RANDOMIZE_RANDOM_AND_TYPINGS', name: 'Random Random Elements and Typings' },
-                    { value: 'MAINTAIN_CHARACTER_ELEMENT', name: 'Use Character Element' },
-                    { value: 'MAINTAIN_STOCK', name: 'Stock' },
+                    { value: 'RANDOM_CAMPAIGN', name: 'Randomize per Campaign' },
+                    { value: 'RANDOM_BATTLE', name: 'Randomize per Battle' },
+                    { value: 'RANDOM_TRANSFORM', name: 'Randomize per Transform' },
+                    { value: 'STOCK', name: 'Stock' },
                   ],
                   descriptor: 'dragoonElements',
-                  disabled: true,
                 },
                 {
                   id: 8,
-                  name: 'No Element',
+                  name: 'Dragoon No Element',
                   value: 1,
-                  inputType: IrongoonInputs.Dropdown,
-                  data: { value: 'EXCLUDE', name: 'Exclude' },
-                  dataList: [
-                    { value: 'EXCLUDE', name: 'Exclude' },
-                    { value: 'INCLUDE', name: 'Include' },
-                    { value: 'ELEMENTS_ONLY', name: 'Elements Only' },
-                    { value: 'IMMUNITIES_ONLY', name: 'Immunities Only' },
-                    { value: 'MAINTAIN_CHARACTER_ELEMENT_IMMUNITIES', name: 'Use Character Element Immunities' },
-                  ],
-                  descriptor: 'noElementDragoons',
-                  disabled: true,
+                  inputType: IrongoonInputs.Slider,
+                  descriptor: 'dragoonNoElement',
                 },
                 {
                   id: 8,
@@ -1953,6 +1928,7 @@ export class IrongoonService {
     });
     configValues.set('publicSeed', this.publicSeed);
     configValues.set('characterElementOverride', '[]');
+    configValues.set('dragoonElementOverride', '[]');
     configValues.set('battlePartyOverride', '[]');
     configValues.set('battlePartyPool', '[]');
     configValues.set('shopContentsItemPool', '[]');
@@ -1980,7 +1956,7 @@ export class IrongoonService {
         'characterElementOverride',
       ],
       ['# Party', 'enableAllCharacters', 'battleParty', 'battlePartyOverride', 'battlePartySize', 'battlePartyPool', 'battlePartyDuplicates'],
-      ['# Dragoons', 'dragoonTotalStatsPerLevel', 'dragoonTotalStatsDistributionPerLevel'],
+      ['# Dragoons', 'dragoonTotalStatsPerLevel', 'dragoonTotalStatsDistributionPerLevel', 'dragoonElements', 'dragoonNoElement', 'dragoonElementOverride'],
       [
         '# Monsters',
         'monsterTotalStatsPerLevel',
