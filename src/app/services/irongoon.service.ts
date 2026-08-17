@@ -1,7 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { IrongoonComponent } from '../components/irongoon/irongoon.component';
-import { IrongoonCategories, IrongoonConfigOption, IrongoonInputs, IrongoonTooltip } from '../models/irongoon.model';
+import { IrongoonCategories, IrongoonConfigOption, IrongoonInputs, IrongoonOption, IrongoonTooltip } from '../models/irongoon.model';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +11,138 @@ export class IrongoonService {
     {
       option: '',
       message: ``,
+    },
+    {
+      option: 'Addition Unlock Sequence',
+      message: `Stock keeps existing criteria. Randomize Sequence selects a seeded mastery Addition first, a different starter, and ordered ordinary unlock levels without moving additions between characters. Addition XP and level remain campaign progression.`,
+    },
+    {
+      option: 'Addition Unlock Level Lower Bound',
+      message: `Inclusive minimum ordinary Addition unlock level from 2 through 60. Level 1 is reserved for the single starter. Default: 2.`,
+    },
+    {
+      option: 'Addition Unlock Level Upper Bound',
+      message: `Inclusive maximum ordinary Addition unlock level from 2 through 60. Level 1 is reserved for the single starter. Default: 60.`,
+    },
+    {
+      option: 'Addition Base Stats Mode',
+      message: `Controls base damage and SP totals. Shuffle transfers totals only, Randomize Bounds applies stock-relative percentages, and Randomize Random chooses a mode per Addition and enabled field. Hit structures never move.`,
+    },
+    {
+      option: 'Randomize Addition Damage',
+      message: `Enables base damage total changes while Addition Base Stats is not Stock. Default: TRUE.`,
+    },
+    {
+      option: 'Addition Damage Lower Percent Bound',
+      message: `Minimum stock-relative base damage percentage used by bounded modes. Default: 50.`,
+    },
+    {
+      option: 'Addition Damage Upper Percent Bound',
+      message: `Maximum stock-relative base damage percentage used by bounded modes. Default: 150.`,
+    },
+    {
+      option: 'Randomize Addition SP',
+      message: `Enables base SP total changes while Addition Base Stats is not Stock. Default: TRUE.`,
+    },
+    {
+      option: 'Addition SP Lower Percent Bound',
+      message: `Minimum stock-relative base SP percentage used by bounded modes. Default: 50.`,
+    },
+    {
+      option: 'Addition SP Upper Percent Bound',
+      message: `Maximum stock-relative base SP percentage used by bounded modes. Default: 150.`,
+    },
+    {
+      option: 'Addition Level Scaling Mode',
+      message: `Controls per-level damage and SP curves independently from base totals. Shuffle only exchanges compatible curves with the same level count.`,
+    },
+    {
+      option: 'Randomize Addition Damage Scaling',
+      message: `Enables damage multiplier curve changes while Addition Level Scaling is not Stock. Default: TRUE.`,
+    },
+    {
+      option: 'Addition Damage Scaling Lower Percent Bound',
+      message: `Minimum stock-relative damage scaling percentage. Default: 50.`,
+    },
+    {
+      option: 'Addition Damage Scaling Upper Percent Bound',
+      message: `Maximum stock-relative damage scaling percentage. Default: 150.`,
+    },
+    {
+      option: 'Randomize Addition SP Scaling',
+      message: `Enables SP multiplier curve changes while Addition Level Scaling is not Stock. Default: TRUE.`,
+    },
+    {
+      option: 'Addition SP Scaling Lower Percent Bound',
+      message: `Minimum stock-relative SP scaling percentage. Default: 50.`,
+    },
+    {
+      option: 'Addition SP Scaling Upper Percent Bound',
+      message: `Maximum stock-relative SP scaling percentage. Default: 150.`,
+    },
+    {
+      option: 'Addition Hit Timing Mode',
+      message: `Randomizes only total frames, hit-frame offset, success frames, and overlay start offset. CSV modes use mods/irongoon/addition-hit-overrides.csv. Animation, audio, movement, flags, hit count, and hit order remain stock.`,
+    },
+    {
+      option: 'Addition Hit Timing Lower Percent Bound',
+      message: `Minimum coherent timing-tuple percentage. Default: 50.`,
+    },
+    {
+      option: 'Addition Hit Timing Upper Percent Bound',
+      message: `Maximum coherent timing-tuple percentage. Default: 150.`,
+    },
+    {
+      option: 'Addition Elements Mode',
+      message: `Assigns one seeded campaign element to each Addition. The element is added to equipment attack elements and uses Severed Chains multi-element combat rules.`,
+    },
+    {
+      option: 'Allow No Element for Additions',
+      message: `Includes Severed Chains No Element in the randomized Addition element pool. Default: FALSE.`,
+    },
+    {
+      option: 'Addition Statuses Mode',
+      message: `Assigns one seeded campaign status and chance to each Addition. It can roll only once after full completion. Equipment status configuration always takes precedence.`,
+    },
+    {
+      option: 'Addition Status Chance Lower Bound',
+      message: `Inclusive minimum Addition status chance from 0 through 100. Default: 0.`,
+    },
+    {
+      option: 'Addition Status Chance Upper Bound',
+      message: `Inclusive maximum Addition status chance from 0 through 100. Default: 100.`,
+    },
+    {
+      option: 'Allow Addition Petrify',
+      message: `Includes Petrify in the randomized Addition status pool.`,
+    },
+    {
+      option: 'Allow Addition Bewitch',
+      message: `Includes Bewitch in the randomized Addition status pool.`,
+    },
+    {
+      option: 'Allow Addition Confuse',
+      message: `Includes Confuse in the randomized Addition status pool.`,
+    },
+    {
+      option: 'Allow Addition Fear',
+      message: `Includes Fear in the randomized Addition status pool.`,
+    },
+    {
+      option: 'Allow Addition Stun',
+      message: `Includes Stun in the randomized Addition status pool.`,
+    },
+    {
+      option: 'Allow Addition Weapon Block',
+      message: `Includes Weapon Block in the randomized Addition status pool.`,
+    },
+    {
+      option: 'Allow Addition Dispirit',
+      message: `Includes Dispirit in the randomized Addition status pool.`,
+    },
+    {
+      option: 'Allow Addition Poison',
+      message: `Includes Poison in the randomized Addition status pool.`,
     },
     {
       option: 'Irongoon',
@@ -1667,19 +1799,161 @@ export class IrongoonService {
           id: 1,
           name: 'Attack',
           settings: [
-            {
-              id: 0,
-              name: 'Additions',
-              options: [
-                { id: 0, name: 'Randomize Learn Levels', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
-                { id: 1, name: 'Randomize Learn Order', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
-                { id: 2, name: 'Randomize Across Characters (basic)', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
-                { id: 3, name: 'Randomize Across Characters (advanced)', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
-                { id: 5, name: 'Tasmans Trial', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
-                { id: 6, name: 'Addition Master', value: 1, inputType: IrongoonInputs.Slider, disabled: true },
-                { id: 7, name: 'Minimum Number of Additions', value: 0, inputType: IrongoonInputs.Number, disabled: true },
-              ],
-            },
+          {
+            id: 0,
+            name: 'Addition Unlocks',
+            options: [
+              {
+                id: 0,
+                name: 'Addition Unlock Sequence',
+                value: 1,
+                inputType: IrongoonInputs.Dropdown,
+                data: { value: 'STOCK', name: 'Stock' },
+                dataList: [
+                  { value: 'STOCK', name: 'Stock' },
+                  { value: 'RANDOMIZE_SEQUENCE', name: 'Randomize Sequence' },
+                ],
+                descriptor: 'additionUnlocks',
+              },
+              {
+                id: 1,
+                name: 'Addition Unlock Level Lower Bound',
+                value: 2,
+                inputType: IrongoonInputs.Number,
+                descriptor: 'additionUnlockLevelLowerBound',
+                dependsOn: { descriptor: 'additionUnlocks', values: ['RANDOMIZE_SEQUENCE'] },
+              },
+              {
+                id: 2,
+                name: 'Addition Unlock Level Upper Bound',
+                value: 60,
+                inputType: IrongoonInputs.Number,
+                descriptor: 'additionUnlockLevelUpperBound',
+                dependsOn: { descriptor: 'additionUnlocks', values: ['RANDOMIZE_SEQUENCE'] },
+              },
+            ],
+          },
+          {
+            id: 1,
+            name: 'Addition Base Stats',
+            options: [
+              {
+                id: 0,
+                name: 'Addition Base Stats Mode',
+                value: 1,
+                inputType: IrongoonInputs.Dropdown,
+                data: { value: 'STOCK', name: 'Stock' },
+                dataList: [
+                  { value: 'STOCK', name: 'Stock' },
+                  { value: 'SHUFFLE', name: 'Shuffle' },
+                  { value: 'RANDOMIZE_BOUNDS', name: 'Randomize Bounds' },
+                  { value: 'RANDOMIZE_RANDOM', name: 'Randomize Random' },
+                ],
+                descriptor: 'additionBaseStats',
+              },
+              { id: 1, name: 'Randomize Addition Damage', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'additionRandomizeDamage', dependsOn: { descriptor: 'additionBaseStats', values: ['SHUFFLE', 'RANDOMIZE_BOUNDS', 'RANDOMIZE_RANDOM'] } },
+              { id: 2, name: 'Addition Damage Lower Percent Bound', value: 50, inputType: IrongoonInputs.Number, descriptor: 'additionDamageLowerPercentBound', dependsOn: { descriptor: 'additionBaseStats', values: ['SHUFFLE', 'RANDOMIZE_BOUNDS', 'RANDOMIZE_RANDOM'] } },
+              { id: 3, name: 'Addition Damage Upper Percent Bound', value: 150, inputType: IrongoonInputs.Number, descriptor: 'additionDamageUpperPercentBound', dependsOn: { descriptor: 'additionBaseStats', values: ['SHUFFLE', 'RANDOMIZE_BOUNDS', 'RANDOMIZE_RANDOM'] } },
+              { id: 4, name: 'Randomize Addition SP', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'additionRandomizeSp', dependsOn: { descriptor: 'additionBaseStats', values: ['SHUFFLE', 'RANDOMIZE_BOUNDS', 'RANDOMIZE_RANDOM'] } },
+              { id: 5, name: 'Addition SP Lower Percent Bound', value: 50, inputType: IrongoonInputs.Number, descriptor: 'additionSpLowerPercentBound', dependsOn: { descriptor: 'additionBaseStats', values: ['SHUFFLE', 'RANDOMIZE_BOUNDS', 'RANDOMIZE_RANDOM'] } },
+              { id: 6, name: 'Addition SP Upper Percent Bound', value: 150, inputType: IrongoonInputs.Number, descriptor: 'additionSpUpperPercentBound', dependsOn: { descriptor: 'additionBaseStats', values: ['SHUFFLE', 'RANDOMIZE_BOUNDS', 'RANDOMIZE_RANDOM'] } },
+            ],
+          },
+          {
+            id: 2,
+            name: 'Addition Scaling',
+            options: [
+              {
+                id: 0,
+                name: 'Addition Level Scaling Mode',
+                value: 1,
+                inputType: IrongoonInputs.Dropdown,
+                data: { value: 'STOCK', name: 'Stock' },
+                dataList: [
+                  { value: 'STOCK', name: 'Stock' },
+                  { value: 'SHUFFLE', name: 'Shuffle' },
+                  { value: 'RANDOMIZE_BOUNDS', name: 'Randomize Bounds' },
+                  { value: 'RANDOMIZE_RANDOM', name: 'Randomize Random' },
+                ],
+                descriptor: 'additionLevelScaling',
+              },
+              { id: 1, name: 'Randomize Addition Damage Scaling', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'additionRandomizeDamageScaling', dependsOn: { descriptor: 'additionLevelScaling', values: ['SHUFFLE', 'RANDOMIZE_BOUNDS', 'RANDOMIZE_RANDOM'] } },
+              { id: 2, name: 'Addition Damage Scaling Lower Percent Bound', value: 50, inputType: IrongoonInputs.Number, descriptor: 'additionDamageScalingLowerPercentBound', dependsOn: { descriptor: 'additionLevelScaling', values: ['SHUFFLE', 'RANDOMIZE_BOUNDS', 'RANDOMIZE_RANDOM'] } },
+              { id: 3, name: 'Addition Damage Scaling Upper Percent Bound', value: 150, inputType: IrongoonInputs.Number, descriptor: 'additionDamageScalingUpperPercentBound', dependsOn: { descriptor: 'additionLevelScaling', values: ['SHUFFLE', 'RANDOMIZE_BOUNDS', 'RANDOMIZE_RANDOM'] } },
+              { id: 4, name: 'Randomize Addition SP Scaling', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'additionRandomizeSpScaling', dependsOn: { descriptor: 'additionLevelScaling', values: ['SHUFFLE', 'RANDOMIZE_BOUNDS', 'RANDOMIZE_RANDOM'] } },
+              { id: 5, name: 'Addition SP Scaling Lower Percent Bound', value: 50, inputType: IrongoonInputs.Number, descriptor: 'additionSpScalingLowerPercentBound', dependsOn: { descriptor: 'additionLevelScaling', values: ['SHUFFLE', 'RANDOMIZE_BOUNDS', 'RANDOMIZE_RANDOM'] } },
+              { id: 6, name: 'Addition SP Scaling Upper Percent Bound', value: 150, inputType: IrongoonInputs.Number, descriptor: 'additionSpScalingUpperPercentBound', dependsOn: { descriptor: 'additionLevelScaling', values: ['SHUFFLE', 'RANDOMIZE_BOUNDS', 'RANDOMIZE_RANDOM'] } },
+            ],
+          },
+          {
+            id: 3,
+            name: 'Addition Hit Timing',
+            options: [
+              {
+                id: 0,
+                name: 'Addition Hit Timing Mode',
+                value: 1,
+                inputType: IrongoonInputs.Dropdown,
+                data: { value: 'STOCK', name: 'Stock' },
+                dataList: [
+                  { value: 'STOCK', name: 'Stock' },
+                  { value: 'RANDOMIZE_BOUNDS', name: 'Randomize Bounds' },
+                  { value: 'OVERRIDES', name: 'CSV Overrides' },
+                  { value: 'RANDOMIZE_WITH_OVERRIDES', name: 'Randomize with Overrides' },
+                ],
+                descriptor: 'additionHitTiming',
+              },
+              { id: 1, name: 'Addition Hit Timing Lower Percent Bound', value: 50, inputType: IrongoonInputs.Number, descriptor: 'additionHitTimingLowerPercentBound', dependsOn: { descriptor: 'additionHitTiming', values: ['RANDOMIZE_BOUNDS', 'RANDOMIZE_WITH_OVERRIDES'] } },
+              { id: 2, name: 'Addition Hit Timing Upper Percent Bound', value: 150, inputType: IrongoonInputs.Number, descriptor: 'additionHitTimingUpperPercentBound', dependsOn: { descriptor: 'additionHitTiming', values: ['RANDOMIZE_BOUNDS', 'RANDOMIZE_WITH_OVERRIDES'] } },
+            ],
+          },
+          {
+            id: 4,
+            name: 'Addition Elements',
+            options: [
+              {
+                id: 0,
+                name: 'Addition Elements Mode',
+                value: 1,
+                inputType: IrongoonInputs.Dropdown,
+                data: { value: 'STOCK', name: 'Stock' },
+                dataList: [
+                  { value: 'STOCK', name: 'Stock' },
+                  { value: 'RANDOMIZE', name: 'Randomize' },
+                ],
+                descriptor: 'additionElements',
+              },
+              { id: 1, name: 'Allow No Element for Additions', value: 1, inputType: IrongoonInputs.Slider, descriptor: 'additionNoElement', dependsOn: { descriptor: 'additionElements', values: ['RANDOMIZE'] } },
+            ],
+          },
+          {
+            id: 5,
+            name: 'Addition Statuses',
+            options: [
+              {
+                id: 0,
+                name: 'Addition Statuses Mode',
+                value: 1,
+                inputType: IrongoonInputs.Dropdown,
+                data: { value: 'STOCK', name: 'Stock' },
+                dataList: [
+                  { value: 'STOCK', name: 'Stock' },
+                  { value: 'RANDOMIZE', name: 'Randomize' },
+                ],
+                descriptor: 'additionStatuses',
+              },
+              { id: 1, name: 'Addition Status Chance Lower Bound', value: 0, inputType: IrongoonInputs.Number, descriptor: 'additionStatusChanceLowerBound', dependsOn: { descriptor: 'additionStatuses', values: ['RANDOMIZE'] } },
+              { id: 2, name: 'Addition Status Chance Upper Bound', value: 100, inputType: IrongoonInputs.Number, descriptor: 'additionStatusChanceUpperBound', dependsOn: { descriptor: 'additionStatuses', values: ['RANDOMIZE'] } },
+              { id: 3, name: 'Allow Addition Petrify', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'additionStatusAllowPetrify', dependsOn: { descriptor: 'additionStatuses', values: ['RANDOMIZE'] } },
+              { id: 4, name: 'Allow Addition Bewitch', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'additionStatusAllowBewitch', dependsOn: { descriptor: 'additionStatuses', values: ['RANDOMIZE'] } },
+              { id: 5, name: 'Allow Addition Confuse', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'additionStatusAllowConfuse', dependsOn: { descriptor: 'additionStatuses', values: ['RANDOMIZE'] } },
+              { id: 6, name: 'Allow Addition Fear', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'additionStatusAllowFear', dependsOn: { descriptor: 'additionStatuses', values: ['RANDOMIZE'] } },
+              { id: 7, name: 'Allow Addition Stun', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'additionStatusAllowStun', dependsOn: { descriptor: 'additionStatuses', values: ['RANDOMIZE'] } },
+              { id: 8, name: 'Allow Addition Weapon Block', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'additionStatusAllowWeaponBlock', dependsOn: { descriptor: 'additionStatuses', values: ['RANDOMIZE'] } },
+              { id: 9, name: 'Allow Addition Dispirit', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'additionStatusAllowDispirit', dependsOn: { descriptor: 'additionStatuses', values: ['RANDOMIZE'] } },
+              { id: 10, name: 'Allow Addition Poison', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'additionStatusAllowPoison', dependsOn: { descriptor: 'additionStatuses', values: ['RANDOMIZE'] } },
+            ],
+          },
           ],
         },
         {
@@ -1841,6 +2115,20 @@ export class IrongoonService {
     return this.optionNotifier.asObservable();
   }
 
+  isOptionVisible(option: IrongoonOption) {
+    if (!option.dependsOn) return true;
+
+    const owner = this.optionCategories
+      .flatMap((category) => category.columns)
+      .flatMap((column) => column.settings)
+      .flatMap((setting) => setting.options)
+      .find((candidate) => candidate.descriptor === option.dependsOn.descriptor);
+    if (!owner) return false;
+
+    const ownerValue = owner.inputType === IrongoonInputs.Dropdown ? owner.data?.value : owner.value === 2 ? 'TRUE' : 'FALSE';
+    return option.dependsOn.values.includes(String(ownerValue));
+  }
+
   generatePublicSeed() {
     let randomInt = Math.floor(Math.random() * Math.pow(2, 32));
 
@@ -1862,6 +2150,7 @@ export class IrongoonService {
         column.settings.forEach((setting) => {
           setting.options.forEach((option, index) => {
             if (option.disabled) return;
+            if (option.descriptor?.startsWith('addition') && option.inputType !== IrongoonInputs.Dropdown) return;
 
             switch (option.inputType) {
               case IrongoonInputs.Dropdown:
@@ -1996,7 +2285,42 @@ export class IrongoonService {
       ['# Options'],
       ['# Custom'],
       ['# Scaling'],
-      ['# Additions'],
+      [
+        '# Additions',
+        'additionUnlocks',
+        'additionUnlockLevelLowerBound',
+        'additionUnlockLevelUpperBound',
+        'additionBaseStats',
+        'additionRandomizeDamage',
+        'additionDamageLowerPercentBound',
+        'additionDamageUpperPercentBound',
+        'additionRandomizeSp',
+        'additionSpLowerPercentBound',
+        'additionSpUpperPercentBound',
+        'additionLevelScaling',
+        'additionRandomizeDamageScaling',
+        'additionDamageScalingLowerPercentBound',
+        'additionDamageScalingUpperPercentBound',
+        'additionRandomizeSpScaling',
+        'additionSpScalingLowerPercentBound',
+        'additionSpScalingUpperPercentBound',
+        'additionHitTiming',
+        'additionHitTimingLowerPercentBound',
+        'additionHitTimingUpperPercentBound',
+        'additionElements',
+        'additionNoElement',
+        'additionStatuses',
+        'additionStatusChanceLowerBound',
+        'additionStatusChanceUpperBound',
+        'additionStatusAllowPetrify',
+        'additionStatusAllowBewitch',
+        'additionStatusAllowConfuse',
+        'additionStatusAllowFear',
+        'additionStatusAllowStun',
+        'additionStatusAllowWeaponBlock',
+        'additionStatusAllowDispirit',
+        'additionStatusAllowPoison',
+      ],
       ['# Randomizer', 'useRandomSeedOnNewCampaign'],
       ['# Encounters', 'battleStage', 'battleStageList', 'battleMusic', 'escapeChance', 'escapeChanceUpperBound', 'escapeChanceLowerBound'],
     ];
