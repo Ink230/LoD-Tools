@@ -56,6 +56,10 @@ export interface IrongoonOption {
   disabled?: boolean;
   descriptor?: string;
   tooltip?: string;
+  dependsOn?: {
+    descriptor: string;
+    values: string[];
+  };
 }
 
 export interface DropdownOption {
