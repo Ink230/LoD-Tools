@@ -1321,6 +1321,19 @@ export class IrongoonService {
               name: 'Dragoons',
               options: [
                 {
+                  id: 3,
+                  name: 'Enable All Dragoons',
+                  value: 1,
+                  inputType: IrongoonInputs.Dropdown,
+                  data: { value: 'PERMANENTLY', name: 'Permanently' },
+                  dataList: [
+                    { value: 'PERMANENTLY', name: 'Permanently' },
+                    { value: 'STORY_CONTROLLED', name: 'Story Controlled' },
+                    { value: 'STOCK', name: 'Stock' },
+                  ],
+                  descriptor: 'enableAllDragoons',
+                },
+                {
                   id: 4,
                   name: 'Dragoon Stats',
                   value: 1,
@@ -2238,7 +2251,7 @@ export class IrongoonService {
         'characterElementOverride',
       ],
       ['# Party', 'enableAllCharacters', 'battleParty', 'battlePartyOverride', 'battlePartySize', 'battlePartyPool', 'battlePartyDuplicates'],
-      ['# Dragoons', 'dragoonTotalStatsPerLevel', 'dragoonTotalStatsDistributionPerLevel', 'dragoonElements', 'dragoonNoElement', 'dragoonSpellUnlocks', 'dragoonSpellRandomizationPool', 'dragoonSpellStats', 'dragoonSpellRandomizePower', 'dragoonSpellPowerLowerPercentBound', 'dragoonSpellPowerUpperPercentBound', 'dragoonSpellMpCosts', 'dragoonSpellMpCostLowerBound', 'dragoonSpellMpCostUpperBound', 'dragoonSpellRandomizeAccuracy', 'dragoonSpellAccuracyLowerBound', 'dragoonSpellAccuracyUpperBound', 'dragoonSpellRandomizeStatusChance', 'dragoonSpellStatusChanceLowerBound', 'dragoonSpellStatusChanceUpperBound', 'dragoonSpellElements', 'dragoonSpellNoElement', 'dragoonSpellEffects', 'dragoonSpellAllowDamage', 'dragoonSpellAllowHealHp', 'dragoonSpellAllowRestoreMp', 'dragoonSpellAllowRestoreSp', 'dragoonSpellAllowRevive', 'dragoonSpellAllowCleanse', 'dragoonSpellAllowDrainHp', 'dragoonSpellAllowDrainMp', 'dragoonSpellAllowDrainSp', 'dragoonSpellAllowStatus', 'dragoonSpellAllowBuff', 'dragoonSpellAllowDebuff', 'dragoonSpellAllowRegenHp', 'dragoonSpellAllowRegenMp', 'dragoonSpellAllowRegenSp', 'dragoonElementOverride'],
+      ['# Dragoons', 'enableAllDragoons', 'dragoonTotalStatsPerLevel', 'dragoonTotalStatsDistributionPerLevel', 'dragoonElements', 'dragoonNoElement', 'dragoonSpellUnlocks', 'dragoonSpellRandomizationPool', 'dragoonSpellStats', 'dragoonSpellRandomizePower', 'dragoonSpellPowerLowerPercentBound', 'dragoonSpellPowerUpperPercentBound', 'dragoonSpellMpCosts', 'dragoonSpellMpCostLowerBound', 'dragoonSpellMpCostUpperBound', 'dragoonSpellRandomizeAccuracy', 'dragoonSpellAccuracyLowerBound', 'dragoonSpellAccuracyUpperBound', 'dragoonSpellRandomizeStatusChance', 'dragoonSpellStatusChanceLowerBound', 'dragoonSpellStatusChanceUpperBound', 'dragoonSpellElements', 'dragoonSpellNoElement', 'dragoonSpellEffects', 'dragoonSpellAllowDamage', 'dragoonSpellAllowHealHp', 'dragoonSpellAllowRestoreMp', 'dragoonSpellAllowRestoreSp', 'dragoonSpellAllowRevive', 'dragoonSpellAllowCleanse', 'dragoonSpellAllowDrainHp', 'dragoonSpellAllowDrainMp', 'dragoonSpellAllowDrainSp', 'dragoonSpellAllowStatus', 'dragoonSpellAllowBuff', 'dragoonSpellAllowDebuff', 'dragoonSpellAllowRegenHp', 'dragoonSpellAllowRegenMp', 'dragoonSpellAllowRegenSp', 'dragoonElementOverride'],
       [
         '# Monsters',
         'monsterTotalStatsPerLevel',
