@@ -344,36 +344,13 @@ export class IrongoonService {
       message: `Allows No Element to participate in Dragoon element randomization.`,
     },
     {
-      option: 'Dragoon Spells',
-      message: `Not implemented. Will become a slider for each option.
-               <br><br>
-               <b>Randomize</b>
-               <br>
-               Randomizes stats, effects, learn order, and MP cost.
-               <br><br>
-               <b>Randomize Stats</b>
-               <br>
-               Randomize only the stats of Dragoon spells.
-               <br><br>
-               <b>Randomize Effects</b>
-               <br>
-               Randomize only the effects of Dragoon spells.
-               <br><br>
-               <b>Randomize Stats and Effects</b>
-               <br>
-               Randomize both stats and effects of Dragoon spells.
-               <br><br>
-               <b>Randomize All</b>
-               <br>
-               Randomizes stats, effects, learn order, and MP cost across all characters.
-               <br><br>
-               <b>Randomize Random All</b>
-               <br>
-               Randomizes stats, effects, learn order, and MP cost across all characters on every encounter.
-               <br><br>`,
-    },
-    {
-      option: 'Monster Stats',
+      option: 'Dragoon Spell Unlocks', message: `Shuffles each character's registered Dragoon spells only across that character's existing spirit and Dragoon-level unlock slots. The first spell remains usable at the first slot. Items, battle items, and healing items are never included.`, },
+    { option: 'Dragoon Spell Randomization Pool', message: `Selects whether spell stats, elements, and effect packages draw from each character's registered spells or one global registered spell pool. Custom spells participate only when their mod registers an Irongoon capability profile.`, },
+    { option: 'Dragoon Spell Stats', message: `Controls scalar spell metadata: power, accuracy, and status chance. Shuffle moves selected values; Randomize Bounds generates values inside the configured bounds; Randomize Random seededly chooses stock, shuffle, or bounds per selected field. MP costs are controlled separately.`, },
+    { option: 'Dragoon Spell MP Costs', message: `Controls Dragoon spell MP costs independently of other spell stats.<br><br><b>Stock</b> keeps each spell's original cost.<br><br><b>Randomize per Unlock per Campaign</b> gives every character the same seeded cost progression by unlock slot for the campaign.<br><br><b>Randomize per Character per Campaign</b> gives each character a separate seeded cost progression for the campaign.<br><br><b>Randomize per Battle</b> rerolls each character's progression every battle.<br><br><b>Randomize per Transform</b> rerolls each character's progression after detransforming and transforming again.`, },
+    { option: 'Dragoon Spell Elements', message: `Controls spell elements independently from Dragoon transformation elements. Shuffle moves registered elements; Randomize chooses registered elements from the selected pool. No Element participates only when enabled.`, },
+    { option: 'Dragoon Spell Effects', message: `Shuffle Packages moves complete compatible effect packages and keeps the first slot usable on a living target. Randomize Archetype creates a coherent effect with compatible targeting. Randomize Independent combines enabled components while rejecting contradictory targets, invalid drains, dead-target misuse, and plans without a primary effect. Randomize Raw randomizes legacy target, flag, special-effect, multiplier, status, buff, and unknown bytes without usability guarantees; unknown and script-coupled bits can produce misleading or ineffective results. Only registered Dragoon spells with an Irongoon capability profile participate; item, battle-item, and healing-item registries are excluded. Names, animations, sounds, and dragon battle stages remain the base spell's identity.`, },
+    { option: 'Monster Stats',
       message: `Includes monster Attack and Magic Attack, and Defense and Magic Defense as two sets.
                 <br><br>
                 <b>Randomize Bounds</b>
@@ -1275,23 +1252,39 @@ export class IrongoonService {
                   inputType: IrongoonInputs.Slider,
                   descriptor: 'dragoonNoElement',
                 },
-                {
-                  id: 8,
-                  name: 'Dragoon Spells',
-                  value: 1,
-                  inputType: IrongoonInputs.Dropdown,
-                  data: { value: '', name: 'Randomize' },
-                  dataList: [
-                    { value: '', name: 'Randomize' },
-                    { value: '', name: 'Randomize Stats' },
-                    { value: '', name: 'Randomize Effects' },
-                    { value: '', name: 'Randomize Stats and Effects' },
-                    { value: '', name: 'Randomize All' },
-                    { value: '', name: 'Randomize Random All' },
-                  ],
-                  descriptor: 'dragoonSpells',
-                  disabled: true,
-                },
+            { id: 9, name: 'Dragoon Spell Unlocks', value: 1, inputType: IrongoonInputs.Dropdown, data: { value: 'STOCK', name: 'Stock' }, dataList: [{ value: 'STOCK', name: 'Stock' }, { value: 'RANDOMIZE_SEQUENCE', name: 'Randomize Sequence' }], descriptor: 'dragoonSpellUnlocks' },
+            { id: 10, name: 'Dragoon Spell Randomization Pool', value: 1, inputType: IrongoonInputs.Dropdown, data: { value: 'GLOBAL', name: 'Global' }, dataList: [{ value: 'GLOBAL', name: 'Global' }, { value: 'PER_CHARACTER', name: 'Per Character' }], descriptor: 'dragoonSpellRandomizationPool' },
+            { id: 11, name: 'Dragoon Spell Stats', value: 1, inputType: IrongoonInputs.Dropdown, data: { value: 'STOCK', name: 'Stock' }, dataList: [{ value: 'STOCK', name: 'Stock' }, { value: 'SHUFFLE', name: 'Shuffle' }, { value: 'RANDOMIZE_BOUNDS', name: 'Randomize Bounds' }, { value: 'RANDOMIZE_RANDOM', name: 'Randomize Random' }], descriptor: 'dragoonSpellStats' },
+            { id: 12, name: 'Randomize Dragoon Spell Power', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellRandomizePower' },
+            { id: 13, name: 'Dragoon Spell Power Lower Percent Bound', value: 50, inputType: IrongoonInputs.Number, descriptor: 'dragoonSpellPowerLowerPercentBound' },
+            { id: 14, name: 'Dragoon Spell Power Upper Percent Bound', value: 150, inputType: IrongoonInputs.Number, descriptor: 'dragoonSpellPowerUpperPercentBound' },
+          { id: 15, name: 'Dragoon Spell MP Costs', value: 1, inputType: IrongoonInputs.Dropdown, data: { value: 'RANDOM_CAMPAIGN_CHARACTER', name: 'Randomize per Character per Campaign' }, dataList: [{ value: 'STOCK', name: 'Stock' }, { value: 'RANDOM_CAMPAIGN_UNLOCK', name: 'Randomize per Unlock per Campaign' }, { value: 'RANDOM_CAMPAIGN_CHARACTER', name: 'Randomize per Character per Campaign' }, { value: 'RANDOM_BATTLE', name: 'Randomize per Battle' }, { value: 'RANDOM_TRANSFORM', name: 'Randomize per Transform' }], descriptor: 'dragoonSpellMpCosts' },
+            { id: 16, name: 'Dragoon Spell MP Cost Lower Bound', value: 1, inputType: IrongoonInputs.Number, descriptor: 'dragoonSpellMpCostLowerBound' },
+            { id: 17, name: 'Dragoon Spell MP Cost Upper Bound', value: 80, inputType: IrongoonInputs.Number, descriptor: 'dragoonSpellMpCostUpperBound' },
+            { id: 18, name: 'Randomize Dragoon Spell Accuracy', value: 1, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellRandomizeAccuracy' },
+            { id: 19, name: 'Dragoon Spell Accuracy Lower Bound', value: 75, inputType: IrongoonInputs.Number, descriptor: 'dragoonSpellAccuracyLowerBound' },
+            { id: 20, name: 'Dragoon Spell Accuracy Upper Bound', value: 100, inputType: IrongoonInputs.Number, descriptor: 'dragoonSpellAccuracyUpperBound' },
+            { id: 21, name: 'Randomize Dragoon Spell Status Chance', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellRandomizeStatusChance' },
+            { id: 22, name: 'Dragoon Spell Status Chance Lower Bound', value: 25, inputType: IrongoonInputs.Number, descriptor: 'dragoonSpellStatusChanceLowerBound' },
+            { id: 23, name: 'Dragoon Spell Status Chance Upper Bound', value: 100, inputType: IrongoonInputs.Number, descriptor: 'dragoonSpellStatusChanceUpperBound' },
+            { id: 24, name: 'Dragoon Spell Elements', value: 1, inputType: IrongoonInputs.Dropdown, data: { value: 'STOCK', name: 'Stock' }, dataList: [{ value: 'STOCK', name: 'Stock' }, { value: 'SHUFFLE', name: 'Shuffle' }, { value: 'RANDOMIZE', name: 'Randomize' }], descriptor: 'dragoonSpellElements' },
+            { id: 25, name: 'Dragoon Spell No Element', value: 1, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellNoElement' },
+            { id: 26, name: 'Dragoon Spell Effects', value: 1, inputType: IrongoonInputs.Dropdown, data: { value: 'STOCK', name: 'Stock' }, dataList: [{ value: 'STOCK', name: 'Stock' }, { value: 'SHUFFLE_PACKAGES', name: 'Shuffle Packages' }, { value: 'RANDOMIZE_ARCHETYPE', name: 'Randomize Archetype' }, { value: 'RANDOMIZE_INDEPENDENT', name: 'Randomize Independent' }, { value: 'RANDOMIZE_RAW', name: 'Randomize Raw' }], descriptor: 'dragoonSpellEffects' },
+            { id: 27, name: 'Allow Dragoon Spell Damage', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowDamage' },
+            { id: 28, name: 'Allow Dragoon Spell HP Healing', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowHealHp' },
+            { id: 29, name: 'Allow Dragoon Spell MP Restore', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowRestoreMp' },
+            { id: 30, name: 'Allow Dragoon Spell SP Restore', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowRestoreSp' },
+            { id: 31, name: 'Allow Dragoon Spell Revive', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowRevive' },
+            { id: 32, name: 'Allow Dragoon Spell Cleanse', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowCleanse' },
+            { id: 33, name: 'Allow Dragoon Spell HP Drain', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowDrainHp' },
+            { id: 34, name: 'Allow Dragoon Spell MP Drain', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowDrainMp' },
+            { id: 35, name: 'Allow Dragoon Spell SP Drain', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowDrainSp' },
+            { id: 36, name: 'Allow Dragoon Spell Status', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowStatus' },
+            { id: 37, name: 'Allow Dragoon Spell Buff', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowBuff' },
+            { id: 38, name: 'Allow Dragoon Spell Debuff', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowDebuff' },
+            { id: 39, name: 'Allow Dragoon Spell HP Regeneration', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowRegenHp' },
+            { id: 40, name: 'Allow Dragoon Spell MP Regeneration', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowRegenMp' },
+            { id: 41, name: 'Allow Dragoon Spell SP Regeneration', value: 2, inputType: IrongoonInputs.Slider, descriptor: 'dragoonSpellAllowRegenSp' },
               ],
             },
           ],
@@ -1956,7 +1949,7 @@ export class IrongoonService {
         'characterElementOverride',
       ],
       ['# Party', 'enableAllCharacters', 'battleParty', 'battlePartyOverride', 'battlePartySize', 'battlePartyPool', 'battlePartyDuplicates'],
-      ['# Dragoons', 'dragoonTotalStatsPerLevel', 'dragoonTotalStatsDistributionPerLevel', 'dragoonElements', 'dragoonNoElement', 'dragoonElementOverride'],
+      ['# Dragoons', 'dragoonTotalStatsPerLevel', 'dragoonTotalStatsDistributionPerLevel', 'dragoonElements', 'dragoonNoElement', 'dragoonSpellUnlocks', 'dragoonSpellRandomizationPool', 'dragoonSpellStats', 'dragoonSpellRandomizePower', 'dragoonSpellPowerLowerPercentBound', 'dragoonSpellPowerUpperPercentBound', 'dragoonSpellMpCosts', 'dragoonSpellMpCostLowerBound', 'dragoonSpellMpCostUpperBound', 'dragoonSpellRandomizeAccuracy', 'dragoonSpellAccuracyLowerBound', 'dragoonSpellAccuracyUpperBound', 'dragoonSpellRandomizeStatusChance', 'dragoonSpellStatusChanceLowerBound', 'dragoonSpellStatusChanceUpperBound', 'dragoonSpellElements', 'dragoonSpellNoElement', 'dragoonSpellEffects', 'dragoonSpellAllowDamage', 'dragoonSpellAllowHealHp', 'dragoonSpellAllowRestoreMp', 'dragoonSpellAllowRestoreSp', 'dragoonSpellAllowRevive', 'dragoonSpellAllowCleanse', 'dragoonSpellAllowDrainHp', 'dragoonSpellAllowDrainMp', 'dragoonSpellAllowDrainSp', 'dragoonSpellAllowStatus', 'dragoonSpellAllowBuff', 'dragoonSpellAllowDebuff', 'dragoonSpellAllowRegenHp', 'dragoonSpellAllowRegenMp', 'dragoonSpellAllowRegenSp', 'dragoonElementOverride'],
       [
         '# Monsters',
         'monsterTotalStatsPerLevel',
