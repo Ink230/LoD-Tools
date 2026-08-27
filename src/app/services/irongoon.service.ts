@@ -1243,20 +1243,6 @@ export class IrongoonService {
                   descriptor: 'bodyTotalStatsDistributionPerLevel',
                 },
                 {
-                  id: 2,
-                  name: 'Body Total Stats Bounds',
-                  value: 1,
-                  inputType: IrongoonInputs.Dropdown,
-                  data: { value: 'STOCK', name: 'Stock' },
-                  dataList: [
-                    { value: 'STOCK', name: 'Stock' },
-                    { value: 'RANDOM_MODIFIER', name: 'Random modifier' },
-                    { value: 'RANDOM_MODIFIER_CUSTOM_UPPER_BOUND', name: 'Random modifier with custom upper bound' },
-                  ],
-                  descriptor: 'bodyTotalStatsBounds',
-                  disabled: true,
-                },
-                {
                   id: 3,
                   name: 'HP Stat Per Level',
                   value: 1,
@@ -1361,20 +1347,6 @@ export class IrongoonService {
                     { value: 'DABAS_PER_LEVEL_CUSTOM', name: 'Shuffle Custom' },
                   ],
                   descriptor: 'dragoonTotalStatsDistributionPerLevel',
-                },
-                {
-                  id: 6,
-                  name: 'Dragoon Total Stats Bounds',
-                  value: 1,
-                  inputType: IrongoonInputs.Dropdown,
-                  data: { value: 'STOCK', name: 'Stock' },
-                  dataList: [
-                    { value: 'STOCK', name: 'Stock' },
-                    { value: 'RANDOM_MODIFIER', name: 'Random modifier' },
-                    { value: 'RANDOM_MODIFIER_CUSTOM_UPPER_BOUND', name: 'Random modifier with custom upper bound' },
-                  ],
-                  descriptor: 'dragoonTotalStatsBounds',
-                  disabled: true,
                 },
                 {
                   id: 7,
