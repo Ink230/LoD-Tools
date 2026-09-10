@@ -18,11 +18,11 @@ export class IrongoonService {
     },
     {
       option: 'Addition Unlock Level Lower Bound',
-      message: `Inclusive minimum ordinary Addition unlock level from 2 through 60. Level 1 is reserved for the single starter. Default: 2.`,
+      message: `Inclusive minimum ordinary Addition unlock level from 2 through 60. Level 1 is reserved for the single starter. Builder initial value: 2.`,
     },
     {
       option: 'Addition Unlock Level Upper Bound',
-      message: `Inclusive maximum ordinary Addition unlock level from 2 through 60. Level 1 is reserved for the single starter. Default: 60.`,
+      message: `Inclusive maximum ordinary Addition unlock level from 2 through 60. Level 1 is reserved for the single starter. Builder initial value: 60.`,
     },
     {
       option: 'Addition Base Stats Mode',
@@ -30,27 +30,27 @@ export class IrongoonService {
     },
     {
       option: 'Randomize Addition Damage',
-      message: `Enables base damage total changes while Addition Base Stats is not Stock. Default: TRUE.`,
+      message: `Enables base damage total changes while Addition Base Stats is not Stock. Builder initial value: TRUE.`,
     },
     {
       option: 'Addition Damage Lower Percent Bound',
-      message: `Minimum stock-relative base damage percentage used by bounded modes. Default: 50.`,
+      message: `Minimum stock-relative base damage percentage used by bounded modes. Builder initial value: 50.`,
     },
     {
       option: 'Addition Damage Upper Percent Bound',
-      message: `Maximum stock-relative base damage percentage used by bounded modes. Default: 150.`,
+      message: `Maximum stock-relative base damage percentage used by bounded modes. Builder initial value: 150.`,
     },
     {
       option: 'Randomize Addition SP',
-      message: `Enables base SP total changes while Addition Base Stats is not Stock. Default: TRUE.`,
+      message: `Enables base SP total changes while Addition Base Stats is not Stock. Builder initial value: TRUE.`,
     },
     {
       option: 'Addition SP Lower Percent Bound',
-      message: `Minimum stock-relative base SP percentage used by bounded modes. Default: 50.`,
+      message: `Minimum stock-relative base SP percentage used by bounded modes. Builder initial value: 50.`,
     },
     {
       option: 'Addition SP Upper Percent Bound',
-      message: `Maximum stock-relative base SP percentage used by bounded modes. Default: 150.`,
+      message: `Maximum stock-relative base SP percentage used by bounded modes. Builder initial value: 150.`,
     },
     {
       option: 'Addition Level Scaling Mode',
@@ -58,27 +58,27 @@ export class IrongoonService {
     },
     {
       option: 'Randomize Addition Damage Scaling',
-      message: `Enables damage multiplier curve changes while Addition Level Scaling is not Stock. Default: TRUE.`,
+      message: `Enables damage multiplier curve changes while Addition Level Scaling is not Stock. Builder initial value: TRUE.`,
     },
     {
       option: 'Addition Damage Scaling Lower Percent Bound',
-      message: `Minimum stock-relative damage scaling percentage. Default: 50.`,
+      message: `Minimum stock-relative damage scaling percentage. Builder initial value: 50.`,
     },
     {
       option: 'Addition Damage Scaling Upper Percent Bound',
-      message: `Maximum stock-relative damage scaling percentage. Default: 150.`,
+      message: `Maximum stock-relative damage scaling percentage. Builder initial value: 150.`,
     },
     {
       option: 'Randomize Addition SP Scaling',
-      message: `Enables SP multiplier curve changes while Addition Level Scaling is not Stock. Default: TRUE.`,
+      message: `Enables SP multiplier curve changes while Addition Level Scaling is not Stock. Builder initial value: TRUE.`,
     },
     {
       option: 'Addition SP Scaling Lower Percent Bound',
-      message: `Minimum stock-relative SP scaling percentage. Default: 50.`,
+      message: `Minimum stock-relative SP scaling percentage. Builder initial value: 50.`,
     },
     {
       option: 'Addition SP Scaling Upper Percent Bound',
-      message: `Maximum stock-relative SP scaling percentage. Default: 150.`,
+      message: `Maximum stock-relative SP scaling percentage. Builder initial value: 150.`,
     },
     {
       option: 'Addition Hit Timing Mode',
@@ -86,11 +86,11 @@ export class IrongoonService {
     },
     {
       option: 'Addition Hit Timing Lower Percent Bound',
-      message: `Minimum coherent timing-tuple percentage. Default: 50.`,
+      message: `Minimum coherent timing-tuple percentage. Builder initial value: 50.`,
     },
     {
       option: 'Addition Hit Timing Upper Percent Bound',
-      message: `Maximum coherent timing-tuple percentage. Default: 150.`,
+      message: `Maximum coherent timing-tuple percentage. Builder initial value: 150.`,
     },
     {
       option: 'Addition Elements Mode',
@@ -98,7 +98,7 @@ export class IrongoonService {
     },
     {
       option: 'Allow No Element for Additions',
-      message: `Includes Severed Chains No Element in the randomized Addition element pool. Default: FALSE.`,
+      message: `Includes Severed Chains No Element in the randomized Addition element pool. Builder initial value: FALSE.`,
     },
     {
       option: 'Addition Statuses Mode',
@@ -106,11 +106,11 @@ export class IrongoonService {
     },
     {
       option: 'Addition Status Chance Lower Bound',
-      message: `Inclusive minimum Addition status chance from 0 through 100. Default: 0.`,
+      message: `Inclusive minimum Addition status chance from 0 through 100. Builder initial value: 0.`,
     },
     {
       option: 'Addition Status Chance Upper Bound',
-      message: `Inclusive maximum Addition status chance from 0 through 100. Default: 100.`,
+      message: `Inclusive maximum Addition status chance from 0 through 100. Builder initial value: 100.`,
     },
     {
       option: 'Allow Addition Petrify',
@@ -628,17 +628,7 @@ export class IrongoonService {
     },
     {
       option: 'Use New Seed on Campaign Start',
-      message: `While set to TRUE, this option will have the randomizer ignore the publicSeed in the config.yaml.
-               <br><br>
-               The randomizer will then create and save a campaign-specific seed in the Severed Chains campaign config file.
-               <br><br>
-               While the option is true, the randomizer will look for and only use a campaign config seed.
-               <br><br>
-               Further, when starting a new campaign, a seed is auto-generated for you and your new campaign.
-               <br><br>
-               Note
-               <br>
-               When this option is FALSE, the publicSeed in config.yaml will take priority over any other seeds.`,
+      message: `When TRUE, new campaigns receive a campaign seed. Existing campaigns retain their saved seed. When FALSE, deterministic modes use publicSeed from the staged configuration snapshot. Load an updated YAML profile and choose Use settings to stage changes; existing campaigns then require saving and reloading.`,
     },
     {
       option: 'Slow Down Audio When in Peril',
@@ -2126,7 +2116,7 @@ export class IrongoonService {
 
       category.columns.forEach((column) => {
         column.settings.forEach((setting) => {
-          setting.options.forEach((option, index) => {
+          setting.options.forEach((option) => {
             if (option.disabled) return;
             if (option.descriptor?.startsWith('addition') && option.inputType !== IrongoonInputs.Dropdown) return;
 
@@ -2140,20 +2130,46 @@ export class IrongoonService {
                 const choiceSlider = this.getRandomInt(1, 2);
                 option.value = choiceSlider;
                 break;
-              case IrongoonInputs.Number:
-                if (option?.descriptor.includes('Defense')) break;
+              case IrongoonInputs.Number: {
+                if (option.descriptor?.includes('Defense')) break;
 
-                const upper = option?.descriptor.includes('Lower') ? setting.options[index - 1].value - 1 : this.numberInputUpperBound;
-                const lower = this.numberInputLowerBound;
-                const choiceNumber = this.getRandomInt(lower, upper);
-                option.value = choiceNumber;
+                const [lower, upper] = this.getRandomNumberBounds(option.descriptor);
+                option.value = this.getRandomInt(lower, upper);
                 break;
+              }
             }
           });
         });
       });
     });
 
+    this.normalizeRandomizedBounds();
+    this.ensureRandomizedPool('additionStatuses', ['RANDOMIZE'], [
+      'additionStatusAllowPetrify',
+      'additionStatusAllowBewitch',
+      'additionStatusAllowConfuse',
+      'additionStatusAllowFear',
+      'additionStatusAllowStun',
+      'additionStatusAllowWeaponBlock',
+      'additionStatusAllowDispirit',
+      'additionStatusAllowPoison',
+    ]);
+    this.ensureRandomizedPool('dragoonSpellEffects', ['SHUFFLE_PACKAGES', 'RANDOMIZE_ARCHETYPE', 'RANDOMIZE_INDEPENDENT'], [
+      'dragoonSpellAllowDamage',
+      'dragoonSpellAllowHealHp',
+      'dragoonSpellAllowRestoreMp',
+      'dragoonSpellAllowRestoreSp',
+      'dragoonSpellAllowCleanse',
+      'dragoonSpellAllowDrainHp',
+      'dragoonSpellAllowDrainMp',
+      'dragoonSpellAllowDrainSp',
+      'dragoonSpellAllowStatus',
+      'dragoonSpellAllowBuff',
+      'dragoonSpellAllowDebuff',
+      'dragoonSpellAllowRegenHp',
+      'dragoonSpellAllowRegenMp',
+      'dragoonSpellAllowRegenSp',
+    ]);
     this.sendOptionUpdate();
   }
 
@@ -2193,7 +2209,9 @@ export class IrongoonService {
         });
       });
     });
-    configValues.set('publicSeed', this.publicSeed);
+    configValues.set('publicSeed', `'${this.publicSeed}'`);
+    configValues.set('bodyTotalStatsBounds', 'STOCK');
+    configValues.set('dragoonStatsBounds', 'STOCK');
     configValues.set('characterElementOverride', '[]');
     configValues.set('dragoonElementOverride', '[]');
     configValues.set('battlePartyOverride', '[]');
@@ -2211,6 +2229,7 @@ export class IrongoonService {
       [
         '# Characters',
         'bodyTotalStatsPerLevel',
+        'bodyTotalStatsBounds',
         'bodyTotalStatsDistributionPerLevel',
         'hpStatPerLevel',
         'hpStatUpperPercentBound',
@@ -2223,7 +2242,7 @@ export class IrongoonService {
         'characterElementOverride',
       ],
       ['# Party', 'enableAllCharacters', 'battleParty', 'battlePartyOverride', 'battlePartySize', 'battlePartyPool', 'battlePartyDuplicates'],
-      ['# Dragoons', 'enableAllDragoons', 'dragoonTotalStatsPerLevel', 'dragoonTotalStatsDistributionPerLevel', 'dragoonElements', 'dragoonNoElement', 'dragoonSpellUnlocks', 'dragoonSpellRandomizationPool', 'dragoonSpellStats', 'dragoonSpellRandomizePower', 'dragoonSpellPowerLowerPercentBound', 'dragoonSpellPowerUpperPercentBound', 'dragoonSpellMpCosts', 'dragoonSpellMpCostLowerBound', 'dragoonSpellMpCostUpperBound', 'dragoonSpellRandomizeAccuracy', 'dragoonSpellAccuracyLowerBound', 'dragoonSpellAccuracyUpperBound', 'dragoonSpellRandomizeStatusChance', 'dragoonSpellStatusChanceLowerBound', 'dragoonSpellStatusChanceUpperBound', 'dragoonSpellElements', 'dragoonSpellNoElement', 'dragoonSpellEffects', 'dragoonSpellAllowDamage', 'dragoonSpellAllowHealHp', 'dragoonSpellAllowRestoreMp', 'dragoonSpellAllowRestoreSp', 'dragoonSpellAllowRevive', 'dragoonSpellAllowCleanse', 'dragoonSpellAllowDrainHp', 'dragoonSpellAllowDrainMp', 'dragoonSpellAllowDrainSp', 'dragoonSpellAllowStatus', 'dragoonSpellAllowBuff', 'dragoonSpellAllowDebuff', 'dragoonSpellAllowRegenHp', 'dragoonSpellAllowRegenMp', 'dragoonSpellAllowRegenSp', 'dragoonElementOverride'],
+      ['# Dragoons', 'enableAllDragoons', 'dragoonTotalStatsPerLevel', 'dragoonStatsBounds', 'dragoonTotalStatsDistributionPerLevel', 'dragoonElements', 'dragoonNoElement', 'dragoonSpellUnlocks', 'dragoonSpellRandomizationPool', 'dragoonSpellStats', 'dragoonSpellRandomizePower', 'dragoonSpellPowerLowerPercentBound', 'dragoonSpellPowerUpperPercentBound', 'dragoonSpellMpCosts', 'dragoonSpellMpCostLowerBound', 'dragoonSpellMpCostUpperBound', 'dragoonSpellRandomizeAccuracy', 'dragoonSpellAccuracyLowerBound', 'dragoonSpellAccuracyUpperBound', 'dragoonSpellRandomizeStatusChance', 'dragoonSpellStatusChanceLowerBound', 'dragoonSpellStatusChanceUpperBound', 'dragoonSpellElements', 'dragoonSpellNoElement', 'dragoonSpellEffects', 'dragoonSpellAllowDamage', 'dragoonSpellAllowHealHp', 'dragoonSpellAllowRestoreMp', 'dragoonSpellAllowRestoreSp', 'dragoonSpellAllowRevive', 'dragoonSpellAllowCleanse', 'dragoonSpellAllowDrainHp', 'dragoonSpellAllowDrainMp', 'dragoonSpellAllowDrainSp', 'dragoonSpellAllowStatus', 'dragoonSpellAllowBuff', 'dragoonSpellAllowDebuff', 'dragoonSpellAllowRegenHp', 'dragoonSpellAllowRegenMp', 'dragoonSpellAllowRegenSp', 'dragoonElementOverride'],
       [
         '# Monsters',
         'monsterTotalStatsPerLevel',
@@ -2316,5 +2335,55 @@ export class IrongoonService {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  private getRandomNumberBounds(descriptor?: string): [number, number] {
+    if (descriptor === 'additionUnlockLevelLowerBound' || descriptor === 'additionUnlockLevelUpperBound') return [2, 60];
+    if (descriptor === 'battlePartySize') return [1, 3];
+
+    // Match main.future's numeric schema, including its overflow headroom.
+    let maximum = 2147483646;
+    if (descriptor?.startsWith('hpStat') || descriptor?.startsWith('speedStat') || descriptor?.startsWith('totalStatsMonsters')) maximum = 2147483627;
+    if (descriptor?.includes('StatusChance') || descriptor?.includes('Accuracy') || descriptor?.startsWith('escapeChance')) maximum = 100;
+
+    const requestedLower = Number(this.numberInputLowerBound);
+    const requestedUpper = Number(this.numberInputUpperBound);
+    const lower = Math.min(maximum, Math.max(0, Math.floor(Number.isFinite(requestedLower) ? requestedLower : 30)));
+    const upper = Math.min(maximum, Math.max(0, Math.floor(Number.isFinite(requestedUpper) ? requestedUpper : 250)));
+    return [Math.min(lower, upper), Math.max(lower, upper)];
+  }
+
+  private normalizeRandomizedBounds(): void {
+    const options = this.getOptionsByDescriptor();
+    options.forEach((option, descriptor) => {
+      if (!descriptor.includes('Lower')) return;
+
+      const upper = options.get(descriptor.replace('Lower', 'Upper'));
+      if (upper && typeof option.value === 'number' && typeof upper.value === 'number' && option.value > upper.value) {
+        [option.value, upper.value] = [upper.value, option.value];
+      }
+    });
+  }
+
+  private ensureRandomizedPool(modeDescriptor: string, modes: string[], poolDescriptors: string[]): void {
+    const options = this.getOptionsByDescriptor();
+    const mode = options.get(modeDescriptor);
+    if (!mode?.data || !modes.includes(mode.data.value)) return;
+
+    const pool = poolDescriptors.map((descriptor) => options.get(descriptor)).filter((option): option is IrongoonOption => !!option);
+    if (pool.some((option) => option.value === 2)) return;
+
+    pool[this.getRandomInt(0, pool.length - 1)].value = 2;
+  }
+
+  private getOptionsByDescriptor(): Map<string, IrongoonOption> {
+    return new Map(
+      this.optionCategories
+        .flatMap((category) => category.columns)
+        .flatMap((column) => column.settings)
+        .flatMap((setting) => setting.options)
+        .filter((option): option is IrongoonOption & { descriptor: string } => !!option.descriptor)
+        .map((option) => [option.descriptor, option]),
+    );
   }
 }

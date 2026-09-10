@@ -7,7 +7,9 @@
         <a href="https://github.com/Legend-of-Dragoon-Modding/Severed-Chains" target="_blank">Severed Chains</a> is the native PC port that makes all of the mods for Legend of Dragoon possible.
         <br />
         <br />
-        Follow the instructions in the <a href="https://legendofdragoon.org/guides/setup-severed-chains/" target="_blank">setup guide</a>.
+        This builder targets Irongoon <strong>main.future</strong> (v0.5.1 package) with Severed Chains <strong>main.spike-testing</strong>.
+        Use the matching engine from the Future bundle; an official development update can replace it with an incompatible build.
+        Follow the <a href="https://legendofdragoon.org/guides/setup-severed-chains/" target="_blank">setup guide</a> for disc images and general setup.
       </p>
     </div>
     <div class="supportArticle">
@@ -17,8 +19,13 @@
         <a href="https://gist.github.com/Ink230/76197fd8251de5e0927d99077e0c1124" target="_blank">Irongoon ruleset</a>.
         <br />
         <br />
-        Unzip the contents from the latest release of the mod 'as is' into the Severed Chain's /mods folder.<br /><br />
-        Then, open the /mods/irongoon/config.yaml file and paste in the copied contents of the generated config above.
+        Download a matching platform bundle from <a href="https://github.com/Ink230/irongoon/releases/tag/irongoon-future" target="_blank">Latest Irongoon Future</a>
+        and extract it into a new directory. Irongoon is already installed; supply your own disc images in <code>isos</code> and use <code>launch.bat</code> on Windows or <code>launch</code> on Linux/macOS.
+        For a mod-only installation, back up your configuration, remove the old Irongoon JAR, and extract the mod ZIP into the matching engine's <code>mods</code> directory.<br /><br />
+        Save the generated YAML as <code>mods/irongoon/configs/custom-ig.yaml</code>. In Irongoon's in-game configuration menu, choose <strong>Rescan Profiles</strong>,
+        select it under <strong>Load YAML Profile</strong>, then choose <strong>Use settings</strong>.
+        New campaigns apply staged settings when they start; existing campaigns require saving and reloading.
+        The builder's starting values are a custom preset, not the built-in Irongoon (Blueprint) defaults.
       </p>
     </div>
   </div>
@@ -27,6 +34,24 @@
     <div class="supportArticle">
       <h2>What can it do now?</h2>
       <p>Irongoon provides configurable character, Dragoon, monster, Addition, Dragoon spell, party, encounter, shop, and inventory randomization.</p>
+    </div>
+    <div class="supportArticle">
+      <h2>Why did editing my YAML file not change my campaign?</h2>
+      <p>
+        Campaign saves contain an Irongoon configuration snapshot. Load the updated YAML profile and choose <strong>Use settings</strong>, then save and reload the campaign.
+        <code>mods/irongoon/config.yaml</code> is a legacy fallback and migration source; it is not reread over an existing campaign snapshot.
+        New-campaign-only options such as enabling all characters or Dragoons still require a new campaign.
+      </p>
+    </div>
+    <div class="supportArticle">
+      <h2>How do Severed Chains presets relate to YAML profiles?</h2>
+      <p>
+        SC includes a read-only <strong>Irongoon (Blueprint)</strong> preset. Select it and use SC's <strong>Add</strong> action to create an editable copy.
+        Edit Irongoon settings, choose <strong>Use settings</strong>, then return to SC's preset editor and confirm its save prompt.
+        <strong>Active Configuration</strong> identifies the SC preset and shows <strong>(Modified)</strong> when settings differ.
+        Loading YAML stages configuration separately; <strong>Use settings</strong> does not write a YAML file.
+        Use <strong>Save YAML Profile</strong> or <strong>Save YAML As...</strong> for explicit file saves.
+      </p>
     </div>
     <div class="supportArticle">
       <h2>What is next?</h2>
