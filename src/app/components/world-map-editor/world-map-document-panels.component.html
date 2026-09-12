@@ -1,0 +1,39 @@
+@if (editor.tab === 'source') {
+  <div class="source-panel">
+    <p class="muted">Version 1 XML. Apply edits to update the graph and inspector. Unknown fields are preserved here; the runtime rejects them.</p>
+    <textarea aria-label="World map XML source" spellcheck="false" [(ngModel)]="editor.source"></textarea>
+    <div class="actions"><button class="primary" (click)="editor.applySource()">Apply XML</button><button (click)="editor.source = ''; editor.setTab('source')">Reset to document</button></div>
+  </div>
+}
+@if (editor.tab === 'assets') {
+  <div class="asset-panel">
+    <h2>Asset package</h2>
+    <p>Attach TIM textures, TMD / CContainer models and animation files using the same relative paths as the preset. Export a .wmap.zip to keep them together.</p>
+    <div class="actions">
+      <button (click)="assetFiles.click()">Attach files</button><button (click)="folder.click()">Import package folder</button
+      ><input #assetFiles type="file" hidden multiple (change)="editor.fileInput($event)" /><input #folder type="file" hidden multiple webkitdirectory (change)="editor.fileInput($event)" />
+    </div>
+    <p class="muted">Native extracted game assets are still required. Preview uses a 2D graph; models and textures are rendered by Severed Chains.</p>
+    @for (asset of editor.assetEntries; track asset[0]) {
+      <div class="asset-row">
+        <code>{{ asset[0] }}</code
+        ><span>{{ (asset[1].byteLength / 1024).toFixed(1) }} KB</span><button (click)="editor.removeAsset(asset[0])" [attr.aria-label]="'Remove ' + asset[0]">×</button>
+      </div>
+    } @empty {
+      <p class="muted">No asset files attached</p>
+    }
+  </div>
+}
+@if (editor.showDiagnostics) {
+  <div class="diagnostics">
+    <div class="panel-title">REFERENCE & PACKAGE DIAGNOSTICS</div>
+    @for (issue of editor.issues; track $index) {
+      <button (click)="editor.revealIssue(issue)">
+        <span [class.issue-error]="issue.severity === 'error'">{{ issue.severity }}</span
+        >{{ issue.message }}
+      </button>
+    } @empty {
+      <p>No local reference or asset issues found. Runtime validation remains authoritative.</p>
+    }
+  </div>
+}

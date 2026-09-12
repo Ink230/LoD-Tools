@@ -4,6 +4,10 @@ import { AppComponent } from './app/components/app-default/app.component';
 
 const routes: Routes = [
   {
+    path: 'world-map-editor',
+    loadComponent: () => import('./app/components/world-map-editor/world-map-editor.component').then((m) => m.WorldMapEditorComponent),
+  },
+  {
     path: '',
     redirectTo: 'mods/irongoon',
     pathMatch: 'full',

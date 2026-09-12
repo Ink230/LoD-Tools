@@ -1,0 +1,139 @@
+:host {
+  display: contents;
+}
+.actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+h2,
+p {
+  margin: 0;
+}
+h2 {
+  font-size: 17px;
+  font-weight: 600;
+}
+.muted {
+  color: #899d90;
+  font-size: 12px;
+}
+.panel-title {
+  padding: 12px 0;
+  font:
+    10px ui-monospace,
+    monospace;
+  letter-spacing: 1px;
+  color: #98af9c;
+}
+code {
+  font:
+    11px ui-monospace,
+    monospace;
+  color: #8ca696;
+  overflow-wrap: anywhere;
+}
+button,
+select,
+input,
+textarea {
+  all: revert;
+  box-sizing: border-box;
+  font: 12px system-ui;
+  color: #d6e5db;
+  border: 1px solid #354c3c;
+  border-radius: 5px;
+  background: #18281e;
+  padding: 7px 10px;
+  min-width: 0;
+}
+button {
+  cursor: pointer;
+}
+button:hover {
+  background: #2c4531;
+}
+button:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+button.active {
+  color: #c5eea4;
+  background: #2a432a;
+  border-color: #648f48;
+}
+button.primary {
+  background: #a4d77b;
+  color: #12200e;
+  border-color: #a4d77b;
+  font-weight: 650;
+}
+button.primary:hover {
+  background: #b9e990;
+}
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+svg:focus-visible {
+  outline: 2px solid #b7e190;
+  outline-offset: -2px;
+}
+.source-panel,
+.asset-panel {
+  padding: 18px;
+  display: grid;
+  gap: 16px;
+}
+.source-panel {
+  flex: 1;
+  grid-template-rows: auto 1fr auto;
+}
+.source-panel textarea {
+  resize: vertical;
+  min-height: 550px;
+  background: #0d1711;
+  font:
+    12px/1.6 ui-monospace,
+    monospace;
+  white-space: pre;
+  tab-size: 2;
+  caret-color: #b7e190;
+}
+.asset-panel p {
+  font-size: 12px;
+}
+.asset-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+.asset-row code {
+  flex: 1;
+}
+.diagnostics {
+  max-height: 230px;
+  overflow: auto;
+  padding: 0 12px;
+  border-top: 1px solid var(--line);
+}
+.diagnostics button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+.diagnostics span {
+  color: #d7c38d;
+  margin-right: 10px;
+}
+.diagnostics .issue-error {
+  color: #f4a093;
+}
+input[hidden] {
+  display: none;
+}

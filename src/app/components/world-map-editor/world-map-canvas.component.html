@@ -1,0 +1,111 @@
+<div class="map-tools">
+  <div class="actions">
+    <button [class.active]="editor.mode === 'select'" (click)="editor.mode = 'select'" title="Select and drag; blank space pans">↖ Select</button
+    ><button [class.active]="editor.mode === 'node'" (click)="editor.mode = 'node'">+ Node</button><button (click)="editor.addRoute()">+ Route</button
+    ><button [class.active]="editor.mode === 'point'" [disabled]="!editor.selectedGeometry" (click)="editor.mode = 'point'">+ Point</button>
+  </div>
+  <select aria-label="Filter region" [(ngModel)]="editor.region" (change)="editor.fit()">
+    <option value="">All regions</option>
+    @for (entry of editor.regions; track entry) {
+      <option [value]="entry.getAttribute('id')">{{ editor.shortId(entry.getAttribute('id')) }}</option>
+    }
+  </select>
+</div>
+<div class="canvas-wrap">
+  <svg
+    #map
+    class="map"
+    [attr.viewBox]="editor.viewBox"
+    tabindex="0"
+    role="application"
+    aria-label="World map graph. Drag nodes or route points. Drag background to pan. Scroll to zoom. Arrow keys move selection, Shift moves ten units, F fits, Delete removes."
+    (wheel)="editor.wheel($event, map)"
+    (pointerdown)="editor.pointerDown($event, map)"
+    (pointermove)="editor.pointerMove($event, map)"
+    (pointerup)="editor.pointerUp($event, map)"
+    (pointercancel)="editor.pointerUp($event, map)"
+    (keydown)="editor.mapKey($event)"
+  >
+    <defs>
+      <pattern id="wmap-grid" [attr.width]="50 * editor.unit" [attr.height]="50 * editor.unit" patternUnits="userSpaceOnUse">
+        <path [attr.d]="'M ' + 50 * editor.unit + ' 0 L 0 0 0 ' + 50 * editor.unit" fill="none" stroke="#263a2c" [attr.stroke-width]="editor.unit" />
+      </pattern>
+      <marker id="wmap-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#80bd69" /></marker>
+    </defs>
+    <rect [attr.x]="editor.view.x" [attr.y]="editor.view.z" [attr.width]="editor.view.width" [attr.height]="editor.view.height" fill="url(#wmap-grid)" />
+    @for (route of editor.filteredRoutes; track route.id) {
+      <polyline
+        class="route-hit"
+        [attr.points]="route.points"
+        fill="none"
+        stroke="transparent"
+        [attr.stroke-width]="16 * editor.unit"
+        (pointerdown)="$event.stopPropagation(); editor.select(route.element, 'routes')"
+      >
+        <title>{{ route.id }} · {{ route.start?.id }} → {{ route.end?.id }}</title>
+      </polyline>
+      <polyline
+        class="route"
+        [class.selected-route]="editor.selected === route.element"
+        [attr.points]="route.points"
+        fill="none"
+        [attr.stroke-width]="(editor.selected === route.element ? 3 : 1.7) * editor.unit"
+        marker-end="url(#wmap-arrow)"
+      />
+    }
+    @if (editor.selectedGeometry) {
+      <polyline class="geometry-line" [attr.points]="editor.geometryPoints" fill="none" [attr.stroke-width]="2 * editor.unit" />
+    }
+    @for (node of editor.filteredNodes; track node.id) {
+      <g
+        class="node"
+        (pointerdown)="editor.pointerDown($event, map, node.element)"
+        (keydown.enter)="editor.select(node.element, 'nodes')"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="'Node ' + node.id"
+      >
+        <circle
+          [attr.cx]="node.x"
+          [attr.cy]="node.z"
+          [attr.r]="(editor.selected === node.element ? 7 : 4) * editor.unit"
+          [attr.stroke-width]="1.5 * editor.unit"
+          [class.selected-node]="editor.selected === node.element"
+        />
+        @if (editor.showLabels) {
+          <text [attr.x]="node.x + 9 * editor.unit" [attr.y]="node.z - 8 * editor.unit" [attr.font-size]="11 * editor.unit">{{ editor.nodeName(node.id) }}</text>
+        }
+        <title>{{ node.id }} · X {{ node.x }} / Z {{ node.z }}</title>
+      </g>
+    }
+    @for (point of editor.handles; track point.element) {
+      <rect
+        class="handle"
+        [class.selected-handle]="editor.pointIndex === point.index"
+        [attr.x]="point.x - 4 * editor.unit"
+        [attr.y]="point.z - 4 * editor.unit"
+        [attr.width]="8 * editor.unit"
+        [attr.height]="8 * editor.unit"
+        [attr.stroke-width]="editor.unit"
+        (pointerdown)="editor.pointerDown($event, map, point.element, 'point', point.index)"
+      >
+        <title>Point {{ point.index + 1 }} · X {{ point.x }} / Z {{ point.z }}</title>
+      </rect>
+    }
+  </svg>
+  @if (!editor.nodes.length && !editor.routes.length) {
+    <div class="empty-state">
+      <span class="empty-icon">⌘</span>
+      <h2>Your world starts here</h2>
+      <p>Load the complete vanilla world map, or import a preset to explore its graph.</p>
+      <button class="primary" (click)="editor.loadVanilla()" [disabled]="editor.loading">Load vanilla world</button>
+      <p class="muted">You can also drop .wmap or .wmap.zip files here</p>
+    </div>
+  }
+  <div class="map-controls">
+    <button (click)="editor.zoom(0.8)" aria-label="Zoom in">+</button><button (click)="editor.zoom(1.25)" aria-label="Zoom out">−</button><button (click)="editor.fit()" title="F">Fit</button
+    ><button (click)="editor.showLabels = !editor.showLabels" [class.active]="editor.showLabels">Labels</button>
+  </div>
+  <div class="axis">X → &nbsp; Z ↓ <span>Height is edited as Y in the inspector</span></div>
+</div>
+<div class="hint">Drag background to pan · Scroll to zoom · Arrows move selection · Shift ×10 · F fit · Delete remove</div>

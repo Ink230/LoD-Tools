@@ -1,0 +1,69 @@
+:host {
+  display: block;
+}
+h2,
+p {
+  margin: 0;
+}
+h2 {
+  font-size: 17px;
+  font-weight: 600;
+}
+.muted {
+  color: #899d90;
+  font-size: 12px;
+}
+.panel-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 44px;
+  font:
+    10px ui-monospace,
+    monospace;
+  letter-spacing: 1px;
+  color: #98af9c;
+}
+button {
+  all: revert;
+  box-sizing: border-box;
+  cursor: pointer;
+  font: 12px system-ui;
+  color: #d6e5db;
+  border: 1px solid #354c3c;
+  border-radius: 5px;
+  background: #18281e;
+  padding: 5px 8px;
+}
+button:hover {
+  background: #2c4531;
+}
+button:focus-visible {
+  outline: 2px solid #b7e190;
+  outline-offset: 1px;
+}
+.selected-id {
+  font:
+    11px ui-monospace,
+    monospace;
+  color: #a8c19e;
+  overflow-wrap: anywhere;
+  margin: 6px 0 18px;
+}
+:host > .muted {
+  margin: 10px 0 20px;
+}
+.notice,
+.point-panel {
+  padding: 10px;
+  border: 1px solid #4b5437;
+  background: #272e20;
+  border-radius: 4px;
+  margin-bottom: 14px;
+  font-size: 11px;
+  color: #bdc9a1;
+}
+.wide {
+  width: 100%;
+  margin-top: 12px;
+}

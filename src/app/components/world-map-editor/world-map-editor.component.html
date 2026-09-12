@@ -1,0 +1,74 @@
+<main class="editor" (dragover)="$event.preventDefault()" (drop)="drop($event)">
+  <header class="editor-header">
+    <div>
+      <p class="eyebrow">SEVERED CHAINS / AUTHORING TOOLS</p>
+      <h1>World Map Editor <span>V1</span></h1>
+      <p class="subtitle">Shape paths, connect places, define your world</p>
+    </div>
+    <div class="actions">
+      <button (click)="loadVanilla()" [disabled]="loading">Load vanilla</button>
+      <button (click)="files.click()" [disabled]="loading">Import</button>
+      <button (click)="download()">Export .wmap</button>
+      <button class="primary" (click)="download(true)">Export package ↓</button>
+      <input #files type="file" hidden multiple accept=".wmap,.zip,.tim,.tmd,.bin" (change)="fileInput($event)" />
+    </div>
+  </header>
+  @if (error) {
+    <div class="error" role="alert">{{ error }} <button (click)="error = ''" aria-label="Dismiss error">×</button></div>
+  }
+  <div class="document-bar">
+    <div>
+      <strong>{{ title }}</strong
+      ><code>{{ root.getAttribute('id') }}</code>
+    </div>
+    <div class="actions">
+      <button (click)="undo()" [disabled]="!undoStack.length" title="Ctrl+Z">↶ Undo</button><button (click)="redo()" [disabled]="!redoStack.length" title="Ctrl+Shift+Z">↷ Redo</button
+      ><button [class.active]="showDiagnostics" (click)="showDiagnostics = !showDiagnostics">{{ issues.length }} diagnostics</button>
+    </div>
+  </div>
+  <div class="workspace">
+    <aside class="library" aria-label="Preset sections">
+      <div class="panel-title">WORLD CONTENT</div>
+      <div class="section-list">
+        @for (name of sections; track name) {
+          <button [class.active]="section === name" (click)="chooseSection(name)">
+            <span>{{ label(name) }}</span
+            ><small>{{ count(name) }}</small>
+          </button>
+        }
+      </div>
+      <div class="panel-title">{{ label(section) }} <button (click)="createEntry()" aria-label="Add entry">+</button></div>
+      <input class="search" aria-label="Search registry IDs" placeholder="Search registry IDs…" [(ngModel)]="search" />
+      <div class="entry-list">
+        @for (item of items; track item) {
+          <button [class.active]="selected === item" (click)="select(item)">
+            <span>{{ section === 'nodes' ? nodeName(item.getAttribute('id')) : shortId(item.getAttribute('id')) }}</span
+            ><small>{{ item.getAttribute('name') || item.getAttribute('id') || item.tagName }}</small>
+          </button>
+        } @empty {
+          <p class="muted">No entries. Add one, or import a preset.</p>
+        }
+      </div>
+    </aside>
+    <section class="center" aria-label="Editor canvas">
+      <div class="toolbar">
+        <div class="actions">
+          <button [class.active]="tab === 'map'" (click)="setTab('map')">Map</button><button [class.active]="tab === 'source'" (click)="setTab('source')">XML source</button
+          ><button [class.active]="tab === 'assets'" (click)="setTab('assets')">
+            Assets <small>{{ assets.size }}</small>
+          </button>
+        </div>
+        <span class="muted">{{ nodes.length }} nodes · {{ routes.length }} routes</span>
+      </div>
+      @if (tab === 'map') {
+        <app-world-map-canvas [editor]="this" />
+      }
+      <app-world-map-document-panels [editor]="this" />
+    </section>
+    <app-world-map-inspector class="inspector" [editor]="this" />
+  </div>
+  <footer class="status" role="status">
+    <span><i></i>{{ loading ? 'Loading…' : status }}</span
+    ><span>Local editing · .wmap v1 · Assets {{ assets.size }}</span>
+  </footer>
+</main>
