@@ -32,7 +32,7 @@ describe('world map XML document and asset package', () => {
     const doc = parsePreset(SOURCE);
     entries(doc, 'routes')[0].setAttribute('start', '');
     const issues = diagnostics(doc, ['assets/map.tmd', 'assets/map.tim']);
-    expect(issues.some((i) => i.severity === 'error' && i.message.startsWith('start:'))).toBe(true);
+    expect(issues.some((i) => i.severity === 'error' && i.message.startsWith('Missing nodes reference') && i.message.includes('(start)'))).toBe(true);
     expect(issues.some((i) => i.severity === 'warning' && i.message.includes('lod:region'))).toBe(true);
     expect(issues.some((i) => i.message.includes('Asset not attached'))).toBe(false);
   });
@@ -88,5 +88,11 @@ describe('world map XML document and asset package', () => {
       expect(() => safeAssetPath(path)).toThrow();
     expect(() => writePackage(SOURCE, new Map([['other.wmap', new Uint8Array()]]))).toThrow('.wmap');
     expect(() => readPackage(zipSync({ 'other.wmap': strToU8(SOURCE) }))).toThrow('preset.wmap');
+  });
+  it('resolves native encounter registries outside editable preset sections', () => {
+    const doc = parsePreset('<worldMapPreset version="1" id="custom:test"><encounterPools><encounterPool id="custom:pool"><encounters><item id="lod:sea_dragon"/><item id="lod:sea_dragon"/><item id="lod:sea_dragon"/><item id="lod:sea_dragon"/></encounters></encounterPool></encounterPools></worldMapPreset>');
+    expect(diagnostics(doc, [], { encounters: ['lod:sea_dragon'] })).toEqual([]);
+    const unresolved = diagnostics(doc, []);
+    expect(unresolved.some((issue) => issue.message.includes('Unknown encounters reference "lod:sea_dragon"') && issue.message.includes('Choose an existing encounters ID'))).toBe(true);
   });
 });

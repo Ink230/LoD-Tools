@@ -153,7 +153,7 @@ export interface Diagnostic {
 
 export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegistry: Record<string, string[]> = {}): Diagnostic[] {
   const result: Diagnostic[] = [];
-  const registryIds = new Map(Object.keys(SECTIONS).map((section) => [section, new Set([...entries(doc, section).map((entry) => entry.getAttribute('id')), ...(nativeRegistry[section] || [])])]));
+  const registryIds = new Map([...new Set([...Object.keys(SECTIONS), ...Object.keys(nativeRegistry)])].map((section) => [section, new Set([...entries(doc, section).map((entry) => entry.getAttribute('id')), ...(nativeRegistry[section] || [])])]));
   const removedIds = new Set(entries(doc, 'removals').map((entry) => `${entry.getAttribute('kind')}:${entry.getAttribute('id')}`));
   const add = (element: Element, message: string, severity: 'error' | 'warning' = 'error') => {
     if (!result.some((issue) => issue.message === message)) result.push({ element, message, severity });
@@ -176,7 +176,7 @@ export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegist
       const removed = target && removedIds.has(`${target}:${attribute.value}`);
       if (removed && element.tagName !== 'remove') add(element, `${attribute.name}: ${attribute.value} refers to a removed ${target} entry`);
       else if (target && element.tagName !== 'remove' && !registryIds.get(target)?.has(attribute.value)) {
-        add(element, `${attribute.name}: ${attribute.value || '(empty)'} is not in this file; an installed mod must provide it`, attribute.value ? 'warning' : 'error');
+        add(element, attribute.value ? `Unknown ${target} reference "${attribute.value}" in ${element.parentElement?.tagName}/${element.tagName} (${attribute.name}). Choose an existing ${target} ID, add its definition to this preset where supported, or enable a mod that registers it in SC; external mod registries cannot be verified here.` : `Missing ${target} reference in ${element.parentElement?.tagName}/${element.tagName} (${attribute.name}). Choose an existing ${target} ID in the inspector.`, attribute.value ? 'warning' : 'error');
       }
       const presentation = fieldPresentation(element, attribute.name);
       if (presentation.numeric && (!attribute.value.trim() || !Number.isFinite(Number(attribute.value)))) add(element, `${attribute.name} must be a finite number`);
