@@ -24,8 +24,7 @@
   <div class="document-bar command-bar">
     <div class="document-identity">
     <div>
-      <strong>{{ title }}</strong
-      ><code class="document-file" [title]="root.getAttribute('id') + ' - ' + filename">{{ root.getAttribute('id') }} - {{ filename }}</code>
+      <button type="button" (click)="selected = null; pointIndex = -1" aria-label="Open preset details" style="padding: 0; border: 0; background: none; font: inherit; font-weight: 700; text-align: left">{{ title }}</button><code class="document-file" [title]="root.getAttribute('id') + ' - ' + filename">{{ root.getAttribute('id') }} - {{ filename }}</code>
     </div>
 
 
