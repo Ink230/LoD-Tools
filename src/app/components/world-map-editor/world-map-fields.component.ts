@@ -123,7 +123,7 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
       .point-row { border-bottom: 1px solid #37443b; padding-bottom: 8px; }
       .point-heading { display: flex; gap: 8px; align-items: center; color: #a8c898; font: 10px ui-monospace, monospace; margin-bottom: 6px; }
       .point-heading [draggable] { cursor: grab; padding: 2px 6px; font-size: 16px; }
-      .coordinates { position: relative; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding-right: 28px; }
+      .coordinates { position: relative; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 0 14px; }
       .coordinates .field { display: flex; flex-direction: column; min-width: 0; gap: 4px; }
       .coordinates input { padding: 7px 4px; font-size: 11px; appearance: textfield; }
       .coordinates input::-webkit-inner-spin-button, .coordinates input::-webkit-outer-spin-button { appearance: none; margin: 0; }
