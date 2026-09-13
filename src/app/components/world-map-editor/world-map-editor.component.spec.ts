@@ -214,4 +214,15 @@ describe('world map graph editing', () => {
     expect(editor.selected).toBeNull();
     expect(editor.mode).toBe('select');
   });
+  it('uses the configured namespace for new entities and drawn geometry', () => {
+    editor.registryNamespace = 'irongoon';
+    editor.chooseSection('nodes');
+    editor.createEntry();
+    expect(editor.selected.getAttribute('id')).toBe('irongoon:node_1');
+    editor.startGeometryDrawing();
+    editor.drawGeometryPoint(0, 0);
+    editor.drawGeometryPoint(20, 20);
+    editor.finishGeometryDrawing();
+    expect(editor.selected.getAttribute('id')).toBe('irongoon:geometry_1');
+  });
 });

@@ -60,7 +60,7 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
               @if (element.tagName === 'points') {
                 <div class="point-heading"><span draggable="true" role="button" tabindex="0" aria-label="Drag point to reorder" (dragstart)="dragPoint = child; $event.stopPropagation()" (dragend)="dragPoint = null">⠿</span><button type="button" class="point-link" title="Show point on map" (click)="navigate.emit({ element: element.parentElement!, section: 'geometry', point: child })">{{ child === element.firstElementChild ? 'START' : child === element.lastElementChild ? 'END' : 'POINT ' + (normalChildren.indexOf(child) + 1) }}</button> @if (canRemove(child)) { <button type="button" class="point-remove" aria-label="Remove point" (click)="removeChild(child, $event)">×</button> }</div>
               }
-          <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" [removableEntry]="element.tagName !== 'points' && canRemove(child)"
+          <app-world-map-fields [namespace]="namespace" [element]="child" [registry]="registry" [registryLabels]="registryLabels" [removableEntry]="element.tagName !== 'points' && canRemove(child)"
             (mutate)="mutate.emit($event)" (navigate)="navigate.emit($event)" (removeEntry)="removeChild(child, $event)" />
             </div>
         } @else {
@@ -71,7 +71,7 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
               <button type="button" class="remove" (click)="removeChild(child, $event)" [attr.aria-label]="'Remove ' + child.tagName">×</button>
             }
           </div>
-          <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" (mutate)="mutate.emit($event)" (navigate)="navigate.emit($event)" />
+          <app-world-map-fields [namespace]="namespace" [element]="child" [registry]="registry" [registryLabels]="registryLabels" (mutate)="mutate.emit($event)" (navigate)="navigate.emit($event)" />
         </section>
         }
       }
@@ -102,7 +102,7 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
             @for (child of compatibilityChildren; track child) {
               <section class="field-section">
                 <div class="section-heading">{{ childLabelName(child.tagName) }}</div>
-                <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" (mutate)="mutate.emit($event)" (navigate)="navigate.emit($event)" />
+                <app-world-map-fields [namespace]="namespace" [element]="child" [registry]="registry" [registryLabels]="registryLabels" (mutate)="mutate.emit($event)" (navigate)="navigate.emit($event)" />
               </section>
             }
           </div>
@@ -165,6 +165,7 @@ export class WorldMapFieldsComponent {
   private readonly instanceId = WorldMapFieldsComponent.nextId++;
   activeSuggestions: string | null = null;
   @Input({ required: true }) element!: Element;
+  @Input() namespace = 'custom';
   @Input() registry: Record<string, string[]> = {};
   @Input() registryLabels: Record<string, Record<string, string>> = {};
   @Output() mutate = new EventEmitter<() => void>();
@@ -321,7 +322,7 @@ export class WorldMapFieldsComponent {
   }
   addChild(name?: string) {
     this.mutate.emit(() => {
-      const child = new DOMParser().parseFromString(childTemplate(this.element, name), 'application/xml').documentElement;
+      const child = new DOMParser().parseFromString(childTemplate(this.element, name).replace('custom:marker', this.namespace + ':marker'), 'application/xml').documentElement;
       const imported = this.element.ownerDocument.importNode(child, true);
       this.element.insertBefore(imported, this.element.tagName === 'points' ? this.element.lastElementChild : null);
     });

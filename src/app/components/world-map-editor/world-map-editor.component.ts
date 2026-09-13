@@ -1,3 +1,4 @@
+import { WorldMapConfigComponent } from './world-map-config.component';
 import { splitJunction } from './world-map-junction';
 import { WORLD_MAP_THEME_COLORS } from './world-map-theme';
 import { WorldMapTerrainComponent } from './world-map-terrain.component';
@@ -44,7 +45,7 @@ interface EditorSnapshot {
   // XML DOM nodes mutate in place; refresh this isolated editor subtree when its owner changes.
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default,
-  imports: [WorldMapTerrainComponent, FormsModule, WorldMapInspectorComponent, WorldMapCanvasComponent, WorldMapDocumentPanelsComponent],
+  imports: [WorldMapConfigComponent, WorldMapTerrainComponent, FormsModule, WorldMapInspectorComponent, WorldMapCanvasComponent, WorldMapDocumentPanelsComponent],
   templateUrl: './world-map-editor.component.html',
   styleUrls: ['./world-map-editor.component.css', './world-map-viewport.css'],
 })
@@ -163,6 +164,10 @@ export class WorldMapEditorComponent implements OnInit {
   }
   ngOnInit() {
     this.restoreLabelSettings();
+    try {
+      const namespace = localStorage.getItem('lodtools.world-map.registry-namespace');
+      if (namespace && /^[a-z]+$/.test(namespace)) this.registryNamespace = namespace;
+    } catch { /* Use the default namespace. */ }
     try { this.toolsOpen = localStorage.getItem('lodtools.world-map.tools-open') === 'true'; } catch { /* Default closed. */ }
     try {
       this.includeStoryRefs = localStorage.getItem('lodtools.world-map.include-story-refs') === 'true';
@@ -202,8 +207,8 @@ export class WorldMapEditorComponent implements OnInit {
     this.mutate(() => {
       const route = source.cloneNode(true) as Element;
       let index = 1;
-      while (this.registry['routes']?.includes(`custom:route_${index}`)) index++;
-      route.setAttribute('id', `custom:route_${index}`);
+      while (this.registry['routes']?.includes(`${this.registryNamespace}:route_${index}`)) index++;
+      route.setAttribute('id', `${this.registryNamespace}:route_${index}`);
       // A new route must not overwrite its source's native slot.
       route.removeAttribute('legacyIndex');
       route.setAttribute('start', end);
@@ -222,8 +227,8 @@ export class WorldMapEditorComponent implements OnInit {
   }
   private drawingId(section: string, kind: string) {
     let index = 1;
-    while (entries(this.doc, section).some(entry => entry.getAttribute('id') === `custom:${kind}_${index}`)) index++;
-    return `custom:${kind}_${index}`;
+    while (entries(this.doc, section).some(entry => entry.getAttribute('id') === `${this.registryNamespace}:${kind}_${index}`)) index++;
+    return `${this.registryNamespace}:${kind}_${index}`;
   }
   private appendDrawingEntry(section: string, element: Element) {
     let container = Array.from(this.root.children).find(child => child.tagName === section);
@@ -295,6 +300,12 @@ export class WorldMapEditorComponent implements OnInit {
     if ((event.target as Element)?.closest?.('[data-delete-entity]')) return;
     if (this.mode === 'drawGeometry' && !(event.target as Element)?.closest?.('.canvas-wrap')) this.finishGeometryDrawing();
   }
+  registryNamespace = 'custom';
+  setRegistryNamespace(value: string) {
+    if (!/^[a-z]+$/.test(value)) return;
+    this.registryNamespace = value;
+    try { localStorage.setItem('lodtools.world-map.registry-namespace', value); } catch { /* Configuration works without storage. */ }
+  }
   toolsOpen = false;
   toggleJunctionTool() {
     this.finishGeometryDrawing();
@@ -322,7 +333,7 @@ export class WorldMapEditorComponent implements OnInit {
     const point = this.coordinates(event, map);
     try {
       this.mutate(() => {
-        this.selected = splitJunction(this.doc, route, point.x, point.z);
+        this.selected = splitJunction(this.doc, route, point.x, point.z, this.registryNamespace);
         this.section = 'nodes';
         this.pointIndex = -1;
       });
@@ -668,8 +679,8 @@ export class WorldMapEditorComponent implements OnInit {
       if (tag !== 'rules') {
         const entryName = tag.replace(/[A-Z]/g, (character) => '_' + character.toLowerCase());
         let index = 1;
-        while (this.registry[this.section]?.includes(`custom:${entryName}_${index}`)) index++;
-        element.setAttribute('id', tag === 'mod' ? 'custom' : `custom:${entryName}_${index}`);
+        while (this.registry[this.section]?.includes(`${this.registryNamespace}:${entryName}_${index}`)) index++;
+        element.setAttribute('id', tag === 'mod' ? this.registryNamespace : `${this.registryNamespace}:${entryName}_${index}`);
       }
       if (tag === 'node') {
         const position = element.querySelector('position');

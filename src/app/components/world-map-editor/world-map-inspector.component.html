@@ -24,7 +24,7 @@
   @if (editor.section === 'behaviours' || editor.section === 'traversalProfiles' || editor.section === 'avatars') {
     <p class="notice">Provider and behaviour IDs refer to installed mod handlers. Presets contain data and cannot embed executable code.</p>
   }
-  <app-world-map-fields [element]="editor.selected" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" (navigate)="editor.goToEntry($event)" />
+  <app-world-map-fields [namespace]="editor.registryNamespace" [element]="editor.selected" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" (navigate)="editor.goToEntry($event)" />
   @if (editor.section === 'routes') {
     <section class="node-references">
       <h3>Corresponding Routes</h3>
@@ -57,5 +57,5 @@
 } @else {
   <h2>Preset details</h2>
   <p class="muted">Select a node, route or registry entry to edit its properties.</p>
-  <app-world-map-fields [element]="editor.root" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" (navigate)="editor.goToEntry($event)" />
+  <app-world-map-fields [namespace]="editor.registryNamespace" [element]="editor.root" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" (navigate)="editor.goToEntry($event)" />
 }

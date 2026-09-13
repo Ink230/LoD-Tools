@@ -1,7 +1,7 @@
 import { entries } from './world-map-document';
 
 /** Split all directional records sharing geometry, retaining their original arrival anchors. */
-export function splitJunction(doc: XMLDocument, route: Element, x: number, z: number): Element {
+export function splitJunction(doc: XMLDocument, route: Element, x: number, z: number, namespace = 'custom'): Element {
   const geometry = entries(doc, 'geometry').find(entry => entry.getAttribute('id') === route.getAttribute('geometry'));
   const points = Array.from(geometry?.querySelectorAll('points > item') || []);
   if (points.length < 2) throw new Error('The route needs geometry with at least two points.');
@@ -22,8 +22,8 @@ export function splitJunction(doc: XMLDocument, route: Element, x: number, z: nu
   if (routes.length !== 2 || new Set(routes.map(entry => entry.getAttribute('direction'))).size !== 2 || routes.some(entry => !['1', '-1'].includes(entry.getAttribute('direction'))) || routes[0].getAttribute('start') !== routes[1].getAttribute('end') || routes[0].getAttribute('end') !== routes[1].getAttribute('start')) throw new Error('Junction splitting needs two corresponding routes with reversed start and end nodes.');
   const unique = (section: string, kind: string) => {
     let index = 1;
-    while (entries(doc, section).some(entry => entry.getAttribute('id') === `custom:${kind}_${index}`)) index++;
-    return `custom:${kind}_${index}`;
+    while (entries(doc, section).some(entry => entry.getAttribute('id') === `${namespace}:${kind}_${index}`)) index++;
+    return `${namespace}:${kind}_${index}`;
   };
   const append = (section: string, element: Element) => {
     let container = Array.from(doc.documentElement.children).find(child => child.tagName === section);

@@ -51,7 +51,7 @@
         <button [class.active]="orientation === i && stageRotation === 0" [attr.aria-pressed]="orientation === i && stageRotation === 0" [title]="direction + ' at top'" (click)="orientation = i; stageRotation = 0">{{ direction[0] }}</button>
       }
 
-      <app-world-map-terrain #terrain [region]="region" [view]="view" [attr.inert]="tab !== 'map' ? '' : null" />
+      <app-world-map-config [namespace]="registryNamespace" (namespaceChange)="setRegistryNamespace($event)" /><app-world-map-terrain #terrain [region]="region" [view]="view" [attr.inert]="tab !== 'map' ? '' : null" />
       <button (click)="toggleStoryRefs()" [class.active]="includeStoryRefs" [attr.aria-pressed]="includeStoryRefs" title="Include story presets in Referenced by lists" style="margin-left: 18px">Include story refs</button><button (click)="toggleTools()" [class.active]="toolsOpen" [attr.aria-pressed]="toolsOpen">Tools</button>
     </fieldset>
     <div class="document-history"><div class="actions" style="align-items: center; flex-wrap: nowrap">
