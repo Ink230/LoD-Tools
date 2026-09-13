@@ -74,4 +74,14 @@ describe('world map graph editing', () => {
     a.remove();
     expect(editor.canNavigateEntity(false)).toBe(false);
   });
+  it('indexes reverse references for geometry and service definitions', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test"><geometry><geometry id="custom:shared"><points><item x="0" y="0" z="0"/><item x="1" y="0" z="0"/></points></geometry></geometry><routes><route id="custom:route" geometry="custom:shared"/></routes><serviceDefinitions><serviceDefinition id="custom:shared" label="Shop"/></serviceDefinitions><places><place id="custom:place"><serviceIds><item id="custom:shared"/><item id="custom:shared"/></serviceIds></place></places></worldMapPreset>', 'test.wmap');
+    editor.select(editor.doc.querySelector('geometry[id]'), 'geometry');
+    expect(editor.selectedReferences.map((reference) => reference.element.getAttribute('id'))).toEqual(['custom:route']);
+    editor.select(editor.doc.querySelector('serviceDefinition'), 'serviceDefinitions');
+    expect(editor.selectedReferences.length).toBe(1);
+    expect(editor.selectedReferences[0].fields).toEqual(['serviceIds.id']);
+    editor.goToEntry(editor.selectedReferences[0]);
+    expect(editor.selected.getAttribute('id')).toBe('custom:place');
+  });
 });

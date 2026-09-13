@@ -153,16 +153,10 @@ export class WorldMapEditorComponent implements OnInit {
   get regions() {
     return entries(this.doc, 'regions');
   }
-  nodeReferences = new Map<string, { element: Element; section: string; fields: string[] }[]>();
-  get selectedPortalReferences() {
-    if (!['routes', 'places'].includes(this.section) || !this.selected) return [];
-    const id = this.selected.getAttribute('id');
-    const field = this.section === 'routes' ? 'route' : 'place';
-    return entries(this.doc, 'portals').filter((portal) => portal.getAttribute(field) === id)
-      .map((element) => ({ element, section: 'portals', fields: [field] }));
-  }
-  get selectedNodeReferences() {
-    return this.section === 'nodes' ? this.nodeReferences.get(this.selected?.getAttribute('id') || '') || [] : [];
+  entityReferences = new Map<string, { element: Element; section: string; fields: string[] }[]>();
+  get selectedReferences() {
+    const id = this.selected?.getAttribute('id');
+    return id ? (this.entityReferences.get(`${this.section}:${id}`) || []).filter((reference) => reference.element !== this.selected) : [];
   }
   get assetEntries() {
     return Array.from(this.assets.entries());
@@ -299,21 +293,23 @@ export class WorldMapEditorComponent implements OnInit {
       if (element.getAttribute('direction') === '-1') points = points.split(' ').reverse().join(' ');
       return { element, id: element.getAttribute('id'), geometry, points, start, end };
     });
-    this.nodeReferences.clear();
+    this.entityReferences.clear();
     for (const section of this.sections) {
       if (section === 'removals') continue;
       for (const entry of entries(this.doc, section)) {
         const referenced = new Map<string, Set<string>>();
         for (const element of [entry, ...Array.from(entry.querySelectorAll('*'))]) {
           for (const attribute of Array.from(element.attributes)) {
-            if (referenceSection(element, attribute.name) !== 'nodes' || !attribute.value) continue;
-            if (!referenced.has(attribute.value)) referenced.set(attribute.value, new Set());
-            referenced.get(attribute.value).add(attribute.name);
+            const target = referenceSection(element, attribute.name);
+            if (!target || !attribute.value) continue;
+            const key = `${target}:${attribute.value}`;
+            if (!referenced.has(key)) referenced.set(key, new Set());
+            referenced.get(key).add(element === entry ? attribute.name : `${element.parentElement?.tagName}.${attribute.name}`);
           }
         }
         for (const [id, fields] of referenced) {
-          if (!this.nodeReferences.has(id)) this.nodeReferences.set(id, []);
-          this.nodeReferences.get(id).push({ element: entry, section, fields: [...fields] });
+          if (!this.entityReferences.has(id)) this.entityReferences.set(id, []);
+          this.entityReferences.get(id).push({ element: entry, section, fields: [...fields] });
         }
       }
     }
