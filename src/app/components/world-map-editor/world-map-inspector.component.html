@@ -25,16 +25,16 @@
     <p class="notice">Provider and behaviour IDs refer to installed mod handlers. Presets contain data and cannot embed executable code.</p>
   }
   <app-world-map-fields [element]="editor.selected" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" (navigate)="editor.goToEntry($event)" />
-  @if (editor.section === 'nodes') {
+  @if (editor.section === 'nodes' || editor.section === 'routes') {
     <section class="node-references">
       <h3>Referenced by</h3>
-      @for (reference of editor.selectedNodeReferences; track reference.element) {
+      @for (reference of (editor.section === 'nodes' ? editor.selectedNodeReferences : editor.selectedRouteReferences); track reference.element) {
         <button type="button" (click)="editor.goToEntry(reference)">
           <strong>{{ editor.label(reference.element.tagName) }} · {{ reference.fields.join(', ') }}</strong>
           <span>{{ reference.element.getAttribute('name') || reference.element.getAttribute('label') || reference.element.getAttribute('id') }}</span>
           @if (reference.element.getAttribute('name') || reference.element.getAttribute('label')) { <small>{{ reference.element.getAttribute('id') }}</small> }
         </button>
-      } @empty { <p class="muted">No entities reference this node.</p> }
+      } @empty { <p class="muted">No references to this {{ editor.section === 'nodes' ? 'node' : 'route' }}.</p> }
     </section>
   }
 } @else {
