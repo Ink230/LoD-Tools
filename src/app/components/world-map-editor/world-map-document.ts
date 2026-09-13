@@ -153,6 +153,8 @@ export interface Diagnostic {
 
 export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegistry: Record<string, string[]> = {}): Diagnostic[] {
   const result: Diagnostic[] = [];
+  const registryIds = new Map(Object.keys(SECTIONS).map((section) => [section, new Set([...entries(doc, section).map((entry) => entry.getAttribute('id')), ...(nativeRegistry[section] || [])])]));
+  const removedIds = new Set(entries(doc, 'removals').map((entry) => `${entry.getAttribute('kind')}:${entry.getAttribute('id')}`));
   const add = (element: Element, message: string, severity: 'error' | 'warning' = 'error') => {
     if (!result.some((issue) => issue.message === message)) result.push({ element, message, severity });
   };
@@ -171,9 +173,9 @@ export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegist
     for (const attribute of Array.from(element.attributes)) {
       const target = referenceSection(element, attribute.name);
       if (target && attribute.value && !/^[a-z0-9_.-]+:[a-z0-9_./-]+$/.test(attribute.value)) add(element, `${attribute.name} must use namespace:entry syntax`);
-      const removed = target && entries(doc, 'removals').some((e) => e.getAttribute('kind') === target && e.getAttribute('id') === attribute.value);
+      const removed = target && removedIds.has(`${target}:${attribute.value}`);
       if (removed && element.tagName !== 'remove') add(element, `${attribute.name}: ${attribute.value} refers to a removed ${target} entry`);
-      else if (target && element.tagName !== 'remove' && !entries(doc, target).some((e) => e.getAttribute('id') === attribute.value) && !nativeRegistry[target]?.includes(attribute.value)) {
+      else if (target && element.tagName !== 'remove' && !registryIds.get(target)?.has(attribute.value)) {
         add(element, `${attribute.name}: ${attribute.value || '(empty)'} is not in this file; an installed mod must provide it`, attribute.value ? 'warning' : 'error');
       }
       const presentation = fieldPresentation(element, attribute.name);

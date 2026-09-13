@@ -262,7 +262,7 @@ export class WorldMapEditorComponent implements OnInit {
     this.changeDetector.markForCheck();
   }
   snapshot(): EditorSnapshot {
-    return { source: serializePreset(this.doc), assets: new Map(this.assets), filename: this.filename };
+    return { source: this.documentSource, assets: new Map(this.assets), filename: this.filename };
   }
   mutate(action: () => void) {
     const before = this.snapshot();
