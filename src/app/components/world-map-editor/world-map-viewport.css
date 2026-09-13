@@ -32,8 +32,8 @@
 
 .document-history { display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 0; }
 .document-history > .actions { flex-shrink: 0; margin-right: 24px; }
-.history-spacer { flex: 0 1 206px; min-width: 0; }
+.history-spacer { flex: 0 1 206px; min-width: max-content; display: flex; justify-content: flex-end; }
 @media (max-width: 1600px) {
-  .history-spacer { display: none; }
+  .history-spacer { flex: 0 0 auto; }
   .document-history > .actions { margin-right: 0; }
 }

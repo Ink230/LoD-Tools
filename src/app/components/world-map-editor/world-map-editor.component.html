@@ -53,9 +53,9 @@
     </fieldset>
     <div class="document-history"><div class="actions" style="align-items: center; flex-wrap: nowrap">
       <button (click)="undo()" [disabled]="!undoStack.length" title="Ctrl+Z">↶ Undo</button><button (click)="redo()" [disabled]="!redoStack.length" title="Ctrl+Shift+Z">↷ Redo</button
-      ><button [class.active]="showDiagnostics" (click)="showDiagnostics = !showDiagnostics">{{ issues.length }} diagnostics</button>
+      >
     </div>
-    <span class="history-spacer" aria-hidden="true"></span></div>
+    <div class="history-spacer"><button [class.active]="showDiagnostics" (click)="showDiagnostics = !showDiagnostics">{{ issues.length }} diagnostics</button></div></div>
   </div>
   <div class="workspace">
     <aside class="library" aria-label="Preset sections">
