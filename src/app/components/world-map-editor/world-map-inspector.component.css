@@ -71,3 +71,8 @@ button:focus-visible {
   width: 100%;
   margin-top: 12px;
 }
+.node-references { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.node-references h3 { margin: 0 0 10px; font: 600 12px system-ui; }
+.node-references button { display: grid; gap: 4px; width: 100%; margin-bottom: 6px; text-align: left; }
+.node-references strong { font-size: 11px; }
+.node-references span, .node-references small { overflow-wrap: anywhere; }

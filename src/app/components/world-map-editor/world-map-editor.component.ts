@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { WorldMapInspectorComponent } from './world-map-inspector.component';
 import { WorldMapCanvasComponent } from './world-map-canvas.component';
 import { WorldMapDocumentPanelsComponent } from './world-map-document-panels.component';
-import { Diagnostic, diagnostics, entries, parsePreset, SECTIONS, serializePreset, TEMPLATES } from './world-map-document';
+import { Diagnostic, diagnostics, entries, parsePreset, referenceSection, SECTIONS, serializePreset, TEMPLATES } from './world-map-document';
 import { readPackage, safeAssetPath, writePackage } from './world-map-package';
 import { NATIVE_REGISTRY } from './world-map-registry';
 import { graphCoordinates, synchronizeGraph } from './world-map-graph';
@@ -153,6 +153,10 @@ export class WorldMapEditorComponent implements OnInit {
   get regions() {
     return entries(this.doc, 'regions');
   }
+  nodeReferences = new Map<string, { element: Element; section: string; fields: string[] }[]>();
+  get selectedNodeReferences() {
+    return this.section === 'nodes' ? this.nodeReferences.get(this.selected?.getAttribute('id') || '') || [] : [];
+  }
   get assetEntries() {
     return Array.from(this.assets.entries());
   }
@@ -288,6 +292,24 @@ export class WorldMapEditorComponent implements OnInit {
       if (element.getAttribute('direction') === '-1') points = points.split(' ').reverse().join(' ');
       return { element, id: element.getAttribute('id'), geometry, points, start, end };
     });
+    this.nodeReferences.clear();
+    for (const section of this.sections) {
+      if (section === 'removals') continue;
+      for (const entry of entries(this.doc, section)) {
+        const referenced = new Map<string, Set<string>>();
+        for (const element of [entry, ...Array.from(entry.querySelectorAll('*'))]) {
+          for (const attribute of Array.from(element.attributes)) {
+            if (referenceSection(element, attribute.name) !== 'nodes' || !attribute.value) continue;
+            if (!referenced.has(attribute.value)) referenced.set(attribute.value, new Set());
+            referenced.get(attribute.value).add(attribute.name);
+          }
+        }
+        for (const [id, fields] of referenced) {
+          if (!this.nodeReferences.has(id)) this.nodeReferences.set(id, []);
+          this.nodeReferences.get(id).push({ element: entry, section, fields: [...fields] });
+        }
+      }
+    }
     this.issues = diagnostics(this.doc, Array.from(this.assets.keys()), this.nativeRegistry);
     this.changeDetector.markForCheck();
   }
