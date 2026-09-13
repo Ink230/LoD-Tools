@@ -7,8 +7,8 @@ import type { WorldMapEditorComponent } from './world-map-editor.component';
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default,
   template: `@if (editor.toolsOpen) {
-    <div class="tools" [style.left]="'clamp(0px, ' + x + 'px, calc(100% - 42px))'" [style.top]="'clamp(0px, ' + y + 'px, calc(100% - 187px))'" (pointerdown)="$event.stopPropagation()">
-      <button class="handle" [title]="pinned ? 'Unpin tools' : 'Drag to move; click to pin'" aria-label="Pin tools" [attr.aria-pressed]="pinned" [class.pinned]="pinned" (click)="togglePinned()" (pointerdown)="begin($event)" (pointermove)="move($event)" (pointerup)="end()" (pointercancel)="end()">⠿</button>
+    <div class="tools" [style.left]="'clamp(0px, ' + x + 'px, calc(100% - 52px))'" [style.top]="'clamp(0px, ' + y + 'px, calc(100% - 187px))'" (pointerdown)="$event.stopPropagation()">
+      <button class="handle" [title]="pinned ? 'Unpin tools' : 'Drag to move; click to pin'" aria-label="Pin tools" [attr.aria-pressed]="pinned" [class.pinned]="pinned" (click)="togglePinned()" (pointerdown)="begin($event)" (pointermove)="move($event)" (pointerup)="end()" (pointercancel)="end()"><svg viewBox="0 0 12 5" aria-hidden="true"><circle cx="2" cy="1" r="1"/><circle cx="6" cy="1" r="1"/><circle cx="10" cy="1" r="1"/><circle cx="2" cy="4" r="1"/><circle cx="6" cy="4" r="1"/><circle cx="10" cy="4" r="1"/></svg></button>
       <button class="group-start" title="Select" aria-label="Select" [class.active]="editor.mode === 'select'" (click)="editor.finishGeometryDrawing(); editor.mode = 'select'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3L19 13L12 14L9 21Z"/></svg></button>
       <button title="Place node" aria-label="Place node" [class.active]="editor.mode === 'node'" (click)="editor.finishGeometryDrawing(); editor.mode = 'node'"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><path d="M12 8V16M8 12H16"/></svg></button>
       <button title="Draw geometry" aria-label="Draw geometry" [class.active]="editor.mode === 'drawGeometry'" [attr.aria-pressed]="editor.mode === 'drawGeometry'" (click)="editor.startGeometryDrawing()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18L10 7L20 14"/><rect x="2" y="16" width="4" height="4"/><rect x="8" y="5" width="4" height="4"/><rect x="18" y="12" width="4" height="4"/></svg></button>
@@ -17,7 +17,7 @@ import type { WorldMapEditorComponent } from './world-map-editor.component';
       </button>
     </div>
   }`,
-  styles: `:host{position:absolute;inset:0;pointer-events:none;z-index:5}.tools{position:absolute;display:flex;flex-direction:column;gap:4px;padding:3px;background:var(--wmap-color-4);border:1px solid var(--wmap-color-3);border-radius:5px;pointer-events:auto}button{display:grid;place-items:center;width:34px;height:34px;padding:5px;border:1px solid var(--wmap-color-3);border-radius:4px;background:var(--wmap-color-4);color:var(--wmap-color-2);cursor:pointer}.handle{touch-action:none;cursor:move;height:11px;padding:0;line-height:9px;overflow:hidden}.handle.pinned{cursor:pointer}.group-start{margin-top:8px}.active{outline:1px solid currentColor}svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2}`
+  styles: `:host{position:absolute;inset:0;pointer-events:none;z-index:5}.tools{position:absolute;display:flex;flex-direction:column;gap:4px;padding:3px 8px;background:var(--wmap-color-4);border:1px solid var(--wmap-color-3);border-radius:5px;pointer-events:auto}button{box-sizing:border-box;display:grid;place-items:center;width:34px;height:34px;padding:5px;border:1px solid var(--wmap-color-3);border-radius:4px;background:var(--wmap-color-4);color:var(--wmap-color-2);cursor:pointer}.handle{touch-action:none;cursor:move;height:11px;padding:2px 6px;line-height:1}.handle svg{width:12px;height:5px;fill:currentColor;stroke:none}.handle.pinned{cursor:pointer}.group-start{margin-top:8px}.active{outline:1px solid currentColor}svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2}`
 })
 export class WorldMapToolsComponent {
   @Input({ required: true }) editor!: WorldMapEditorComponent;
@@ -48,7 +48,7 @@ export class WorldMapToolsComponent {
     if (!this.drag) return;
     if (Math.hypot(event.clientX - this.drag.x, event.clientY - this.drag.y) > 3) this.moved = true;
     if (!this.moved) return;
-    this.x = Math.max(0, Math.min(this.drag.width - 42, this.drag.left + event.clientX - this.drag.x));
+    this.x = Math.max(0, Math.min(this.drag.width - 52, this.drag.left + event.clientX - this.drag.x));
     this.y = Math.max(0, Math.min(this.drag.height - 187, this.drag.top + event.clientY - this.drag.y));
   }
   togglePinned() {
