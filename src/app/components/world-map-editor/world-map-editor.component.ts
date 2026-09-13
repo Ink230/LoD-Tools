@@ -59,7 +59,8 @@ export class WorldMapEditorComponent implements OnInit {
   filename = 'world-map.wmap';
   status = 'Load the vanilla preset or import a .wmap to begin';
   error = '';
-  source = '';
+  private documentSource = serializePreset(this.doc);
+  source = this.documentSource;
   assets = new Map<string, Uint8Array>();
   undoStack: EditorSnapshot[] = [];
   redoStack: EditorSnapshot[] = [];
@@ -266,7 +267,9 @@ export class WorldMapEditorComponent implements OnInit {
     const coordinates = graphCoordinates(this.doc);
     action();
     synchronizeGraph(this.doc, coordinates);
-    if (serializePreset(this.doc) !== before.source || this.assets.size !== before.assets.size || Array.from(this.assets).some(([key, value]) => before.assets.get(key) !== value)) {
+    this.documentSource = serializePreset(this.doc);
+    if (this.tab !== 'source') this.source = this.documentSource;
+    if (this.documentSource !== before.source || this.assets.size !== before.assets.size || Array.from(this.assets).some(([key, value]) => before.assets.get(key) !== value)) {
       this.undoStack.push(before);
       this.undoStack = this.undoStack.slice(-80);
       this.redoStack = [];
@@ -281,7 +284,8 @@ export class WorldMapEditorComponent implements OnInit {
     this.selected = entries(this.doc, this.section).find((e) => e.getAttribute('id') === id) || null;
     this.pointIndex = -1;
     this.refresh();
-    if (this.tab === 'source') this.source = serializePreset(this.doc);
+    this.documentSource = snapshot.source;
+    this.source = this.documentSource;
   }
   undo() {
     if (this.undoStack.length) {
@@ -486,7 +490,11 @@ export class WorldMapEditorComponent implements OnInit {
     }
   }
   pointerUp(event: PointerEvent, svg: HTMLElement | SVGSVGElement) {
-    if (this.drag?.before && this.drag.before.source !== serializePreset(this.doc)) {
+    if (this.drag?.before) {
+      this.documentSource = serializePreset(this.doc);
+      this.source = this.documentSource;
+    }
+    if (this.drag?.before && this.drag.before.source !== this.documentSource) {
       this.undoStack.push(this.drag.before);
       this.redoStack = [];
     }
@@ -572,7 +580,7 @@ export class WorldMapEditorComponent implements OnInit {
   }
   setTab(tab: 'map' | 'source' | 'assets') {
     this.tab = tab;
-    if (tab === 'source') this.source = serializePreset(this.doc);
+    if (tab === 'source') this.source = this.documentSource;
   }
   applySource() {
     try {

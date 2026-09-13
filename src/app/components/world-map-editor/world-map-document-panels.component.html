@@ -1,10 +1,8 @@
-@if (editor.tab === 'source') {
-  <div class="source-panel">
+  <div class="source-panel" [style.display]="editor.tab === 'source' ? null : 'none'">
     <p class="muted">Version 1 XML. Apply edits to update the graph and inspector. Unknown fields are preserved here; the runtime rejects them.</p>
     <textarea aria-label="World map XML source" spellcheck="false" [(ngModel)]="editor.source"></textarea>
     <div class="actions"><button class="primary" (click)="editor.applySource()">Apply XML</button><button (click)="editor.source = ''; editor.setTab('source')">Reset to document</button></div>
   </div>
-}
 @if (editor.tab === 'assets') {
   <div class="asset-panel">
     <h2>Asset package</h2>
