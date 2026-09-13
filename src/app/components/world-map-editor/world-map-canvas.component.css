@@ -79,8 +79,7 @@ button.primary:hover {
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
-select:focus-visible,
-svg:focus-visible {
+select:focus-visible {
   outline: 2px solid #b7e190;
   outline-offset: -2px;
 }
@@ -193,3 +192,5 @@ svg:focus-visible {
 }
 
 
+
+.map:focus { outline: none; }
