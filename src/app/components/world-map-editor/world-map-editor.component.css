@@ -10,6 +10,7 @@
   margin: 0 auto;
   padding: 12px 20px;
   max-width: 2000px;
+  min-width: 1900px;
   --line: #2b3e31;
 }
 h1,
