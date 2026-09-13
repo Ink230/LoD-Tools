@@ -148,13 +148,13 @@ svg:focus-visible {
 .map-controls {
   position: absolute;
   right: 12px;
-  bottom: 38px;
+  bottom: 12px;
   display: flex;
   gap: 4px;
 }
 .entity-label { fill: #d0dca3; cursor: pointer; font-family: ui-monospace, monospace; }
 .entity-label:hover { text-decoration: underline; }
-.label-menu { position: absolute; right: 12px; bottom: 78px; z-index: 2; display: grid; gap: 2px; width: 190px; box-sizing: border-box; margin: 0; padding: 8px; border: 1px solid #354c3c; border-radius: 6px; background: #122018; box-shadow: 0 8px 24px #0008; font: 12px system-ui; } .label-menu legend { padding: 0 6px; color: #a8c898; } .label-menu label { display: flex; align-items: center; gap: 10px; padding: 8px; cursor: pointer; border-radius: 3px; } .label-menu label:hover { background: #263c2b; } .label-menu input[type=checkbox] { appearance: auto; width: 16px; height: 16px; margin: 0; padding: 0; accent-color: #a4d77b; } .label-menu button { margin-top: 6px; }
+.label-menu { position: absolute; right: 12px; bottom: 52px; z-index: 2; display: grid; gap: 2px; width: 190px; box-sizing: border-box; margin: 0; padding: 8px; border: 1px solid #354c3c; border-radius: 6px; background: #122018; box-shadow: 0 8px 24px #0008; font: 12px system-ui; } .label-menu legend { padding: 0 6px; color: #a8c898; } .label-menu label { display: flex; align-items: center; gap: 10px; padding: 8px; cursor: pointer; border-radius: 3px; } .label-menu label:hover { background: #263c2b; } .label-menu input[type=checkbox] { appearance: auto; width: 16px; height: 16px; margin: 0; padding: 0; accent-color: #a4d77b; } .label-menu button { margin-top: 6px; }
 .axis {
   position: absolute;
   left: 14px;
@@ -215,6 +215,7 @@ svg:focus-visible {
   }
   .map-controls {
     right: 6px;
+    bottom: 6px;
   }
   .empty-state {
     width: 175px;
