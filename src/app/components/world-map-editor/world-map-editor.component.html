@@ -1,4 +1,4 @@
-<main class="editor" (dragover)="$event.preventDefault()" (drop)="drop($event)">
+<main class="editor" [class.fill-viewport]="fillViewport" (dragover)="$event.preventDefault()" (drop)="drop($event)">
   <header class="editor-header">
     <div>
       <p class="eyebrow">SEVERED CHAINS / AUTHORING TOOLS</p>
@@ -10,6 +10,7 @@
       <button (click)="files.click()" [disabled]="loading">Import</button>
       <button (click)="download()">Export .wmap</button>
       <button class="primary" (click)="download(true)">Export package ↓</button>
+      <button (click)="fillViewport = !fillViewport" [attr.aria-pressed]="fillViewport" title="Escape exits viewport mode">{{ fillViewport ? 'Exit viewport' : 'Fill viewport' }}</button>
       <input #files type="file" hidden multiple accept=".wmap,.zip,.tim,.tmd,.bin" (change)="fileInput($event)" />
     </div>
   </header>

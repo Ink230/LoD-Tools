@@ -43,11 +43,12 @@ interface EditorSnapshot {
   changeDetection: ChangeDetectionStrategy.Default,
   imports: [WorldMapTerrainComponent, FormsModule, WorldMapInspectorComponent, WorldMapCanvasComponent, WorldMapDocumentPanelsComponent],
   templateUrl: './world-map-editor.component.html',
-  styleUrl: './world-map-editor.component.css',
+  styleUrls: ['./world-map-editor.component.css', './world-map-viewport.css'],
 })
 export class WorldMapEditorComponent implements OnInit {
   private readonly changeDetector = inject(ChangeDetectorRef);
   doc = parsePreset('<worldMapPreset version="1" id="custom:world_map" name="Untitled world map" description=""/>');
+  fillViewport = false;
   section = 'nodes';
   sections = Object.keys(SECTIONS);
   selected: Element | null = null;
@@ -553,6 +554,10 @@ export class WorldMapEditorComponent implements OnInit {
   }
   @HostListener('document:keydown', ['$event'])
   keyboard(event: KeyboardEvent) {
+    if (event.key === 'Escape' && this.fillViewport) {
+      this.fillViewport = false;
+      return;
+    }
     if ((event.target as HTMLElement).matches('input,textarea,select')) return;
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
       event.preventDefault();
