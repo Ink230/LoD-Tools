@@ -25,6 +25,19 @@
     <p class="notice">Provider and behaviour IDs refer to installed mod handlers. Presets contain data and cannot embed executable code.</p>
   }
   <app-world-map-fields [element]="editor.selected" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" (navigate)="editor.goToEntry($event)" />
+  @if (editor.correspondingRoutes.length) {
+    <section class="node-references">
+      <h3>Corresponding Routes</h3>
+      @for (route of editor.correspondingRoutes; track route) {
+        <button type="button" (click)="editor.goToEntry({ element: route, section: 'routes' })">
+          <strong>{{ route.getAttribute('name') || route.getAttribute('label') || route.getAttribute('id') }}</strong>
+          @if (route.getAttribute('name') || route.getAttribute('label')) {
+            <small>{{ route.getAttribute('id') }}</small>
+          }
+        </button>
+      }
+    </section>
+  }
   @if (editor.selected.getAttribute('id')) {
     <section class="node-references">
       <h3>Referenced by</h3>

@@ -42,7 +42,7 @@
           stroke="transparent"
           [attr.stroke-width]="16 * editor.unit"
           (pointerdown)="$event.ctrlKey && $event.button === 1 ? editor.pointerDown($event, map) : ($event.stopPropagation())"
-          (click)="editor.select(route.element, 'routes')"
+          (click)="editor.selectMapRoute(route.element)"
         >
           <title>{{ route.id }} · {{ route.start?.id }} → {{ route.end?.id }}</title>
         </polyline>

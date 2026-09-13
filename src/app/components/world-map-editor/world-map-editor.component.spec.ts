@@ -117,4 +117,21 @@ describe('world map graph editing', () => {
     editor.region = '';
     expect(editor.coolonMarkers).toHaveLength(1);
   });
+  it('cycles shared geometry routes on map clicks but selects explicit links directly', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test"><routes><route id="custom:a" geometry="custom:g"/><route id="custom:b" geometry="custom:g"/><route id="custom:c" geometry="custom:g"/><route id="custom:d" geometry="custom:other"/></routes></worldMapPreset>', 'test.wmap');
+    const [a, b, c, d] = Array.from(editor.doc.querySelectorAll('route'));
+    editor.selectMapRoute(a);
+    expect(editor.correspondingRoutes).toEqual([b, c]);
+    editor.selectMapRoute(a);
+    expect(editor.selected).toBe(b);
+    editor.selectMapRoute(a);
+    expect(editor.selected).toBe(c);
+    editor.selectMapRoute(a);
+    expect(editor.selected).toBe(a);
+    editor.goToEntry({ element: c, section: 'routes' });
+    expect(editor.selected).toBe(c);
+    editor.selectMapRoute(d);
+    expect(editor.selected).toBe(d);
+    expect(editor.correspondingRoutes).toEqual([]);
+  });
 });

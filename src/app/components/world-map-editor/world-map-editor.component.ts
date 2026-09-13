@@ -185,6 +185,20 @@ export class WorldMapEditorComponent implements OnInit {
     return entries(this.doc, 'regions');
   }
   entityReferences = new Map<string, { element: Element; section: string; fields: string[] }[]>();
+  get correspondingRoutes() {
+    const geometry = this.section === 'routes' ? this.selected?.getAttribute('geometry') : null;
+    return geometry ? entries(this.doc, 'routes').filter((route) => route !== this.selected && route.getAttribute('geometry') === geometry) : [];
+  }
+  selectMapRoute(route: Element) {
+    const geometry = route.getAttribute('geometry');
+    if (geometry && this.section === 'routes' && this.selected?.getAttribute('geometry') === geometry) {
+      const routes = entries(this.doc, 'routes').filter((entry) => entry.getAttribute('geometry') === geometry);
+      const index = routes.indexOf(this.selected);
+      this.select(routes[(index + 1) % routes.length], 'routes');
+      return;
+    }
+    this.select(route, 'routes');
+  }
   get selectedReferences() {
     const id = this.selected?.getAttribute('id');
     return id ? (this.entityReferences.get(`${this.section}:${id}`) || []).filter((reference) => reference.element !== this.selected && (this.includeStoryRefs || reference.section !== 'storyPresets')) : [];
