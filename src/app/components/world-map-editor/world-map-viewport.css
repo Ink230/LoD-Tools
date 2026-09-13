@@ -41,3 +41,13 @@
 @media (max-width: 1150px) { .editor { --library-width: 270px; } }
 @media (max-width: 800px) { .editor { --library-width: 150px; } }
 @media (max-width: 480px) { .editor { --library-width: 110px; } }
+@media (min-width: 801px) {
+  .document-bar.command-bar { position: relative; }
+  .document-history > .actions {
+    position: absolute;
+    right: calc(var(--library-width) + 18px);
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: 0;
+  }
+}
