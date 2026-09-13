@@ -95,6 +95,19 @@
           <title>{{ node.id }} · X {{ node.x }} / Z {{ node.z }}</title>
         </g>
       }
+      @for (marker of editor.coolonMarkers; track marker.element) {
+        <g class="coolon-marker" role="button" tabindex="0" [attr.aria-label]="'Edit Coolon destination ' + marker.text"
+          [attr.transform]="editor.labelTransform(marker.x, marker.z)"
+          (pointerdown)="$event.stopPropagation()" (click)="editor.goToEntry(marker)"
+          (keydown.enter)="editor.goToEntry(marker)" (keydown.space)="$event.preventDefault(); editor.goToEntry(marker)">
+          <title>Coolon destination: {{ marker.text }} — arrival portal</title>
+          <circle [attr.cx]="marker.x - 12 * editor.unit" [attr.cy]="marker.z - 24 * editor.unit" [attr.r]="8 * editor.unit" [attr.stroke-width]="editor.unit" />
+          <text [attr.x]="marker.x - 12 * editor.unit" [attr.y]="marker.z - 24 * editor.unit" [attr.font-size]="10 * editor.unit" text-anchor="middle" dominant-baseline="central">C</text>
+          @if (editor.showLabels && editor.activeLabels.coolonDestinations) {
+            <text [attr.x]="marker.x" [attr.y]="marker.z - 24 * editor.unit" [attr.font-size]="(editor.fillViewport ? 8 : 11) * editor.unit" dominant-baseline="central">{{ marker.text }}</text>
+          }
+        </g>
+      }
       @if (editor.showLabels) {
         @for (label of editor.extraMapLabels; track label.element) {
           <text class="entity-label" role="button" tabindex="0"

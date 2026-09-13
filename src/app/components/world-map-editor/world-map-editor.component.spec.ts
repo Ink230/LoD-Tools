@@ -84,4 +84,12 @@ describe('world map graph editing', () => {
     editor.goToEntry(editor.selectedReferences[0]);
     expect(editor.selected.getAttribute('id')).toBe('custom:place');
   });
+  it('filters story references without hiding other referencing entities', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test"><portals><portal id="custom:p"/></portals><storyPresets><storyPreset id="custom:s"><enabledPortals><item id="custom:p"/></enabledPortals></storyPreset></storyPresets><coolonDestinations><coolonDestination id="custom:c" portal="custom:p"/></coolonDestinations></worldMapPreset>', 'test.wmap');
+    editor.select(editor.doc.querySelector('portal'), 'portals');
+    editor.includeStoryRefs = false;
+    expect(editor.selectedReferences.map((ref) => ref.section)).toEqual(['coolonDestinations']);
+    editor.includeStoryRefs = true;
+    expect(editor.selectedReferences.map((ref) => ref.section)).toContain('storyPresets');
+  });
 });

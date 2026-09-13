@@ -194,3 +194,7 @@ select:focus-visible {
 
 
 .map:focus { outline: none; }
+.coolon-marker { cursor: pointer; }
+.coolon-marker circle { fill: var(--wmap-color-1); stroke: currentColor; }
+.coolon-marker text { fill: currentColor; font-family: ui-monospace, monospace; }
+.coolon-marker:hover text { text-decoration: underline; }

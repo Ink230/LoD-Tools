@@ -52,6 +52,11 @@ export class WorldMapEditorComponent implements OnInit {
   doc = parsePreset('<worldMapPreset version="1" id="custom:world_map" name="Untitled world map" description=""/>');
   fillViewport = true;
   headerCollapsed = false;
+  includeStoryRefs = false;
+  toggleStoryRefs() {
+    this.includeStoryRefs = !this.includeStoryRefs;
+    try { localStorage.setItem('lodtools.world-map.include-story-refs', String(this.includeStoryRefs)); } catch { /* Filtering still works without browser storage. */ }
+  }
   readonly themeColors = WORLD_MAP_THEME_COLORS;
   readonly themes = [
     { name: 'Green', shift: 0, color: '#a4d77b' },
@@ -97,11 +102,21 @@ export class WorldMapEditorComponent implements OnInit {
   view = { x: -500, z: -350, width: 1000, height: 700 };
   showLabels = true;
   labelMenuOpen = false;
-  readonly labelKinds = ['places', 'nodes', 'routes', 'portals', 'geometry'] as const;
-  activeLabels = { places: true, nodes: true, routes: false, portals: false, geometry: false };
+  readonly labelKinds = ['places', 'nodes', 'routes', 'portals', 'geometry', 'coolonDestinations'] as const;
+  activeLabels = { places: true, nodes: true, routes: false, portals: false, geometry: false, coolonDestinations: true };
   mapNodeLabel(id: string) {
     if (this.activeLabels.places && this.nodePlaces.has(id)) return this.nodeName(id);
     return this.activeLabels.nodes ? this.shortId(id) : '';
+  }
+  get coolonMarkers() {
+    const portals = new Map(entries(this.doc, 'portals').map((portal) => [portal.getAttribute('id'), portal]));
+    const routes = new Map(this.filteredRoutes.map((route) => [route.id, route]));
+    return entries(this.doc, 'coolonDestinations').flatMap((element) => {
+      const portal = portals.get(element.getAttribute('portal'));
+      if (!portal || (this.region && portal.getAttribute('region') !== this.region)) return [];
+      const node = routes.get(portal.getAttribute('route'))?.start;
+      return node ? [{ element, section: 'coolonDestinations', x: node.x, z: node.z, text: (element.getAttribute('label') || this.shortId(element.getAttribute('id'))).replaceAll('\n', ' ') }] : [];
+    });
   }
   get extraMapLabels() {
     const result: { element: Element; section: string; text: string; x: number; z: number; offset: number }[] = [];
@@ -133,6 +148,7 @@ export class WorldMapEditorComponent implements OnInit {
 
   ngOnInit() {
     try {
+      this.includeStoryRefs = localStorage.getItem('lodtools.world-map.include-story-refs') === 'true';
       this.headerCollapsed = localStorage.getItem('lodtools.world-map.header-collapsed') === 'true';
       const stored = localStorage.getItem('lodtools.world-map.theme');
       this.themeIndex = Math.max(0, this.themes.findIndex((theme) => theme.name === stored));
@@ -156,7 +172,7 @@ export class WorldMapEditorComponent implements OnInit {
   entityReferences = new Map<string, { element: Element; section: string; fields: string[] }[]>();
   get selectedReferences() {
     const id = this.selected?.getAttribute('id');
-    return id ? (this.entityReferences.get(`${this.section}:${id}`) || []).filter((reference) => reference.element !== this.selected) : [];
+    return id ? (this.entityReferences.get(`${this.section}:${id}`) || []).filter((reference) => reference.element !== this.selected && (this.includeStoryRefs || reference.section !== 'storyPresets')) : [];
   }
   get assetEntries() {
     return Array.from(this.assets.entries());
@@ -398,8 +414,8 @@ export class WorldMapEditorComponent implements OnInit {
     this.tab = 'map';
     const id = target.element.getAttribute('id');
     let route = this.routes.find((entry) => target.section === 'routes' ? entry.id === id : target.section === 'geometry' && entry.element.getAttribute('geometry') === id);
-    if (target.section === 'portals' || target.section === 'places') {
-      const portal = target.section === 'portals' ? target.element : entries(this.doc, 'portals').find((entry) => entry.getAttribute('place') === id);
+    if (target.section === 'portals' || target.section === 'places' || target.section === 'coolonDestinations') {
+      const portal = target.section === 'portals' ? target.element : entries(this.doc, 'portals').find((entry) => target.section === 'coolonDestinations' ? entry.getAttribute('id') === target.element.getAttribute('portal') : entry.getAttribute('place') === id);
       route = this.routes.find((entry) => entry.id === portal?.getAttribute('route'));
     }
     const node = target.section === 'nodes' ? this.nodes.find((entry) => entry.id === id) : route?.start;
