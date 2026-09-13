@@ -107,4 +107,14 @@ describe('world map graph editing', () => {
     editor.select(editor.doc.querySelector('place'), 'places');
     expect(editor.region).toBe('custom:a');
   });
+  it('shows Coolon markers in a region when its portal uses a native continent', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test"><regions><region id="custom:a" legacyTemplate="0"/><region id="custom:b" legacyTemplate="1"/></regions><nodes><node id="custom:n"><position x="12" y="0" z="34"/></node></nodes><routes><route id="custom:r" start="custom:n" end="custom:n"/></routes><portals><portal id="custom:p" continent="0" route="custom:r"/></portals><coolonDestinations><coolonDestination id="custom:c" portal="custom:p"/></coolonDestinations></worldMapPreset>', 'test.wmap');
+    editor.region = 'custom:a';
+    expect(editor.coolonMarkers).toHaveLength(1);
+    expect(editor.coolonMarkers[0]).toMatchObject({ x: 12, z: 34 });
+    editor.region = 'custom:b';
+    expect(editor.coolonMarkers).toHaveLength(0);
+    editor.region = '';
+    expect(editor.coolonMarkers).toHaveLength(1);
+  });
 });

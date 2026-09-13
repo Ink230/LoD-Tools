@@ -113,7 +113,7 @@ export class WorldMapEditorComponent implements OnInit {
     const routes = new Map(this.filteredRoutes.map((route) => [route.id, route]));
     return entries(this.doc, 'coolonDestinations').flatMap((element) => {
       const portal = portals.get(element.getAttribute('portal'));
-      if (!portal || (this.region && portal.getAttribute('region') !== this.region)) return [];
+      if (!portal || (this.region && !this.entryRegions(portal, 'portals').has(this.region))) return [];
       const node = routes.get(portal.getAttribute('route'))?.start;
       return node ? [{ element, section: 'coolonDestinations', x: node.x, z: node.z, text: (element.getAttribute('label') || this.shortId(element.getAttribute('id'))).replaceAll('\n', ' ') }] : [];
     });
