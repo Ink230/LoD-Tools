@@ -56,9 +56,9 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
         @if (child.tagName === 'item') {
             <div [class.point-row]="element.tagName === 'points'" (dragover)="pointDragOver($event)" (drop)="dropPoint(child, $event)">
               @if (element.tagName === 'points') {
-                <div class="point-heading"><span draggable="true" role="button" tabindex="0" aria-label="Drag point to reorder" (dragstart)="dragPoint = child; $event.stopPropagation()" (dragend)="dragPoint = null">⠿</span><button type="button" class="point-link" title="Show point on map" (click)="navigate.emit({ element: element.parentElement!, section: 'geometry', point: child })">{{ child === element.firstElementChild ? 'START' : child === element.lastElementChild ? 'END' : 'POINT ' + (normalChildren.indexOf(child) + 1) }}</button></div>
+                <div class="point-heading"><span draggable="true" role="button" tabindex="0" aria-label="Drag point to reorder" (dragstart)="dragPoint = child; $event.stopPropagation()" (dragend)="dragPoint = null">⠿</span><button type="button" class="point-link" title="Show point on map" (click)="navigate.emit({ element: element.parentElement!, section: 'geometry', point: child })">{{ child === element.firstElementChild ? 'START' : child === element.lastElementChild ? 'END' : 'POINT ' + (normalChildren.indexOf(child) + 1) }}</button> @if (canRemove(child)) { <button type="button" class="point-remove" aria-label="Remove point" (click)="removeChild(child, $event)">×</button> }</div>
               }
-          <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" [removableEntry]="canRemove(child)"
+          <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" [removableEntry]="element.tagName !== 'points' && canRemove(child)"
             (mutate)="mutate.emit($event)" (navigate)="navigate.emit($event)" (removeEntry)="removeChild(child, $event)" />
             </div>
         } @else {
@@ -123,6 +123,7 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
       .point-row { border-bottom: 1px solid var(--wmap-color-46); padding-bottom: 8px; }
       .point-heading { display: flex; gap: 8px; align-items: center; color: var(--wmap-color-23); font: 10px ui-monospace, monospace; margin-bottom: 6px; }
       .point-link { padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+      .point-remove { margin-left: auto; width: 18px; height: 18px; padding: 0; font-size: 11px; line-height: 16px; }
       .point-link:hover { text-decoration: underline; }
       .point-heading [draggable] { cursor: grab; padding: 2px 6px; font-size: 16px; }
       .coordinates { position: relative; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 0 14px; }
