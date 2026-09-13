@@ -146,13 +146,13 @@
   }
   <div class="map-controls">
     <button (click)="editor.zoom(0.8)" aria-label="Zoom in">+</button><button (click)="editor.zoom(1.25)" aria-label="Zoom out">−</button><button (click)="editor.fit()" title="F">Fit</button
-    ><button (click)="editor.showLabels = !editor.showLabels" [class.active]="editor.showLabels">Labels</button>
+    ><button (click)="editor.showLabels = !editor.showLabels; editor.saveLabelSettings()" [class.active]="editor.showLabels">Labels</button>
     <button (click)="editor.labelMenuOpen = !editor.labelMenuOpen" [attr.aria-expanded]="editor.labelMenuOpen" aria-controls="active-map-labels">Active Labels</button>
   </div>
   @if (editor.labelMenuOpen) {
     <fieldset id="active-map-labels" class="label-menu"><legend>Active Labels</legend>
       @for (kind of editor.labelKinds; track kind) {
-        <label><input type="checkbox" [(ngModel)]="editor.activeLabels[kind]" /> {{ editor.label(kind) }}</label>
+        <label><input type="checkbox" [(ngModel)]="editor.activeLabels[kind]" (ngModelChange)="editor.saveLabelSettings()" /> {{ editor.label(kind) }}</label>
       }
       <button (click)="editor.labelMenuOpen = false">Close</button>
     </fieldset>

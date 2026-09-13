@@ -146,7 +146,22 @@ export class WorldMapEditorComponent implements OnInit {
   loading = false;
   drag: { kind: 'pan' | 'node' | 'point'; x: number; z: number; clientX: number; clientY: number; element?: Element; before?: EditorSnapshot } | null = null;
 
+  saveLabelSettings() {
+    try {
+      localStorage.setItem('lodtools.world-map.labels', JSON.stringify({ visible: this.showLabels, active: this.activeLabels }));
+    } catch { /* Labels still work without browser storage. */ }
+  }
+  private restoreLabelSettings() {
+    try {
+      const stored = JSON.parse(localStorage.getItem('lodtools.world-map.labels') || 'null');
+      if (typeof stored?.visible === 'boolean') this.showLabels = stored.visible;
+      for (const kind of this.labelKinds) {
+        if (typeof stored?.active?.[kind] === 'boolean') this.activeLabels[kind] = stored.active[kind];
+      }
+    } catch { /* Keep defaults when storage is unavailable or invalid. */ }
+  }
   ngOnInit() {
+    this.restoreLabelSettings();
     try {
       this.includeStoryRefs = localStorage.getItem('lodtools.world-map.include-story-refs') === 'true';
       this.headerCollapsed = localStorage.getItem('lodtools.world-map.header-collapsed') === 'true';
