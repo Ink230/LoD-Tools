@@ -32,9 +32,6 @@
     </div>
   }
   <app-world-map-fields [element]="editor.selected" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" (navigate)="editor.goToEntry($event)" />
-  @if (editor.selectedGeometry) {
-    <button class="wide" (click)="editor.addPoint()">+ Insert geometry point</button>
-  }
 } @else {
   <h2>Preset details</h2>
   <p class="muted">Select a node, route or registry entry to edit its properties.</p>

@@ -54,8 +54,13 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
 
       @for (child of normalChildren; track child) {
         @if (child.tagName === 'item') {
+            <div [class.point-row]="element.tagName === 'points'" (dragover)="pointDragOver($event)" (drop)="dropPoint(child, $event)">
+              @if (element.tagName === 'points') {
+                <div class="point-heading"><span draggable="true" role="button" tabindex="0" aria-label="Drag point to reorder" (dragstart)="dragPoint = child; $event.stopPropagation()" (dragend)="dragPoint = null">⠿</span><span>{{ child === element.firstElementChild ? 'START' : child === element.lastElementChild ? 'END' : 'POINT ' + (normalChildren.indexOf(child) + 1) }}</span></div>
+              }
           <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" [removableEntry]="canRemove(child)"
             (mutate)="mutate.emit($event)" (navigate)="navigate.emit($event)" (removeEntry)="removeChild(child, $event)" />
+            </div>
         } @else {
         <section class="field-section">
           <div class="section-heading">
@@ -115,6 +120,9 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
       :host { display: block; font: inherit; color: inherit; }
       .fields, .compatibility-fields { display: grid; gap: 10px; }
       .field { display: grid; grid-template-columns: 24px minmax(0, 1fr) 22px; column-gap: 6px; row-gap: 4px; align-items: start; font-size: 12px; }
+      .point-row { border-bottom: 1px solid #37443b; padding-bottom: 8px; }
+      .point-heading { display: flex; gap: 8px; align-items: center; color: #a8c898; font: 10px ui-monospace, monospace; margin-bottom: 6px; }
+      .point-heading [draggable] { cursor: grab; padding: 2px 6px; font-size: 16px; }
       .coordinates { position: relative; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding-right: 28px; }
       .coordinates .field { display: flex; flex-direction: column; min-width: 0; gap: 4px; }
       .coordinates input { padding: 7px 4px; font-size: 11px; appearance: textfield; }
@@ -153,6 +161,36 @@ export class WorldMapFieldsComponent {
   @Output() navigate = new EventEmitter<{ element: Element; section: string }>();
   @Input() removableEntry = false;
   @Output() removeEntry = new EventEmitter<Event>();
+  dragPoint: Element | null = null;
+  pointDragOver(event: DragEvent) {
+    if (!this.dragPoint) return;
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  dropPoint(target: Element, event: DragEvent) {
+    const source = this.dragPoint;
+    if (!source || source === target) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const after = event.clientY >= bounds.top + bounds.height / 2;
+    this.dragPoint = null;
+    this.mutate.emit(() => {
+      this.element.insertBefore(source, after ? target.nextElementSibling : target);
+      const geometry = this.element.parentElement;
+      for (const route of entries(this.element.ownerDocument, 'routes').filter((entry) => entry.getAttribute('geometry') === geometry?.getAttribute('id'))) {
+        for (const field of ['start', 'end']) {
+          const first = (field === 'start') !== (route.getAttribute('direction') === '-1');
+          const point = first ? this.element.firstElementChild : this.element.lastElementChild;
+          const node = entries(this.element.ownerDocument, 'nodes').find((entry) => entry.getAttribute('id') === route.getAttribute(field));
+          const position = node?.querySelector('position');
+          if (position && point) {
+            for (const axis of ['x', 'y', 'z']) position.setAttribute(axis, point.getAttribute(axis) || '0');
+          }
+        }
+      }
+    });
+  }
   get coordinateRow() { return this.element.parentElement?.tagName === 'points' && ['x', 'y', 'z'].every((axis) => this.element.hasAttribute(axis)); }
   get compactReference() { return this.element.tagName === 'item' && this.attributes.length === 1 && Boolean(this.reference('id')); }
 
@@ -196,6 +234,7 @@ export class WorldMapFieldsComponent {
     return (options[this.element.tagName] || []).filter((name) => !this.children.some((child) => child.tagName === name));
   }
   get listItemLabel() {
+    if (this.element.tagName === 'points') return 'Point';
     if (this.element.tagName === 'capabilities') return 'Capability';
     if (this.element.tagName === 'serviceIds') return 'Service';
     if (this.element.tagName === 'soundIds') return 'Sound';

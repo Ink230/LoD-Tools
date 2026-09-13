@@ -75,4 +75,16 @@ describe('WorldMapFieldsComponent', () => {
     expect((fixture.nativeElement.querySelector('select[aria-label="Atmosphere"]') as HTMLSelectElement).value).toBe('SNOW');
     expect((fixture.nativeElement.querySelector('input[aria-label="Arrival destination"]') as HTMLInputElement).value).toBe('outside:arrival');
   });
+  it('reorders point rows and updates the connected start node', () => {
+    const component = new WorldMapFieldsComponent();
+    const doc = parsePreset('<worldMapPreset version="1" id="custom:test"><nodes><node id="custom:n"><position x="0" y="0" z="0"/></node></nodes><geometry><geometry id="custom:g"><points><item x="0" y="0" z="0"/><item x="12.34" y="5" z="6"/><item x="20" y="0" z="0"/></points></geometry></geometry><routes><route id="custom:r" geometry="custom:g" start="custom:n" end="custom:other" direction="1"/></routes></worldMapPreset>');
+    component.element = doc.querySelector('points');
+    const target = component.element.firstElementChild;
+    const source = target.nextElementSibling;
+    component.dragPoint = source;
+    component.mutate.subscribe((change) => change());
+    component.dropPoint(target, { preventDefault() {}, stopPropagation() {}, clientY: 0, currentTarget: { getBoundingClientRect: () => ({ top: 0, height: 40 }) } } as unknown as DragEvent);
+    expect(component.element.firstElementChild).toBe(source);
+    expect(doc.querySelector('position').getAttribute('x')).toBe('12.34');
+  });
 });
