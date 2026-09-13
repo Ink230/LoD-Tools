@@ -10,7 +10,7 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
   changeDetection: ChangeDetectionStrategy.Default,
   imports: [FormsModule],
   template: `
-    <div class="fields" [class.coordinates]="coordinateRow">
+    <div class="fields" [class.coordinates]="coordinateRow" [class.removable-coordinates]="coordinateRow && removableEntry">
       @for (attribute of normalAttributes; track attribute.name) {
         <div class="field">
           <span class="field-copy" [hidden]="compactReference">
@@ -130,7 +130,8 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
       .coordinates .field { display: flex; flex-direction: column; min-width: 0; gap: 4px; }
       .coordinates input { padding: 7px 4px; font-size: 11px; appearance: textfield; }
       .coordinates input::-webkit-inner-spin-button, .coordinates input::-webkit-outer-spin-button { appearance: none; margin: 0; }
-      .coordinates .remove { position: absolute; right: 0; bottom: 3px; }
+      .removable-coordinates { padding: 0 26px 0 14px; }
+      .coordinates .remove { position: absolute; right: 0; bottom: 5px; width: 18px; height: 18px; padding: 0; font-size: 11px; line-height: 16px; }
       .field-copy[hidden] { display: none; }
     .field-copy { grid-column: 2; grid-row: 1; }
     .field > input, .field > select, .field > .input-stack { grid-column: 2; grid-row: 2; }
