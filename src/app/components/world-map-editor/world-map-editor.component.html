@@ -28,7 +28,7 @@
   </div>
   <div class="workspace">
     <aside class="library" aria-label="Preset sections">
-      <details class="world-content" open><summary class="panel-title" style="display: list-item; cursor: pointer">WORLD CONTENT</summary>
+      <details class="world-content" open><summary class="panel-title" style="display: list-item; cursor: pointer; min-height: 0; padding: 20px 12px 8px">WORLD CONTENT</summary>
       <div class="section-list">
         @for (name of sections; track name) {
           <button [class.active]="section === name" (click)="chooseSection(name)">
