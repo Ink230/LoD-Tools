@@ -365,7 +365,7 @@ export class WorldMapEditorComponent implements OnInit {
     this.pointIndex = -1;
     if (section) this.section = section;
   }
-  goToEntry(target: { element: Element; section: string }, recordHistory = true) {
+  goToEntry(target: { element: Element; section: string; point?: Element }, recordHistory = true) {
     this.select(target.element, target.section, recordHistory);
     this.search = '';
     this.tab = 'map';
@@ -379,6 +379,13 @@ export class WorldMapEditorComponent implements OnInit {
     if (node) {
       if (!this.filteredNodes.some((entry) => entry.id === node.id)) this.region = '';
       this.view = { ...this.view, x: node.x - this.view.width / 2, z: node.z - this.view.height / 2 };
+    }
+    if (target.point && target.section === 'geometry') {
+      this.pointIndex = this.handles.findIndex((point) => point.element === target.point);
+      if (this.pointIndex >= 0) {
+        const point = this.handles[this.pointIndex];
+        this.view = { ...this.view, x: point.x - this.view.width / 2, z: point.z - this.view.height / 2 };
+      }
     }
   }
   chooseSection(section: string) {
