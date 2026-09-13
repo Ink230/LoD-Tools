@@ -10,7 +10,7 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
   changeDetection: ChangeDetectionStrategy.Default,
   imports: [FormsModule],
   template: `
-    <div class="fields">
+    <div class="fields" [class.coordinates]="coordinateRow">
       @for (attribute of normalAttributes; track attribute.name) {
         <div class="field">
           <span class="field-copy" [hidden]="compactReference">
@@ -115,6 +115,11 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
       :host { display: block; font: inherit; color: inherit; }
       .fields, .compatibility-fields { display: grid; gap: 10px; }
       .field { display: grid; grid-template-columns: 24px minmax(0, 1fr) 22px; column-gap: 6px; row-gap: 4px; align-items: start; font-size: 12px; }
+      .coordinates { position: relative; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding-right: 28px; }
+      .coordinates .field { display: flex; flex-direction: column; min-width: 0; gap: 4px; }
+      .coordinates input { padding: 7px 4px; font-size: 11px; appearance: textfield; }
+      .coordinates input::-webkit-inner-spin-button, .coordinates input::-webkit-outer-spin-button { appearance: none; margin: 0; }
+      .coordinates .remove { position: absolute; right: 0; bottom: 3px; }
       .field-copy[hidden] { display: none; }
     .field-copy { grid-column: 2; grid-row: 1; }
     .field > input, .field > select, .field > .input-stack { grid-column: 2; grid-row: 2; }
@@ -148,6 +153,7 @@ export class WorldMapFieldsComponent {
   @Output() navigate = new EventEmitter<{ element: Element; section: string }>();
   @Input() removableEntry = false;
   @Output() removeEntry = new EventEmitter<Event>();
+  get coordinateRow() { return this.element.parentElement?.tagName === 'points' && ['x', 'y', 'z'].every((axis) => this.element.hasAttribute(axis)); }
   get compactReference() { return this.element.tagName === 'item' && this.attributes.length === 1 && Boolean(this.reference('id')); }
 
   get attributes() {
