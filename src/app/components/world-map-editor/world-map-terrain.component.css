@@ -1,61 +1,15 @@
-:host {
-  display: block;
-  flex-shrink: 0;
-  color: #b8cbbb;
-  font: 12px system-ui;
-}
-details {
-  padding: 0;
-}
-summary {
-  padding: 8px;
-  border: 1px solid #354c3c;
-  border-radius: 4px;
-  cursor: pointer;
-  color: #c5eea4;
-}
-.panel {
-  position: absolute;
-  z-index: 10;
-  top: calc(100% + 1px);
-  left: 0;
-  right: 0;
-  padding: 12px;
-  background: #122018;
-  border: 1px solid #354c3c;
-  box-shadow: 0 8px 20px #0008;
-}
-.controls {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
-}
-label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-input[type='number'] {
-  width: 78px;
-}
-input[type='file'] {
-  max-width: 225px;
-}
-input,
-button {
-  font: inherit;
-  color: #d6e5db;
-  background: #18281e;
-  border: 1px solid #354c3c;
-  border-radius: 4px;
-  padding: 4px;
-}
-button {
-  cursor: pointer;
-}
-p {
-  margin: 8px 0 0;
-  color: #899d90;
-}
+:host { display: block; position: relative; flex-shrink: 0; color: #b8cbbb; font: 12px system-ui; }
+details { padding: 0; }
+summary { padding: 8px; border: 1px solid #354c3c; border-radius: 4px; cursor: pointer; color: #c5eea4; list-style: none; }
+summary::-webkit-details-marker { display: none; }
+.panel { position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; width: 320px; box-sizing: border-box; padding: 14px; border-radius: 5px; background: #122018; border: 1px solid #354c3c; box-shadow: 0 8px 24px #0008; }
+.controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+label { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+label:has(input[type=checkbox]) { flex-direction: row; align-items: center; }
+label:has(input[type=range]), .import, button { grid-column: 1 / -1; }
+input { box-sizing: border-box; min-width: 0; width: 100%; accent-color: #a4d77b; }
+input[type=checkbox] { width: 16px; height: 16px; margin: 0; appearance: auto; }
+input[type=range] { padding: 0; margin: 0; }
+input[type=number], input[type=file], button { padding: 7px; border: 1px solid #354c3c; border-radius: 4px; background: #18281e; color: #d6e5db; font: 12px system-ui; }
+button { cursor: pointer; }
+p { margin: 12px 0 0; padding-top: 10px; border-top: 1px solid #354c3c; color: #899d90; font-size: 11px; line-height: 1.5; }

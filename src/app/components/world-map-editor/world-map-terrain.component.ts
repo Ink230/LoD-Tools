@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 export interface TerrainGuide {
@@ -38,6 +38,15 @@ export class WorldMapTerrainComponent implements OnInit {
   @Input() region = '';
   @Input() view = { x: 0, z: 0, width: 1000, height: 700 };
   private readonly detector = inject(ChangeDetectorRef);
+  private readonly host = inject(ElementRef<HTMLElement>);
+  @HostListener('document:pointerdown', ['$event'])
+  closeOutside(event: PointerEvent) {
+    if (!this.host.nativeElement.contains(event.target as Node)) this.close();
+  }
+  @HostListener('keydown.escape')
+  close() {
+    this.host.nativeElement.querySelector('details')?.removeAttribute('open');
+  }
   private readonly storageKey = 'lodtools.world-map.terrain-guides.v1';
   native: TerrainGuide[] = [];
   custom: TerrainGuide[] = [];

@@ -1,8 +1,8 @@
 <details>
-  <summary>Terrain guide · {{ !region ? 'choose a region' : customGuide ? 'custom image' : active ? 'native terrain' : 'no image' }}</summary>
+  <summary>Background</summary>
   <div class="panel">
     <div class="controls">
-      <label><input type="checkbox" [(ngModel)]="visible" /> Show terrain</label>
+      <label><input type="checkbox" [(ngModel)]="visible" /> Show background</label>
       <label>Opacity <input aria-label="Terrain opacity" type="range" min="0" max="1" step="0.05" [(ngModel)]="opacity" /></label>
       <label class="import"
         >Import image <input aria-label="Import terrain guide image" type="file" accept="image/png,image/jpeg,image/webp" [disabled]="!region" (change)="importImage($event)"
