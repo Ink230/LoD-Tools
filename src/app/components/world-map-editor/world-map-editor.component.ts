@@ -639,7 +639,7 @@ export class WorldMapEditorComponent implements OnInit {
     this.tab = 'map';
     this.region = '';
     this.fit();
-    this.status = `Loaded ${filename}`;
+    this.status = '';
   }
   async importFiles(files: FileList | File[]) {
     if (!files?.length) return;
