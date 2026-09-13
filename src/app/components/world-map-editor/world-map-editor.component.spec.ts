@@ -92,4 +92,19 @@ describe('world map graph editing', () => {
     editor.includeStoryRefs = true;
     expect(editor.selectedReferences.map((ref) => ref.section)).toContain('storyPresets');
   });
+  it('follows portal regions for entity selection and restores shared entity history regions', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test"><regions><region id="custom:a"/><region id="custom:b"/></regions><nodes><node id="custom:n"/></nodes><routes><route id="custom:r" start="custom:n"/></routes><places><place id="custom:p"/></places><portals><portal id="custom:pa" region="custom:a" route="custom:r" place="custom:p"/><portal id="custom:pb" region="custom:b" route="custom:r"/></portals><coolonDestinations><coolonDestination id="custom:c" portal="custom:pb"/></coolonDestinations></worldMapPreset>', 'test.wmap');
+    editor.region = 'custom:a';
+    editor.select(editor.doc.querySelector('node'), 'nodes');
+    expect(editor.region).toBe('custom:a');
+    editor.goToEntry({ element: editor.doc.querySelector('coolonDestination'), section: 'coolonDestinations' });
+    expect(editor.region).toBe('custom:b');
+    editor.navigateEntity(false);
+    expect(editor.selected.tagName).toBe('node');
+    expect(editor.region).toBe('custom:a');
+    editor.navigateEntity(true);
+    expect(editor.region).toBe('custom:b');
+    editor.select(editor.doc.querySelector('place'), 'places');
+    expect(editor.region).toBe('custom:a');
+  });
 });

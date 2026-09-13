@@ -374,10 +374,10 @@ export class WorldMapEditorComponent implements OnInit {
       this.restore(this.redoStack.pop());
     }
   }
-  entityBack: { id: string; section: string }[] = [];
-  entityForward: { id: string; section: string }[] = [];
+  entityBack: { id: string; section: string; region: string }[] = [];
+  entityForward: { id: string; section: string; region: string }[] = [];
   private currentEntity() {
-    return this.selected ? { id: this.selected.getAttribute('id') || '', section: this.section } : undefined;
+    return this.selected ? { id: this.selected.getAttribute('id') || '', section: this.section, region: this.region } : undefined;
   }
   private resolveEntity(target: { id: string; section: string }) {
     return entries(this.doc, target.section).find((entry) => (entry.getAttribute('id') || '') === target.id);
@@ -394,6 +394,7 @@ export class WorldMapEditorComponent implements OnInit {
       if (!element) continue;
       const current = this.currentEntity();
       if (current) destination.push(current);
+      this.region = this.regions.some((region) => region.getAttribute('id') === target.region) ? target.region : '';
       this.goToEntry({ element, section: target.section }, false);
       return;
     }
@@ -407,20 +408,49 @@ export class WorldMapEditorComponent implements OnInit {
     this.selected = element;
     this.pointIndex = -1;
     if (section) this.section = section;
+    const regions = this.entryRegions(element, this.section);
+    if (regions.size && !regions.has(this.region)) this.region = regions.values().next().value;
+  }
+  private entryRegions(element: Element, section: string, visited = new Set<Element>()): Set<string> {
+    const result = new Set<string>();
+    if (visited.has(element)) return result;
+    visited.add(element);
+    const add = (id: string) => {
+      if (this.regions.some((region) => region.getAttribute('id') === id)) result.add(id);
+    };
+    if (section === 'regions') add(element.getAttribute('id'));
+    add(element.getAttribute('region'));
+    if (section === 'portals' && !element.hasAttribute('region')) {
+      for (const region of this.regions) {
+        if (element.hasAttribute('continent') && region.getAttribute('legacyTemplate') === element.getAttribute('continent')) add(region.getAttribute('id'));
+      }
+    }
+    const portalId = section === 'coolonDestinations' ? element.getAttribute('portal') : section === 'teleportLinks' ? element.getAttribute('source') : null;
+    if (portalId) {
+      const portal = entries(this.doc, 'portals').find((entry) => entry.getAttribute('id') === portalId);
+      if (portal) for (const region of this.entryRegions(portal, 'portals', visited)) result.add(region);
+    }
+    if (result.size) return result;
+    // Follow ownership towards spatial entries, never broad story/rule references.
+    const owners = this.entityReferences.get(`${section}:${element.getAttribute('id')}`) || [];
+    for (const owner of owners) {
+      if (!['routes', 'portals', 'places', 'coolonDestinations', 'regions'].includes(owner.section)) continue;
+      for (const region of this.entryRegions(owner.element, owner.section, visited)) result.add(region);
+    }
+    return result;
   }
   goToEntry(target: { element: Element; section: string; point?: Element }, recordHistory = true) {
     this.select(target.element, target.section, recordHistory);
     this.search = '';
     this.tab = 'map';
     const id = target.element.getAttribute('id');
-    let route = this.routes.find((entry) => target.section === 'routes' ? entry.id === id : target.section === 'geometry' && entry.element.getAttribute('geometry') === id);
+    let route = this.filteredRoutes.find((entry) => target.section === 'routes' ? entry.id === id : target.section === 'geometry' && entry.element.getAttribute('geometry') === id);
     if (target.section === 'portals' || target.section === 'places' || target.section === 'coolonDestinations') {
       const portal = target.section === 'portals' ? target.element : entries(this.doc, 'portals').find((entry) => target.section === 'coolonDestinations' ? entry.getAttribute('id') === target.element.getAttribute('portal') : entry.getAttribute('place') === id);
       route = this.routes.find((entry) => entry.id === portal?.getAttribute('route'));
     }
     const node = target.section === 'nodes' ? this.nodes.find((entry) => entry.id === id) : route?.start;
     if (node) {
-      if (!this.filteredNodes.some((entry) => entry.id === node.id)) this.region = '';
       this.view = { ...this.view, x: node.x - this.view.width / 2, z: node.z - this.view.height / 2 };
     }
     if (target.point && target.section === 'geometry') {
