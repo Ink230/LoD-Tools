@@ -27,12 +27,14 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
             </select>
           } @else if (choices(attribute.name).length || reference(attribute.name)) {
             <span class="input-stack">
-              <input [attr.list]="listId(attribute.name)" [ngModel]="attribute.value" [readOnly]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label" />
+              <input [attr.list]="listId(attribute.name)" (focus)="activeSuggestions = attribute.name" (blur)="activeSuggestions = null" [ngModel]="attribute.value" [readOnly]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label" />
+              @if (activeSuggestions === attribute.name) {
               <datalist [id]="listId(attribute.name)">
                 @for (choice of choices(attribute.name); track choice) {
                   <option [value]="choice" [label]="choiceLabel(attribute.name, choice)"></option>
                 }
               </datalist>
+              }
               @if (selectedLabel(attribute.name, attribute.value)) {
                 <small class="selection-label">{{ selectedLabel(attribute.name, attribute.value) }}</small>
               }
@@ -158,6 +160,9 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
   ],
 })
 export class WorldMapFieldsComponent {
+  private static nextId = 0;
+  private readonly instanceId = WorldMapFieldsComponent.nextId++;
+  activeSuggestions: string | null = null;
   @Input({ required: true }) element!: Element;
   @Input() registry: Record<string, string[]> = {};
   @Input() registryLabels: Record<string, Record<string, string>> = {};
@@ -280,7 +285,7 @@ export class WorldMapFieldsComponent {
     if (name === 'soundIds') return 'Sounds';
     return name.replace('Ids', '').replace(/([A-Z])/g, ' $1').replace(/^./, (character) => character.toUpperCase());
   }
-  listId(attribute: string) { return 'ref-' + this.element.tagName + '-' + attribute; }
+  listId(attribute: string) { return 'ref-' + this.instanceId + '-' + attribute; }
   set(attribute: string, event: Event) {
     if (this.locked(attribute)) return;
     const input = event.target as HTMLInputElement;

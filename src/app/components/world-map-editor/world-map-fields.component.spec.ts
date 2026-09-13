@@ -108,4 +108,20 @@ describe('WorldMapFieldsComponent', () => {
       expect((fixture.nativeElement.querySelector('select[aria-label="Direction"]') as HTMLSelectElement).value).toBe(route.getAttribute('direction'));
     }
   });
+  it('creates registry suggestions only for the focused reference row', () => {
+    const fixture = TestBed.configureTestingModule({ imports: [WorldMapFieldsComponent] }).createComponent(WorldMapFieldsComponent);
+    const doc = parsePreset('<worldMapPreset version="1" id="custom:test"><storyPresets><storyPreset id="custom:story"><enabledPortals><item id="custom:a"/><item id="custom:b"/></enabledPortals></storyPreset></storyPresets></worldMapPreset>');
+    fixture.componentRef.setInput('element', doc.querySelector('storyPreset'));
+    fixture.componentRef.setInput('registry', { portals: ['custom:a', 'custom:b'] });
+    fixture.detectChanges();
+    const inputs = fixture.nativeElement.querySelectorAll('input[list]') as NodeListOf<HTMLInputElement>;
+    expect(inputs[0].getAttribute('list')).not.toBe(inputs[1].getAttribute('list'));
+    expect(fixture.nativeElement.querySelectorAll('datalist').length).toBe(0);
+    inputs[0].dispatchEvent(new FocusEvent('focus'));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('datalist option').length).toBe(2);
+    inputs[0].dispatchEvent(new FocusEvent('blur'));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('datalist').length).toBe(0);
+  });
 });
