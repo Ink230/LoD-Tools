@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { diagnostics, entries, parsePreset, serializePreset } from './world-map-document';
+import { diagnostics, entries, parsePreset, renameRegistryEntry, serializePreset } from './world-map-document';
 import { readPackage, safeAssetPath, writePackage } from './world-map-package';
 import { strToU8, zipSync } from 'fflate';
 
@@ -94,5 +94,21 @@ describe('world map XML document and asset package', () => {
     expect(diagnostics(doc, [], { encounters: ['lod:sea_dragon'] })).toEqual([]);
     const unresolved = diagnostics(doc, []);
     expect(unresolved.some((issue) => issue.message.includes('Unknown encounters reference "lod:sea_dragon"') && issue.message.includes('Choose an existing encounters ID'))).toBe(true);
+  });
+  it('renames typed references without changing matching IDs in other registries', () => {
+    const doc = parsePreset(SOURCE);
+    entries(doc, 'routes')[0].setAttribute('avatar', 'custom:a');
+    renameRegistryEntry(entries(doc, 'nodes')[0], 'custom:renamed');
+    expect(entries(doc, 'routes')[0].getAttribute('start')).toBe('custom:renamed');
+    expect(entries(doc, 'routes')[0].getAttribute('avatar')).toBe('custom:a');
+    expect(() => renameRegistryEntry(entries(doc, 'nodes')[0], 'custom:b')).toThrow('already exists');
+    expect(entries(doc, 'routes')[0].getAttribute('start')).toBe('custom:renamed');
+  });
+  it('renames portal references in rules and teleport links', () => {
+    const doc = parsePreset('<worldMapPreset version="1" id="custom:test"><portals><portal id="custom:a"/></portals><rules><portals><portal id="custom:a"/></portals></rules><teleportLinks><teleportLink id="custom:link" source="custom:a" destination="custom:a"/></teleportLinks></worldMapPreset>');
+    renameRegistryEntry(entries(doc, 'portals')[0], 'custom:b');
+    expect(doc.querySelector('rules portal').getAttribute('id')).toBe('custom:b');
+    expect(doc.querySelector('teleportLink').getAttribute('source')).toBe('custom:b');
+    expect(doc.querySelector('teleportLink').getAttribute('destination')).toBe('custom:b');
   });
 });

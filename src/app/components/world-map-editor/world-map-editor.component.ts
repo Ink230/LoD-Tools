@@ -326,7 +326,9 @@ export class WorldMapEditorComponent implements OnInit {
   mutate(action: () => void) {
     const before = this.snapshot();
     const coordinates = graphCoordinates(this.doc);
+    const activeRegion = this.regions.find((entry) => entry.getAttribute('id') === this.region);
     action();
+    if (activeRegion?.isConnected) this.region = activeRegion.getAttribute('id') || '';
     synchronizeGraph(this.doc, coordinates);
     this.documentSource = serializePreset(this.doc);
     if (this.tab !== 'source') this.source = this.documentSource;

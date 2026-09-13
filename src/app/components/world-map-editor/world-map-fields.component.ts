@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { childTemplate, entries, OPTIONAL_ATTRIBUTES, referenceSection } from './world-map-document';
+import { childTemplate, entries, OPTIONAL_ATTRIBUTES, referenceSection, renameRegistryEntry } from './world-map-document';
 import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } from './world-map-field-metadata';
 
 @Component({
@@ -282,8 +282,19 @@ export class WorldMapFieldsComponent {
   listId(attribute: string) { return 'ref-' + this.element.tagName + '-' + attribute; }
   set(attribute: string, event: Event) {
     if (this.locked(attribute)) return;
-    const value = (event.target as HTMLInputElement).value;
-    this.mutate.emit(() => this.element.setAttribute(attribute, value));
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+    input.setCustomValidity('');
+    this.mutate.emit(() => {
+      try {
+        if (attribute === 'id') renameRegistryEntry(this.element, value);
+        else this.element.setAttribute(attribute, value);
+      } catch (error) {
+        input.setCustomValidity(error instanceof Error ? error.message : String(error));
+        input.reportValidity();
+        input.value = this.element.getAttribute(attribute) || '';
+      }
+    });
   }
   addAttribute(attribute: string) { this.mutate.emit(() => this.element.setAttribute(attribute, '')); }
   removeAttribute(attribute: string) { this.mutate.emit(() => this.element.removeAttribute(attribute)); }

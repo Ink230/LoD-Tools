@@ -105,6 +105,26 @@ export function entries(doc: XMLDocument, section: string): Element[] {
   return Array.from(doc.documentElement.children).find((e) => e.tagName === section) ? Array.from(Array.from(doc.documentElement.children).find((e) => e.tagName === section).children) : [];
 }
 
+export function renameRegistryEntry(element: Element, value: string): void {
+  const section = element.parentElement?.tagName;
+  const doc = element.ownerDocument;
+  const previous = element.getAttribute('id');
+  if (previous === value) return;
+  if (!section || section === 'requiredMods' || element.parentElement?.parentElement !== doc.documentElement || SECTIONS[section] !== element.tagName || referenceSection(element, 'id')) {
+    element.setAttribute('id', value);
+    return;
+  }
+  if (!/^[a-z0-9_.-]+:[a-z0-9_./-]+$/.test(value)) throw new Error('Use a registry ID in namespace:name format');
+  if (entries(doc, section).some((entry) => entry !== element && entry.getAttribute('id') === value)) throw new Error(`An entry named ${value} already exists in ${section}`);
+  if (previous) {
+    for (const target of Array.from(doc.querySelectorAll('*'))) {
+      for (const attribute of Array.from(target.attributes)) {
+        if (attribute.value === previous && referenceSection(target, attribute.name) === section) target.setAttribute(attribute.name, value);
+      }
+    }
+  }
+  element.setAttribute('id', value);
+}
 export function referenceSection(element: Element, attribute: string): string | undefined {
   const fields: Record<string, string> = {
     start: 'nodes',
@@ -129,6 +149,7 @@ export function referenceSection(element: Element, attribute: string): string | 
   if (fields[attribute]) return fields[attribute];
   if (attribute === 'provider')
     return element.tagName === 'region' ? 'regions' : element.tagName === 'avatar' ? 'avatars' : element.tagName === 'thumbnailDefinition' ? 'thumbnailDefinitions' : 'traversalProfiles';
+  if (attribute === 'id' && element.tagName === 'portal' && element.parentElement?.parentElement?.tagName === 'rules') return 'portals';
   if (attribute === 'id' && element.tagName === 'thumbnail') return 'places';
   if (attribute === 'id' && element.tagName === 'remove') return element.getAttribute('kind');
   if (attribute === 'id' && element.tagName === 'item') {
