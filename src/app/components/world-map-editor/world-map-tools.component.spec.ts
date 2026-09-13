@@ -13,7 +13,7 @@ describe('floating tools', () => {
     expect(fixture.nativeElement.querySelector('.tools')).toBeNull();
     editor.toolsOpen = true;
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelectorAll('.tools button')).toHaveLength(3);
+    expect(fixture.nativeElement.querySelectorAll('.tools button')).toHaveLength(5);
     editor.toolsOpen = false;
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.tools')).toBeNull();

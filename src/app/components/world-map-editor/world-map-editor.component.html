@@ -40,9 +40,7 @@
     </div>
     </div>
     <fieldset [disabled]="tab !== 'map'" [style.display]="tab === 'map' ? 'flex' : 'none'" style="align-items: center; justify-content: center; flex: 1; flex-wrap: wrap; gap: 6px; border: 0; padding: 0; margin: 0; min-width: 0" aria-label="Map controls">
-      <button [class.active]="mode === 'select'" (click)="mode = 'select'">↖ Select</button>
-      <button [class.active]="mode === 'node'" (click)="mode = 'node'">+ Node</button>
-      <button (click)="addRoute()">+ Route</button>
+          <button (click)="addRoute()">+ Route</button>
       <button [disabled]="!selectedGeometry" [class.active]="mode === 'point'" (click)="mode = 'point'">+ Point</button>
     
     <span style="position: relative; display: inline-flex; margin-left: 18px">
