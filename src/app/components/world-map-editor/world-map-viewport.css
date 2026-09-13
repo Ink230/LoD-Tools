@@ -14,6 +14,5 @@
 }
 .fill-viewport > .editor-header,
 .fill-viewport > .document-bar,
-.fill-viewport > .status,
 .fill-viewport > .error { flex-shrink: 0; }
 .fill-viewport > .workspace { flex: 1; height: auto; min-height: 0; }
