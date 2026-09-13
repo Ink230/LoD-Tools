@@ -496,7 +496,7 @@ export class WorldMapEditorComponent implements OnInit {
       const drag = this.rotationDrag;
       const radius = Math.max(40, Math.hypot(event.clientX - drag.cx, event.clientY - drag.cy));
       const sensitivity = Math.max(0.25, Math.min(4, drag.radius / radius));
-      this.stageRotation = (this.stageRotation + (event.clientX - drag.x) * 0.5 * sensitivity) % 360;
+      this.stageRotation = (this.stageRotation - (event.clientX - drag.x) * 0.25 * sensitivity) % 360;
       drag.x = event.clientX;
       return;
     }
