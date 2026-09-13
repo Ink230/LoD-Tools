@@ -216,6 +216,8 @@ export class WorldMapEditorComponent implements OnInit {
       route.setAttribute('end', start);
       route.setAttribute('direction', String(-direction));
       source.parentElement.appendChild(route);
+      const region = this.entryRegions(source, 'routes').values().next().value || this.region;
+      if (region) this.bindDrawnRouteRegion(route, region);
     });
   }
   private drawingGeometryId?: string;
@@ -271,6 +273,7 @@ export class WorldMapEditorComponent implements OnInit {
     } else if (geometry && endNode) {
       this.mutate(() => {
         let start = entries(this.doc, 'nodes').find(entry => entry.getAttribute('id') === this.drawingStartId);
+        start ||= entries(this.doc, 'nodes').find(entry => entry.querySelector('position') && ['x', 'y', 'z'].every(axis => Number(entry.querySelector('position').getAttribute(axis)) === Number(points[0].getAttribute(axis))));
         if (!start) {
           start = this.doc.createElement('node');
           start.setAttribute('id', this.drawingId('nodes', 'node'));
@@ -287,6 +290,8 @@ export class WorldMapEditorComponent implements OnInit {
         route.setAttribute('start', start.getAttribute('id'));
         route.setAttribute('end', endNode.getAttribute('id'));
         this.appendDrawingEntry('routes', route);
+        const region = this.region || this.entryRegions(endNode, 'nodes').values().next().value;
+        if (region) this.bindDrawnRouteRegion(route, region);
         this.selected = route;
         this.section = 'routes';
         this.pointIndex = -1;
@@ -295,6 +300,21 @@ export class WorldMapEditorComponent implements OnInit {
     this.mode = 'select';
     this.drawingGeometryId = undefined;
     this.drawingStartId = undefined;
+  }
+  private bindDrawnRouteRegion(route: Element, region: string) {
+    const place = this.doc.createElement('place');
+    place.setAttribute('id', this.drawingId('places', 'junction_place'));
+    place.setAttribute('services', '0');
+    place.setAttribute('thumbnail', '0');
+    this.appendDrawingEntry('places', place);
+    const portal = this.doc.importNode(new DOMParser().parseFromString(TEMPLATES['portal'], 'application/xml').documentElement, true);
+    portal.setAttribute('id', this.drawingId('portals', 'junction_portal'));
+    portal.setAttribute('route', route.getAttribute('id'));
+    portal.setAttribute('place', place.getAttribute('id'));
+    portal.setAttribute('region', region);
+    const template = this.regions.find(entry => entry.getAttribute('id') === region)?.getAttribute('legacyTemplate');
+    if (template) portal.setAttribute('continent', template);
+    this.appendDrawingEntry('portals', portal);
   }
   @HostListener('document:pointerdown', ['$event'])
   finishDrawingOutside(event: PointerEvent) {

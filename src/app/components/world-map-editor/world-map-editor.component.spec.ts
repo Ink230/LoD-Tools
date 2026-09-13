@@ -225,4 +225,21 @@ describe('world map graph editing', () => {
     editor.finishGeometryDrawing();
     expect(editor.selected.getAttribute('id')).toBe('irongoon:geometry_1');
   });
+  it('binds a drawn route to the active region and reuses its existing start node', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test"><regions><region id="custom:a" legacyTemplate="SOUTH_SERDIO_0"/><region id="custom:b" legacyTemplate="NORTH_SERDIO_1"/></regions><nodes><node id="custom:start"><position x="0" y="0" z="0"/></node><node id="custom:end"><position x="100" y="0" z="0"/></node></nodes></worldMapPreset>', 'test.wmap');
+    editor.region = 'custom:a';
+    editor.startGeometryDrawing();
+    editor.drawGeometryPoint(0, 0);
+    editor.drawGeometryPoint(100, 0, editor.doc.querySelector('node[id="custom:end"]'));
+    expect(editor.nodes).toHaveLength(2);
+    expect(editor.filteredRoutes).toHaveLength(1);
+    editor.selected = null;
+    expect(editor.filteredRoutes).toHaveLength(1);
+    editor.changeRegion('custom:b');
+    expect(editor.filteredRoutes).toHaveLength(0);
+    expect(editor.filteredNodes).toHaveLength(0);
+    const portal = editor.doc.querySelector('portals > portal');
+    expect(portal.getAttribute('region')).toBe('custom:a');
+    expect(portal.getAttribute('place')).toBeTruthy();
+  });
 });
