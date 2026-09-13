@@ -87,4 +87,13 @@ describe('WorldMapFieldsComponent', () => {
     expect(component.element.firstElementChild).toBe(source);
     expect(doc.querySelector('position').getAttribute('x')).toBe('12.34');
   });
+  it('uses the shared coordinate row for region camera vectors', () => {
+    const fixture = TestBed.configureTestingModule({ imports: [WorldMapFieldsComponent] }).createComponent(WorldMapFieldsComponent);
+    const doc = parsePreset('<worldMapPreset version="1" id="custom:test"><regions><region id="custom:region"><camera><viewpoint x="1" y="2" z="3"/><refpoint x="4" y="5" z="6"/><minimum x="0" y="0" z="0"/><maximum x="10" y="10" z="10"/></camera></region></regions></worldMapPreset>');
+    fixture.componentRef.setInput('element', doc.querySelector('region'));
+    fixture.detectChanges();
+    const rows = fixture.nativeElement.querySelectorAll('.coordinates') as NodeListOf<HTMLElement>;
+    expect(rows.length).toBe(4);
+    for (const row of rows) expect(row.querySelectorAll('input').length).toBe(3);
+  });
 });

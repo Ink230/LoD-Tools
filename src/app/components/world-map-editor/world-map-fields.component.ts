@@ -193,7 +193,7 @@ export class WorldMapFieldsComponent {
       }
     });
   }
-  get coordinateRow() { return (this.element.parentElement?.tagName === 'points' || this.element.tagName === 'position') && ['x', 'y', 'z'].every((axis) => this.element.hasAttribute(axis)); }
+  get coordinateRow() { return ['x', 'y', 'z'].every((axis) => this.element.hasAttribute(axis)); }
   get compactReference() { return this.element.tagName === 'item' && this.attributes.length === 1 && Boolean(this.reference('id')); }
 
   get attributes() {
