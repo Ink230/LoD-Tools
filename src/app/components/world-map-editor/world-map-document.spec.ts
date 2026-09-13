@@ -37,6 +37,45 @@ describe('world map XML document and asset package', () => {
     expect(issues.some((i) => i.message.includes('Asset not attached'))).toBe(false);
   });
 
+  it('resolves modern authoring references and validates reusable definitions', () => {
+    const doc = parsePreset(`<worldMapPreset version="1" id="custom:modern" name="Modern">
+      <places><place id="custom:place" legacyIndex="-1" thumbnail="0" services="0" thumbnailId="custom:thumbnail"><serviceIds><item id="custom:service"/></serviceIds><soundIds><item id="custom:sound"/></soundIds><sounds/></place></places>
+      <routes><route id="custom:route" legacyIndex="-1" start="custom:a" end="custom:b" geometry="custom:path" direction="1" encounterRate="0" battleStage="0" modelIndex="0" legacyEncounterPlaceholder="-1" battleStageId="custom:stage"/></routes>
+      <portals><portal id="custom:portal" legacyIndex="-1" junctionIndex="-1" continent="SOUTH_SERDIO_0" fullBrightness="false" effectFlags="0" atmosphere="SNOW" smoke="MODE_1" fromId="custom:from" toId="custom:to"><from cut="0" scene="0"/><to cut="0" scene="0"/></portal></portals>
+      <thumbnailDefinitions><thumbnailDefinition id="custom:thumbnail" nativeIndex="-1" asset="assets/thumb.tim" label="Custom thumbnail"/></thumbnailDefinitions>
+      <serviceDefinitions><serviceDefinition id="custom:service" label="Save point"/></serviceDefinitions>
+      <soundDefinitions><soundDefinition id="custom:sound" nativeIndex="4" label="Town ambience"/></soundDefinitions>
+      <battleStageDefinitions><battleStageDefinition id="custom:stage" nativeIndex="-1" label="Default world-map stage"/></battleStageDefinitions>
+      <submapDestinations><submapDestination id="custom:from" cut="1" scene="2" label="Arrival"/><submapDestination id="custom:to" cut="3" scene="4" label="Departure"/></submapDestinations>
+    </worldMapPreset>`);
+
+    const issues = diagnostics(doc, ['assets/thumb.tim'], {
+      nodes: ['custom:a', 'custom:b'],
+      geometry: ['custom:path'],
+    });
+    expect(issues).toEqual([]);
+    expect(entries(doc, 'thumbnailDefinitions')[0].getAttribute('label')).toBe('Custom thumbnail');
+    expect(serializePreset(parsePreset(serializePreset(doc)))).toBe(serializePreset(doc));
+  });
+
+  it('reports invalid modern definitions and typed portal effects', () => {
+    const doc = parsePreset(`<worldMapPreset version="1" id="custom:invalid">
+      <portals><portal id="custom:portal" atmosphere="RAIN" smoke="LOTS"/></portals>
+      <thumbnailDefinitions><thumbnailDefinition id="custom:thumbnail"/></thumbnailDefinitions>
+      <soundDefinitions><soundDefinition id="custom:sound" nativeIndex="0"/></soundDefinitions>
+      <battleStageDefinitions><battleStageDefinition id="custom:stage" nativeIndex="1.5"/></battleStageDefinitions>
+      <submapDestinations><submapDestination id="custom:destination" cut="2.5" scene=""/></submapDestinations>
+    </worldMapPreset>`);
+    const messages = diagnostics(doc, []).map((issue) => issue.message);
+    expect(messages).toContain('atmosphere must be NONE, CLOUDS or SNOW');
+    expect(messages).toContain('smoke must be NONE, MODE_1 or MODE_2');
+    expect(messages).toContain('Thumbnail definitions require a native index of -1 or greater');
+    expect(messages).toContain('Thumbnail definitions require exactly one native index, packaged asset or provider');
+    expect(messages).toContain('Sound definitions require a positive integer native index');
+    expect(messages).toContain('Battle-stage definitions require an integer native index of -1 or greater');
+    expect(messages).toContain('Submap destinations require integer cut and scene numbers');
+  });
+
   it('preserves XML and arbitrary binary assets through compressed package export/import', () => {
     const assets = new Map([['assets/map.tim', new Uint8Array([0, 255, 16, 1, 0, 42])]]);
     const result = readPackage(writePackage(SOURCE, assets));

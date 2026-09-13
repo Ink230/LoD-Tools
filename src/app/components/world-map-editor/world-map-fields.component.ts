@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { childTemplate, OPTIONAL_ATTRIBUTES, referenceSection } from './world-map-document';
+import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } from './world-map-field-metadata';
 
 @Component({
   selector: 'app-world-map-fields',
@@ -10,204 +11,206 @@ import { childTemplate, OPTIONAL_ATTRIBUTES, referenceSection } from './world-ma
   imports: [FormsModule],
   template: `
     <div class="fields">
-      @for (attribute of attributes; track attribute.name) {
-        <label
-          ><span>{{ attribute.name }}</span>
-          @if (choices(attribute.name).length) {
-            <input [attr.list]="listId(attribute.name)" [ngModel]="attribute.value" [readOnly]="locked(attribute.name)" (change)="set(attribute.name, $event)" />
-            <datalist [id]="listId(attribute.name)">
-              @for (choice of choices(attribute.name); track choice) {
-                <option [value]="choice"></option>
+      @for (attribute of normalAttributes; track attribute.name) {
+        <label class="field">
+          <span class="field-copy">
+            <strong>{{ presentation(attribute.name).label }}</strong>
+            @if (presentation(attribute.name).description) {
+              <small>{{ presentation(attribute.name).description }}</small>
+            }
+          </span>
+          @if (closedChoices(attribute.name).length) {
+            <select [ngModel]="attribute.value" [disabled]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label">
+              @for (choice of closedChoices(attribute.name); track choice) {
+                <option [value]="choice">{{ choiceLabel(attribute.name, choice) }}</option>
               }
-            </datalist>
+            </select>
+          } @else if (choices(attribute.name).length || reference(attribute.name)) {
+            <span class="input-stack">
+              <input [attr.list]="listId(attribute.name)" [ngModel]="attribute.value" [readOnly]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label" />
+              <datalist [id]="listId(attribute.name)">
+                @for (choice of choices(attribute.name); track choice) {
+                  <option [value]="choice" [label]="choiceLabel(attribute.name, choice)"></option>
+                }
+              </datalist>
+              @if (selectedLabel(attribute.name, attribute.value)) {
+                <small class="selection-label">{{ selectedLabel(attribute.name, attribute.value) }}</small>
+              }
+            </span>
           } @else {
-            <input [ngModel]="attribute.value" [readOnly]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="attribute.name" />
+            <input [type]="presentation(attribute.name).numeric ? 'number' : 'text'" [attr.step]="presentation(attribute.name).integer ? '1' : presentation(attribute.name).numeric ? 'any' : null" [ngModel]="attribute.value" [readOnly]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label" />
           }
           @if (optionalAttributes.includes(attribute.name)) {
-            <button class="remove" type="button" (click)="removeAttribute(attribute.name)" [attr.aria-label]="'Remove ' + attribute.name">×</button>
+            <button class="remove" type="button" (click)="removeAttribute(attribute.name)" [attr.aria-label]="'Remove ' + presentation(attribute.name).label">×</button>
           }
         </label>
       }
+
       @for (attribute of missingAttributes; track attribute) {
-        <button type="button" (click)="addAttribute(attribute)">+ {{ attribute }}</button>
+        <button type="button" (click)="addAttribute(attribute)">+ {{ presentation(attribute).label }}</button>
       }
-      @for (child of children; track child) {
+
+      @for (child of normalChildren; track child) {
         <details open>
           <summary>
-            {{ child.tagName }}{{ child.getAttribute('id') ? ' · ' + child.getAttribute('id') : '' }}
+            {{ childLabelName(child.tagName) }}{{ child.getAttribute('id') ? ' · ' + child.getAttribute('id') : '' }}
             @if (canRemove(child)) {
               <button type="button" class="remove" (click)="removeChild(child, $event)" [attr.aria-label]="'Remove ' + child.tagName">×</button>
             }
           </summary>
-          <app-world-map-fields [element]="child" [registry]="registry" (mutate)="mutate.emit($event)" />
+          <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" (mutate)="mutate.emit($event)" />
         </details>
       }
+
+      @if (hasCompatibility) {
+        <details class="compatibility">
+          <summary><span>Native compatibility</span><small>Retail fallbacks</small></summary>
+          <div class="compatibility-fields">
+            @for (attribute of compatibilityAttributes; track attribute.name) {
+              <label class="field">
+                <span class="field-copy">
+                  <strong>{{ presentation(attribute.name).label }}</strong>
+                  @if (presentation(attribute.name).description) {
+                    <small>{{ presentation(attribute.name).description }}</small>
+                  }
+                </span>
+                @if (closedChoices(attribute.name).length) {
+                  <select [ngModel]="attribute.value" [disabled]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label">
+                    @for (choice of closedChoices(attribute.name); track choice) {
+                      <option [value]="choice">{{ choiceLabel(attribute.name, choice) }}</option>
+                    }
+                  </select>
+                } @else {
+                  <input [type]="presentation(attribute.name).numeric ? 'number' : 'text'" [attr.step]="presentation(attribute.name).integer ? '1' : presentation(attribute.name).numeric ? 'any' : null" [ngModel]="attribute.value" [readOnly]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label" />
+                }
+              </label>
+            }
+            @for (child of compatibilityChildren; track child) {
+              <details open>
+                <summary>{{ childLabelName(child.tagName) }}</summary>
+                <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" (mutate)="mutate.emit($event)" />
+              </details>
+            }
+          </div>
+        </details>
+      }
+
       @if (isList) {
-        <button type="button" (click)="addChild()">+ {{ element.tagName === 'capabilities' ? 'Capability' : 'Entry' }}</button>
+        <button type="button" (click)="addChild()">+ {{ listItemLabel }}</button>
       }
       @for (child of optionalChildren; track child) {
-        <button type="button" (click)="addChild(child)">+ {{ child }}</button>
+        <button type="button" (click)="addChild(child)">+ {{ childLabelName(child) }}</button>
       }
     </div>
   `,
   styles: [
     `
-      :host {
-        display: block;
-        font: inherit;
-        color: inherit;
-      }
-      .fields {
-        display: grid;
-        gap: 8px;
-      }
-      label {
-        display: grid;
-        grid-template-columns: minmax(84px, 1fr) minmax(0, 1.4fr) auto;
-        gap: 6px;
-        align-items: center;
-        font-size: 12px;
-      }
-      span {
-        overflow-wrap: anywhere;
-        color: #aab9ad;
-      }
-      input {
-        all: revert;
-        box-sizing: border-box;
-        width: 100%;
-        min-width: 0;
-        border: 1px solid #34473b;
-        border-radius: 4px;
-        background: #111c16;
-        color: #e3eee5;
-        padding: 7px;
-        font:
-          12px ui-monospace,
-          monospace;
-        caret-color: #b7e190;
-      }
-      button {
-        all: revert;
-        box-sizing: border-box;
-        cursor: pointer;
-        border: 1px solid #354a3c;
-        border-radius: 4px;
-        padding: 5px 8px;
-        background: #213728;
-        color: #bdd5c4;
-        font: 12px system-ui;
-      }
-      button:hover {
-        background: #304f38;
-      }
-      details {
-        border-left: 2px solid #344f3c;
-        padding-left: 9px;
-      }
-      summary {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        cursor: pointer;
-        font: 600 12px system-ui;
-        color: #a9d890;
-        padding: 7px 0;
-      }
-      .remove {
-        padding: 2px 6px;
-        color: #edb0a3;
-      }
-      input:focus-visible,
-      button:focus-visible {
-        outline: 2px solid #b7e190;
-        outline-offset: 1px;
-      }
+      :host { display: block; font: inherit; color: inherit; }
+      .fields, .compatibility-fields { display: grid; gap: 10px; }
+      .field { display: grid; grid-template-columns: minmax(100px, 1fr) minmax(0, 1.25fr) auto; gap: 7px; align-items: start; font-size: 12px; }
+      .field-copy, .input-stack { display: grid; min-width: 0; gap: 3px; }
+      .field-copy strong { overflow-wrap: anywhere; color: #b9c9bc; font-weight: 500; }
+      .field-copy small, .selection-label { color: #758a7b; font: 10px/1.3 system-ui, sans-serif; }
+      .selection-label { color: #9dc38d; overflow-wrap: anywhere; }
+      input, select { all: revert; box-sizing: border-box; width: 100%; min-width: 0; border: 1px solid #34473b; border-radius: 4px; background: #111c16; color: #e3eee5; padding: 7px; font: 12px ui-monospace, monospace; caret-color: #b7e190; }
+      select { cursor: pointer; }
+      button { all: revert; box-sizing: border-box; cursor: pointer; border: 1px solid #354a3c; border-radius: 4px; padding: 5px 8px; background: #213728; color: #bdd5c4; font: 12px system-ui; }
+      button:hover { background: #304f38; }
+      details:not(.compatibility) { border-left: 2px solid #344f3c; padding-left: 9px; }
+      summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; font: 600 12px system-ui; color: #a9d890; padding: 7px 0; }
+      .compatibility { margin-top: 3px; border: 1px solid #37443b; border-radius: 4px; background: #101914; }
+      .compatibility > summary { padding: 8px 9px; color: #93a198; }
+      .compatibility > summary small { font: 9px ui-monospace, monospace; color: #68766d; text-transform: uppercase; letter-spacing: 0.5px; }
+      .compatibility-fields { padding: 5px 9px 10px; }
+      .remove { padding: 2px 6px; color: #edb0a3; }
+      input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid #b7e190; outline-offset: 1px; }
     `,
   ],
 })
 export class WorldMapFieldsComponent {
   @Input({ required: true }) element!: Element;
   @Input() registry: Record<string, string[]> = {};
+  @Input() registryLabels: Record<string, Record<string, string>> = {};
   @Output() mutate = new EventEmitter<() => void>();
-  get attributes() {
-    return Array.from(this.element.attributes);
-  }
-  get children() {
-    return this.element.tagName === 'worldMapPreset' ? [] : Array.from(this.element.children);
-  }
-  get optionalAttributes() {
-    return OPTIONAL_ATTRIBUTES[this.element.tagName] || [];
-  }
-  get missingAttributes() {
-    return this.optionalAttributes.filter((a) => !this.element.hasAttribute(a));
-  }
+
+  get attributes() { return Array.from(this.element.attributes); }
+  get normalAttributes() { return this.attributes.filter((attribute) => !isCompatibilityAttribute(this.element, attribute.name)); }
+  get compatibilityAttributes() { return this.attributes.filter((attribute) => isCompatibilityAttribute(this.element, attribute.name)); }
+  get children() { return this.element.tagName === 'worldMapPreset' ? [] : Array.from(this.element.children); }
+  get normalChildren() { return this.children.filter((child) => !isCompatibilityChild(this.element, child)); }
+  get compatibilityChildren() { return this.children.filter((child) => isCompatibilityChild(this.element, child)); }
+  get hasCompatibility() { return Boolean(this.compatibilityAttributes.length || this.compatibilityChildren.length); }
+  get optionalAttributes() { return OPTIONAL_ATTRIBUTES[this.element.tagName] || []; }
+  get missingAttributes() { return this.optionalAttributes.filter((attribute) => !this.element.hasAttribute(attribute)); }
   get isList() {
     return (
-      [
-        'points',
-        'sounds',
-        'encounters',
-        'enabledPortals',
-        'routes',
-        'markers',
-        'warps',
-        'mapPositions',
-        'regions',
-        'services',
-        'waterClutYs',
-        'playerAvatarVramSlots',
-        'textureAdjustments',
-        'textures',
-        'animations',
-        'capabilities',
-      ].includes(this.element.tagName) ||
+      ['points', 'sounds', 'soundIds', 'serviceIds', 'encounters', 'enabledPortals', 'routes', 'markers', 'warps', 'mapPositions', 'regions', 'services', 'waterClutYs', 'playerAvatarVramSlots', 'textureAdjustments', 'textures', 'animations', 'capabilities'].includes(this.element.tagName) ||
       (this.element.tagName === 'portals' && this.element.parentElement?.tagName === 'rules')
     );
   }
   get optionalChildren() {
-    const options: Record<string, string[]> = { region: ['assets'], avatar: ['assets'], traversalProfile: ['visualOffset'], camera: ['overviewPosition', 'minimum', 'maximum'] };
-    return (options[this.element.tagName] || []).filter((name) => !this.children.some((c) => c.tagName === name));
+    const options: Record<string, string[]> = {
+      place: ['serviceIds', 'soundIds'],
+      region: ['assets'],
+      avatar: ['assets'],
+      traversalProfile: ['visualOffset'],
+      camera: ['overviewPosition', 'minimum', 'maximum'],
+    };
+    return (options[this.element.tagName] || []).filter((name) => !this.children.some((child) => child.tagName === name));
   }
+  get listItemLabel() {
+    if (this.element.tagName === 'capabilities') return 'Capability';
+    if (this.element.tagName === 'serviceIds') return 'Service';
+    if (this.element.tagName === 'soundIds') return 'Sound';
+    return 'Entry';
+  }
+
+  presentation(attribute: string) { return fieldPresentation(this.element, attribute); }
+  reference(attribute: string) { return referenceSection(this.element, attribute); }
   choices(attribute: string): string[] {
-    const section = referenceSection(this.element, attribute);
+    const section = this.reference(attribute);
     if (section) return this.registry[section] || [];
+    if (attribute === 'texture' || attribute === 'model' || attribute === 'asset' || (attribute === 'value' && ['textures', 'animations'].includes(this.element.parentElement?.tagName)))
+      return this.registry['assetPaths'] || [];
+    return [];
+  }
+  closedChoices(attribute: string): string[] {
     if (attribute === 'id' && this.element.tagName === 'capability') return ['COOLON', 'QUEEN_FURY_BOARDING'];
     if (attribute === 'continent' || attribute === 'legacyTemplate')
       return ['SOUTH_SERDIO_0', 'NORTH_SERDIO_1', 'TIBEROA_2', 'ILLISA_BAY_3', 'MILLE_SESEAU_4', 'GLORIANO_5', 'DEATH_FRONTIER_6', 'ENDINESS_7', ...(attribute === 'continent' ? ['NONE_8'] : [])];
     if (attribute === 'kind') return ['nodes', 'geometry', 'routes', 'places', 'portals'];
-    if (attribute === 'texture' || attribute === 'model' || (attribute === 'value' && ['textures', 'animations'].includes(this.element.parentElement?.tagName)))
-      return this.registry['assetPaths'] || [];
     const enums: Record<string, string[]> = {
-      direction: ['1', '-1'],
-      policy: ['STORY', 'OPEN'],
-      phase: ['ENTER', 'TICK', 'MOVE', 'CROSS', 'EXIT'],
-      mode: ['NORMAL', 'NONE', 'PNG'],
-      code: ['ALLOWED', 'STORY_LOCKED', 'RULE_LOCKED', 'NO_PATH', 'WRONG_CONTINENT'],
+      direction: ['1', '-1'], policy: ['STORY', 'OPEN'], phase: ['ENTER', 'TICK', 'MOVE', 'CROSS', 'EXIT'], mode: ['NORMAL', 'NONE', 'PNG'],
+      code: ['ALLOWED', 'STORY_LOCKED', 'RULE_LOCKED', 'NO_PATH', 'WRONG_CONTINENT'], atmosphere: ['NONE', 'CLOUDS', 'SNOW'], smoke: ['NONE', 'MODE_1', 'MODE_2'],
     };
     if (enums[attribute]) return enums[attribute];
     if (['true', 'false'].includes(this.element.getAttribute(attribute))) return ['true', 'false'];
     return [];
   }
-  listId(attribute: string) {
-    return 'ref-' + this.element.tagName + '-' + attribute;
+  choiceLabel(attribute: string, choice: string) {
+    const section = this.reference(attribute);
+    return (section && this.registryLabels[section]?.[choice]) || choice;
   }
+  selectedLabel(attribute: string, value: string) {
+    const section = this.reference(attribute);
+    return section ? this.registryLabels[section]?.[value] || '' : '';
+  }
+  childLabelName(name: string) {
+    return name.replace('Ids', '').replace(/([A-Z])/g, ' $1').replace(/^./, (character) => character.toUpperCase());
+  }
+  listId(attribute: string) { return 'ref-' + this.element.tagName + '-' + attribute; }
   set(attribute: string, event: Event) {
     if (this.locked(attribute)) return;
     const value = (event.target as HTMLInputElement).value;
     this.mutate.emit(() => this.element.setAttribute(attribute, value));
   }
-  addAttribute(attribute: string) {
-    this.mutate.emit(() => this.element.setAttribute(attribute, ''));
-  }
-  removeAttribute(attribute: string) {
-    this.mutate.emit(() => this.element.removeAttribute(attribute));
-  }
+  addAttribute(attribute: string) { this.mutate.emit(() => this.element.setAttribute(attribute, '')); }
+  removeAttribute(attribute: string) { this.mutate.emit(() => this.element.removeAttribute(attribute)); }
   canRemove(child: Element) {
     if (this.element.tagName === 'points' && (child === this.element.firstElementChild || child === this.element.lastElementChild)) return false;
-    return ['item', 'capability', 'assets', 'visualOffset', 'overviewPosition', 'minimum', 'maximum'].includes(child.tagName) || this.element.tagName === 'portals';
+    return ['item', 'capability', 'assets', 'visualOffset', 'overviewPosition', 'minimum', 'maximum', 'serviceIds', 'soundIds'].includes(child.tagName) || this.element.tagName === 'portals';
   }
-  locked(attribute: string): boolean {
+  locked(attribute: string) {
     const index = Number(this.element.getAttribute('legacyIndex'));
     return this.element.tagName === 'portal' && this.element.hasAttribute('legacyIndex') && index >= 0 && index < 256 && ['id', 'legacyIndex'].includes(attribute);
   }

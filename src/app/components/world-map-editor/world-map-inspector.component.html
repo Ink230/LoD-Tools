@@ -22,15 +22,15 @@
   @if (editor.pointElement) {
     <div class="point-panel">
       <div class="panel-title">GEOMETRY POINT {{ editor.pointIndex + 1 }}<button (click)="editor.removePoint()">Remove</button></div>
-      <app-world-map-fields [element]="editor.pointElement" [registry]="editor.registry" (mutate)="editor.mutate($event)" />
+      <app-world-map-fields [element]="editor.pointElement" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" />
     </div>
   }
-  <app-world-map-fields [element]="editor.selected" [registry]="editor.registry" (mutate)="editor.mutate($event)" />
+  <app-world-map-fields [element]="editor.selected" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" />
   @if (editor.selectedGeometry) {
     <button class="wide" (click)="editor.addPoint()">+ Insert geometry point</button>
   }
 } @else {
   <h2>Preset details</h2>
   <p class="muted">Select a node, route or registry entry to edit its properties.</p>
-  <app-world-map-fields [element]="editor.root" [registry]="editor.registry" (mutate)="editor.mutate($event)" />
+  <app-world-map-fields [element]="editor.root" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" />
 }

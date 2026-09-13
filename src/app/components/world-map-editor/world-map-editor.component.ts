@@ -66,6 +66,9 @@ export class WorldMapEditorComponent implements OnInit {
   nodePlaces = new Map<string, Element>();
   routes: MapRoute[] = [];
   registry: Record<string, string[]> = {};
+  registryLabels: Record<string, Record<string, string>> = {};
+  private nativeRegistry: Record<string, string[]> = Object.fromEntries(Object.entries(NATIVE_REGISTRY).map(([section, ids]) => [section, [...ids]]));
+  private nativeRegistryLabels: Record<string, Record<string, string>> = {};
   issues: Diagnostic[] = [];
   view = { x: -500, z: -350, width: 1000, height: 700 };
   showLabels = true;
@@ -76,6 +79,7 @@ export class WorldMapEditorComponent implements OnInit {
 
   ngOnInit() {
     this.refresh();
+    void this.loadNativeCatalog();
   }
   get root() {
     return this.doc.documentElement;
@@ -149,6 +153,10 @@ export class WorldMapEditorComponent implements OnInit {
   nodeName(id: string): string {
     return this.nodeNames.get(id) || this.shortId(id);
   }
+  entryLabel(element: Element): string {
+    if (this.section === 'nodes') return this.nodeName(element.getAttribute('id'));
+    return element.getAttribute('label') || element.getAttribute('name') || this.shortId(element.getAttribute('id'));
+  }
   selectNodePlace(id: string) {
     const place = this.nodePlaces.get(id);
     if (place) this.select(place, 'places');
@@ -182,7 +190,16 @@ export class WorldMapEditorComponent implements OnInit {
           .filter(Boolean),
       ])
     );
-    for (const [section, ids] of Object.entries(NATIVE_REGISTRY)) this.registry[section] = Array.from(new Set([...(this.registry[section] || []), ...ids]));
+    this.registryLabels = Object.fromEntries(Object.entries(this.nativeRegistryLabels).map(([section, labels]) => [section, { ...labels }]));
+    for (const section of this.sections) {
+      this.registryLabels[section] ||= {};
+      for (const entry of entries(this.doc, section)) {
+        const id = entry.getAttribute('id');
+        const label = entry.getAttribute('label') || entry.getAttribute('name');
+        if (id && label) this.registryLabels[section][id] = label;
+      }
+    }
+    for (const [section, ids] of Object.entries(this.nativeRegistry)) this.registry[section] = Array.from(new Set([...(this.registry[section] || []), ...ids]));
     this.registry['assetPaths'] = Array.from(this.assets.keys());
     this.nodes = entries(this.doc, 'nodes').map((element) => ({
       element,
@@ -201,7 +218,7 @@ export class WorldMapEditorComponent implements OnInit {
       if (element.getAttribute('direction') === '-1') points = points.split(' ').reverse().join(' ');
       return { element, id: element.getAttribute('id'), geometry, points, start, end };
     });
-    this.issues = diagnostics(this.doc, Array.from(this.assets.keys()), NATIVE_REGISTRY);
+    this.issues = diagnostics(this.doc, Array.from(this.assets.keys()), this.nativeRegistry);
     this.changeDetector.markForCheck();
   }
   snapshot(): EditorSnapshot {
@@ -261,9 +278,10 @@ export class WorldMapEditorComponent implements OnInit {
       const tag = SECTIONS[this.section];
       const element = this.doc.importNode(new DOMParser().parseFromString(TEMPLATES[tag], 'application/xml').documentElement, true);
       if (tag !== 'rules') {
+        const entryName = tag.replace(/[A-Z]/g, (character) => '_' + character.toLowerCase());
         let index = 1;
-        while (this.registry[this.section]?.includes(`custom:${tag}_${index}`)) index++;
-        element.setAttribute('id', tag === 'mod' ? 'custom' : `custom:${tag}_${index}`);
+        while (this.registry[this.section]?.includes(`custom:${entryName}_${index}`)) index++;
+        element.setAttribute('id', tag === 'mod' ? 'custom' : `custom:${entryName}_${index}`);
       }
       let container = Array.from(this.root.children).find((e) => e.tagName === this.section);
       if (this.section === 'rules') this.root.appendChild(element);
@@ -290,7 +308,7 @@ export class WorldMapEditorComponent implements OnInit {
     }
     this.mutate(() => {
       const id = this.selected.getAttribute('id');
-      if (NATIVE_REGISTRY[this.section]?.includes(id) && ['nodes', 'geometry', 'routes', 'places', 'portals'].includes(this.section)) {
+      if (this.nativeRegistry[this.section]?.includes(id) && ['nodes', 'geometry', 'routes', 'places', 'portals'].includes(this.section)) {
         let removals = Array.from(this.root.children).find((e) => e.tagName === 'removals');
         if (!removals) {
           removals = this.doc.createElement('removals');
@@ -499,6 +517,28 @@ export class WorldMapEditorComponent implements OnInit {
     } finally {
       this.loading = false;
       this.changeDetector.markForCheck();
+    }
+  }
+  private async loadNativeCatalog() {
+    if (typeof fetch !== 'function') return;
+    try {
+      const response = await fetch('assets/world-map/vanilla.wmap');
+      if (!response.ok) return;
+      const nativeDocument = parsePreset(await response.text());
+      for (const section of Object.keys(SECTIONS)) {
+        const nativeEntries = entries(nativeDocument, section);
+        const ids = nativeEntries.map((entry) => entry.getAttribute('id')).filter(Boolean);
+        this.nativeRegistry[section] = Array.from(new Set([...(this.nativeRegistry[section] || []), ...ids]));
+        this.nativeRegistryLabels[section] ||= {};
+        for (const entry of nativeEntries) {
+          const id = entry.getAttribute('id');
+          const label = entry.getAttribute('label') || entry.getAttribute('name');
+          if (id && label) this.nativeRegistryLabels[section][id] = label;
+        }
+      }
+      this.refresh();
+    } catch {
+      // The editor remains usable with manually entered IDs when the optional native suggestion catalog is unavailable.
     }
   }
   importSource(source: string, filename: string) {

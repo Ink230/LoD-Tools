@@ -1,3 +1,5 @@
+import { fieldPresentation } from './world-map-field-metadata';
+
 export const SECTIONS: Record<string, string> = {
   nodes: 'node',
   geometry: 'geometry',
@@ -14,6 +16,11 @@ export const SECTIONS: Record<string, string> = {
   presentationProfiles: 'presentationProfile',
   requiredMods: 'mod',
   behaviours: 'behaviour',
+  thumbnailDefinitions: 'thumbnailDefinition',
+  serviceDefinitions: 'serviceDefinition',
+  soundDefinitions: 'soundDefinition',
+  battleStageDefinitions: 'battleStageDefinition',
+  submapDestinations: 'submapDestination',
   rules: 'rules',
   removals: 'remove',
   thumbnails: 'thumbnail',
@@ -23,9 +30,9 @@ const POINT = 'x="0" y="0" z="0"';
 export const TEMPLATES: Record<string, string> = {
   node: `<node><position ${POINT}/></node>`,
   geometry: `<geometry legacyIndex="-1"><points><item ${POINT}/><item x="100" y="0" z="0"/></points></geometry>`,
-  place: '<place legacyIndex="-1" name="New place" thumbnail="0" services="0"><sounds><item value="-1"/><item value="-1"/><item value="-1"/><item value="-1"/></sounds></place>',
+  place: '<place legacyIndex="-1" name="New place" thumbnail="0" services="0"><serviceIds/><soundIds/><sounds><item value="-1"/><item value="-1"/><item value="-1"/><item value="-1"/></sounds></place>',
   route: '<route legacyIndex="-1" start="" end="" geometry="" direction="1" encounterRate="0" battleStage="0" modelIndex="0" legacyEncounterPlaceholder="0"/>',
-  portal: '<portal legacyIndex="-1" junctionIndex="0" continent="SOUTH_SERDIO_0" fullBrightness="false" effectFlags="0"><from cut="0" scene="0"/><to cut="0" scene="0"/></portal>',
+  portal: '<portal legacyIndex="-1" junctionIndex="0" continent="SOUTH_SERDIO_0" fullBrightness="false" effectFlags="0" atmosphere="NONE" smoke="NONE"><from cut="0" scene="0"/><to cut="0" scene="0"/></portal>',
   encounterPool: '<encounterPool legacyIndex="-1"><encounters><item id=""/><item id=""/><item id=""/><item id=""/></encounters></encounterPool>',
   storyPreset: '<storyPreset order="0" storyFlag="0" x="0" y="0"><enabledPortals/></storyPreset>',
   coolonDestination: `<coolonDestination order="0" portal="" defaultDestination="" x="0" y="0" label="New destination" worldMapArrival="false" opensMenuOnArrival="false"><position ${POINT}/></coolonDestination>`,
@@ -36,15 +43,25 @@ export const TEMPLATES: Record<string, string> = {
   presentationProfile: '<presentationProfile><mapPositions/><regions/><services/><waterClutYs/><playerAvatarVramSlots/><textureAdjustments/></presentationProfile>',
   mod: '<mod/>',
   behaviour: '<behaviour/>',
+  thumbnailDefinition: '<thumbnailDefinition nativeIndex="-1" label="New thumbnail"/>',
+  serviceDefinition: '<serviceDefinition label="New service"/>',
+  soundDefinition: '<soundDefinition nativeIndex="" label="New sound"/>',
+  battleStageDefinition: '<battleStageDefinition nativeIndex="-1" label="New battle stage"/>',
+  submapDestination: '<submapDestination cut="0" scene="0" label="New submap destination"/>',
   rules: '<rules policy="STORY"><capabilities/><portals/></rules>',
   remove: '<remove kind="nodes"/>',
   thumbnail: '<thumbnail texture="assets/thumbnail.tim"/>',
 };
 
 export const OPTIONAL_ATTRIBUTES: Record<string, string[]> = {
-  place: ['name'],
-  route: ['encounterPool', 'avatar'],
-  portal: ['route', 'place', 'region'],
+  place: ['name', 'thumbnailId'],
+  route: ['encounterPool', 'avatar', 'battleStageId'],
+  portal: ['route', 'place', 'region', 'fromId', 'toId', 'atmosphere', 'smoke'],
+  thumbnailDefinition: ['asset', 'provider', 'label'],
+  serviceDefinition: ['legacyBit'],
+  soundDefinition: ['label'],
+  battleStageDefinition: ['label'],
+  submapDestination: ['label'],
   storyPreset: ['place'],
   avatar: ['provider'],
   traversalProfile: ['provider', 'avatar'],
@@ -104,13 +121,26 @@ export function referenceSection(element: Element, attribute: string): string | 
     defaultDestination: 'coolonDestinations',
     target: 'portals',
     presentationProvider: 'regions',
+    thumbnailId: 'thumbnailDefinitions',
+    battleStageId: 'battleStageDefinitions',
+    fromId: 'submapDestinations',
+    toId: 'submapDestinations',
   };
   if (fields[attribute]) return fields[attribute];
-  if (attribute === 'provider') return element.tagName === 'region' ? 'regions' : element.tagName === 'avatar' ? 'avatars' : 'traversalProfiles';
+  if (attribute === 'provider')
+    return element.tagName === 'region' ? 'regions' : element.tagName === 'avatar' ? 'avatars' : element.tagName === 'thumbnailDefinition' ? 'thumbnailDefinitions' : 'traversalProfiles';
   if (attribute === 'id' && element.tagName === 'thumbnail') return 'places';
   if (attribute === 'id' && element.tagName === 'remove') return element.getAttribute('kind');
   if (attribute === 'id' && element.tagName === 'item') {
-    return ({ enabledPortals: 'portals', routes: 'routes', encounters: 'encounters' } as Record<string, string>)[element.parentElement?.tagName];
+    return (
+      {
+        enabledPortals: 'portals',
+        routes: 'routes',
+        encounters: 'encounters',
+        serviceIds: 'serviceDefinitions',
+        soundIds: 'soundDefinitions',
+      } as Record<string, string>
+    )[element.parentElement?.tagName];
   }
   return undefined;
 }
@@ -140,23 +170,50 @@ export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegist
   for (const element of [doc.documentElement, ...Array.from(doc.querySelectorAll('*'))]) {
     for (const attribute of Array.from(element.attributes)) {
       const target = referenceSection(element, attribute.name);
+      if (target && attribute.value && !/^[a-z0-9_.-]+:[a-z0-9_./-]+$/.test(attribute.value)) add(element, `${attribute.name} must use namespace:entry syntax`);
       const removed = target && entries(doc, 'removals').some((e) => e.getAttribute('kind') === target && e.getAttribute('id') === attribute.value);
       if (removed && element.tagName !== 'remove') add(element, `${attribute.name}: ${attribute.value} refers to a removed ${target} entry`);
       else if (target && element.tagName !== 'remove' && !entries(doc, target).some((e) => e.getAttribute('id') === attribute.value) && !nativeRegistry[target]?.includes(attribute.value)) {
         add(element, `${attribute.name}: ${attribute.value || '(empty)'} is not in this file; an installed mod must provide it`, attribute.value ? 'warning' : 'error');
       }
-      if (['x', 'y', 'z', 'speedMultiplier', 'progress', 'projectionDistance'].includes(attribute.name) && !Number.isFinite(Number(attribute.value)))
-        add(element, `${attribute.name} must be a finite number`);
+      const presentation = fieldPresentation(element, attribute.name);
+      if (presentation.numeric && (!attribute.value.trim() || !Number.isFinite(Number(attribute.value)))) add(element, `${attribute.name} must be a finite number`);
+      else if (presentation.integer && !Number.isInteger(Number(attribute.value))) add(element, `${attribute.name} must be an integer`);
     }
     if (element.tagName === 'geometry' && element.hasAttribute('id') && element.querySelectorAll('points > item').length < 2) add(element, 'Geometry needs at least two points');
     if (element.tagName === 'encounterPool' && element.querySelectorAll('encounters > item').length !== 4) add(element, 'Encounter pools require exactly four encounter IDs');
     if (element.tagName === 'camera' && Boolean(element.querySelector('minimum')) !== Boolean(element.querySelector('maximum')))
       add(element, 'Camera minimum and maximum bounds must be supplied together');
     if (element.tagName === 'route' && !['1', '-1'].includes(element.getAttribute('direction'))) add(element, 'Route direction must be 1 or -1');
-    if (element.tagName === 'assets' || element.tagName === 'thumbnail') {
+    if (element.tagName === 'portal' && element.hasAttribute('atmosphere') && !['NONE', 'CLOUDS', 'SNOW'].includes(element.getAttribute('atmosphere')))
+      add(element, 'atmosphere must be NONE, CLOUDS or SNOW');
+    if (element.tagName === 'portal' && element.hasAttribute('smoke') && !['NONE', 'MODE_1', 'MODE_2'].includes(element.getAttribute('smoke')))
+      add(element, 'smoke must be NONE, MODE_1 or MODE_2');
+    if (element.tagName === 'thumbnailDefinition') {
+      const nativeIndex = Number(element.getAttribute('nativeIndex'));
+      if (!element.hasAttribute('nativeIndex') || !Number.isInteger(nativeIndex) || nativeIndex < -1) add(element, 'Thumbnail definitions require a native index of -1 or greater');
+      const backingCount = (element.hasAttribute('nativeIndex') && Number.isInteger(nativeIndex) && nativeIndex >= 0 ? 1 : 0) + (element.getAttribute('asset') ? 1 : 0) + (element.getAttribute('provider') ? 1 : 0);
+      if (backingCount !== 1) add(element, 'Thumbnail definitions require exactly one native index, packaged asset or provider');
+    }
+    if (element.tagName === 'soundDefinition' && (!element.hasAttribute('nativeIndex') || !Number.isInteger(Number(element.getAttribute('nativeIndex'))) || Number(element.getAttribute('nativeIndex')) <= 0))
+      add(element, 'Sound definitions require a positive integer native index');
+    if (element.tagName === 'battleStageDefinition' && (!element.hasAttribute('nativeIndex') || !Number.isInteger(Number(element.getAttribute('nativeIndex'))) || Number(element.getAttribute('nativeIndex')) < -1))
+      add(element, 'Battle-stage definitions require an integer native index of -1 or greater');
+    if (element.tagName === 'serviceDefinition' && !element.getAttribute('label')) add(element, 'Service definitions require a display label');
+    if (element.tagName === 'serviceDefinition' && element.hasAttribute('legacyBit')) {
+      const legacyBit = Number(element.getAttribute('legacyBit'));
+      if (!Number.isInteger(legacyBit) || legacyBit < 0 || legacyBit >= 31) add(element, 'Service native bit must be an integer from 0 through 30');
+    }
+    if (
+      element.tagName === 'submapDestination' &&
+      (!element.hasAttribute('cut') || !element.getAttribute('cut').trim() || !Number.isInteger(Number(element.getAttribute('cut'))) || !element.hasAttribute('scene') || !element.getAttribute('scene').trim() || !Number.isInteger(Number(element.getAttribute('scene'))))
+    )
+      add(element, 'Submap destinations require integer cut and scene numbers');
+    if (element.tagName === 'assets' || element.tagName === 'thumbnail' || element.tagName === 'thumbnailDefinition') {
       const paths = [
         element.getAttribute('model'),
         element.getAttribute('texture'),
+        element.getAttribute('asset'),
         ...Array.from(element.querySelectorAll('textures > item, animations > item')).map((e) => e.getAttribute('value')),
       ].filter(Boolean);
       for (const path of paths) {
@@ -175,9 +232,10 @@ export function childTemplate(parent: Element, name?: string): string {
     return parent.tagName === 'avatar'
       ? `<assets model="" shadowScale="1" idleAnimation="0" walkAnimation="1" runAnimation="2" textureSlot="0"><scale x="1" y="1" z="1"/><animations/></assets>`
       : '<assets model="" retailAnimations="false"><textures/></assets>';
+  if (name === 'serviceIds' || name === 'soundIds') return `<${name}/>`;
   const p = parent.tagName;
   if (['points', 'mapPositions'].includes(p)) return `<item ${POINT}/>`;
-  if (['enabledPortals', 'routes', 'encounters'].includes(p)) return '<item id=""/>';
+  if (['enabledPortals', 'routes', 'encounters', 'serviceIds', 'soundIds'].includes(p)) return '<item id=""/>';
   if (p === 'markers') return '<item id="custom:marker" progress="0.5"/>';
   if (p === 'warps') return '<item phase="TICK" target="" respectAccess="true"/>';
   if (p === 'textureAdjustments') return '<item index="0" clutX="0" clutY="0" tpageX="0" tpageY="0" mode="NORMAL"/>';

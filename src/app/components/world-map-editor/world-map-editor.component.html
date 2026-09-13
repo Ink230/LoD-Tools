@@ -42,8 +42,8 @@
       <div class="entry-list">
         @for (item of items; track item) {
           <button [class.active]="selected === item" (click)="select(item)">
-            <span>{{ section === 'nodes' ? nodeName(item.getAttribute('id')) : shortId(item.getAttribute('id')) }}</span
-            ><small>{{ item.getAttribute('name') || item.getAttribute('id') || item.tagName }}</small>
+          <span>{{ entryLabel(item) }}</span
+          ><small>{{ item.getAttribute('id') || item.tagName }}</small>
           </button>
         } @empty {
           <p class="muted">No entries. Add one, or import a preset.</p>

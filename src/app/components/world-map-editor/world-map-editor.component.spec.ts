@@ -37,6 +37,13 @@ describe('world map graph editing', () => {
     expect(editor.error).toContain('at least two');
   });
 
+  it('creates registry-safe IDs for multiword authoring definitions', () => {
+    editor.chooseSection('thumbnailDefinitions');
+    editor.createEntry();
+    expect(editor.selected?.getAttribute('id')).toBe('custom:thumbnail_definition_1');
+    expect(editor.issues.some((issue) => issue.message.includes('Invalid registry ID'))).toBe(false);
+  });
+
   it('protects reserved native portal slots and tombstones native graph removals', () => {
     editor.importSource(
       '<worldMapPreset version="1" id="custom:test" name="Test"><portals><portal id="lod:wmap_portal_0" legacyIndex="0"/></portals><nodes><node id="lod:wmap_node_0"><position x="0" y="0" z="0"/></node></nodes></worldMapPreset>',
