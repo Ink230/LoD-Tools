@@ -41,7 +41,8 @@
           fill="none"
           stroke="transparent"
           [attr.stroke-width]="16 * editor.unit"
-          (pointerdown)="$event.stopPropagation(); editor.select(route.element, 'routes')"
+          (pointerdown)="$event.ctrlKey && $event.button === 1 ? editor.pointerDown($event, map) : ($event.stopPropagation())"
+          (click)="editor.select(route.element, 'routes')"
         >
           <title>{{ route.id }} · {{ route.start?.id }} → {{ route.end?.id }}</title>
         </polyline>
@@ -144,11 +145,11 @@
     </fieldset>
   }
     <div class="axis" title="SC X / Y / Z coordinates are preserved in the inspector and export">
-    <svg width="72" height="72" viewBox="0 0 20 20" fill="none" role="img" [attr.aria-label]="editor.orientations[editor.orientation] + ' at top. SC X / Y / Z coordinates are preserved in the inspector and export'">
+    <svg width="72" height="72" viewBox="0 0 20 20" fill="none" role="img" aria-label="Compass. SC X / Y / Z coordinates are preserved in the inspector and export">
       <circle cx="10" cy="10" r="10" fill="#315b3b" opacity="0.40"/>
       <circle cx="10" cy="10" r="8" stroke="currentColor" opacity="0.5"/>
-      <path d="m10 2 3 10-3-2-3 2Z" fill="currentColor"/>
-      <path d="m10 18-3-6 3 2 3-2Z" fill="currentColor" opacity="0.4"/>
+      <path [attr.transform]="'rotate(' + (-editor.rotationTurns * 90) + ' 10 10)'" d="m10 2 3 10-3-2-3 2Z" fill="currentColor"/>
+      <path [attr.transform]="'rotate(' + (-editor.rotationTurns * 90) + ' 10 10)'" d="m10 18-3-6 3 2 3-2Z" fill="currentColor" opacity="0.4"/>
     </svg>
   </div>
 </div>

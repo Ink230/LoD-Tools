@@ -135,12 +135,18 @@ export class WorldMapEditorComponent implements OnInit {
   get viewBox() {
     const a = orientPoint(this.view.x, this.view.z, this.orientation);
     const b = orientPoint(this.view.x + this.view.width, this.view.z + this.view.height, this.orientation);
-    return `${Math.min(a.x, b.x)} ${Math.min(a.z, b.z)} ${Math.abs(b.x - a.x)} ${Math.abs(b.z - a.z)}`;
+        const center = orientPoint(this.view.x + this.view.width / 2, this.view.z + this.view.height / 2, this.rotationTurns);
+    const width = Math.abs(b.x - a.x);
+    const height = Math.abs(b.z - a.z);
+    return `${center.x - width / 2} ${center.z - height / 2} ${width} ${height}`;
   }
   orientation = 0;
+  stageRotation = 0;
+  private rotationDrag: { x: number; radius: number; cx: number; cy: number } | null = null;
+  get rotationTurns() { return this.orientation + this.stageRotation / 90; }
   readonly orientations = ['North', 'East', 'South', 'West'];
   get mapTransform() {
-    return `rotate(${-this.orientation * 90}) scale(1 -1)`;
+    return `rotate(${-this.rotationTurns * 90}) scale(1 -1)`;
   }
   labelTransform(x: number, z: number) {
     return `translate(${x} ${z}) ${this.mapTransform} translate(${-x} ${-z})`;
@@ -442,7 +448,7 @@ export class WorldMapEditorComponent implements OnInit {
     point.x = event.clientX;
     point.y = event.clientY;
     const mapped = point.matrixTransform(svg.getScreenCTM().inverse());
-    return orientPoint(mapped.x, mapped.y, this.orientation);
+    return orientPoint(mapped.x, mapped.y, this.rotationTurns);
   }
   wheel(event: WheelEvent, svg: HTMLElement | SVGSVGElement) {
     event.preventDefault();
@@ -454,6 +460,14 @@ export class WorldMapEditorComponent implements OnInit {
     event.preventDefault();
     event.stopPropagation();
     svg.focus();
+    if (event.button === 1 && event.ctrlKey) {
+      const bounds = svg.getBoundingClientRect();
+      const cx = bounds.left + bounds.width / 2;
+      const cy = bounds.top + bounds.height / 2;
+      this.rotationDrag = { x: event.clientX, radius: Math.max(40, Math.hypot(event.clientX - cx, event.clientY - cy)), cx, cy };
+      svg.setPointerCapture(event.pointerId);
+      return;
+    }
     const point = this.coordinates(event, svg);
     if (!element && event.button === 0 && this.mode === 'node') {
       this.section = 'nodes';
@@ -477,6 +491,15 @@ export class WorldMapEditorComponent implements OnInit {
     svg.setPointerCapture(event.pointerId);
   }
   pointerMove(event: PointerEvent, svg: HTMLElement | SVGSVGElement) {
+    if (this.rotationDrag) {
+      if (!event.ctrlKey || !(event.buttons & 4)) { this.rotationDrag = null; return; }
+      const drag = this.rotationDrag;
+      const radius = Math.max(40, Math.hypot(event.clientX - drag.cx, event.clientY - drag.cy));
+      const sensitivity = Math.max(0.25, Math.min(4, drag.radius / radius));
+      this.stageRotation = (this.stageRotation + (event.clientX - drag.x) * 0.5 * sensitivity) % 360;
+      drag.x = event.clientX;
+      return;
+    }
     if (!this.drag) return;
     const point = this.coordinates(event, svg);
     if (this.drag.kind === 'pan') {
@@ -492,6 +515,7 @@ export class WorldMapEditorComponent implements OnInit {
     }
   }
   pointerUp(event: PointerEvent, svg: HTMLElement | SVGSVGElement) {
+    this.rotationDrag = null;
     if (this.drag?.before) {
       this.documentSource = serializePreset(this.doc);
       this.source = this.documentSource;
@@ -536,7 +560,7 @@ export class WorldMapEditorComponent implements OnInit {
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
       event.preventDefault();
       const step = event.shiftKey ? 10 : 1;
-      const delta = orientPoint(event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0, event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0, this.orientation);
+      const delta = orientPoint(event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0, event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0, this.rotationTurns);
       const dx = delta.x;
       const dz = delta.z;
       const element = this.pointElement || (this.selected?.tagName === 'node' ? this.selected.querySelector('position') : null);

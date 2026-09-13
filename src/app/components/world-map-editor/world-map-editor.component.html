@@ -50,7 +50,7 @@
       @for (entry of regions; track entry) { <option [value]="entry.getAttribute('id')">{{ shortId(entry.getAttribute('id')) }}</option> }
     </select><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none"><path d="m2 3.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
       @for (direction of orientations; track direction; let i = $index) {
-        <button [class.active]="orientation === i" [attr.aria-pressed]="orientation === i" [title]="direction + ' at top'" (click)="orientation = i">{{ direction[0] }}</button>
+        <button [class.active]="orientation === i && stageRotation === 0" [attr.aria-pressed]="orientation === i && stageRotation === 0" [title]="direction + ' at top'" (click)="orientation = i; stageRotation = 0">{{ direction[0] }}</button>
       }
 
       <app-world-map-terrain #terrain [region]="region" [view]="view" [attr.inert]="tab !== 'map' ? '' : null" />
