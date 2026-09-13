@@ -86,7 +86,7 @@
               [attr.transform]="editor.labelTransform(node.x, node.z)"
               [attr.x]="node.x + 9 * editor.unit"
               [attr.y]="node.z - 8 * editor.unit"
-              [attr.font-size]="11 * editor.unit"
+              [attr.font-size]="(editor.fillViewport ? 8 : 11) * editor.unit"
             >
               {{ editor.mapNodeLabel(node.id) }}
             </text>
@@ -99,7 +99,7 @@
           <text class="entity-label" role="button" tabindex="0"
             [attr.aria-label]="'Edit ' + label.text"
             [attr.transform]="editor.labelTransform(label.x, label.z)"
-            [attr.x]="label.x + 9 * editor.unit" [attr.y]="label.z + label.offset * editor.unit" [attr.font-size]="11 * editor.unit"
+            [attr.x]="label.x + 9 * editor.unit" [attr.y]="label.z + label.offset * editor.unit" [attr.font-size]="(editor.fillViewport ? 8 : 11) * editor.unit"
             (pointerdown)="$event.stopPropagation()" (click)="editor.goToEntry(label)"
             (keydown.enter)="$event.stopPropagation(); editor.goToEntry(label)"
             (keydown.space)="$event.preventDefault(); $event.stopPropagation(); editor.goToEntry(label)">{{ label.text }}</text>
