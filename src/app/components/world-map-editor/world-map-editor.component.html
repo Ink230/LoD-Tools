@@ -16,21 +16,19 @@
   @if (error) {
     <div class="error" role="alert">{{ error }} <button (click)="error = ''" aria-label="Dismiss error">×</button></div>
   }
-  <div class="document-bar" style="flex-wrap: wrap; justify-content: flex-start; gap: 8px">
+  <div class="document-bar" style="display: grid; grid-template-columns: minmax(150px, 206px) minmax(0, 1fr) auto; align-items: center; gap: 12px">
     <div>
       <strong>{{ title }}</strong
       ><code style="display: block; margin-left: 2ch">{{ root.getAttribute('id') }}</code>
     </div>
-    <div class="actions">
-      <button (click)="undo()" [disabled]="!undoStack.length" title="Ctrl+Z">↶ Undo</button><button (click)="redo()" [disabled]="!redoStack.length" title="Ctrl+Shift+Z">↷ Redo</button
-      ><button [class.active]="showDiagnostics" (click)="showDiagnostics = !showDiagnostics">{{ issues.length }} diagnostics</button>
-    </div>
+
+    <div style="display: flex; align-items: center; gap: 14px; min-width: 0">
     <div class="actions" role="tablist" aria-label="Editor view" style="align-items: center; flex-wrap: nowrap">
       <button [class.active]="tab === 'map'" (click)="setTab('map')">Map</button><span aria-hidden="true">|</span>
       <button [class.active]="tab === 'source'" (click)="setTab('source')">XML source</button><span aria-hidden="true">|</span>
       <button [class.active]="tab === 'assets'" (click)="setTab('assets')">Assets</button>
     </div>
-    <fieldset [disabled]="tab !== 'map'" [style.opacity]="tab === 'map' ? 1 : 0.38" style="display: flex; align-items: center; gap: 6px; border: 0; padding: 0; margin: 0; min-width: 0" aria-label="Map controls">
+    <fieldset [disabled]="tab !== 'map'" [style.display]="tab === 'map' ? 'flex' : 'none'" style="align-items: center; justify-content: center; flex: 1; flex-wrap: wrap; gap: 6px; border: 0; padding: 0; margin: 0; min-width: 0" aria-label="Map controls">
       <button [class.active]="mode === 'select'" (click)="mode = 'select'">↖ Select</button>
       <button [class.active]="mode === 'node'" (click)="mode = 'node'">+ Node</button>
       <button (click)="addRoute()">+ Route</button>
@@ -39,12 +37,18 @@
       @for (direction of orientations; track direction; let i = $index) {
         <button [class.active]="orientation === i" [attr.aria-pressed]="orientation === i" [title]="direction + ' at top'" (click)="orientation = i">{{ direction[0] }}</button>
       }
-    </fieldset>
-    <span class="muted" style="margin-left: auto; white-space: nowrap">{{ nodes.length }} nodes · {{ routes.length }} routes</span>
+
+    <span class="muted" style="white-space: nowrap">{{ nodes.length }} nodes · {{ routes.length }} routes</span>
     <select aria-label="Filter region" [(ngModel)]="region" (change)="fit()" [disabled]="tab !== 'map'" style="max-width: 220px; padding: 7px; background: #18281e; color: #d6e5db; border: 1px solid #354c3c; border-radius: 5px">
       <option value="">All regions</option>
       @for (entry of regions; track entry) { <option [value]="entry.getAttribute('id')">{{ shortId(entry.getAttribute('id')) }}</option> }
     </select>
+    </fieldset>
+    </div>
+    <div class="actions" style="align-items: center; flex-wrap: nowrap; justify-self: end">
+      <button (click)="undo()" [disabled]="!undoStack.length" title="Ctrl+Z">↶ Undo</button><button (click)="redo()" [disabled]="!redoStack.length" title="Ctrl+Shift+Z">↷ Redo</button
+      ><button [class.active]="showDiagnostics" (click)="showDiagnostics = !showDiagnostics">{{ issues.length }} diagnostics</button>
+    </div>
   </div>
   <div class="workspace">
     <aside class="library" aria-label="Preset sections">
