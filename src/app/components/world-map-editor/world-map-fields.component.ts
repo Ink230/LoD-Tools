@@ -51,15 +51,15 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
       }
 
       @for (child of normalChildren; track child) {
-        <details open>
-          <summary>
-            {{ childLabelName(child.tagName) }}{{ child.getAttribute('id') ? ' · ' + child.getAttribute('id') : '' }}
+        <section class="field-section">
+          <div class="section-heading">
+            {{ childLabelName(child.tagName) }}
             @if (canRemove(child)) {
               <button type="button" class="remove" (click)="removeChild(child, $event)" [attr.aria-label]="'Remove ' + child.tagName">×</button>
             }
-          </summary>
+          </div>
           <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" (mutate)="mutate.emit($event)" />
-        </details>
+        </section>
       }
 
       @if (hasCompatibility) {
@@ -86,10 +86,10 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
               </label>
             }
             @for (child of compatibilityChildren; track child) {
-              <details open>
-                <summary>{{ childLabelName(child.tagName) }}</summary>
+              <section class="field-section">
+                <div class="section-heading">{{ childLabelName(child.tagName) }}</div>
                 <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" (mutate)="mutate.emit($event)" />
-              </details>
+              </section>
             }
           </div>
         </details>
@@ -116,12 +116,13 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
       select { cursor: pointer; }
       button { all: revert; box-sizing: border-box; cursor: pointer; border: 1px solid #354a3c; border-radius: 4px; padding: 5px 8px; background: #213728; color: #bdd5c4; font: 12px system-ui; }
       button:hover { background: #304f38; }
-      details:not(.compatibility) { border-left: 2px solid #344f3c; padding-left: 9px; }
+      .field-section { min-width: 0; margin: 0; padding: 8px 0; border-top: 1px solid #344f3c; border-bottom: 1px solid #263c2e; }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; font: 600 12px system-ui; color: #a9d890; padding: 0 0 10px; }
       summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; font: 600 12px system-ui; color: #a9d890; padding: 7px 0; }
-      .compatibility { margin-top: 3px; border: 1px solid #37443b; border-radius: 4px; background: #101914; }
-      .compatibility > summary { padding: 8px 9px; color: #93a198; }
+      .compatibility { margin-top: 3px; border-top: 1px solid #37443b; border-bottom: 1px solid #37443b; }
+      .compatibility > summary { padding: 8px 0; color: #93a198; }
       .compatibility > summary small { font: 9px ui-monospace, monospace; color: #68766d; text-transform: uppercase; letter-spacing: 0.5px; }
-      .compatibility-fields { padding: 5px 9px 10px; }
+      .compatibility-fields { padding: 5px 0 10px; }
       .remove { padding: 2px 6px; color: #edb0a3; }
       input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid #b7e190; outline-offset: 1px; }
     `,
