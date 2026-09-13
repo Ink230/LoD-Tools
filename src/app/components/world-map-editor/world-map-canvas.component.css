@@ -129,6 +129,13 @@ svg:focus-visible {
   pointer-events: none;
   font-family: ui-monospace, monospace;
 }
+.node text.place-label {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.place-label:hover, .place-label:focus {
+  text-decoration: underline;
+}
 .handle {
   fill: #203827;
   stroke: #d5efa6;

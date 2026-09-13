@@ -63,6 +63,7 @@ export class WorldMapEditorComponent implements OnInit {
   redoStack: EditorSnapshot[] = [];
   nodes: MapNode[] = [];
   nodeNames = new Map<string, string>();
+  nodePlaces = new Map<string, Element>();
   routes: MapRoute[] = [];
   registry: Record<string, string[]> = {};
   issues: Diagnostic[] = [];
@@ -148,6 +149,10 @@ export class WorldMapEditorComponent implements OnInit {
   nodeName(id: string): string {
     return this.nodeNames.get(id) || this.shortId(id);
   }
+  selectNodePlace(id: string) {
+    const place = this.nodePlaces.get(id);
+    if (place) this.select(place, 'places');
+  }
   number(element: Element, attribute: string) {
     const value = Number(element?.getAttribute(attribute));
     return Number.isFinite(value) ? value : 0;
@@ -157,12 +162,17 @@ export class WorldMapEditorComponent implements OnInit {
   }
   refresh() {
     this.nodeNames.clear();
+    this.nodePlaces.clear();
     const routeEntries = new Map(entries(this.doc, 'routes').map((route) => [route.getAttribute('id'), route]));
     const placeEntries = new Map(entries(this.doc, 'places').map((place) => [place.getAttribute('id'), place]));
     for (const portal of entries(this.doc, 'portals')) {
       const node = routeEntries.get(portal.getAttribute('route'))?.getAttribute('start');
-      const name = placeEntries.get(portal.getAttribute('place'))?.getAttribute('name');
-      if (node && name && !this.nodeNames.has(node)) this.nodeNames.set(node, name.replaceAll('\n', ' '));
+      const place = placeEntries.get(portal.getAttribute('place'));
+      const name = place?.getAttribute('name');
+      if (node && name && !this.nodeNames.has(node)) {
+        this.nodeNames.set(node, name.replaceAll('\n', ' '));
+        this.nodePlaces.set(node, place);
+      }
     }
     this.registry = Object.fromEntries(
       this.sections.map((s) => [
