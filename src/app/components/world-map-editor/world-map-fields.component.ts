@@ -125,7 +125,7 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
       .point-row { border-bottom: 1px solid var(--wmap-color-46); padding-bottom: 8px; }
       .point-heading { display: flex; gap: 8px; align-items: center; color: var(--wmap-color-23); font: 10px ui-monospace, monospace; margin-bottom: 6px; }
       .point-link { padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
-      .point-remove { margin-left: auto; width: 18px; height: 18px; padding: 0; font-size: 11px; line-height: 16px; }
+      .point-remove { margin-left: auto; width: 18px; height: 18px; padding: 0; font-size: 11px; line-height: 1; }
       .point-link:hover { text-decoration: underline; }
       .point-heading [draggable] { cursor: grab; padding: 2px 6px; font-size: 16px; }
       .coordinates { position: relative; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 0 14px; }
@@ -133,11 +133,11 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
       .coordinates input { padding: 7px 4px; font-size: 11px; appearance: textfield; }
       .coordinates input::-webkit-inner-spin-button, .coordinates input::-webkit-outer-spin-button { appearance: none; margin: 0; }
       .removable-coordinates { padding: 0 26px 0 14px; }
-      .coordinates .remove { position: absolute; right: 0; bottom: 5px; width: 18px; height: 18px; padding: 0; font-size: 11px; line-height: 16px; }
+      .coordinates .remove { position: absolute; right: 0; bottom: 5px; width: 18px; height: 18px; padding: 0; font-size: 11px; line-height: 1; }
       .field-copy[hidden] { display: none; }
     .field-copy { grid-column: 2; grid-row: 1; }
     .field > input, .field > select, .field > .input-stack { grid-column: 2; grid-row: 2; }
-    .field > .remove { grid-column: 3; grid-row: 2; }
+    .field > .remove { grid-column: 3; grid-row: 2; margin-top: 4px; }
     .field > .go { grid-column: 1; grid-row: 2; align-self: start; padding: 7px 0; border: 0; background: none; color: var(--wmap-color-47); text-decoration: underline; }
     .field-copy, .input-stack { display: grid; min-width: 0; gap: 3px; }
       .field-copy strong { overflow-wrap: anywhere; color: var(--wmap-color-48); font-weight: 500; }
@@ -154,7 +154,8 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
       .compatibility > summary { padding: 8px 0; color: var(--wmap-color-60); }
       .compatibility > summary small { font: 9px ui-monospace, monospace; color: var(--wmap-color-61); text-transform: uppercase; letter-spacing: 0.5px; }
       .compatibility-fields { padding: 5px 0 10px; }
-      .remove { padding: 2px 6px; color: #edb0a3; }
+      .remove { width: 22px; height: 22px; padding: 0; color: #edb0a3; }
+      .remove, .point-remove { display: inline-grid; place-items: center; line-height: 1; }
       input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--wmap-color-12); outline-offset: 1px; }
     `,
   ],
