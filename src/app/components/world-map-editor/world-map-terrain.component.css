@@ -1,15 +1,29 @@
 :host {
   display: block;
-  border-bottom: 1px solid #2b3e31;
+  flex-shrink: 0;
   color: #b8cbbb;
   font: 12px system-ui;
 }
 details {
-  padding: 8px 12px;
+  padding: 0;
 }
 summary {
+  padding: 8px;
+  border: 1px solid #354c3c;
+  border-radius: 4px;
   cursor: pointer;
   color: #c5eea4;
+}
+.panel {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 1px);
+  left: 0;
+  right: 0;
+  padding: 12px;
+  background: #122018;
+  border: 1px solid #354c3c;
+  box-shadow: 0 8px 20px #0008;
 }
 .controls {
   display: flex;

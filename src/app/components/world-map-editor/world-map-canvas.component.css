@@ -7,16 +7,24 @@
 .actions {
   display: flex;
   gap: 6px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
 }
 .map-tools {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
   padding: 9px 12px;
   border-bottom: 1px solid #2b3e31;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+.map-tools select {
+  margin-left: auto;
+}
+.compass {
+  gap: 3px;
 }
 h2,
 p {
