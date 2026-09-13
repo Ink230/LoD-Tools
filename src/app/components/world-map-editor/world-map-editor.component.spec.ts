@@ -155,4 +155,18 @@ describe('world map graph editing', () => {
     editor.redo();
     expect(editor.correspondingRoutes).toHaveLength(1);
   });
+  it('clears out-of-region geometry selection and restores it through history', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test"><regions><region id="custom:a"/><region id="custom:b"/></regions><geometry><geometry id="custom:g"><points><item x="0" y="0" z="0"/><item x="1" y="0" z="1"/></points></geometry></geometry><routes><route id="custom:r" geometry="custom:g"/></routes><portals><portal id="custom:p" route="custom:r" region="custom:a"/></portals></worldMapPreset>', 'test.wmap');
+    editor.select(editor.doc.querySelector('geometry[id]'), 'geometry');
+    editor.changeRegion('');
+    expect(editor.selected).not.toBeNull();
+    editor.changeRegion('custom:a');
+    expect(editor.selected).not.toBeNull();
+    editor.changeRegion('custom:b');
+    expect(editor.selected).toBeNull();
+    expect(editor.handles).toHaveLength(0);
+    editor.navigateEntity(false);
+    expect(editor.selected.getAttribute('id')).toBe('custom:g');
+    expect(editor.region).toBe('custom:a');
+  });
 });

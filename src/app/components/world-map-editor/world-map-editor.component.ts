@@ -512,6 +512,21 @@ export class WorldMapEditorComponent implements OnInit {
       }
     }
   }
+  changeRegion(region: string) {
+    if (this.selected && region) {
+      const regions = this.entryRegions(this.selected, this.section);
+      const spatial = ['nodes', 'routes', 'geometry', 'portals', 'places', 'coolonDestinations', 'teleportLinks', 'regions'].includes(this.section);
+      if (!regions.has(region) && (regions.size || spatial)) {
+        const current = this.currentEntity();
+        if (current) this.entityBack.push(current);
+        this.entityForward = [];
+        this.selected = null;
+        this.pointIndex = -1;
+      }
+    }
+    this.region = region;
+    this.fit();
+  }
   chooseSection(section: string) {
     this.search = '';
     const first = entries(this.doc, section)[0];
