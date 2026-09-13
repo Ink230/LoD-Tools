@@ -157,9 +157,13 @@ export class WorldMapEditorComponent implements OnInit {
     if (this.section === 'nodes') return this.nodeName(element.getAttribute('id'));
     return element.getAttribute('label') || element.getAttribute('name') || this.shortId(element.getAttribute('id'));
   }
-  selectNodePlace(id: string) {
+  selectMapLabel(id: string) {
     const place = this.nodePlaces.get(id);
     if (place) this.select(place, 'places');
+    else {
+      const node = this.nodes.find((entry) => entry.id === id);
+      if (node) this.select(node.element, 'nodes');
+    }
   }
   number(element: Element, attribute: string) {
     const value = Number(element?.getAttribute(attribute));

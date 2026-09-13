@@ -129,11 +129,12 @@ svg:focus-visible {
   pointer-events: none;
   font-family: ui-monospace, monospace;
 }
-.node text.place-label {
+.node text.map-label {
   pointer-events: auto;
   cursor: pointer;
 }
-.place-label:hover, .place-label:focus {
+.map-label:hover,
+.map-label:focus {
   text-decoration: underline;
 }
 .handle {

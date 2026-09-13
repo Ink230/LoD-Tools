@@ -102,15 +102,19 @@
           />
           @if (editor.showLabels) {
             <text
-              [class.place-label]="editor.nodePlaces.has(node.id)"
-              [attr.role]="editor.nodePlaces.has(node.id) ? 'button' : null"
-              [attr.tabindex]="editor.nodePlaces.has(node.id) ? 0 : null"
-              [attr.aria-label]="editor.nodePlaces.has(node.id) ? 'Edit place ' + editor.nodeName(node.id) : null"
-              (pointerdown)="editor.nodePlaces.has(node.id) && $event.stopPropagation()"
-              (click)="editor.selectNodePlace(node.id)"
-              (keydown.enter)="$event.stopPropagation(); editor.selectNodePlace(node.id)"
-              (keydown.space)="$event.preventDefault(); $event.stopPropagation(); editor.selectNodePlace(node.id)"
-              [attr.transform]="editor.labelTransform(node.x, node.z)" [attr.x]="node.x + 9 * editor.unit" [attr.y]="node.z - 8 * editor.unit" [attr.font-size]="11 * editor.unit">
+              class="map-label"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="(editor.nodePlaces.has(node.id) ? 'Edit place ' : 'Edit node ') + editor.nodeName(node.id)"
+              (pointerdown)="$event.stopPropagation()"
+              (click)="editor.selectMapLabel(node.id)"
+              (keydown.enter)="$event.stopPropagation(); editor.selectMapLabel(node.id)"
+              (keydown.space)="$event.preventDefault(); $event.stopPropagation(); editor.selectMapLabel(node.id)"
+              [attr.transform]="editor.labelTransform(node.x, node.z)"
+              [attr.x]="node.x + 9 * editor.unit"
+              [attr.y]="node.z - 8 * editor.unit"
+              [attr.font-size]="11 * editor.unit"
+            >
               {{ editor.nodeName(node.id) }}
             </text>
           }
