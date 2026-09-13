@@ -134,4 +134,25 @@ describe('world map graph editing', () => {
     expect(editor.selected).toBe(d);
     expect(editor.correspondingRoutes).toEqual([]);
   });
+  it('creates an undoable counterpart with reversed terminals and copied settings', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test"><routes><route id="custom:route_1" legacyIndex="11" geometry="custom:g" start="custom:a" end="custom:b" direction="-1" encounterPool="custom:pool" encounterRate="2" modelIndex="1"/></routes></worldMapPreset>', 'test.wmap');
+    editor.select(editor.doc.querySelector('route'), 'routes');
+    editor.createCorrespondingRoute();
+    const counterpart = editor.correspondingRoutes[0];
+    expect(counterpart.getAttribute('id')).toBe('custom:route_2');
+    expect(counterpart.hasAttribute('legacyIndex')).toBe(false);
+    expect(counterpart.getAttribute('start')).toBe('custom:b');
+    expect(counterpart.getAttribute('end')).toBe('custom:a');
+    expect(counterpart.getAttribute('direction')).toBe('1');
+    expect(counterpart.getAttribute('geometry')).toBe('custom:g');
+    expect(counterpart.getAttribute('encounterPool')).toBe('custom:pool');
+    expect(counterpart.getAttribute('encounterRate')).toBe('2');
+    expect(counterpart.getAttribute('modelIndex')).toBe('1');
+    editor.createCorrespondingRoute();
+    expect(editor.correspondingRoutes).toHaveLength(1);
+    editor.undo();
+    expect(editor.correspondingRoutes).toHaveLength(0);
+    editor.redo();
+    expect(editor.correspondingRoutes).toHaveLength(1);
+  });
 });

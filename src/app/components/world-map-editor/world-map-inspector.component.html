@@ -25,9 +25,13 @@
     <p class="notice">Provider and behaviour IDs refer to installed mod handlers. Presets contain data and cannot embed executable code.</p>
   }
   <app-world-map-fields [element]="editor.selected" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" (navigate)="editor.goToEntry($event)" />
-  @if (editor.correspondingRoutes.length) {
+  @if (editor.section === 'routes') {
     <section class="node-references">
       <h3>Corresponding Routes</h3>
+      @if (!editor.correspondingRoutes.length) {
+        <p>This route has no corresponding route.</p>
+        <button type="button" (click)="editor.createCorrespondingRoute()" [disabled]="!editor.selected.getAttribute('geometry') || !editor.selected.getAttribute('start') || !editor.selected.getAttribute('end') || !['1', '-1'].includes(editor.selected.getAttribute('direction'))">Create corresponding route</button>
+      }
       @for (route of editor.correspondingRoutes; track route) {
         <button type="button" (click)="editor.goToEntry({ element: route, section: 'routes' })">
           <strong>{{ route.getAttribute('name') || route.getAttribute('label') || route.getAttribute('id') }}</strong>

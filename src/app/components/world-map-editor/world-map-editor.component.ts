@@ -189,6 +189,27 @@ export class WorldMapEditorComponent implements OnInit {
     const geometry = this.section === 'routes' ? this.selected?.getAttribute('geometry') : null;
     return geometry ? entries(this.doc, 'routes').filter((route) => route !== this.selected && route.getAttribute('geometry') === geometry) : [];
   }
+  createCorrespondingRoute() {
+    if (this.section !== 'routes' || !this.selected || this.correspondingRoutes.length) return;
+    const source = this.selected;
+    const geometry = source.getAttribute('geometry');
+    const start = source.getAttribute('start');
+    const end = source.getAttribute('end');
+    const direction = Number(source.getAttribute('direction'));
+    if (!geometry || !start || !end || ![1, -1].includes(direction)) return;
+    this.mutate(() => {
+      const route = source.cloneNode(true) as Element;
+      let index = 1;
+      while (this.registry['routes']?.includes(`custom:route_${index}`)) index++;
+      route.setAttribute('id', `custom:route_${index}`);
+      // A new route must not overwrite its source's native slot.
+      route.removeAttribute('legacyIndex');
+      route.setAttribute('start', end);
+      route.setAttribute('end', start);
+      route.setAttribute('direction', String(-direction));
+      source.parentElement.appendChild(route);
+    });
+  }
   selectMapRoute(route: Element) {
     const geometry = route.getAttribute('geometry');
     if (geometry && this.section === 'routes' && this.selected?.getAttribute('geometry') === geometry) {
