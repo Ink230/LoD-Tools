@@ -173,11 +173,14 @@ code {
   display: flex;
   justify-content: space-between;
   text-align: left;
-  font-size: 10px;
+  font-size: 12px;
+  align-items: center;
+  gap: 6px;
   padding: 7px 5px;
   background: transparent;
   border-color: transparent;
 }
+.section-list small { font-size: 11px; flex-shrink: 0; }
 .section-list button.active,
 .entry-list button.active {
   background: #293e28;
