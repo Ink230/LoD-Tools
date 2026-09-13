@@ -38,6 +38,7 @@ interface EditorSnapshot {
 
 @Component({
   selector: 'app-world-map-editor',
+  host: { '[class.viewport-host]': 'fillViewport' },
   // XML DOM nodes mutate in place; refresh this isolated editor subtree when its owner changes.
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default,

@@ -1,14 +1,15 @@
+:host(.viewport-host) { position: fixed; inset: 0; z-index: 10000; overflow: auto; background: #101310; overscroll-behavior: contain; }
 .editor.fill-viewport {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
+  position: relative;
+
+
   max-width: none;
   width: 100%;
   height: 100dvh;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow: visible;
   overscroll-behavior: contain;
   background: #101310;
 }
@@ -21,11 +22,7 @@
 .document-identity > div:first-child { min-width: 0; }
 .command-bar > fieldset { grid-column: 2; }
 .command-bar > .document-history { grid-column: 3; }
-@media (max-width: 1600px) {
-  .document-bar.command-bar { grid-template-columns: minmax(0, 1fr) auto; }
-  .command-bar > .document-history { grid-column: 2; grid-row: 1; }
-  .command-bar > fieldset { grid-column: 1 / -1; grid-row: 2; }
-}
+
 .document-identity > div:first-child { flex: 0 1 206px; overflow: hidden; }
 .document-identity > .actions { margin-left: 0; flex-shrink: 0; }
 .document-file { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -33,15 +30,12 @@
 .document-history { display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 0; }
 .document-history > .actions { flex-shrink: 0; margin-right: 24px; }
 .history-spacer { flex: 0 1 206px; min-width: max-content; display: flex; justify-content: flex-end; }
-@media (max-width: 1600px) {
-  .history-spacer { flex: 0 0 auto; }
-  .document-history > .actions { margin-right: 0; }
-}
+
 .editor { --library-width: 310px; }
-@media (max-width: 1150px) { .editor { --library-width: 270px; } }
-@media (max-width: 800px) { .editor { --library-width: 150px; } }
-@media (max-width: 480px) { .editor { --library-width: 110px; } }
-@media (min-width: 801px) {
+
+
+
+
   .document-bar.command-bar { position: relative; }
   .document-history > .actions {
     position: absolute;
@@ -50,6 +44,6 @@
     transform: translateY(-50%);
     margin-right: 0;
   }
-}.editor-header.compact-header { padding: 0 0 8px; flex-direction: row; align-items: center; }
+.editor-header.compact-header { padding: 0 0 8px; flex-direction: row; align-items: center; }
 .compact-credit { font: 12px system-ui; color: #b8cbbb; }
 .compact-header > .actions > button { width: 34px; height: 34px; padding: 7px; display: inline-grid; place-items: center; }

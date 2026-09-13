@@ -235,59 +235,9 @@ code {
   float: right;
   padding: 0 6px;
 }
-@media (max-width: 1150px) {
-  .workspace {
-    grid-template-columns: 270px minmax(0, 1fr) 270px;
-  }
-  .section-list {
-    grid-template-columns: 1fr;
-  }
-  .editor-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-  .toolbar > .muted {
-    display: none;
-  }
-}
-@media (max-width: 800px) {
-  .editor {
-    padding: 8px;
-  }
-  .workspace {
-    grid-template-columns: 150px minmax(0, 1fr);
-  }
-  .inspector {
-    grid-column: 1/-1;
-    max-height: 520px;
-    border-left: 0;
-    border-top: 1px solid var(--line);
-  }
-  .document-bar {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-}
-@media (max-width: 480px) {
-  .workspace {
-    grid-template-columns: 110px minmax(0, 1fr);
-  }
-  .section-list button {
-    font-size: 9px;
-  }
-  .section-list small {
-    display: none;
-  }
-  .editor h1 {
-    font-size: 23px;
-  }
-  .toolbar {
-    padding: 6px;
-  }
-  .entry-list button {
-    font-size: 10px;
-  }
-}
+
+
+
 input[hidden] {
   display: none;
 }

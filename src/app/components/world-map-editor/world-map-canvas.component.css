@@ -191,36 +191,5 @@ svg:focus-visible {
   font-size: 42px;
   color: #8bab73;
 }
-@media (max-width: 800px) {
-  .canvas-wrap {
-    min-height: 500px;
-  }
-  .axis span {
-    display: none;
-  }
-  .empty-state {
-    width: 220px;
-  }
-  .map-tools select {
-    max-width: 100%;
-  }
-}
-@media (max-width: 480px) {
-  .map-tools {
-    padding: 6px;
-  }
-  .map-tools button {
-    font-size: 10px;
-    padding: 6px;
-  }
-  .map-controls {
-    right: 6px;
-    bottom: 6px;
-  }
-  .empty-state {
-    width: 175px;
-  }
-  .hint {
-    font-size: 9px;
-  }
-}
+
+
