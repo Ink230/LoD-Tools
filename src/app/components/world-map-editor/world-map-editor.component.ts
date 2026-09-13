@@ -112,6 +112,7 @@ export class WorldMapEditorComponent implements OnInit {
   ngOnInit() {
     this.refresh();
     void this.loadNativeCatalog();
+    void this.loadVanilla();
   }
   get root() {
     return this.doc.documentElement;
