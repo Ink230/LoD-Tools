@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { childTemplate, OPTIONAL_ATTRIBUTES, referenceSection } from './world-map-document';
+import { childTemplate, entries, OPTIONAL_ATTRIBUTES, referenceSection } from './world-map-document';
 import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } from './world-map-field-metadata';
 
 @Component({
@@ -12,14 +12,14 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
   template: `
     <div class="fields">
       @for (attribute of normalAttributes; track attribute.name) {
-        <label class="field">
-          <span class="field-copy">
-            <strong>{{ presentation(attribute.name).label }}</strong>
-            @if (presentation(attribute.name).description) {
-              <small>{{ presentation(attribute.name).description }}</small>
-            }
+        <div class="field">
+          <span class="field-copy" [hidden]="compactReference">
+            <strong [title]="presentation(attribute.name).description || ''">{{ presentation(attribute.name).label }}</strong>
           </span>
-          @if (closedChoices(attribute.name).length) {
+          @if (target(attribute.name); as destination) {
+              <button class="go" type="button" [attr.aria-label]="'Go to ' + attribute.value" (click)="navigate.emit(destination)">go</button>
+            }
+            @if (closedChoices(attribute.name).length) {
             <select [ngModel]="attribute.value" [disabled]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label">
               @for (choice of closedChoices(attribute.name); track choice) {
                 <option [value]="choice">{{ choiceLabel(attribute.name, choice) }}</option>
@@ -40,10 +40,12 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
           } @else {
             <input [type]="presentation(attribute.name).numeric ? 'number' : 'text'" [attr.step]="presentation(attribute.name).integer ? '1' : presentation(attribute.name).numeric ? 'any' : null" [ngModel]="attribute.value" [readOnly]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label" />
           }
-          @if (optionalAttributes.includes(attribute.name)) {
+          @if (removableEntry && attribute.name === normalAttributes[0]?.name) {
+            <button class="remove" type="button" (click)="removeEntry.emit($event)" aria-label="Remove entry">×</button>
+          } @else if (optionalAttributes.includes(attribute.name)) {
             <button class="remove" type="button" (click)="removeAttribute(attribute.name)" [attr.aria-label]="'Remove ' + presentation(attribute.name).label">×</button>
           }
-        </label>
+        </div>
       }
 
       @for (attribute of missingAttributes; track attribute) {
@@ -51,6 +53,10 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
       }
 
       @for (child of normalChildren; track child) {
+        @if (child.tagName === 'item') {
+          <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" [removableEntry]="canRemove(child)"
+            (mutate)="mutate.emit($event)" (navigate)="navigate.emit($event)" (removeEntry)="removeChild(child, $event)" />
+        } @else {
         <section class="field-section">
           <div class="section-heading">
             {{ childLabelName(child.tagName) }}
@@ -58,8 +64,9 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
               <button type="button" class="remove" (click)="removeChild(child, $event)" [attr.aria-label]="'Remove ' + child.tagName">×</button>
             }
           </div>
-          <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" (mutate)="mutate.emit($event)" />
+          <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" (mutate)="mutate.emit($event)" (navigate)="navigate.emit($event)" />
         </section>
+        }
       }
 
       @if (hasCompatibility) {
@@ -67,14 +74,14 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
           <summary><span>Native compatibility</span><small>Retail fallbacks</small></summary>
           <div class="compatibility-fields">
             @for (attribute of compatibilityAttributes; track attribute.name) {
-              <label class="field">
-                <span class="field-copy">
-                  <strong>{{ presentation(attribute.name).label }}</strong>
-                  @if (presentation(attribute.name).description) {
-                    <small>{{ presentation(attribute.name).description }}</small>
-                  }
+              <div class="field">
+                <span class="field-copy" [hidden]="compactReference">
+                  <strong [title]="presentation(attribute.name).description || ''">{{ presentation(attribute.name).label }}</strong>
                 </span>
-                @if (closedChoices(attribute.name).length) {
+                @if (target(attribute.name); as destination) {
+              <button class="go" type="button" [attr.aria-label]="'Go to ' + attribute.value" (click)="navigate.emit(destination)">go</button>
+            }
+            @if (closedChoices(attribute.name).length) {
                   <select [ngModel]="attribute.value" [disabled]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label">
                     @for (choice of closedChoices(attribute.name); track choice) {
                       <option [value]="choice">{{ choiceLabel(attribute.name, choice) }}</option>
@@ -83,12 +90,12 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
                 } @else {
                   <input [type]="presentation(attribute.name).numeric ? 'number' : 'text'" [attr.step]="presentation(attribute.name).integer ? '1' : presentation(attribute.name).numeric ? 'any' : null" [ngModel]="attribute.value" [readOnly]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label" />
                 }
-              </label>
+              </div>
             }
             @for (child of compatibilityChildren; track child) {
               <section class="field-section">
                 <div class="section-heading">{{ childLabelName(child.tagName) }}</div>
-                <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" (mutate)="mutate.emit($event)" />
+                <app-world-map-fields [element]="child" [registry]="registry" [registryLabels]="registryLabels" (mutate)="mutate.emit($event)" (navigate)="navigate.emit($event)" />
               </section>
             }
           </div>
@@ -107,8 +114,13 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
     `
       :host { display: block; font: inherit; color: inherit; }
       .fields, .compatibility-fields { display: grid; gap: 10px; }
-      .field { display: grid; grid-template-columns: minmax(100px, 1fr) minmax(0, 1.25fr) auto; gap: 7px; align-items: start; font-size: 12px; }
-      .field-copy, .input-stack { display: grid; min-width: 0; gap: 3px; }
+      .field { display: grid; grid-template-columns: 24px minmax(0, 1fr) 22px; column-gap: 6px; row-gap: 4px; align-items: start; font-size: 12px; }
+      .field-copy[hidden] { display: none; }
+    .field-copy { grid-column: 2; grid-row: 1; }
+    .field > input, .field > select, .field > .input-stack { grid-column: 2; grid-row: 2; }
+    .field > .remove { grid-column: 3; grid-row: 2; }
+    .field > .go { grid-column: 1; grid-row: 2; align-self: start; padding: 7px 0; border: 0; background: none; color: #a9d890; text-decoration: underline; }
+    .field-copy, .input-stack { display: grid; min-width: 0; gap: 3px; }
       .field-copy strong { overflow-wrap: anywhere; color: #b9c9bc; font-weight: 500; }
       .field-copy small, .selection-label { color: #758a7b; font: 10px/1.3 system-ui, sans-serif; }
       .selection-label { color: #9dc38d; overflow-wrap: anywhere; }
@@ -133,15 +145,33 @@ export class WorldMapFieldsComponent {
   @Input() registry: Record<string, string[]> = {};
   @Input() registryLabels: Record<string, Record<string, string>> = {};
   @Output() mutate = new EventEmitter<() => void>();
+  @Output() navigate = new EventEmitter<{ element: Element; section: string }>();
+  @Input() removableEntry = false;
+  @Output() removeEntry = new EventEmitter<Event>();
+  get compactReference() { return this.element.tagName === 'item' && this.attributes.length === 1 && Boolean(this.reference('id')); }
 
-  get attributes() { return Array.from(this.element.attributes); }
+  get attributes() {
+    const first = ['id', 'name', 'label', 'start', 'end', 'geometry', 'fromId', 'toId'];
+    const rank = (name: string) => first.includes(name) ? first.indexOf(name) : first.length;
+    return Array.from(this.element.attributes).sort((a, b) => rank(a.name) - rank(b.name) || a.name.localeCompare(b.name));
+  }
+  target(attribute: string): { element: Element; section: string } | undefined {
+    const section = this.reference(attribute);
+    if (!section) return undefined;
+    const value = this.element.getAttribute(attribute);
+    const element = entries(this.element.ownerDocument, section).find((entry) => entry.getAttribute('id') === value);
+    return element ? { element, section } : undefined;
+  }
   get normalAttributes() { return this.attributes.filter((attribute) => !isCompatibilityAttribute(this.element, attribute.name)); }
   get compatibilityAttributes() { return this.attributes.filter((attribute) => isCompatibilityAttribute(this.element, attribute.name)); }
   get children() { return this.element.tagName === 'worldMapPreset' ? [] : Array.from(this.element.children); }
   get normalChildren() { return this.children.filter((child) => !isCompatibilityChild(this.element, child)); }
   get compatibilityChildren() { return this.children.filter((child) => isCompatibilityChild(this.element, child)); }
   get hasCompatibility() { return Boolean(this.compatibilityAttributes.length || this.compatibilityChildren.length); }
-  get optionalAttributes() { return OPTIONAL_ATTRIBUTES[this.element.tagName] || []; }
+  get optionalAttributes() {
+    if (this.element.tagName === 'item' && this.element.parentElement?.tagName !== 'warps') return [];
+    return OPTIONAL_ATTRIBUTES[this.element.tagName] || [];
+  }
   get missingAttributes() { return this.optionalAttributes.filter((attribute) => !this.element.hasAttribute(attribute)); }
   get isList() {
     return (
@@ -197,6 +227,8 @@ export class WorldMapFieldsComponent {
     return section ? this.registryLabels[section]?.[value] || '' : '';
   }
   childLabelName(name: string) {
+    if (name === 'serviceIds') return 'Services';
+    if (name === 'soundIds') return 'Sounds';
     return name.replace('Ids', '').replace(/([A-Z])/g, ' $1').replace(/^./, (character) => character.toUpperCase());
   }
   listId(attribute: string) { return 'ref-' + this.element.tagName + '-' + attribute; }

@@ -100,12 +100,12 @@
             [attr.stroke-width]="1.5 * editor.unit"
             [class.selected-node]="editor.selected === node.element"
           />
-          @if (editor.showLabels) {
+          @if (editor.showLabels && editor.mapNodeLabel(node.id)) {
             <text
               class="map-label"
               role="button"
               tabindex="0"
-              [attr.aria-label]="(editor.nodePlaces.has(node.id) ? 'Edit place ' : 'Edit node ') + editor.nodeName(node.id)"
+              [attr.aria-label]="(editor.activeLabels.places && editor.nodePlaces.has(node.id) ? 'Edit place ' : 'Edit node ') + editor.mapNodeLabel(node.id)"
               (pointerdown)="$event.stopPropagation()"
               (click)="editor.selectMapLabel(node.id)"
               (keydown.enter)="$event.stopPropagation(); editor.selectMapLabel(node.id)"
@@ -115,11 +115,22 @@
               [attr.y]="node.z - 8 * editor.unit"
               [attr.font-size]="11 * editor.unit"
             >
-              {{ editor.nodeName(node.id) }}
+              {{ editor.mapNodeLabel(node.id) }}
             </text>
           }
           <title>{{ node.id }} · X {{ node.x }} / Z {{ node.z }}</title>
         </g>
+      }
+      @if (editor.showLabels) {
+        @for (label of editor.extraMapLabels; track label.element) {
+          <text class="entity-label" role="button" tabindex="0"
+            [attr.aria-label]="'Edit ' + label.text"
+            [attr.transform]="editor.labelTransform(label.x, label.z)"
+            [attr.x]="label.x + 9 * editor.unit" [attr.y]="label.z + label.offset * editor.unit" [attr.font-size]="11 * editor.unit"
+            (pointerdown)="$event.stopPropagation()" (click)="editor.goToEntry(label)"
+            (keydown.enter)="$event.stopPropagation(); editor.goToEntry(label)"
+            (keydown.space)="$event.preventDefault(); $event.stopPropagation(); editor.goToEntry(label)">{{ label.text }}</text>
+        }
       }
       @for (point of editor.handles; track point.element) {
         <rect
@@ -149,7 +160,16 @@
   <div class="map-controls">
     <button (click)="editor.zoom(0.8)" aria-label="Zoom in">+</button><button (click)="editor.zoom(1.25)" aria-label="Zoom out">−</button><button (click)="editor.fit()" title="F">Fit</button
     ><button (click)="editor.showLabels = !editor.showLabels" [class.active]="editor.showLabels">Labels</button>
+    <button (click)="editor.labelMenuOpen = !editor.labelMenuOpen" [attr.aria-expanded]="editor.labelMenuOpen" aria-controls="active-map-labels">Active Labels</button>
   </div>
+  @if (editor.labelMenuOpen) {
+    <fieldset id="active-map-labels" class="label-menu"><legend>Active Labels</legend>
+      @for (kind of editor.labelKinds; track kind) {
+        <label><input type="checkbox" [(ngModel)]="editor.activeLabels[kind]" /> {{ editor.label(kind) }}</label>
+      }
+      <button (click)="editor.labelMenuOpen = false">Close</button>
+    </fieldset>
+  }
   <div class="axis">{{ editor.orientations[editor.orientation] }} ↑ <span>SC X / Y / Z coordinates are preserved in the inspector and export</span></div>
 </div>
 <div class="hint">Drag background to pan · Scroll to zoom · Arrows move selection · Shift ×10 · F fit · Delete remove</div>

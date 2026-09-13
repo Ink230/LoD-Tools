@@ -28,7 +28,7 @@
   </div>
   <div class="workspace">
     <aside class="library" aria-label="Preset sections">
-      <div class="panel-title">WORLD CONTENT</div>
+      <details class="world-content" open><summary class="panel-title" style="display: list-item; cursor: pointer">WORLD CONTENT</summary>
       <div class="section-list">
         @for (name of sections; track name) {
           <button [class.active]="section === name" (click)="chooseSection(name)">
@@ -37,7 +37,7 @@
           </button>
         }
       </div>
-      <div class="panel-title">{{ label(section) }} <button (click)="createEntry()" aria-label="Add entry">+</button></div>
+      </details><div class="panel-title">{{ label(section) }} <button (click)="createEntry()" aria-label="Add entry">+</button></div>
       <input class="search" aria-label="Search registry IDs" placeholder="Search registry IDs…" [(ngModel)]="search" />
       <div class="entry-list">
         @for (item of items; track item) {

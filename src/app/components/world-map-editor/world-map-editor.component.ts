@@ -72,6 +72,36 @@ export class WorldMapEditorComponent implements OnInit {
   issues: Diagnostic[] = [];
   view = { x: -500, z: -350, width: 1000, height: 700 };
   showLabels = true;
+  labelMenuOpen = false;
+  readonly labelKinds = ['places', 'nodes', 'routes', 'portals', 'geometry'] as const;
+  activeLabels = { places: true, nodes: true, routes: false, portals: false, geometry: false };
+  mapNodeLabel(id: string) {
+    if (this.activeLabels.places && this.nodePlaces.has(id)) return this.nodeName(id);
+    return this.activeLabels.nodes ? this.shortId(id) : '';
+  }
+  get extraMapLabels() {
+    const result: { element: Element; section: string; text: string; x: number; z: number; offset: number }[] = [];
+    const geometrySeen = new Set<string>();
+    for (const route of this.filteredRoutes) {
+      const points = route.points.trim().split(/\s+/).filter(Boolean);
+      const middle = points[Math.floor(points.length / 2)]?.split(',').map(Number);
+      if (!middle) continue;
+      if (this.activeLabels.routes) result.push({ element: route.element, section: 'routes', text: this.shortId(route.id), x: middle[0], z: middle[1], offset: -8 });
+      const geometry = route.geometry;
+      if (this.activeLabels.geometry && geometry && !geometrySeen.has(geometry.getAttribute('id'))) {
+        geometrySeen.add(geometry.getAttribute('id'));
+        result.push({ element: geometry, section: 'geometry', text: this.shortId(geometry.getAttribute('id')), x: middle[0], z: middle[1], offset: 8 });
+      }
+    }
+    if (this.activeLabels.portals) {
+      const routes = new Map(this.filteredRoutes.map((route) => [route.id, route]));
+      for (const portal of entries(this.doc, 'portals')) {
+        const node = routes.get(portal.getAttribute('route'))?.start;
+        if (node) result.push({ element: portal, section: 'portals', text: this.shortId(portal.getAttribute('id')), x: node.x, z: node.z, offset: 22 });
+      }
+    }
+    return result;
+  }
   showDiagnostics = false;
   pointIndex = -1;
   loading = false;
@@ -158,7 +188,7 @@ export class WorldMapEditorComponent implements OnInit {
     return element.getAttribute('label') || element.getAttribute('name') || this.shortId(element.getAttribute('id'));
   }
   selectMapLabel(id: string) {
-    const place = this.nodePlaces.get(id);
+    const place = this.activeLabels.places ? this.nodePlaces.get(id) : undefined;
     if (place) this.select(place, 'places');
     else {
       const node = this.nodes.find((entry) => entry.id === id);
@@ -262,10 +292,55 @@ export class WorldMapEditorComponent implements OnInit {
       this.restore(this.redoStack.pop());
     }
   }
-  select(element: Element, section?: string) {
+  entityBack: { id: string; section: string }[] = [];
+  entityForward: { id: string; section: string }[] = [];
+  private currentEntity() {
+    return this.selected ? { id: this.selected.getAttribute('id') || '', section: this.section } : undefined;
+  }
+  private resolveEntity(target: { id: string; section: string }) {
+    return entries(this.doc, target.section).find((entry) => (entry.getAttribute('id') || '') === target.id);
+  }
+  canNavigateEntity(forward: boolean) {
+    return (forward ? this.entityForward : this.entityBack).some((target) => this.resolveEntity(target));
+  }
+  navigateEntity(forward: boolean) {
+    const source = forward ? this.entityForward : this.entityBack;
+    const destination = forward ? this.entityBack : this.entityForward;
+    while (source.length) {
+      const target = source.pop();
+      const element = this.resolveEntity(target);
+      if (!element) continue;
+      const current = this.currentEntity();
+      if (current) destination.push(current);
+      this.goToEntry({ element, section: target.section }, false);
+      return;
+    }
+  }
+  select(element: Element, section?: string, recordHistory = true) {
+    const current = this.currentEntity();
+    if (recordHistory && current && (this.selected !== element || this.section !== (section || this.section))) {
+      this.entityBack.push(current);
+      this.entityForward = [];
+    }
     this.selected = element;
     this.pointIndex = -1;
     if (section) this.section = section;
+  }
+  goToEntry(target: { element: Element; section: string }, recordHistory = true) {
+    this.select(target.element, target.section, recordHistory);
+    this.search = '';
+    this.tab = 'map';
+    const id = target.element.getAttribute('id');
+    let route = this.routes.find((entry) => target.section === 'routes' ? entry.id === id : target.section === 'geometry' && entry.element.getAttribute('geometry') === id);
+    if (target.section === 'portals' || target.section === 'places') {
+      const portal = target.section === 'portals' ? target.element : entries(this.doc, 'portals').find((entry) => entry.getAttribute('place') === id);
+      route = this.routes.find((entry) => entry.id === portal?.getAttribute('route'));
+    }
+    const node = target.section === 'nodes' ? this.nodes.find((entry) => entry.id === id) : route?.start;
+    if (node) {
+      if (!this.filteredNodes.some((entry) => entry.id === node.id)) this.region = '';
+      this.view = { ...this.view, x: node.x - this.view.width / 2, z: node.z - this.view.height / 2 };
+    }
   }
   chooseSection(section: string) {
     this.section = section;
@@ -547,6 +622,8 @@ export class WorldMapEditorComponent implements OnInit {
   }
   importSource(source: string, filename: string) {
     const parsed = parsePreset(source);
+    this.entityBack = [];
+    this.entityForward = [];
     this.mutate(() => {
       this.doc = parsed;
       this.selected = null;

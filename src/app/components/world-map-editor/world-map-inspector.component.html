@@ -1,18 +1,24 @@
 <div class="panel-title">
-  INSPECTOR
+  <div class="inspector-navigation">
+    INSPECTOR
+    <button (click)="editor.navigateEntity(false)" [disabled]="!editor.canNavigateEntity(false)" aria-label="Previous entity" title="Previous entity">←</button>
+    <button (click)="editor.navigateEntity(true)" [disabled]="!editor.canNavigateEntity(true)" aria-label="Next entity" title="Next entity">→</button>
+  </div>
   @if (editor.selected) {
     <button (click)="editor.deleteSelected()" aria-label="Delete selected entry">Delete</button>
   }
 </div>
 @if (editor.selected) {
+  <h2>{{ editor.label(editor.selected.tagName) }}</h2>
+  <p class="selected-id">{{ editor.selected.getAttribute('id') || 'Preset rules' }}</p>
+  @if (editor.selected.getAttribute('name') || editor.selected.getAttribute('label'); as name) { <p class="entry-name">{{ name }}</p> }
   @if (editor.section === 'removals') {
     <p class="notice">Remove an existing registered entry from the runtime graph. Unknown IDs and referenced entries fail validation. Native portal slots 0–255 stay reserved.</p>
   }
   @if (editor.section === 'nodes' || editor.section === 'geometry' || editor.section === 'routes' || editor.section === 'places' || editor.section === 'portals') {
     <p class="muted">Deleting native entries records a removal. For custom mod registrations, use Removals; deleting a custom overlay retains its registered default.</p>
   }
-  <h2>{{ editor.label(editor.selected.tagName) }}</h2>
-  <p class="selected-id">{{ editor.selected.getAttribute('id') || 'Preset rules' }}</p>
+
   @if (editor.section === 'regions') {
     <p class="notice">Regions retain a native continent template. Camera and assets can be authored here; presentation handlers come from installed mods.</p>
   }
@@ -22,15 +28,15 @@
   @if (editor.pointElement) {
     <div class="point-panel">
       <div class="panel-title">GEOMETRY POINT {{ editor.pointIndex + 1 }}<button (click)="editor.removePoint()">Remove</button></div>
-      <app-world-map-fields [element]="editor.pointElement" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" />
+      <app-world-map-fields [element]="editor.pointElement" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" (navigate)="editor.goToEntry($event)" />
     </div>
   }
-  <app-world-map-fields [element]="editor.selected" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" />
+  <app-world-map-fields [element]="editor.selected" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" (navigate)="editor.goToEntry($event)" />
   @if (editor.selectedGeometry) {
     <button class="wide" (click)="editor.addPoint()">+ Insert geometry point</button>
   }
 } @else {
   <h2>Preset details</h2>
   <p class="muted">Select a node, route or registry entry to edit its properties.</p>
-  <app-world-map-fields [element]="editor.root" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" />
+  <app-world-map-fields [element]="editor.root" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" (navigate)="editor.goToEntry($event)" />
 }

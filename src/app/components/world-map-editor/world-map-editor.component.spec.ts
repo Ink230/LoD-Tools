@@ -59,4 +59,19 @@ describe('world map graph editing', () => {
     editor.undo();
     expect(editor.doc.querySelector('nodes node')).not.toBeNull();
   });
+  it('navigates entity history and clears forward history on a new hop', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test" name="Test"><nodes><node id="custom:a"/><node id="custom:b"/><node id="custom:c"/></nodes></worldMapPreset>', 'test.wmap');
+    const [a, b, c] = Array.from(editor.doc.querySelectorAll('node'));
+    editor.select(a, 'nodes');
+    editor.goToEntry({ element: b, section: 'nodes' });
+    editor.navigateEntity(false);
+    expect(editor.selected).toBe(a);
+    editor.navigateEntity(true);
+    expect(editor.selected).toBe(b);
+    editor.navigateEntity(false);
+    editor.select(c, 'nodes');
+    expect(editor.canNavigateEntity(true)).toBe(false);
+    a.remove();
+    expect(editor.canNavigateEntity(false)).toBe(false);
+  });
 });
