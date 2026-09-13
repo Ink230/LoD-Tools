@@ -49,6 +49,7 @@ export class WorldMapEditorComponent implements OnInit {
   private readonly changeDetector = inject(ChangeDetectorRef);
   doc = parsePreset('<worldMapPreset version="1" id="custom:world_map" name="Untitled world map" description=""/>');
   fillViewport = true;
+  headerCollapsed = false;
   section = 'nodes';
   sections = Object.keys(SECTIONS);
   selected: Element | null = null;

@@ -50,4 +50,6 @@
     transform: translateY(-50%);
     margin-right: 0;
   }
-}
+}.editor-header.compact-header { padding: 0 0 8px; flex-direction: row; align-items: center; }
+.compact-credit { font: 12px system-ui; color: #b8cbbb; }
+.compact-header > .actions > button { width: 34px; height: 34px; padding: 7px; display: inline-grid; place-items: center; }

@@ -1,19 +1,23 @@
 <main class="editor" [class.fill-viewport]="fillViewport" (dragover)="$event.preventDefault()" (drop)="drop($event)">
-  <header class="editor-header">
-    <div>
+  <header class="editor-header" [class.compact-header]="headerCollapsed">
+    <div [hidden]="headerCollapsed">
       <p class="eyebrow">SEVERED CHAINS / AUTHORING TOOLS</p>
       <h1>World Map Editor</h1>
       <p class="subtitle">by: Ink</p>
     </div>
+    @if (headerCollapsed) { <span class="compact-credit">World Map Editor by Ink</span> }
     <div class="actions">
-      <button (click)="loadVanilla()" [disabled]="loading">Load vanilla</button>
-      <button (click)="files.click()" [disabled]="loading">Import</button>
-      <button (click)="download()">Export .wmap</button>
-      <button class="primary" (click)="download(true)">Export package ↓</button>
+      <button (click)="loadVanilla()" [disabled]="loading" title="Load vanilla" aria-label="Load vanilla">{{ headerCollapsed ? 'L' : 'Load vanilla' }}</button>
+      <button (click)="files.click()" [disabled]="loading" title="Import" aria-label="Import">{{ headerCollapsed ? 'I' : 'Import' }}</button>
+      <button (click)="download()" title="Export .wmap" aria-label="Export .wmap">{{ headerCollapsed ? 'E' : 'Export .wmap' }}</button>
+      <button class="primary" (click)="download(true)" title="Export package" aria-label="Export package">{{ headerCollapsed ? 'E' : 'Export package ↓' }}</button>
       <button (click)="fillViewport = !fillViewport" [attr.aria-pressed]="fillViewport" [attr.aria-label]="fillViewport ? 'Exit viewport' : 'Fill viewport'" [title]="fillViewport ? 'Exit viewport (Escape)' : 'Fill viewport'" style="width: 34px; height: 34px; padding: 7px; display: inline-grid; place-items: center">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M9 9 3 3m0 5V3h5m7 6 6-6m-5 0h5v5M9 15l-6 6m0-5v5h5m7-6 6 6m-5 0h5v-5" />
         </svg>
+      </button>
+      <button (click)="headerCollapsed = !headerCollapsed" [attr.aria-expanded]="!headerCollapsed" [title]="headerCollapsed ? 'Expand header' : 'Collapse header'" [attr.aria-label]="headerCollapsed ? 'Expand header' : 'Collapse header'" style="width: 34px; height: 34px; padding: 7px; display: inline-grid; place-items: center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" [style.transform]="headerCollapsed ? 'rotate(180deg)' : null"><path d="M4 4h16M6 15l6-6 6 6M12 9v11" /></svg>
       </button>
       <input #files type="file" hidden multiple accept=".wmap,.zip,.tim,.tmd,.bin" (change)="fileInput($event)" />
     </div>
