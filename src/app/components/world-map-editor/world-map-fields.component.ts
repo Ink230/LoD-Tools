@@ -1,3 +1,4 @@
+import { authorNumber } from './world-map-number';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { childTemplate, entries, OPTIONAL_ATTRIBUTES, referenceSection, renameRegistryEntry } from './world-map-document';
@@ -291,7 +292,8 @@ export class WorldMapFieldsComponent {
   set(attribute: string, event: Event) {
     if (this.locked(attribute)) return;
     const input = event.target as HTMLInputElement;
-    const value = input.value;
+    const value = this.presentation(attribute).numeric && input.value.trim() && Number.isFinite(Number(input.value)) ? String(authorNumber(Number(input.value))) : input.value;
+    if (value !== input.value) input.value = value;
     input.setCustomValidity('');
     this.mutate.emit(() => {
       try {

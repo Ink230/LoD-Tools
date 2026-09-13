@@ -1,3 +1,4 @@
+import { authorNumber } from './world-map-number';
 import { WorldMapConfigComponent } from './world-map-config.component';
 import { splitJunction } from './world-map-junction';
 import { WORLD_MAP_THEME_COLORS } from './world-map-theme';
@@ -250,9 +251,9 @@ export class WorldMapEditorComponent implements OnInit {
       const points = geometry.querySelector('points');
       const point = this.doc.createElement('item');
       const position = node?.querySelector('position');
-      point.setAttribute('x', position?.getAttribute('x') || String(Math.round(x)));
+      point.setAttribute('x', position?.getAttribute('x') || String(authorNumber(x)));
       point.setAttribute('y', position?.getAttribute('y') || points.lastElementChild?.getAttribute('y') || '0');
-      point.setAttribute('z', position?.getAttribute('z') || String(Math.round(z)));
+      point.setAttribute('z', position?.getAttribute('z') || String(authorNumber(z)));
       points.appendChild(point);
       this.selected = geometry;
       this.section = 'geometry';
@@ -684,8 +685,8 @@ export class WorldMapEditorComponent implements OnInit {
       }
       if (tag === 'node') {
         const position = element.querySelector('position');
-        position.setAttribute('x', String(Math.round(this.view.x + this.view.width / 2)));
-        position.setAttribute('z', String(Math.round(this.view.z + this.view.height / 2)));
+        position.setAttribute('x', String(authorNumber(this.view.x + this.view.width / 2)));
+        position.setAttribute('z', String(authorNumber(this.view.z + this.view.height / 2)));
       }
       let container = Array.from(this.root.children).find((e) => e.tagName === this.section);
       if (this.section === 'rules') this.root.appendChild(element);
@@ -797,8 +798,8 @@ export class WorldMapEditorComponent implements OnInit {
       this.createEntry();
       this.mutate(() => {
         const position = this.selected.querySelector('position');
-        position.setAttribute('x', String(Math.round(point.x)));
-        position.setAttribute('z', String(Math.round(point.z)));
+        position.setAttribute('x', String(authorNumber(point.x)));
+        position.setAttribute('z', String(authorNumber(point.z)));
       });
       return;
     }
@@ -835,8 +836,8 @@ export class WorldMapEditorComponent implements OnInit {
     } else {
       const before = graphCoordinates(this.doc);
       const element = this.drag.kind === 'node' ? this.drag.element.querySelector('position') : this.drag.element;
-      element.setAttribute('x', String(Math.round(point.x)));
-      element.setAttribute('z', String(Math.round(point.z)));
+      element.setAttribute('x', String(authorNumber(point.x)));
+      element.setAttribute('z', String(authorNumber(point.z)));
       synchronizeGraph(this.doc, before);
       this.refresh();
     }
@@ -861,9 +862,9 @@ export class WorldMapEditorComponent implements OnInit {
       const points = geometry.querySelector('points');
       const previous = this.handles[this.pointIndex] || this.handles[this.handles.length - 1];
       const point = this.doc.createElement('item');
-      point.setAttribute('x', String(Math.round(x ?? (previous?.x || 0) + 50)));
+      point.setAttribute('x', String(authorNumber(x ?? (previous?.x || 0) + 50)));
       point.setAttribute('y', previous?.element.getAttribute('y') || '0');
-      point.setAttribute('z', String(Math.round(z ?? previous?.z ?? 0)));
+      point.setAttribute('z', String(authorNumber(z ?? previous?.z ?? 0)));
       points.insertBefore(point, previous?.element.nextElementSibling || points.lastElementChild);
       this.pointIndex = Array.from(points.children).indexOf(point);
     });
@@ -893,8 +894,8 @@ export class WorldMapEditorComponent implements OnInit {
       const element = this.pointElement || (this.selected?.tagName === 'node' ? this.selected.querySelector('position') : null);
       if (element)
         this.mutate(() => {
-          element.setAttribute('x', String(this.number(element, 'x') + dx));
-          element.setAttribute('z', String(this.number(element, 'z') + dz));
+          element.setAttribute('x', String(authorNumber(this.number(element, 'x') + dx)));
+          element.setAttribute('z', String(authorNumber(this.number(element, 'z') + dz)));
         });
       else {
         this.view.x += dx * this.unit * 20;

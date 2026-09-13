@@ -1,3 +1,4 @@
+import { authorNumber } from './world-map-number';
 import { entries } from './world-map-document';
 
 /** Split all directional records sharing geometry, retaining their original arrival anchors. */
@@ -33,10 +34,10 @@ export function splitJunction(doc: XMLDocument, route: Element, x: number, z: nu
   const node = doc.createElement('node');
   node.setAttribute('id', unique('nodes', 'node'));
   const position = node.appendChild(doc.createElement('position'));
-  ['x', 'y', 'z'].forEach((axis, i) => position.setAttribute(axis, String(best.position[i])));
+  ['x', 'y', 'z'].forEach((axis, i) => position.setAttribute(axis, String(authorNumber(best.position[i]))));
   append('nodes', node);
   const split = doc.createElement('item');
-  ['x', 'y', 'z'].forEach((axis, i) => split.setAttribute(axis, String(best.position[i])));
+  ['x', 'y', 'z'].forEach((axis, i) => split.setAttribute(axis, String(authorNumber(best.position[i]))));
   const left = points.slice(0, best.index + 1);
   const right = points.slice(best.index + 1);
   if (best.t > 0.000001) left.push(split);
