@@ -516,7 +516,11 @@ export class WorldMapEditorComponent implements OnInit {
     }
     if (element && event.button === 0) {
       if (kind === 'node') this.select(element, 'nodes');
-      else this.pointIndex = index;
+      else {
+        const geometry = element.parentElement?.parentElement;
+        if (geometry?.tagName === 'geometry') this.select(geometry, 'geometry');
+        this.pointIndex = index;
+      }
       this.drag = { ...point, clientX: event.clientX, clientY: event.clientY, kind, element, before: this.snapshot() };
     } else this.drag = { ...point, clientX: event.clientX, clientY: event.clientY, kind: 'pan' };
     svg.setPointerCapture(event.pointerId);
