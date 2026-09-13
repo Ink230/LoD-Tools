@@ -9,10 +9,11 @@ import type { WorldMapEditorComponent } from './world-map-editor.component';
   // XML DOM nodes mutate in place; refresh this isolated editor subtree when its owner changes.
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default,
-  imports: [FormsModule, WorldMapTerrainComponent],
+  imports: [FormsModule],
   templateUrl: './world-map-canvas.component.html',
   styleUrl: './world-map-canvas.component.css',
 })
 export class WorldMapCanvasComponent {
+  @Input({ required: true }) terrain!: WorldMapTerrainComponent;
   @Input({ required: true }) editor!: WorldMapEditorComponent;
 }

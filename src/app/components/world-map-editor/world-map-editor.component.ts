@@ -1,3 +1,4 @@
+import { WorldMapTerrainComponent } from './world-map-terrain.component';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { WorldMapInspectorComponent } from './world-map-inspector.component';
@@ -40,7 +41,7 @@ interface EditorSnapshot {
   // XML DOM nodes mutate in place; refresh this isolated editor subtree when its owner changes.
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default,
-  imports: [FormsModule, WorldMapInspectorComponent, WorldMapCanvasComponent, WorldMapDocumentPanelsComponent],
+  imports: [WorldMapTerrainComponent, FormsModule, WorldMapInspectorComponent, WorldMapCanvasComponent, WorldMapDocumentPanelsComponent],
   templateUrl: './world-map-editor.component.html',
   styleUrl: './world-map-editor.component.css',
 })

@@ -1,30 +1,3 @@
-<div class="map-tools">
-  <div class="actions">
-    <button [class.active]="editor.mode === 'select'" (click)="editor.mode = 'select'" title="Select and drag; blank space pans">↖ Select</button
-    ><button [class.active]="editor.mode === 'node'" (click)="editor.mode = 'node'">+ Node</button><button (click)="editor.addRoute()">+ Route</button
-    ><button [class.active]="editor.mode === 'point'" [disabled]="!editor.selectedGeometry" (click)="editor.mode = 'point'">+ Point</button>
-  </div>
-  <app-world-map-terrain #terrain [region]="editor.region" [view]="editor.view" />
-  <div class="actions compass" role="group" aria-label="Top of map">
-    @for (direction of editor.orientations; track direction; let i = $index) {
-      <button
-        [class.active]="editor.orientation === i"
-        [attr.aria-pressed]="editor.orientation === i"
-        [title]="direction + ' at top'"
-        [attr.aria-label]="direction + ' at top'"
-        (click)="editor.orientation = i"
-      >
-        {{ direction[0] }}
-      </button>
-    }
-  </div>
-  <select aria-label="Filter region" [(ngModel)]="editor.region" (change)="editor.fit()">
-    <option value="">All regions</option>
-    @for (entry of editor.regions; track entry) {
-      <option [value]="entry.getAttribute('id')">{{ editor.shortId(entry.getAttribute('id')) }}</option>
-    }
-  </select>
-</div>
 <div class="canvas-wrap">
   <svg
     #map
@@ -172,4 +145,4 @@
   }
   <div class="axis">{{ editor.orientations[editor.orientation] }} ↑ <span>SC X / Y / Z coordinates are preserved in the inspector and export</span></div>
 </div>
-<div class="hint">Drag background to pan · Scroll to zoom · Arrows move selection · Shift ×10 · F fit · Delete remove</div>
+
