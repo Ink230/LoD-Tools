@@ -169,4 +169,13 @@ describe('world map graph editing', () => {
     expect(editor.selected.getAttribute('id')).toBe('custom:g');
     expect(editor.region).toBe('custom:a');
   });
+  it('shows newly created unassigned nodes in a filtered region at the view center', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test"><regions><region id="custom:a"/></regions></worldMapPreset>', 'test.wmap');
+    editor.region = 'custom:a';
+    editor.view = { x: 100, z: 200, width: 400, height: 200 };
+    editor.chooseSection('nodes');
+    editor.createEntry();
+    expect(editor.filteredNodes).toHaveLength(1);
+    expect(editor.filteredNodes[0]).toMatchObject({ x: 300, z: 300 });
+  });
 });

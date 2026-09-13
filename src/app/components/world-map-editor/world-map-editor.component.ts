@@ -279,7 +279,7 @@ export class WorldMapEditorComponent implements OnInit {
   get filteredNodes() {
     if (!this.region) return this.nodes;
     const ids = new Set(this.filteredRoutes.flatMap((r) => [r.start?.id, r.end?.id]));
-    return this.nodes.filter((n) => ids.has(n.id));
+    return this.nodes.filter((n) => ids.has(n.id) || !this.entryRegions(n.element, 'nodes').size);
   }
   label(value: string) {
     return value.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase());
@@ -550,6 +550,11 @@ export class WorldMapEditorComponent implements OnInit {
         let index = 1;
         while (this.registry[this.section]?.includes(`custom:${entryName}_${index}`)) index++;
         element.setAttribute('id', tag === 'mod' ? 'custom' : `custom:${entryName}_${index}`);
+      }
+      if (tag === 'node') {
+        const position = element.querySelector('position');
+        position.setAttribute('x', String(Math.round(this.view.x + this.view.width / 2)));
+        position.setAttribute('z', String(Math.round(this.view.z + this.view.height / 2)));
       }
       let container = Array.from(this.root.children).find((e) => e.tagName === this.section);
       if (this.section === 'rules') this.root.appendChild(element);
