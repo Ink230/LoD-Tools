@@ -326,6 +326,7 @@ export class WorldMapEditorComponent implements OnInit {
         this.section = 'nodes';
         this.pointIndex = -1;
       });
+      this.mode = 'select';
       this.error = '';
     } catch (error) { this.error = String(error); }
   }
