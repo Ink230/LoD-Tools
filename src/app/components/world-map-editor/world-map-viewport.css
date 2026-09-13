@@ -20,12 +20,20 @@
 .document-identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .document-identity > div:first-child { min-width: 0; }
 .command-bar > fieldset { grid-column: 2; }
-.command-bar > .actions { grid-column: 3; }
+.command-bar > .document-history { grid-column: 3; }
 @media (max-width: 1600px) {
   .document-bar.command-bar { grid-template-columns: minmax(0, 1fr) auto; }
-  .command-bar > .actions { grid-column: 2; grid-row: 1; }
+  .command-bar > .document-history { grid-column: 2; grid-row: 1; }
   .command-bar > fieldset { grid-column: 1 / -1; grid-row: 2; }
 }
 .document-identity > div:first-child { flex: 0 1 206px; overflow: hidden; }
 .document-identity > .actions { margin-left: 24px; flex-shrink: 0; }
 .document-file { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.document-history { display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 0; }
+.document-history > .actions { flex-shrink: 0; margin-right: 24px; }
+.history-spacer { flex: 0 1 206px; min-width: 0; }
+@media (max-width: 1600px) {
+  .history-spacer { display: none; }
+  .document-history > .actions { margin-right: 0; }
+}
