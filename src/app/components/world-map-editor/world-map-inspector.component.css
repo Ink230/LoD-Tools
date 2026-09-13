@@ -11,7 +11,7 @@ h2 {
   font-weight: 700;
 }
 .muted {
-  color: #899d90;
+  color: var(--wmap-color-1);
   font-size: 12px;
 }
 .panel-title {
@@ -23,49 +23,49 @@ h2 {
     10px ui-monospace,
     monospace;
   letter-spacing: 1px;
-  color: #98af9c;
+  color: var(--wmap-color-33);
 }
 button {
   all: revert;
   box-sizing: border-box;
   cursor: pointer;
   font: 12px system-ui;
-  color: #d6e5db;
-  border: 1px solid #354c3c;
+  color: var(--wmap-color-2);
+  border: 1px solid var(--wmap-color-3);
   border-radius: 5px;
-  background: #18281e;
+  background: var(--wmap-color-4);
   padding: 5px 8px;
 }
 button:hover {
-  background: #2c4531;
+  background: var(--wmap-color-5);
 }
 .inspector-navigation { display: flex; align-items: center; gap: 6px; }
 button:disabled { opacity: 0.35; cursor: default; }
 button:focus-visible {
-  outline: 2px solid #b7e190;
+  outline: 2px solid var(--wmap-color-12);
   outline-offset: 1px;
 }
 .selected-id {
   font:
     11px ui-monospace,
     monospace;
-  color: #a8c19e;
+  color: var(--wmap-color-62);
   overflow-wrap: anywhere;
   margin: 3px 0 18px;
 }
-.entry-name { color: #d6e5db; font-size: 14px; margin: -10px 0 18px; }
+.entry-name { color: var(--wmap-color-2); font-size: 14px; margin: -10px 0 18px; }
 :host > .muted {
   margin: 10px 0 20px;
 }
 .notice,
 .point-panel {
   padding: 10px;
-  border: 1px solid #4b5437;
-  background: #272e20;
+  border: 1px solid var(--wmap-color-63);
+  background: var(--wmap-color-64);
   border-radius: 4px;
   margin-bottom: 14px;
   font-size: 11px;
-  color: #bdc9a1;
+  color: var(--wmap-color-65);
 }
 .wide {
   width: 100%;

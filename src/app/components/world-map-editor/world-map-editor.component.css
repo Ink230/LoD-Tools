@@ -4,14 +4,14 @@
   font:
     14px/1.45 system-ui,
     sans-serif;
-  color: #e0ebe3;
+  color: var(--wmap-color-36);
 }
 .editor {
   margin: 0 auto;
   padding: 12px 20px;
   max-width: 2000px;
   min-width: 1900px;
-  --line: #2b3e31;
+  --line: var(--wmap-color-0);
 }
 h1,
 h2,
@@ -28,9 +28,9 @@ h1 span {
     11px ui-monospace,
     monospace;
   padding: 4px 6px;
-  border: 1px solid #47653c;
+  border: 1px solid var(--wmap-color-37);
   border-radius: 4px;
-  color: #b7e190;
+  color: var(--wmap-color-12);
   vertical-align: middle;
 }
 h2 {
@@ -42,12 +42,12 @@ h2 {
     10px ui-monospace,
     monospace;
   letter-spacing: 2px;
-  color: #8aad80;
+  color: var(--wmap-color-38);
   margin-bottom: 7px;
 }
 .subtitle,
 .muted {
-  color: #899d90;
+  color: var(--wmap-color-1);
   font-size: 12px;
 }
 .editor-header,
@@ -71,10 +71,10 @@ input {
   all: revert;
   box-sizing: border-box;
   font: 12px system-ui;
-  color: #d6e5db;
-  border: 1px solid #354c3c;
+  color: var(--wmap-color-2);
+  border: 1px solid var(--wmap-color-3);
   border-radius: 5px;
-  background: #18281e;
+  background: var(--wmap-color-4);
   padding: 7px 10px;
   min-width: 0;
 }
@@ -82,45 +82,45 @@ button {
   cursor: pointer;
 }
 button:hover {
-  background: #2c4531;
+  background: var(--wmap-color-5);
 }
 button:disabled {
   opacity: 0.38;
   cursor: default;
 }
 button.active {
-  color: #c5eea4;
-  background: #2a432a;
-  border-color: #648f48;
+  color: var(--wmap-color-6);
+  background: var(--wmap-color-7);
+  border-color: var(--wmap-color-8);
 }
 button.primary {
-  background: #a4d77b;
-  color: #12200e;
-  border-color: #a4d77b;
+  background: var(--wmap-color-9);
+  color: var(--wmap-color-10);
+  border-color: var(--wmap-color-9);
   font-weight: 650;
 }
 button:focus-visible,
 input:focus-visible {
-  outline: 2px solid #b7e190;
+  outline: 2px solid var(--wmap-color-12);
   outline-offset: -2px;
 }
 small {
   font:
     10px ui-monospace,
     monospace;
-  color: #829688;
+  color: var(--wmap-color-39);
 }
 code {
   font:
     11px ui-monospace,
     monospace;
-  color: #8ca696;
+  color: var(--wmap-color-34);
   overflow-wrap: anywhere;
 }
 .document-bar {
   border: 1px solid var(--line);
   border-radius: 8px 8px 0 0;
-  background: #17251c;
+  background: var(--wmap-color-40);
   padding: 10px 14px;
 }
 .workspace {
@@ -135,7 +135,7 @@ code {
 }
 .library,
 .inspector {
-  background: #142019;
+  background: var(--wmap-color-41);
   overflow: auto;
   max-height: 100%;
 }
@@ -155,7 +155,7 @@ code {
     10px ui-monospace,
     monospace;
   letter-spacing: 1px;
-  color: #98af9c;
+  color: var(--wmap-color-33);
 }
 .library .panel-title {
   padding: 0 12px;
@@ -184,9 +184,9 @@ code {
 .section-list small { font-size: 11px; flex-shrink: 0; }
 .section-list button.active,
 .entry-list button.active {
-  background: #293e28;
-  color: #c2eaa4;
-  border-color: #425f36;
+  background: var(--wmap-color-42);
+  color: var(--wmap-color-43);
+  border-color: var(--wmap-color-44);
 }
 .search {
   width: calc(100% - 20px);
@@ -216,7 +216,7 @@ code {
 .center {
   display: flex;
   flex-direction: column;
-  background: #101b14;
+  background: var(--wmap-color-45);
   min-width: 0;
 }
 .toolbar {

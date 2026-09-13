@@ -1,3 +1,4 @@
+import { WORLD_MAP_THEME_COLORS } from './world-map-theme';
 import { WorldMapTerrainComponent } from './world-map-terrain.component';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -38,7 +39,7 @@ interface EditorSnapshot {
 
 @Component({
   selector: 'app-world-map-editor',
-  host: { '[class.viewport-host]': 'fillViewport' },
+  host: { '[class.viewport-host]': 'fillViewport', '[style.--wmap-hue-shift]': 'theme.shift', '[style]': 'themeColors' },
   // XML DOM nodes mutate in place; refresh this isolated editor subtree when its owner changes.
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default,
@@ -51,6 +52,24 @@ export class WorldMapEditorComponent implements OnInit {
   doc = parsePreset('<worldMapPreset version="1" id="custom:world_map" name="Untitled world map" description=""/>');
   fillViewport = true;
   headerCollapsed = false;
+  readonly themeColors = WORLD_MAP_THEME_COLORS;
+  readonly themes = [
+    { name: 'Green', shift: 0, color: '#a4d77b' },
+    { name: 'Purple', shift: 180, color: '#cb9de8' },
+    { name: 'Red', shift: 250, color: '#ee9696' },
+    { name: 'Orange', shift: 280, color: '#edb17c' },
+    { name: 'Blue', shift: 110, color: '#91b8ef' },
+  ];
+  toggleHeader() {
+    this.headerCollapsed = !this.headerCollapsed;
+    try { localStorage.setItem('lodtools.world-map.header-collapsed', String(this.headerCollapsed)); } catch { /* Header still works without browser storage. */ }
+  }
+  themeIndex = 0;
+  get theme() { return this.themes[this.themeIndex]; }
+  cycleTheme() {
+    this.themeIndex = (this.themeIndex + 1) % this.themes.length;
+    try { localStorage.setItem('lodtools.world-map.theme', this.theme.name); } catch { /* Theme still works without browser storage. */ }
+  }
   section = 'nodes';
   sections = Object.keys(SECTIONS);
   selected: Element | null = null;
@@ -113,6 +132,11 @@ export class WorldMapEditorComponent implements OnInit {
   drag: { kind: 'pan' | 'node' | 'point'; x: number; z: number; clientX: number; clientY: number; element?: Element; before?: EditorSnapshot } | null = null;
 
   ngOnInit() {
+    try {
+      this.headerCollapsed = localStorage.getItem('lodtools.world-map.header-collapsed') === 'true';
+      const stored = localStorage.getItem('lodtools.world-map.theme');
+      this.themeIndex = Math.max(0, this.themes.findIndex((theme) => theme.name === stored));
+    } catch { /* Default to green when browser storage is unavailable. */ }
     this.refresh();
     void this.loadNativeCatalog();
     void this.loadVanilla();

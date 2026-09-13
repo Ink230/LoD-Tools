@@ -15,7 +15,7 @@ h2 {
   font-weight: 600;
 }
 .muted {
-  color: #899d90;
+  color: var(--wmap-color-1);
   font-size: 12px;
 }
 .panel-title {
@@ -24,13 +24,13 @@ h2 {
     10px ui-monospace,
     monospace;
   letter-spacing: 1px;
-  color: #98af9c;
+  color: var(--wmap-color-33);
 }
 code {
   font:
     11px ui-monospace,
     monospace;
-  color: #8ca696;
+  color: var(--wmap-color-34);
   overflow-wrap: anywhere;
 }
 button,
@@ -40,10 +40,10 @@ textarea {
   all: revert;
   box-sizing: border-box;
   font: 12px system-ui;
-  color: #d6e5db;
-  border: 1px solid #354c3c;
+  color: var(--wmap-color-2);
+  border: 1px solid var(--wmap-color-3);
   border-radius: 5px;
-  background: #18281e;
+  background: var(--wmap-color-4);
   padding: 7px 10px;
   min-width: 0;
 }
@@ -51,32 +51,32 @@ button {
   cursor: pointer;
 }
 button:hover {
-  background: #2c4531;
+  background: var(--wmap-color-5);
 }
 button:disabled {
   opacity: 0.38;
   cursor: default;
 }
 button.active {
-  color: #c5eea4;
-  background: #2a432a;
-  border-color: #648f48;
+  color: var(--wmap-color-6);
+  background: var(--wmap-color-7);
+  border-color: var(--wmap-color-8);
 }
 button.primary {
-  background: #a4d77b;
-  color: #12200e;
-  border-color: #a4d77b;
+  background: var(--wmap-color-9);
+  color: var(--wmap-color-10);
+  border-color: var(--wmap-color-9);
   font-weight: 650;
 }
 button.primary:hover {
-  background: #b9e990;
+  background: var(--wmap-color-11);
 }
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 svg:focus-visible {
-  outline: 2px solid #b7e190;
+  outline: 2px solid var(--wmap-color-12);
   outline-offset: -2px;
 }
 .source-panel,
@@ -92,13 +92,13 @@ svg:focus-visible {
 .source-panel textarea {
   resize: vertical;
   min-height: 550px;
-  background: #0d1711;
+  background: var(--wmap-color-35);
   font:
     12px/1.6 ui-monospace,
     monospace;
   white-space: pre;
   tab-size: 2;
-  caret-color: #b7e190;
+  caret-color: var(--wmap-color-12);
 }
 .asset-panel p {
   font-size: 12px;

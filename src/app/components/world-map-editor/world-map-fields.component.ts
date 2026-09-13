@@ -120,8 +120,8 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
       :host { display: block; font: inherit; color: inherit; }
       .fields, .compatibility-fields { display: grid; gap: 10px; }
       .field { display: grid; grid-template-columns: 24px minmax(0, 1fr) 22px; column-gap: 6px; row-gap: 4px; align-items: start; font-size: 12px; }
-      .point-row { border-bottom: 1px solid #37443b; padding-bottom: 8px; }
-      .point-heading { display: flex; gap: 8px; align-items: center; color: #a8c898; font: 10px ui-monospace, monospace; margin-bottom: 6px; }
+      .point-row { border-bottom: 1px solid var(--wmap-color-46); padding-bottom: 8px; }
+      .point-heading { display: flex; gap: 8px; align-items: center; color: var(--wmap-color-23); font: 10px ui-monospace, monospace; margin-bottom: 6px; }
       .point-heading [draggable] { cursor: grab; padding: 2px 6px; font-size: 16px; }
       .coordinates { position: relative; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 0 14px; }
       .coordinates .field { display: flex; flex-direction: column; min-width: 0; gap: 4px; }
@@ -132,24 +132,24 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
     .field-copy { grid-column: 2; grid-row: 1; }
     .field > input, .field > select, .field > .input-stack { grid-column: 2; grid-row: 2; }
     .field > .remove { grid-column: 3; grid-row: 2; }
-    .field > .go { grid-column: 1; grid-row: 2; align-self: start; padding: 7px 0; border: 0; background: none; color: #a9d890; text-decoration: underline; }
+    .field > .go { grid-column: 1; grid-row: 2; align-self: start; padding: 7px 0; border: 0; background: none; color: var(--wmap-color-47); text-decoration: underline; }
     .field-copy, .input-stack { display: grid; min-width: 0; gap: 3px; }
-      .field-copy strong { overflow-wrap: anywhere; color: #b9c9bc; font-weight: 500; }
-      .field-copy small, .selection-label { color: #758a7b; font: 10px/1.3 system-ui, sans-serif; }
-      .selection-label { color: #9dc38d; overflow-wrap: anywhere; }
-      input, select { all: revert; box-sizing: border-box; width: 100%; min-width: 0; border: 1px solid #34473b; border-radius: 4px; background: #111c16; color: #e3eee5; padding: 7px; font: 12px ui-monospace, monospace; caret-color: #b7e190; }
+      .field-copy strong { overflow-wrap: anywhere; color: var(--wmap-color-48); font-weight: 500; }
+      .field-copy small, .selection-label { color: var(--wmap-color-49); font: 10px/1.3 system-ui, sans-serif; }
+      .selection-label { color: var(--wmap-color-50); overflow-wrap: anywhere; }
+      input, select { all: revert; box-sizing: border-box; width: 100%; min-width: 0; border: 1px solid var(--wmap-color-51); border-radius: 4px; background: var(--wmap-color-52); color: var(--wmap-color-53); padding: 7px; font: 12px ui-monospace, monospace; caret-color: var(--wmap-color-12); }
       select { cursor: pointer; }
-      button { all: revert; box-sizing: border-box; cursor: pointer; border: 1px solid #354a3c; border-radius: 4px; padding: 5px 8px; background: #213728; color: #bdd5c4; font: 12px system-ui; }
-      button:hover { background: #304f38; }
-      .field-section { min-width: 0; margin: 0; padding: 8px 0; border-top: 1px solid #344f3c; border-bottom: 1px solid #263c2e; }
-    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; font: 600 12px system-ui; color: #a9d890; padding: 0 0 10px; }
-      summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; font: 600 12px system-ui; color: #a9d890; padding: 7px 0; }
-      .compatibility { margin-top: 3px; border-top: 1px solid #37443b; border-bottom: 1px solid #37443b; }
-      .compatibility > summary { padding: 8px 0; color: #93a198; }
-      .compatibility > summary small { font: 9px ui-monospace, monospace; color: #68766d; text-transform: uppercase; letter-spacing: 0.5px; }
+      button { all: revert; box-sizing: border-box; cursor: pointer; border: 1px solid var(--wmap-color-54); border-radius: 4px; padding: 5px 8px; background: var(--wmap-color-55); color: var(--wmap-color-56); font: 12px system-ui; }
+      button:hover { background: var(--wmap-color-57); }
+      .field-section { min-width: 0; margin: 0; padding: 8px 0; border-top: 1px solid var(--wmap-color-58); border-bottom: 1px solid var(--wmap-color-59); }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; font: 600 12px system-ui; color: var(--wmap-color-47); padding: 0 0 10px; }
+      summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; font: 600 12px system-ui; color: var(--wmap-color-47); padding: 7px 0; }
+      .compatibility { margin-top: 3px; border-top: 1px solid var(--wmap-color-46); border-bottom: 1px solid var(--wmap-color-46); }
+      .compatibility > summary { padding: 8px 0; color: var(--wmap-color-60); }
+      .compatibility > summary small { font: 9px ui-monospace, monospace; color: var(--wmap-color-61); text-transform: uppercase; letter-spacing: 0.5px; }
       .compatibility-fields { padding: 5px 0 10px; }
       .remove { padding: 2px 6px; color: #edb0a3; }
-      input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid #b7e190; outline-offset: 1px; }
+      input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--wmap-color-12); outline-offset: 1px; }
     `,
   ],
 })

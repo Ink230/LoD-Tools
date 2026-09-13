@@ -1,4 +1,4 @@
-:host(.viewport-host) { position: fixed; inset: 0; z-index: 10000; overflow: auto; background: #101310; overscroll-behavior: contain; }
+:host(.viewport-host) { position: fixed; inset: 0; z-index: 10000; overflow: auto; background: var(--wmap-color-67); overscroll-behavior: contain; }
 .editor.fill-viewport {
   position: relative;
 
@@ -11,7 +11,7 @@
   flex-direction: column;
   overflow: visible;
   overscroll-behavior: contain;
-  background: #101310;
+  background: var(--wmap-color-67);
 }
 .fill-viewport > .editor-header,
 .fill-viewport > .document-bar,
@@ -45,5 +45,5 @@
     margin-right: 0;
   }
 .editor-header.compact-header { padding: 0 0 8px; flex-direction: row; align-items: center; }
-.compact-credit { font: 12px system-ui; color: #b8cbbb; }
+.compact-credit { font: 12px system-ui; color: var(--wmap-color-66); }
 .compact-header > .actions > button { width: 34px; height: 34px; padding: 7px; display: inline-grid; place-items: center; }
