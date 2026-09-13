@@ -306,6 +306,7 @@ export class WorldMapFieldsComponent {
   addAttribute(attribute: string) { this.mutate.emit(() => this.element.setAttribute(attribute, '')); }
   removeAttribute(attribute: string) { this.mutate.emit(() => this.element.removeAttribute(attribute)); }
   canRemove(child: Element) {
+    if (['serviceIds', 'soundIds', 'sounds'].includes(child.tagName)) return false;
     if (this.element.tagName === 'points' && (child === this.element.firstElementChild || child === this.element.lastElementChild)) return false;
     return ['item', 'capability', 'assets', 'visualOffset', 'overviewPosition', 'minimum', 'maximum', 'serviceIds', 'soundIds'].includes(child.tagName) || this.element.tagName === 'portals';
   }
