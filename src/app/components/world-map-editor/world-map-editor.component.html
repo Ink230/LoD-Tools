@@ -39,16 +39,17 @@
       <button [class.active]="mode === 'node'" (click)="mode = 'node'">+ Node</button>
       <button (click)="addRoute()">+ Route</button>
       <button [disabled]="!selectedGeometry" [class.active]="mode === 'point'" (click)="mode = 'point'">+ Point</button>
-      <app-world-map-terrain style="margin-left: 18px" #terrain [region]="region" [view]="view" [attr.inert]="tab !== 'map' ? '' : null" />
     
-    <select aria-label="Filter region" [(ngModel)]="region" (change)="fit()" [disabled]="tab !== 'map'" style="max-width: 220px; padding: 7px; background: #18281e; color: #d6e5db; border: 1px solid #354c3c; border-radius: 5px">
+    <span style="position: relative; display: inline-flex; margin-left: 18px">
+    <select aria-label="Filter region" [(ngModel)]="region" (change)="fit()" [disabled]="tab !== 'map'" style="appearance: none; max-width: 220px; padding: 7px 26px 7px 7px; background: #18281e; color: #d6e5db; border: 1px solid #354c3c; border-radius: 5px">
       <option value="">All regions</option>
       @for (entry of regions; track entry) { <option [value]="entry.getAttribute('id')">{{ shortId(entry.getAttribute('id')) }}</option> }
-    </select>
+    </select><span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); pointer-events: none">⌄</span></span>
       @for (direction of orientations; track direction; let i = $index) {
         <button [class.active]="orientation === i" [attr.aria-pressed]="orientation === i" [title]="direction + ' at top'" (click)="orientation = i">{{ direction[0] }}</button>
       }
 
+      <app-world-map-terrain #terrain [region]="region" [view]="view" [attr.inert]="tab !== 'map' ? '' : null" />
     </fieldset>
     <div class="document-history"><div class="actions" style="align-items: center; flex-wrap: nowrap">
       <button (click)="undo()" [disabled]="!undoStack.length" title="Ctrl+Z">↶ Undo</button><button (click)="redo()" [disabled]="!redoStack.length" title="Ctrl+Shift+Z">↷ Redo</button
