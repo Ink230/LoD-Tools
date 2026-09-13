@@ -389,10 +389,14 @@ export class WorldMapEditorComponent implements OnInit {
     }
   }
   chooseSection(section: string) {
-    this.section = section;
-    this.selected = null;
     this.search = '';
-    this.pointIndex = -1;
+    const first = entries(this.doc, section)[0];
+    if (first) this.select(first, section);
+    else {
+      this.section = section;
+      this.selected = null;
+      this.pointIndex = -1;
+    }
   }
   createEntry() {
     if (this.section === 'rules' && entries(this.doc, 'rules').length) {
