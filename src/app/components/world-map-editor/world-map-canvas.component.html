@@ -143,6 +143,10 @@
       <button (click)="editor.labelMenuOpen = false">Close</button>
     </fieldset>
   }
-  <div class="axis">{{ editor.orientations[editor.orientation] }} ↑ <span>SC X / Y / Z coordinates are preserved in the inspector and export</span></div>
+    <div class="axis" style="display: flex; align-items: center; gap: 7px">
+    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="8" stroke="currentColor" opacity="0.5"/><path d="m10 2 3 10-3-2-3 2Z" fill="currentColor"/><path d="m10 18-3-6 3 2 3-2Z" fill="currentColor" opacity="0.4"/></svg>
+    {{ editor.orientations[editor.orientation].toUpperCase() }} ↑
+    <button type="button" title="SC X / Y / Z coordinates are preserved in the inspector and export" aria-label="SC X / Y / Z coordinates are preserved in the inspector and export" style="width: 16px; height: 16px; padding: 0; border-radius: 50%; font-size: 10px">?</button>
+  </div>
 </div>
 
