@@ -24,12 +24,6 @@
   @if (editor.section === 'behaviours' || editor.section === 'traversalProfiles' || editor.section === 'avatars') {
     <p class="notice">Provider and behaviour IDs refer to installed mod handlers. Presets contain data and cannot embed executable code.</p>
   }
-  @if (editor.pointElement) {
-    <div class="point-panel">
-      <div class="panel-title">GEOMETRY POINT {{ editor.pointIndex + 1 }}<button (click)="editor.removePoint()">Remove</button></div>
-      <app-world-map-fields [element]="editor.pointElement" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" (navigate)="editor.goToEntry($event)" />
-    </div>
-  }
   <app-world-map-fields [element]="editor.selected" [registry]="editor.registry" [registryLabels]="editor.registryLabels" (mutate)="editor.mutate($event)" (navigate)="editor.goToEntry($event)" />
 } @else {
   <h2>Preset details</h2>
