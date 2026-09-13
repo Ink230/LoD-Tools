@@ -1,4 +1,4 @@
-<div class="canvas-wrap">
+<div class="canvas-wrap"><app-world-map-tools [editor]="editor" />
   <svg
     #map
     class="map"
@@ -42,7 +42,7 @@
           stroke="transparent"
           [attr.stroke-width]="16 * editor.unit"
           (pointerdown)="$event.ctrlKey && $event.button === 1 ? editor.pointerDown($event, map) : ($event.stopPropagation())"
-          (click)="editor.selectMapRoute(route.element)"
+          (click)="editor.clickMapRoute(route.element, $event, map)"
         >
           <title>{{ route.id }} · {{ route.start?.id }} → {{ route.end?.id }}</title>
         </polyline>

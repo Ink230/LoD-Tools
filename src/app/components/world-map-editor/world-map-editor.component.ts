@@ -1,3 +1,4 @@
+import { splitJunction } from './world-map-junction';
 import { WORLD_MAP_THEME_COLORS } from './world-map-theme';
 import { WorldMapTerrainComponent } from './world-map-terrain.component';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, inject, OnInit } from '@angular/core';
@@ -80,7 +81,7 @@ export class WorldMapEditorComponent implements OnInit {
   selected: Element | null = null;
   search = '';
   region = '';
-  mode: 'select' | 'node' | 'point' = 'select';
+  mode: 'select' | 'node' | 'point' | 'junction' = 'select';
   tab: 'map' | 'source' | 'assets' = 'map';
   filename = 'world-map.wmap';
   status = 'Load the vanilla preset or import a .wmap to begin';
@@ -162,6 +163,7 @@ export class WorldMapEditorComponent implements OnInit {
   }
   ngOnInit() {
     this.restoreLabelSettings();
+    try { this.toolsOpen = localStorage.getItem('lodtools.world-map.tools-open') === 'true'; } catch { /* Default closed. */ }
     try {
       this.includeStoryRefs = localStorage.getItem('lodtools.world-map.include-story-refs') === 'true';
       this.headerCollapsed = localStorage.getItem('lodtools.world-map.header-collapsed') === 'true';
@@ -209,6 +211,27 @@ export class WorldMapEditorComponent implements OnInit {
       route.setAttribute('direction', String(-direction));
       source.parentElement.appendChild(route);
     });
+  }
+  toolsOpen = false;
+  toggleTools() {
+    this.toolsOpen = !this.toolsOpen;
+    if (!this.toolsOpen && this.mode === 'junction') this.mode = 'select';
+    try { localStorage.setItem('lodtools.world-map.tools-open', String(this.toolsOpen)); } catch { /* Tools work without storage. */ }
+  }
+  clickMapRoute(route: Element, event: MouseEvent, map: HTMLElement | SVGSVGElement) {
+    if (this.mode !== 'junction') {
+      this.selectMapRoute(route);
+      return;
+    }
+    const point = this.coordinates(event, map);
+    try {
+      this.mutate(() => {
+        this.selected = splitJunction(this.doc, route, point.x, point.z);
+        this.section = 'nodes';
+        this.pointIndex = -1;
+      });
+      this.error = '';
+    } catch (error) { this.error = String(error); }
   }
   selectMapRoute(route: Element) {
     const geometry = route.getAttribute('geometry');
