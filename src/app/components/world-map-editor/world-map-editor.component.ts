@@ -154,11 +154,12 @@ export class WorldMapEditorComponent implements OnInit {
     return entries(this.doc, 'regions');
   }
   nodeReferences = new Map<string, { element: Element; section: string; fields: string[] }[]>();
-  get selectedRouteReferences() {
-    if (this.section !== 'routes' || !this.selected) return [];
+  get selectedPortalReferences() {
+    if (!['routes', 'places'].includes(this.section) || !this.selected) return [];
     const id = this.selected.getAttribute('id');
-    return entries(this.doc, 'portals').filter((portal) => portal.getAttribute('route') === id)
-      .map((element) => ({ element, section: 'portals', fields: ['route'] }));
+    const field = this.section === 'routes' ? 'route' : 'place';
+    return entries(this.doc, 'portals').filter((portal) => portal.getAttribute(field) === id)
+      .map((element) => ({ element, section: 'portals', fields: [field] }));
   }
   get selectedNodeReferences() {
     return this.section === 'nodes' ? this.nodeReferences.get(this.selected?.getAttribute('id') || '') || [] : [];
