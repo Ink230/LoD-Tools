@@ -3,7 +3,11 @@
 These static top-down images provide terrain context underneath the editor's
 routes and nodes. They use the native model's X/Z coordinates directly; no
 landmark matching or route-based image stretching is applied. Positive Z points
-down in the editor. Height Y determines visible surfaces in the rasterizer.
+down in the stored image. The editor inverts this axis for the native camera's
+top-down orientation, then applies the selected compass rotation to both terrain
+and graph. Height Y determines visible surfaces in the rasterizer. Display
+orientation never changes exported coordinates; pointer and keyboard edits use
+the inverse display transform. Labels remain upright in every orientation.
 
 ## Regenerate
 

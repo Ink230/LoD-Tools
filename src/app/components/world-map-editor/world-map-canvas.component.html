@@ -12,6 +12,14 @@
   </select>
 </div>
 <app-world-map-terrain #terrain [region]="editor.region" [view]="editor.view" />
+<div class="map-tools" role="group" aria-label="Map orientation">
+  <span>Top of map</span>
+  <div class="actions">
+    @for (direction of editor.orientations; track direction; let i = $index) {
+      <button [class.active]="editor.orientation === i" [attr.aria-pressed]="editor.orientation === i" (click)="editor.orientation = i">{{ direction }}</button>
+    }
+  </div>
+</div>
 <div class="canvas-wrap">
   <svg
     #map
@@ -33,79 +41,83 @@
       </pattern>
       <marker id="wmap-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#80bd69" /></marker>
     </defs>
-    <rect [attr.x]="editor.view.x" [attr.y]="editor.view.z" [attr.width]="editor.view.width" [attr.height]="editor.view.height" fill="url(#wmap-grid)" />
-    @if (terrain.visible && terrain.active; as guide) {
-      <image
-        [attr.href]="guide.image"
-        [attr.x]="guide.x"
-        [attr.y]="guide.z"
-        [attr.width]="guide.width"
-        [attr.height]="guide.height"
-        [attr.transform]="terrain.transform"
-        [attr.opacity]="terrain.opacity"
-        preserveAspectRatio="none"
-        pointer-events="none"
-      />
-    }
-    @for (route of editor.filteredRoutes; track route.id) {
-      <polyline
-        class="route-hit"
-        [attr.points]="route.points"
-        fill="none"
-        stroke="transparent"
-        [attr.stroke-width]="16 * editor.unit"
-        (pointerdown)="$event.stopPropagation(); editor.select(route.element, 'routes')"
-      >
-        <title>{{ route.id }} · {{ route.start?.id }} → {{ route.end?.id }}</title>
-      </polyline>
-      <polyline
-        class="route"
-        [class.selected-route]="editor.selected === route.element"
-        [attr.points]="route.points"
-        fill="none"
-        [attr.stroke-width]="(editor.selected === route.element ? 3 : 1.7) * editor.unit"
-        marker-end="url(#wmap-arrow)"
-      />
-    }
-    @if (editor.selectedGeometry) {
-      <polyline class="geometry-line" [attr.points]="editor.geometryPoints" fill="none" [attr.stroke-width]="2 * editor.unit" />
-    }
-    @for (node of editor.filteredNodes; track node.id) {
-      <g
-        class="node"
-        (pointerdown)="editor.pointerDown($event, map, node.element)"
-        (keydown.enter)="editor.select(node.element, 'nodes')"
-        tabindex="0"
-        role="button"
-        [attr.aria-label]="'Node ' + node.id"
-      >
-        <circle
-          [attr.cx]="node.x"
-          [attr.cy]="node.z"
-          [attr.r]="(editor.selected === node.element ? 7 : 4) * editor.unit"
-          [attr.stroke-width]="1.5 * editor.unit"
-          [class.selected-node]="editor.selected === node.element"
+    <g [attr.transform]="editor.mapTransform">
+      <rect [attr.x]="editor.view.x" [attr.y]="editor.view.z" [attr.width]="editor.view.width" [attr.height]="editor.view.height" fill="url(#wmap-grid)" />
+      @if (terrain.visible && terrain.active; as guide) {
+        <image
+          [attr.href]="guide.image"
+          [attr.x]="guide.x"
+          [attr.y]="guide.z"
+          [attr.width]="guide.width"
+          [attr.height]="guide.height"
+          [attr.transform]="terrain.transform"
+          [attr.opacity]="terrain.opacity"
+          preserveAspectRatio="none"
+          pointer-events="none"
         />
-        @if (editor.showLabels) {
-          <text [attr.x]="node.x + 9 * editor.unit" [attr.y]="node.z - 8 * editor.unit" [attr.font-size]="11 * editor.unit">{{ editor.nodeName(node.id) }}</text>
-        }
-        <title>{{ node.id }} · X {{ node.x }} / Z {{ node.z }}</title>
-      </g>
-    }
-    @for (point of editor.handles; track point.element) {
-      <rect
-        class="handle"
-        [class.selected-handle]="editor.pointIndex === point.index"
-        [attr.x]="point.x - 4 * editor.unit"
-        [attr.y]="point.z - 4 * editor.unit"
-        [attr.width]="8 * editor.unit"
-        [attr.height]="8 * editor.unit"
-        [attr.stroke-width]="editor.unit"
-        (pointerdown)="editor.pointerDown($event, map, point.element, 'point', point.index)"
-      >
-        <title>Point {{ point.index + 1 }} · X {{ point.x }} / Z {{ point.z }}</title>
-      </rect>
-    }
+      }
+      @for (route of editor.filteredRoutes; track route.id) {
+        <polyline
+          class="route-hit"
+          [attr.points]="route.points"
+          fill="none"
+          stroke="transparent"
+          [attr.stroke-width]="16 * editor.unit"
+          (pointerdown)="$event.stopPropagation(); editor.select(route.element, 'routes')"
+        >
+          <title>{{ route.id }} · {{ route.start?.id }} → {{ route.end?.id }}</title>
+        </polyline>
+        <polyline
+          class="route"
+          [class.selected-route]="editor.selected === route.element"
+          [attr.points]="route.points"
+          fill="none"
+          [attr.stroke-width]="(editor.selected === route.element ? 3 : 1.7) * editor.unit"
+          marker-end="url(#wmap-arrow)"
+        />
+      }
+      @if (editor.selectedGeometry) {
+        <polyline class="geometry-line" [attr.points]="editor.geometryPoints" fill="none" [attr.stroke-width]="2 * editor.unit" />
+      }
+      @for (node of editor.filteredNodes; track node.id) {
+        <g
+          class="node"
+          (pointerdown)="editor.pointerDown($event, map, node.element)"
+          (keydown.enter)="editor.select(node.element, 'nodes')"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="'Node ' + node.id"
+        >
+          <circle
+            [attr.cx]="node.x"
+            [attr.cy]="node.z"
+            [attr.r]="(editor.selected === node.element ? 7 : 4) * editor.unit"
+            [attr.stroke-width]="1.5 * editor.unit"
+            [class.selected-node]="editor.selected === node.element"
+          />
+          @if (editor.showLabels) {
+            <text [attr.transform]="editor.labelTransform(node.x, node.z)" [attr.x]="node.x + 9 * editor.unit" [attr.y]="node.z - 8 * editor.unit" [attr.font-size]="11 * editor.unit">
+              {{ editor.nodeName(node.id) }}
+            </text>
+          }
+          <title>{{ node.id }} · X {{ node.x }} / Z {{ node.z }}</title>
+        </g>
+      }
+      @for (point of editor.handles; track point.element) {
+        <rect
+          class="handle"
+          [class.selected-handle]="editor.pointIndex === point.index"
+          [attr.x]="point.x - 4 * editor.unit"
+          [attr.y]="point.z - 4 * editor.unit"
+          [attr.width]="8 * editor.unit"
+          [attr.height]="8 * editor.unit"
+          [attr.stroke-width]="editor.unit"
+          (pointerdown)="editor.pointerDown($event, map, point.element, 'point', point.index)"
+        >
+          <title>Point {{ point.index + 1 }} · X {{ point.x }} / Z {{ point.z }}</title>
+        </rect>
+      }
+    </g>
   </svg>
   @if (!editor.nodes.length && !editor.routes.length) {
     <div class="empty-state">
@@ -120,6 +132,6 @@
     <button (click)="editor.zoom(0.8)" aria-label="Zoom in">+</button><button (click)="editor.zoom(1.25)" aria-label="Zoom out">−</button><button (click)="editor.fit()" title="F">Fit</button
     ><button (click)="editor.showLabels = !editor.showLabels" [class.active]="editor.showLabels">Labels</button>
   </div>
-  <div class="axis">X → &nbsp; Z ↓ <span>Height is edited as Y in the inspector</span></div>
+  <div class="axis">{{ editor.orientations[editor.orientation] }} ↑ <span>SC X / Y / Z coordinates are preserved in the inspector and export</span></div>
 </div>
 <div class="hint">Drag background to pan · Scroll to zoom · Arrows move selection · Shift ×10 · F fit · Delete remove</div>

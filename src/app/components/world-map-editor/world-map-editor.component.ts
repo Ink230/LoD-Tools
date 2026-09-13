@@ -7,6 +7,7 @@ import { Diagnostic, diagnostics, entries, parsePreset, SECTIONS, serializePrese
 import { readPackage, safeAssetPath, writePackage } from './world-map-package';
 import { NATIVE_REGISTRY } from './world-map-registry';
 import { graphCoordinates, synchronizeGraph } from './world-map-graph';
+import { orientPoint } from './world-map-view';
 
 interface MapNode {
   element: Element;
@@ -91,7 +92,17 @@ export class WorldMapEditorComponent implements OnInit {
     return Array.from(this.assets.entries());
   }
   get viewBox() {
-    return `${this.view.x} ${this.view.z} ${this.view.width} ${this.view.height}`;
+    const a = orientPoint(this.view.x, this.view.z, this.orientation);
+    const b = orientPoint(this.view.x + this.view.width, this.view.z + this.view.height, this.orientation);
+    return `${Math.min(a.x, b.x)} ${Math.min(a.z, b.z)} ${Math.abs(b.x - a.x)} ${Math.abs(b.z - a.z)}`;
+  }
+  orientation = 0;
+  readonly orientations = ['North', 'East', 'South', 'West'];
+  get mapTransform() {
+    return `rotate(${-this.orientation * 90}) scale(1 -1)`;
+  }
+  labelTransform(x: number, z: number) {
+    return `translate(${x} ${z}) ${this.mapTransform} translate(${-x} ${-z})`;
   }
   get unit() {
     return this.view.width / 1000;
@@ -315,7 +326,7 @@ export class WorldMapEditorComponent implements OnInit {
     point.x = event.clientX;
     point.y = event.clientY;
     const mapped = point.matrixTransform(svg.getScreenCTM().inverse());
-    return { x: mapped.x, z: mapped.y };
+    return orientPoint(mapped.x, mapped.y, this.orientation);
   }
   wheel(event: WheelEvent, svg: HTMLElement | SVGSVGElement) {
     event.preventDefault();
@@ -405,8 +416,9 @@ export class WorldMapEditorComponent implements OnInit {
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
       event.preventDefault();
       const step = event.shiftKey ? 10 : 1;
-      const dx = event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0;
-      const dz = event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0;
+      const delta = orientPoint(event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0, event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0, this.orientation);
+      const dx = delta.x;
+      const dz = delta.z;
       const element = this.pointElement || (this.selected?.tagName === 'node' ? this.selected.querySelector('position') : null);
       if (element)
         this.mutate(() => {

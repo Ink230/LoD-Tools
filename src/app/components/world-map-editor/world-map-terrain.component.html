@@ -15,7 +15,7 @@
       <button (click)="remove()">Remove custom guide</button>
     }
   </div>
-  <p>Authoring only · custom images and transforms stay in this browser, outside .wmap exports. X → / Z ↓; rotation is clockwise about image center.</p>
+  <p>Authoring only · custom images and transforms stay in this browser, outside .wmap exports. Image bounds use SC X/Z coordinates; compass controls orient the entire map.</p>
   @if (!region) {
     <p>Select one region to display its terrain; native regions overlap in world coordinates.</p>
   }
