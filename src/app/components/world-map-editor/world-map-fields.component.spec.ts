@@ -40,7 +40,7 @@ describe('WorldMapFieldsComponent', () => {
     }
   });
 
-  it('adds and removes an explicitly empty service-ID collection', () => {
+  it('adds an empty service-ID collection without a section delete button', () => {
     const fixture = TestBed.configureTestingModule({ imports: [WorldMapFieldsComponent] }).createComponent(WorldMapFieldsComponent);
     const place = parsePreset(
       '<worldMapPreset version="1" id="custom:test"><places><place id="custom:place" legacyIndex="-1" thumbnail="0" services="0"><sounds/></place></places></worldMapPreset>'
@@ -56,9 +56,7 @@ describe('WorldMapFieldsComponent', () => {
     expect(place.querySelectorAll('serviceIds > item')).toHaveLength(0);
 
     const remove = fixture.nativeElement.querySelector('button[aria-label="Remove serviceIds"]') as HTMLButtonElement;
-    remove.click();
-    fixture.detectChanges();
-    expect(place.querySelector('serviceIds')).toBeNull();
+    expect(remove).toBeNull();
   });
 
   it('uses closed named controls for portal effects while accepting external registry IDs', async () => {
@@ -123,5 +121,18 @@ describe('WorldMapFieldsComponent', () => {
     inputs[0].dispatchEvent(new FocusEvent('blur'));
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelectorAll('datalist').length).toBe(0);
+  });
+  it('preserves loaded precision and rounds an edited coordinate to two decimals', () => {
+    const fixture = TestBed.configureTestingModule({ imports: [WorldMapFieldsComponent] }).createComponent(WorldMapFieldsComponent);
+    const point = parsePreset('<worldMapPreset version="1" id="custom:test"><nodes><node id="custom:n"><position x="123.45678" y="4.56789" z="0"/></node></nodes></worldMapPreset>').querySelector('position');
+    fixture.componentRef.setInput('element', point);
+    fixture.componentInstance.mutate.subscribe(action => action());
+    fixture.detectChanges();
+    expect(point.getAttribute('x')).toBe('123.45678');
+    const input = document.createElement('input');
+    input.value = '234.56789';
+    fixture.componentInstance.set('x', { target: input } as unknown as Event);
+    expect(point.getAttribute('x')).toBe('234.57');
+    expect(point.getAttribute('y')).toBe('4.56789');
   });
 });
