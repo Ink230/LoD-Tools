@@ -4,7 +4,7 @@
     <button (click)="editor.navigateEntity(true)" [disabled]="!editor.canNavigateEntity(true)" aria-label="Next entity" title="Next entity">→</button>
   </div>
   @if (editor.selected) {
-    <button (click)="editor.deleteSelected()" aria-label="Delete selected entry">Delete</button>
+    <button data-delete-entity (click)="editor.deleteSelected()" aria-label="Delete selected entry">Delete</button>
   }
 </div>
 @if (editor.selected) {

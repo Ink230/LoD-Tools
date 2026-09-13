@@ -1,12 +1,16 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import type { WorldMapEditorComponent } from './world-map-editor.component';
 
 @Component({
   selector: 'app-world-map-tools',
+  // Editor state is mutated in place, matching the canvas and inspector.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
   template: `@if (editor.toolsOpen) {
-    <div class="tools" [style.left]="'clamp(0px, ' + x + 'px, calc(100% - 42px))'" [style.top]="'clamp(0px, ' + y + 'px, calc(100% - 80px))'" (pointerdown)="$event.stopPropagation()">
+    <div class="tools" [style.left]="'clamp(0px, ' + x + 'px, calc(100% - 42px))'" [style.top]="'clamp(0px, ' + y + 'px, calc(100% - 118px))'" (pointerdown)="$event.stopPropagation()">
       <button class="handle" title="Move tools" aria-label="Move tools" (pointerdown)="begin($event)" (pointermove)="move($event)" (pointerup)="end()" (pointercancel)="end()">⠿</button>
-      <button title="Junction: split a corresponding route pair" aria-label="Junction tool" [class.active]="editor.mode === 'junction'" [attr.aria-pressed]="editor.mode === 'junction'" (click)="editor.mode = editor.mode === 'junction' ? 'select' : 'junction'">
+      <button title="Draw geometry" aria-label="Draw geometry" [class.active]="editor.mode === 'drawGeometry'" [attr.aria-pressed]="editor.mode === 'drawGeometry'" (click)="editor.startGeometryDrawing()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18L10 7L20 14"/><rect x="2" y="16" width="4" height="4"/><rect x="8" y="5" width="4" height="4"/><rect x="18" y="12" width="4" height="4"/></svg></button>
+      <button title="Junction: split a corresponding route pair" aria-label="Junction tool" [class.active]="editor.mode === 'junction'" [attr.aria-pressed]="editor.mode === 'junction'" (click)="editor.toggleJunctionTool()">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18L12 9L21 18M12 9V2"/><circle cx="12" cy="9" r="3"/></svg>
       </button>
     </div>
@@ -37,7 +41,7 @@ export class WorldMapToolsComponent {
   move(event: PointerEvent) {
     if (!this.drag) return;
     this.x = Math.max(0, Math.min(this.drag.width - 42, this.drag.left + event.clientX - this.drag.x));
-    this.y = Math.max(0, Math.min(this.drag.height - 80, this.drag.top + event.clientY - this.drag.y));
+    this.y = Math.max(0, Math.min(this.drag.height - 118, this.drag.top + event.clientY - this.drag.y));
   }
   end() {
     this.drag = undefined;

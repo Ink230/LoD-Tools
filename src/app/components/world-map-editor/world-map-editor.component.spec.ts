@@ -178,4 +178,40 @@ describe('world map graph editing', () => {
     expect(editor.filteredNodes).toHaveLength(1);
     expect(editor.filteredNodes[0]).toMatchObject({ x: 300, z: 300 });
   });
+  it('draws geometry in order and creates a route when finishing at a node', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test"><nodes><node id="custom:end"><position x="100" y="20" z="30"/></node></nodes></worldMapPreset>', 'test.wmap');
+    editor.startGeometryDrawing();
+    editor.drawGeometryPoint(0, 0);
+    editor.drawGeometryPoint(50, 15);
+    editor.pointIndex = 0;
+    editor.drawGeometryPoint(75, 25);
+    expect(editor.handles.map(point => point.x)).toEqual([0, 50, 75]);
+    editor.drawGeometryPoint(100, 30, editor.doc.querySelector('node'));
+    expect(editor.mode).toBe('select');
+    expect(editor.section).toBe('routes');
+    expect(editor.selected.getAttribute('end')).toBe('custom:end');
+    expect(editor.doc.querySelectorAll('nodes > node')).toHaveLength(2);
+    expect(editor.doc.querySelectorAll('geometry > geometry > points > item')).toHaveLength(4);
+    editor.undo();
+    expect(editor.doc.querySelectorAll('routes > route')).toHaveLength(0);
+  });
+  it('finishes free geometry without making a route', () => {
+    editor.startGeometryDrawing();
+    editor.drawGeometryPoint(10, 20);
+    editor.drawGeometryPoint(30, 40);
+    editor.finishGeometryDrawing();
+    expect(editor.mode).toBe('select');
+    expect(editor.doc.querySelectorAll('geometry > geometry')).toHaveLength(1);
+    expect(editor.doc.querySelectorAll('routes > route')).toHaveLength(0);
+  });
+  it('deletes a drawing entity immediately even when its point is selected', () => {
+    editor.startGeometryDrawing();
+    editor.drawGeometryPoint(10, 20);
+    editor.drawGeometryPoint(30, 40);
+    expect(editor.pointIndex).toBe(1);
+    editor.deleteSelected();
+    expect(editor.doc.querySelectorAll('geometry > geometry')).toHaveLength(0);
+    expect(editor.selected).toBeNull();
+    expect(editor.mode).toBe('select');
+  });
 });

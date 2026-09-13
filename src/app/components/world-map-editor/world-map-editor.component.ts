@@ -81,7 +81,7 @@ export class WorldMapEditorComponent implements OnInit {
   selected: Element | null = null;
   search = '';
   region = '';
-  mode: 'select' | 'node' | 'point' | 'junction' = 'select';
+  mode: 'select' | 'node' | 'point' | 'junction' | 'drawGeometry' = 'select';
   tab: 'map' | 'source' | 'assets' = 'map';
   filename = 'world-map.wmap';
   status = 'Load the vanilla preset or import a .wmap to begin';
@@ -212,13 +212,109 @@ export class WorldMapEditorComponent implements OnInit {
       source.parentElement.appendChild(route);
     });
   }
+  private drawingGeometryId?: string;
+  private drawingStartId?: string;
+  startGeometryDrawing() {
+    if (this.mode === 'drawGeometry') { this.finishGeometryDrawing(); return; }
+    this.mode = 'drawGeometry';
+    this.drawingGeometryId = undefined;
+    this.drawingStartId = undefined;
+  }
+  private drawingId(section: string, kind: string) {
+    let index = 1;
+    while (entries(this.doc, section).some(entry => entry.getAttribute('id') === `custom:${kind}_${index}`)) index++;
+    return `custom:${kind}_${index}`;
+  }
+  private appendDrawingEntry(section: string, element: Element) {
+    let container = Array.from(this.root.children).find(child => child.tagName === section);
+    if (!container) container = this.root.appendChild(this.doc.createElement(section));
+    container.appendChild(element);
+  }
+  drawGeometryPoint(x: number, z: number, node?: Element) {
+    let geometry = entries(this.doc, 'geometry').find(entry => entry.getAttribute('id') === this.drawingGeometryId);
+    const finish = !!geometry && !!node;
+    this.mutate(() => {
+      if (!geometry) {
+        geometry = this.doc.createElement('geometry');
+        geometry.setAttribute('id', this.drawingId('geometry', 'geometry'));
+        geometry.appendChild(this.doc.createElement('points'));
+        this.appendDrawingEntry('geometry', geometry);
+        this.drawingGeometryId = geometry.getAttribute('id');
+        this.drawingStartId = node?.getAttribute('id');
+      }
+      const points = geometry.querySelector('points');
+      const point = this.doc.createElement('item');
+      const position = node?.querySelector('position');
+      point.setAttribute('x', position?.getAttribute('x') || String(Math.round(x)));
+      point.setAttribute('y', position?.getAttribute('y') || points.lastElementChild?.getAttribute('y') || '0');
+      point.setAttribute('z', position?.getAttribute('z') || String(Math.round(z)));
+      points.appendChild(point);
+      this.selected = geometry;
+      this.section = 'geometry';
+      this.pointIndex = points.children.length - 1;
+    });
+    if (finish) this.finishGeometryDrawing(node);
+  }
+  finishGeometryDrawing(endNode?: Element) {
+    if (this.mode !== 'drawGeometry') return;
+    const geometry = entries(this.doc, 'geometry').find(entry => entry.getAttribute('id') === this.drawingGeometryId);
+    const points = Array.from(geometry?.querySelectorAll('points > item') || []);
+    if (geometry && points.length < 2) {
+      this.mutate(() => { geometry.remove(); this.selected = null; this.pointIndex = -1; });
+      this.status = 'Geometry needs two points; the unfinished point was discarded.';
+    } else if (geometry && endNode) {
+      this.mutate(() => {
+        let start = entries(this.doc, 'nodes').find(entry => entry.getAttribute('id') === this.drawingStartId);
+        if (!start) {
+          start = this.doc.createElement('node');
+          start.setAttribute('id', this.drawingId('nodes', 'node'));
+          const position = start.appendChild(this.doc.createElement('position'));
+          for (const axis of ['x', 'y', 'z']) position.setAttribute(axis, points[0].getAttribute(axis));
+          this.appendDrawingEntry('nodes', start);
+        } else {
+          // The first point may have been dragged after starting at an existing node.
+          for (const axis of ['x', 'y', 'z']) points[0].setAttribute(axis, start.querySelector('position').getAttribute(axis));
+        }
+        const route = this.doc.importNode(new DOMParser().parseFromString(TEMPLATES['route'], 'application/xml').documentElement, true);
+        route.setAttribute('id', this.drawingId('routes', 'route'));
+        route.setAttribute('geometry', geometry.getAttribute('id'));
+        route.setAttribute('start', start.getAttribute('id'));
+        route.setAttribute('end', endNode.getAttribute('id'));
+        this.appendDrawingEntry('routes', route);
+        this.selected = route;
+        this.section = 'routes';
+        this.pointIndex = -1;
+      });
+    }
+    this.mode = 'select';
+    this.drawingGeometryId = undefined;
+    this.drawingStartId = undefined;
+  }
+  @HostListener('document:pointerdown', ['$event'])
+  finishDrawingOutside(event: PointerEvent) {
+    if ((event.target as Element)?.closest?.('[data-delete-entity]')) return;
+    if (this.mode === 'drawGeometry' && !(event.target as Element)?.closest?.('.canvas-wrap')) this.finishGeometryDrawing();
+  }
   toolsOpen = false;
+  toggleJunctionTool() {
+    this.finishGeometryDrawing();
+    this.mode = this.mode === 'junction' ? 'select' : 'junction';
+  }
   toggleTools() {
+    this.finishGeometryDrawing();
     this.toolsOpen = !this.toolsOpen;
     if (!this.toolsOpen && this.mode === 'junction') this.mode = 'select';
     try { localStorage.setItem('lodtools.world-map.tools-open', String(this.toolsOpen)); } catch { /* Tools work without storage. */ }
   }
   clickMapRoute(route: Element, event: MouseEvent, map: HTMLElement | SVGSVGElement) {
+    if (this.mode === 'drawGeometry') {
+      if (event.ctrlKey) this.finishGeometryDrawing();
+      else {
+        const point = this.coordinates(event, map);
+        this.drawGeometryPoint(point.x, point.z);
+      }
+      return;
+    }
     if (this.mode !== 'junction') {
       this.selectMapRoute(route);
       return;
@@ -592,8 +688,8 @@ export class WorldMapEditorComponent implements OnInit {
       this.pointIndex = -1;
     });
   }
-  deleteSelected() {
-    if (this.pointElement) {
+  deleteSelected(entity = true) {
+    if (!entity && this.pointElement) {
       this.removePoint();
       return;
     }
@@ -615,6 +711,12 @@ export class WorldMapEditorComponent implements OnInit {
         removal.setAttribute('id', id);
         removals.appendChild(removal);
       }
+      if (this.selected.getAttribute('id') === this.drawingGeometryId) {
+        this.mode = 'select';
+        this.drawingGeometryId = undefined;
+        this.drawingStartId = undefined;
+      }
+      this.pointIndex = -1;
       this.selected.remove();
       this.selected = null;
     });
@@ -671,6 +773,13 @@ export class WorldMapEditorComponent implements OnInit {
       return;
     }
     const point = this.coordinates(event, svg);
+    if (this.mode === 'drawGeometry' && event.button === 0) {
+      if (event.ctrlKey) { this.finishGeometryDrawing(); return; }
+      if (kind !== 'point' || !element) {
+        this.drawGeometryPoint(point.x, point.z, element);
+        return;
+      }
+    }
     if (!element && event.button === 0 && this.mode === 'node') {
       this.section = 'nodes';
       this.createEntry();
@@ -782,7 +891,7 @@ export class WorldMapEditorComponent implements OnInit {
     }
     if (event.key === 'Delete' || event.key === 'Backspace') {
       event.preventDefault();
-      this.deleteSelected();
+      this.deleteSelected(false);
     }
     if (event.key.toLowerCase() === 'f') this.fit();
     if (event.key === '+' || event.key === '=') this.zoom(0.8);
