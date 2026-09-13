@@ -144,7 +144,7 @@
       <button (click)="editor.labelMenuOpen = false">Close</button>
     </fieldset>
   }
-    <div class="axis" title="SC X / Y / Z coordinates are preserved in the inspector and export">
+    <div class="axis" role="button" tabindex="0" aria-label="Reset map to north" title="Reset to north. SC X / Y / Z coordinates are preserved in the inspector and export" style="cursor: pointer" (click)="editor.orientation = 0; editor.stageRotation = 0" (keydown.enter)="editor.orientation = 0; editor.stageRotation = 0" (keydown.space)="$event.preventDefault(); editor.orientation = 0; editor.stageRotation = 0">
     <svg width="72" height="72" viewBox="0 0 20 20" fill="none" role="img" aria-label="Compass. SC X / Y / Z coordinates are preserved in the inspector and export">
       <circle cx="10" cy="10" r="10" fill="#315b3b" opacity="0.40"/>
       <circle cx="10" cy="10" r="8" stroke="currentColor" opacity="0.5"/>
