@@ -20,9 +20,9 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
               <button class="go" type="button" [attr.aria-label]="'Go to ' + attribute.value" (click)="navigate.emit(destination)">go</button>
             }
             @if (closedChoices(attribute.name).length) {
-            <select [ngModel]="attribute.value" [disabled]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label">
+            <select [value]="attribute.value" [disabled]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label">
               @for (choice of closedChoices(attribute.name); track choice) {
-                <option [value]="choice">{{ choiceLabel(attribute.name, choice) }}</option>
+                <option [value]="choice" [selected]="choice === attribute.value">{{ choiceLabel(attribute.name, choice) }}</option>
               }
             </select>
           } @else if (choices(attribute.name).length || reference(attribute.name)) {
@@ -87,9 +87,9 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
               <button class="go" type="button" [attr.aria-label]="'Go to ' + attribute.value" (click)="navigate.emit(destination)">go</button>
             }
             @if (closedChoices(attribute.name).length) {
-                  <select [ngModel]="attribute.value" [disabled]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label">
+                  <select [value]="attribute.value" [disabled]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label">
                     @for (choice of closedChoices(attribute.name); track choice) {
-                      <option [value]="choice">{{ choiceLabel(attribute.name, choice) }}</option>
+                      <option [value]="choice" [selected]="choice === attribute.value">{{ choiceLabel(attribute.name, choice) }}</option>
                     }
                   </select>
                 } @else {

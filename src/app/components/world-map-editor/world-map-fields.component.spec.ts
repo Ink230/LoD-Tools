@@ -96,4 +96,16 @@ describe('WorldMapFieldsComponent', () => {
     expect(rows.length).toBe(4);
     for (const row of rows) expect(row.querySelectorAll('input').length).toBe(3);
   });
+  it('updates direction immediately when a different route is selected', () => {
+    const fixture = TestBed.configureTestingModule({ imports: [WorldMapFieldsComponent] }).createComponent(WorldMapFieldsComponent);
+    const doc = parsePreset('<worldMapPreset version="1" id="custom:test"><routes><route id="custom:forward" direction="1"/><route id="custom:reverse" direction="-1"/></routes><nodes><node id="custom:node"/></nodes></worldMapPreset>');
+    const [forward, reverse] = Array.from(doc.querySelectorAll('route'));
+    for (const route of [reverse, forward, reverse]) {
+      fixture.componentRef.setInput('element', doc.querySelector('node'));
+      fixture.detectChanges();
+      fixture.componentRef.setInput('element', route);
+      fixture.detectChanges();
+      expect((fixture.nativeElement.querySelector('select[aria-label="Direction"]') as HTMLSelectElement).value).toBe(route.getAttribute('direction'));
+    }
+  });
 });
