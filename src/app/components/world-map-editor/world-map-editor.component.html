@@ -41,8 +41,7 @@
     </div>
     <fieldset [disabled]="tab !== 'map'" [style.display]="tab === 'map' ? 'flex' : 'none'" style="align-items: center; justify-content: center; flex: 1; flex-wrap: wrap; gap: 6px; border: 0; padding: 0; margin: 0; min-width: 0" aria-label="Map controls">
           <button (click)="addRoute()">+ Route</button>
-      <button [disabled]="!selectedGeometry" [class.active]="mode === 'point'" (click)="mode = 'point'">+ Point</button>
-    
+      
     <span style="position: relative; display: inline-flex; margin-left: 18px">
     <select aria-label="Filter region" [ngModel]="region" (ngModelChange)="changeRegion($event)" [disabled]="tab !== 'map'" style="appearance: none; box-sizing: border-box; width: 220px; min-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 7px 34px 7px 12px; background: var(--wmap-color-4); color: var(--wmap-color-2); border: 1px solid var(--wmap-color-3); border-radius: 5px">
       <option value="">All regions</option>
