@@ -127,6 +127,8 @@ code {
   grid-template-columns: 220px minmax(0, 1fr) 310px;
   border: 1px solid var(--line);
   border-top: 0;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
   height: calc(100vh - 310px);
   min-height: 560px;
 }
