@@ -179,7 +179,7 @@ export class WorldMapEditorComponent implements OnInit {
     return this.root.getAttribute('name') || 'Untitled world map';
   }
   get items() {
-    return entries(this.doc, this.section).filter((e) => !this.search || (e.getAttribute('id') + ' ' + e.getAttribute('name')).toLowerCase().includes(this.search.toLowerCase()));
+    return entries(this.doc, this.section).sort((a, b) => (a.getAttribute('id') || '').localeCompare(b.getAttribute('id') || '', undefined, { numeric: true })).filter((e) => !this.search || (e.getAttribute('id') + ' ' + e.getAttribute('name')).toLowerCase().includes(this.search.toLowerCase()));
   }
   get regions() {
     return entries(this.doc, 'regions');
@@ -342,6 +342,7 @@ export class WorldMapEditorComponent implements OnInit {
     }
     for (const [section, ids] of Object.entries(this.nativeRegistry)) this.registry[section] = Array.from(new Set([...(this.registry[section] || []), ...ids]));
     this.registry['assetPaths'] = Array.from(this.assets.keys());
+    for (const ids of Object.values(this.registry)) ids.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
     this.nodes = entries(this.doc, 'nodes').map((element) => ({
       element,
       id: element.getAttribute('id'),
