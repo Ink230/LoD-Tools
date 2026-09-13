@@ -1,0 +1,25 @@
+<details>
+  <summary>Terrain guide · {{ !region ? 'choose a region' : customGuide ? 'custom image' : active ? 'native terrain' : 'no image' }}</summary>
+  <div class="controls">
+    <label><input type="checkbox" [(ngModel)]="visible" /> Show terrain</label>
+    <label>Opacity <input aria-label="Terrain opacity" type="range" min="0" max="1" step="0.05" [(ngModel)]="opacity" /></label>
+    <label class="import"
+      >Import image <input aria-label="Import terrain guide image" type="file" accept="image/png,image/jpeg,image/webp" [disabled]="!region" (change)="importImage($event)"
+    /></label>
+    @if (customGuide; as guide) {
+      @for (field of fields; track field) {
+        <label
+          >{{ field === 'rotation' ? 'Rotation °' : field }}<input type="number" [attr.aria-label]="'Guide ' + field" [ngModel]="guide[field] ?? 0" (ngModelChange)="update(field, $event)"
+        /></label>
+      }
+      <button (click)="remove()">Remove custom guide</button>
+    }
+  </div>
+  <p>Authoring only · custom images and transforms stay in this browser, outside .wmap exports. X → / Z ↓; rotation is clockwise about image center.</p>
+  @if (!region) {
+    <p>Select one region to display its terrain; native regions overlap in world coordinates.</p>
+  }
+  @if (message) {
+    <p role="status">{{ message }}</p>
+  }
+</details>

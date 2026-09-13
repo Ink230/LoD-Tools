@@ -1,0 +1,76 @@
+{
+  "guides": [
+    {
+      "region": "lod:wmap_region_south_serdio",
+      "image": "assets/world-map/terrain/south-serdio.png",
+      "x": -1096.0,
+      "z": -1096.0,
+      "width": 2192.0,
+      "height": 2192.0,
+      "triangles": 1893
+    },
+    {
+      "region": "lod:wmap_region_north_serdio",
+      "image": "assets/world-map/terrain/north-serdio.png",
+      "x": -1096.0,
+      "z": -1096.0,
+      "width": 2192.0,
+      "height": 2192.0,
+      "triangles": 2281
+    },
+    {
+      "region": "lod:wmap_region_tiberoa",
+      "image": "assets/world-map/terrain/tiberoa.png",
+      "x": -1096.0,
+      "z": -1096.0,
+      "width": 2192.0,
+      "height": 2192.0,
+      "triangles": 1698
+    },
+    {
+      "region": "lod:wmap_region_illisa_bay",
+      "image": "assets/world-map/terrain/illisa-bay.png",
+      "x": -1096.0,
+      "z": -1096.0,
+      "width": 2192.0,
+      "height": 2192.0,
+      "triangles": 1270
+    },
+    {
+      "region": "lod:wmap_region_mille_seseau",
+      "image": "assets/world-map/terrain/mille-seseau.png",
+      "x": -1096.0,
+      "z": -1096.0,
+      "width": 2192.0,
+      "height": 2192.0,
+      "triangles": 2913
+    },
+    {
+      "region": "lod:wmap_region_gloriano",
+      "image": "assets/world-map/terrain/gloriano.png",
+      "x": -1096.0,
+      "z": -1096.0,
+      "width": 2192.0,
+      "height": 2192.0,
+      "triangles": 1990
+    },
+    {
+      "region": "lod:wmap_region_death_frontier",
+      "image": "assets/world-map/terrain/death-frontier.png",
+      "x": -1096.0,
+      "z": -1096.0,
+      "width": 2192.0,
+      "height": 2192.0,
+      "triangles": 1511
+    },
+    {
+      "region": "lod:wmap_region_endiness",
+      "image": "assets/world-map/terrain/endiness.png",
+      "x": -1366.0,
+      "z": -1366.0,
+      "width": 2732.0,
+      "height": 2732.0,
+      "triangles": 2795
+    }
+  ]
+}
