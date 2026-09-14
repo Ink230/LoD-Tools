@@ -51,6 +51,16 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
         </div>
       }
 
+      @if (element.tagName === 'coolonDestination') {
+        <div class="fields coordinates">
+          @for (axis of ['x', 'y', 'z']; track axis) {
+            <div class="field">
+              <span class="field-copy"><strong>{{ axis.toUpperCase() }}</strong></span>
+              <input type="number" step="0.01" [disabled]="axis === 'z'" [ngModel]="axis === 'z' ? '' : element.getAttribute(axis)" (change)="set(axis, $event)" [attr.aria-label]="axis.toUpperCase()" />
+            </div>
+          }
+        </div>
+      }
       @for (attribute of missingAttributes; track attribute) {
         <button type="button" (click)="addAttribute(attribute)">+ {{ presentation(attribute).label }}</button>
       }
@@ -220,7 +230,7 @@ export class WorldMapFieldsComponent {
     const element = entries(this.element.ownerDocument, section).find((entry) => entry.getAttribute('id') === value);
     return element ? { element, section } : undefined;
   }
-  get normalAttributes() { return this.attributes.filter((attribute) => !isCompatibilityAttribute(this.element, attribute.name)); }
+  get normalAttributes() { return this.attributes.filter((attribute) => !isCompatibilityAttribute(this.element, attribute.name) && !(this.element.tagName === 'coolonDestination' && ['x', 'y'].includes(attribute.name))); }
   get compatibilityAttributes() { return this.attributes.filter((attribute) => isCompatibilityAttribute(this.element, attribute.name)); }
   get children() { return this.element.tagName === 'worldMapPreset' ? [] : Array.from(this.element.children); }
   get normalChildren() { return this.children.filter((child) => !isCompatibilityChild(this.element, child)); }
