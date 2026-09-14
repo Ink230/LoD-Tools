@@ -95,6 +95,40 @@ describe('world map XML document and asset package', () => {
     const unresolved = diagnostics(doc, []);
     expect(unresolved.some((issue) => issue.message.includes('Unknown encounters reference "lod:sea_dragon"') && issue.message.includes('Choose an existing encounters ID'))).toBe(true);
   });
+
+  it('preserves omitted lighting and encounter percentages while validating authored values', () => {
+    const oldPreset = parsePreset('<worldMapPreset version="1" id="custom:test"><regions><region id="custom:region"><camera projectionDistance="320"><viewpoint x="0" y="0" z="0"/><refpoint x="0" y="0" z="0"/></camera></region></regions><encounterPools><encounterPool id="custom:pool"><encounters><item id="lod:a"/><item id="lod:b"/><item id="lod:c"/><item id="lod:d"/></encounters></encounterPool></encounterPools></worldMapPreset>');
+    expect(oldPreset.querySelector('lighting')).toBeNull();
+    expect(oldPreset.querySelector('percentages')).toBeNull();
+    expect(diagnostics(oldPreset, [], { encounters: ['lod:a', 'lod:b', 'lod:c', 'lod:d'] })).toEqual([]);
+    expect(parsePreset(serializePreset(oldPreset)).querySelector('lighting')).toBeNull();
+
+    const flatBounds = parsePreset('<worldMapPreset version="1" id="custom:test"><regions><region id="custom:region"><camera projectionDistance="320"><viewpoint x="0" y="0" z="0"/><refpoint x="0" y="0" z="0"/><minimum x="1" y="0" z="0"/><maximum x="1" y="1" z="1"/></camera></region></regions></worldMapPreset>');
+    expect(diagnostics(flatBounds, [])).toEqual([]);
+
+    const invalid = parsePreset('<worldMapPreset version="1" id="custom:test"><regions><region id="custom:region"><camera projectionDistance="0"><viewpoint x="0" y="0" z="0"/><refpoint x="0" y="0" z="0"/><minimum x="2" y="0" z="0"/><maximum x="1" y="1" z="1"/><lighting overviewBrightness="2" transitionBrightness="0" transitionStep="0"><ambient x="1.1" y="0" z="0"/><lights><item><direction x="0" y="0" z="0"/><colour x="2" y="0" z="0"/></item></lights></lighting></camera></region></regions><encounterPools><encounterPool id="custom:pool"><encounters><item id="lod:a"/><item id="lod:b"/><item id="lod:c"/><item id="lod:d"/></encounters><percentages><item value="50"/><item value="20"/><item value="20"/><item value="20"/></percentages></encounterPool></encounterPools></worldMapPreset>');
+    const messages = diagnostics(invalid, [], { encounters: ['lod:a', 'lod:b', 'lod:c', 'lod:d'] }).map((issue) => issue.message);
+    expect(messages).toContain('Camera projection distance must be positive');
+    expect(messages).toContain('Camera minimum bounds must not exceed maximum bounds on any axis');
+    expect(messages).toContain('Lighting overview brightness must be finite from 0 through 1');
+    expect(messages).toContain('Lighting transition brightness must be finite from overview brightness through 1');
+    expect(messages).toContain('Lighting transition step must be positive and finite');
+    expect(messages).toContain('Lighting ambient RGB components must be finite from 0 through 1');
+    expect(messages).toContain('Lighting requires exactly three lights with finite nonzero directions and RGB colours from 0 through 1');
+    expect(messages).toContain('Encounter percentages require exactly four integer values from 0 through 100 totaling 100');
+
+    const missingValues = parsePreset('<worldMapPreset version="1" id="custom:test"><regions><region id="custom:region"><camera projectionDistance="320"><viewpoint x="0" y="0" z="0"/><refpoint x="0" y="0" z="0"/><lighting overviewBrightness="" transitionStep="NaN"><ambient x="" y="0" z="0"/><lights><item><direction x="1" z="0"/><colour x="0" y="0"/></item><item><direction x="1" y="0" z="0"/><colour x="0" y="0" z="0"/></item><item><direction x="1" y="0" z="0"/><colour x="0" y="0" z="0"/></item></lights></lighting></camera></region></regions><encounterPools><encounterPool id="custom:pool"><encounters><item id="lod:a"/><item id="lod:b"/><item id="lod:c"/><item id="lod:d"/></encounters><percentages><item value="35.0"/><item value="3.5e1"/><item value=""/></percentages></encounterPool></encounterPools></worldMapPreset>');
+    const missingMessages = diagnostics(missingValues, [], { encounters: ['lod:a', 'lod:b', 'lod:c', 'lod:d'] }).map((issue) => issue.message);
+    expect(missingMessages).toContain('Lighting overview brightness must be finite from 0 through 1');
+    expect(missingMessages).toContain('Lighting transition brightness must be finite from overview brightness through 1');
+    expect(missingMessages).toContain('Lighting transition step must be positive and finite');
+    expect(missingMessages).toContain('Lighting ambient RGB components must be finite from 0 through 1');
+    expect(missingMessages).toContain('Lighting requires exactly three lights with finite nonzero directions and RGB colours from 0 through 1');
+    expect(missingMessages).toContain('Encounter percentages require exactly four integer values from 0 through 100 totaling 100');
+
+    const endpointValues = parsePreset('<worldMapPreset version="1" id="custom:test"><regions><region id="custom:region"><camera projectionDistance="320"><viewpoint x="0" y="0" z="0"/><refpoint x="0" y="0" z="0"/><lighting overviewBrightness="0" transitionBrightness="1" transitionStep="0.1"><ambient x="0" y="0" z="0"/><lights><item><direction x="1" y="0" z="0"/><colour x="1" y="1" z="1"/></item><item><direction x="1" y="0" z="0"/><colour x="1" y="1" z="1"/></item><item><direction x="1" y="0" z="0"/><colour x="1" y="1" z="1"/></item></lights></lighting></camera></region></regions><encounterPools><encounterPool id="custom:pool"><encounters><item id="lod:a"/><item id="lod:b"/><item id="lod:c"/><item id="lod:d"/></encounters><percentages><item value="0"/><item value="0"/><item value="0"/><item value="100"/></percentages></encounterPool></encounterPools></worldMapPreset>');
+    expect(diagnostics(endpointValues, [], { encounters: ['lod:a', 'lod:b', 'lod:c', 'lod:d'] })).toEqual([]);
+  });
   it('renames typed references without changing matching IDs in other registries', () => {
     const doc = parsePreset(SOURCE);
     entries(doc, 'routes')[0].setAttribute('avatar', 'custom:a');

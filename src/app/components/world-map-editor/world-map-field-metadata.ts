@@ -3,6 +3,7 @@ export interface FieldPresentation {
   description?: string;
   numeric?: boolean;
   integer?: boolean;
+  preservePrecision?: boolean;
 }
 
 const FIELDS: Record<string, FieldPresentation> = {
@@ -38,6 +39,9 @@ const FIELDS: Record<string, FieldPresentation> = {
   speedMultiplier: { label: 'Speed multiplier', description: 'Multiplier applied to avatar movement speed', numeric: true },
   progress: { label: 'Route progress', description: 'Position along the route from 0 to 1', numeric: true },
   projectionDistance: { label: 'Projection distance', description: 'World-map camera projection distance', numeric: true },
+  overviewBrightness: { label: 'Overview brightness', description: 'Lighting brightness while the overview map is active, from 0 through 1', numeric: true, preservePrecision: true },
+  transitionBrightness: { label: 'Transition brightness', description: 'Boundary brightness where dimming snaps to overview brightness and return fading begins; it must be from overview brightness through 1', numeric: true, preservePrecision: true },
+  transitionStep: { label: 'Transition step', description: 'Positive lighting transition amount applied each update', numeric: true, preservePrecision: true },
   order: { label: 'Order', description: 'Stable evaluation and display order', numeric: true, integer: true },
   storyFlag: { label: 'Story flag', description: 'Retail story progression flag', numeric: true, integer: true },
 };
@@ -75,6 +79,7 @@ export function fieldPresentation(element: Element, attribute: string): FieldPre
   }
   if (element.tagName === 'item' && attribute === 'value' && element.parentElement?.tagName === 'sounds')
     return { label: 'Native sound index', description: 'Retail sound index used only when sound IDs are absent', numeric: true, integer: true };
+  if (element.tagName === 'item' && attribute === 'value' && element.parentElement?.tagName === 'percentages') return { label: 'Encounter percentage', description: 'Selection chance for this encounter slot; all four slots must total 100%', numeric: true, integer: true, preservePrecision: true };
   if (attribute === 'nativeIndex') {
     if (element.tagName === 'thumbnailDefinition')
       return { label: 'Native thumbnail index', description: 'Retail thumbnail file index; use -1 when an asset or provider supplies the image', numeric: true, integer: true };
@@ -84,6 +89,11 @@ export function fieldPresentation(element: Element, attribute: string): FieldPre
       return { label: 'Native battle-stage index', description: 'Retail battle stage represented by this registry ID; -1 selects the default world-map stage', numeric: true, integer: true };
   }
   if (['x', 'y', 'z'].includes(attribute)) {
+    if (element.tagName === 'ambient' || element.tagName === 'colour') {
+      const channel = ({ x: 'Red', y: 'Green', z: 'Blue' } as Record<string, string>)[attribute];
+      return { label: `${channel} (RGB)`, description: `${element.tagName === 'ambient' ? 'Ambient' : 'Light colour'} ${channel.toLowerCase()} component from 0 through 1`, numeric: true, preservePrecision: true };
+    }
+    if (element.tagName === 'direction') return { label: `Direction ${attribute.toUpperCase()}`, description: 'Light direction component; the full direction must not be zero', numeric: true, preservePrecision: true };
     if (['position', 'translation', 'viewpoint', 'refpoint', 'overviewPosition', 'minimum', 'maximum', 'visualOffset'].includes(element.tagName))
       return { label: attribute.toUpperCase(), description: attribute === 'y' ? 'World-space height coordinate' : `World-space ${attribute.toUpperCase()} coordinate`, numeric: true };
     if (element.tagName === 'item' && ['points', 'mapPositions'].includes(element.parentElement?.tagName))

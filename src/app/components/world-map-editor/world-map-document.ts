@@ -179,6 +179,10 @@ export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegist
   const add = (element: Element, message: string, severity: 'error' | 'warning' = 'error') => {
     if (!result.some((issue) => issue.message === message)) result.push({ element, message, severity });
   };
+  const finiteAttribute = (element: Element, attribute: string) => {
+    const value = element.getAttribute(attribute);
+    return value !== null && value.trim() !== '' && Number.isFinite(Number(value));
+  };
   if (!/^[a-z0-9_.-]+:[a-z0-9_./-]+$/.test(doc.documentElement.getAttribute('id') || '')) add(doc.documentElement, 'Preset ID must use namespace:entry syntax');
   for (const section of Array.from(doc.documentElement.children)) {
     if (!(section.tagName in SECTIONS)) add(section, `Unknown section ${section.tagName}; runtime rejects unknown fields`);
@@ -205,8 +209,45 @@ export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegist
     }
     if (element.tagName === 'geometry' && element.hasAttribute('id') && element.querySelectorAll('points > item').length < 2) add(element, 'Geometry needs at least two points');
     if (element.tagName === 'encounterPool' && element.querySelectorAll('encounters > item').length !== 4) add(element, 'Encounter pools require exactly four encounter IDs');
+    if (element.tagName === 'encounterPool' && element.querySelector('percentages')) {
+      const percentages = Array.from(element.querySelectorAll(':scope > percentages > item'));
+      const rawValues = percentages.map((item) => item.getAttribute('value') || '');
+      const values = rawValues.map(Number);
+      if (percentages.length !== 4 || rawValues.some((value) => !/^[-+]?\d+$/.test(value)) || values.some((value) => value < 0 || value > 100) || values.reduce((sum, value) => sum + value, 0) !== 100)
+        add(element, 'Encounter percentages require exactly four integer values from 0 through 100 totaling 100');
+    }
     if (element.tagName === 'camera' && Boolean(element.querySelector('minimum')) !== Boolean(element.querySelector('maximum')))
       add(element, 'Camera minimum and maximum bounds must be supplied together');
+    if (element.tagName === 'camera' && (!element.hasAttribute('projectionDistance') || Number(element.getAttribute('projectionDistance')) <= 0))
+      add(element, 'Camera projection distance must be positive');
+    if (element.tagName === 'camera' && element.querySelector('minimum') && element.querySelector('maximum')) {
+      const minimum = element.querySelector('minimum')!;
+      const maximum = element.querySelector('maximum')!;
+      if (['x', 'y', 'z'].some((axis) => Number(minimum.getAttribute(axis)) > Number(maximum.getAttribute(axis))))
+        add(element, 'Camera minimum bounds must not exceed maximum bounds on any axis');
+    }
+    if (element.tagName === 'lighting') {
+      const brightness = Number(element.getAttribute('overviewBrightness'));
+      const transitionBrightness = Number(element.getAttribute('transitionBrightness'));
+      const transitionStep = Number(element.getAttribute('transitionStep'));
+      const ambient = element.querySelector(':scope > ambient');
+      const lights = Array.from(element.querySelectorAll(':scope > lights > item'));
+      if (!finiteAttribute(element, 'overviewBrightness') || brightness < 0 || brightness > 1)
+        add(element, 'Lighting overview brightness must be finite from 0 through 1');
+      if (!finiteAttribute(element, 'transitionBrightness') || transitionBrightness < 0 || transitionBrightness > 1 || transitionBrightness < brightness)
+        add(element, 'Lighting transition brightness must be finite from overview brightness through 1');
+      if (!finiteAttribute(element, 'transitionStep') || transitionStep <= 0)
+        add(element, 'Lighting transition step must be positive and finite');
+      if (!ambient || ['x', 'y', 'z'].some((axis) => !finiteAttribute(ambient!, axis) || Number(ambient!.getAttribute(axis)) < 0 || Number(ambient!.getAttribute(axis)) > 1))
+        add(element, 'Lighting ambient RGB components must be finite from 0 through 1');
+      if (lights.length !== 3 || lights.some((light) => {
+        const direction = light.querySelector(':scope > direction');
+        const colour = light.querySelector(':scope > colour');
+        const directionValues = ['x', 'y', 'z'].map((axis) => Number(direction?.getAttribute(axis)));
+        return !direction || !colour || ['x', 'y', 'z'].some((axis) => !finiteAttribute(direction!, axis)) || directionValues.every((value) => value === 0)
+          || ['x', 'y', 'z'].some((axis) => !finiteAttribute(colour!, axis) || Number(colour!.getAttribute(axis)) < 0 || Number(colour!.getAttribute(axis)) > 1);
+      })) add(element, 'Lighting requires exactly three lights with finite nonzero directions and RGB colours from 0 through 1');
+    }
     if (element.tagName === 'route' && !['1', '-1'].includes(element.getAttribute('direction'))) add(element, 'Route direction must be 1 or -1');
     if (element.tagName === 'portal' && element.hasAttribute('atmosphere') && !['NONE', 'CLOUDS', 'SNOW'].includes(element.getAttribute('atmosphere')))
       add(element, 'atmosphere must be NONE, CLOUDS or SNOW');
@@ -250,6 +291,8 @@ export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegist
 
 export function childTemplate(parent: Element, name?: string): string {
   const tag = name || 'item';
+  if (parent.tagName === 'camera' && tag === 'lighting') return '<lighting overviewBrightness="0.125" transitionBrightness="0.25" transitionStep="0.140625"><ambient x="0.375" y="0.375" z="0.375"/><lights><item><direction x="0.24414062" y="0.024414062" z="0"/><colour x="0.125" y="0.125" z="0.125"/></item><item><direction x="0.24414062" y="0.024414062" z="0"/><colour x="0.125" y="0.125" z="0.125"/></item><item><direction x="0.24414062" y="0.024414062" z="0"/><colour x="0.125" y="0.125" z="0.125"/></item></lights></lighting>';
+  if (parent.tagName === 'encounterPool' && tag === 'percentages') return '<percentages><item value="35"/><item value="35"/><item value="20"/><item value="10"/></percentages>';
   if (name && ['position', 'translation', 'viewpoint', 'refpoint', 'overviewPosition', 'minimum', 'maximum', 'visualOffset', 'scale'].includes(name)) return `<${name} ${POINT}/>`;
   if (name === 'assets')
     return parent.tagName === 'avatar'

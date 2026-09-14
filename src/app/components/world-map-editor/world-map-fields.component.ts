@@ -62,9 +62,15 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
           }
         </div>
       }
-      @for (attribute of missingAttributes; track attribute) {
-        <button type="button" (click)="addAttribute(attribute)">+ {{ presentation(attribute).label }}</button>
-      }
+    @for (attribute of missingAttributes; track attribute) {
+      <button type="button" (click)="addAttribute(attribute)">+ {{ presentation(attribute).label }}</button>
+    }
+    @if (element.tagName === 'encounterPool') {
+      <div class="field-section encounter-percentages">
+        <div class="section-heading">Effective encounter percentages</div>
+        <small>Slot 1: {{ effectiveEncounterPercentages[0] }}% · Slot 2: {{ effectiveEncounterPercentages[1] }}% · Slot 3: {{ effectiveEncounterPercentages[2] }}% · Slot 4: {{ effectiveEncounterPercentages[3] }}%</small>
+      </div>
+    }
 
       @for (child of normalChildren; track child) {
         @if (child.tagName === 'item') {
@@ -254,7 +260,8 @@ export class WorldMapFieldsComponent {
       region: ['assets'],
       avatar: ['assets'],
       traversalProfile: ['visualOffset'],
-      camera: ['overviewPosition', 'minimum', 'maximum'],
+      camera: ['overviewPosition', 'minimum', 'maximum', 'lighting'],
+      encounterPool: ['percentages'],
     };
     return (options[this.element.tagName] || []).filter((name) => !this.children.some((child) => child.tagName === name));
   }
@@ -306,7 +313,7 @@ export class WorldMapFieldsComponent {
   set(attribute: string, event: Event) {
     if (this.locked(attribute)) return;
     const input = event.target as HTMLInputElement;
-    const value = this.presentation(attribute).numeric && input.value.trim() && Number.isFinite(Number(input.value)) ? String(authorNumber(Number(input.value))) : input.value;
+    const value = this.presentation(attribute).numeric && !this.presentation(attribute).preservePrecision && input.value.trim() && Number.isFinite(Number(input.value)) ? String(authorNumber(Number(input.value))) : input.value;
     if (value !== input.value) input.value = value;
     input.setCustomValidity('');
     this.mutate.emit(() => {
@@ -324,12 +331,20 @@ export class WorldMapFieldsComponent {
   removeAttribute(attribute: string) { this.mutate.emit(() => this.element.removeAttribute(attribute)); }
   canRemove(child: Element) {
     if (['serviceIds', 'soundIds', 'sounds'].includes(child.tagName)) return false;
+    if (['lights', 'percentages'].includes(this.element.tagName) && child.tagName === 'item') return false;
     if (this.element.tagName === 'points' && (child === this.element.firstElementChild || child === this.element.lastElementChild)) return false;
-    return ['item', 'capability', 'assets', 'visualOffset', 'overviewPosition', 'minimum', 'maximum', 'serviceIds', 'soundIds'].includes(child.tagName) || this.element.tagName === 'portals';
+    return ['item', 'capability', 'assets', 'visualOffset', 'overviewPosition', 'minimum', 'maximum', 'lighting', 'percentages', 'serviceIds', 'soundIds'].includes(child.tagName) || this.element.tagName === 'portals';
   }
   locked(attribute: string) {
     const index = Number(this.element.getAttribute('legacyIndex'));
     return this.element.tagName === 'portal' && this.element.hasAttribute('legacyIndex') && index >= 0 && index < 256 && ['id', 'legacyIndex'].includes(attribute);
+  }
+
+  get effectiveEncounterPercentages(): string[] {
+    const percentages = this.element.querySelector(':scope > percentages');
+    if (!percentages) return ['35', '35', '20', '10'];
+    const values = Array.from(percentages.querySelectorAll(':scope > item')).map((item) => item.getAttribute('value')?.trim() || 'invalid');
+    return [0, 1, 2, 3].map((index) => values[index] || 'invalid');
   }
   removeChild(child: Element, event: Event) {
     event.preventDefault();
