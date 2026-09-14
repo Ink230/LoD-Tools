@@ -56,6 +56,15 @@ const COMPATIBILITY_CHILDREN: Record<string, string[]> = {
 };
 
 export function fieldPresentation(element: Element, attribute: string): FieldPresentation {
+  if (element.tagName === 'coolonDestination') {
+    const fields: Record<string, FieldPresentation> = {
+      defaultDestination: { label: 'Default Destination', description: 'Destination initially selected when opening Coolon travel from this origin. It does not automatically travel there; the player can select another destination.' },
+      opensMenuOnArrival: { label: 'Opens Menu On Arrival', description: 'Automatically opens the Coolon travel menu when entering the world map from the submap exit matching this portal\'s arrival mapping. This controls opening the menu, not where a Coolon flight lands.' },
+      order: { label: 'Order', description: 'Position in the ordered Coolon destination list; lower values come first. Each destination must have a unique order. This is not its map position or flight priority.', numeric: true, integer: true },
+      worldMapArrival: { label: 'World Map Arrival', description: 'When flying to this destination: true returns to the world map using the portal\'s arrival mapping; false enters the submap specified by its departure mapping. Separate from automatically opening the Coolon menu.' },
+    };
+    if (fields[attribute]) return fields[attribute];
+  }
   if (element.tagName === 'item' && attribute === 'id') {
     const parent = element.parentElement?.tagName;
     if (parent === 'serviceIds') return { label: 'Service', description: 'World-map service definition registry ID' };
