@@ -52,7 +52,7 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
       }
 
       @if (element.tagName === 'coolonDestination') {
-        <strong title="X and Y position this destination in Coolon's travel menu. Z is unused. The Position section below contains world-space coordinates.">Coolon menu coordinates</strong>
+        <strong class="section-heading" title="X and Y position this destination in Coolon's travel menu. Z is unused. The Position section below contains world-space coordinates.">Coolon menu coordinates</strong>
         <div class="fields coordinates">
           @for (axis of ['x', 'y', 'z']; track axis) {
             <div class="field">
