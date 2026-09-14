@@ -1,3 +1,5 @@
+import { WorldMapControlsComponent } from './world-map-controls.component';
+import { WorldMapKeybindings } from './world-map-keybindings';
 import { authorNumber } from './world-map-number';
 import { WorldMapConfigComponent } from './world-map-config.component';
 import { splitJunction } from './world-map-junction';
@@ -46,7 +48,7 @@ interface EditorSnapshot {
   // XML DOM nodes mutate in place; refresh this isolated editor subtree when its owner changes.
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default,
-  imports: [WorldMapConfigComponent, WorldMapTerrainComponent, FormsModule, WorldMapInspectorComponent, WorldMapCanvasComponent, WorldMapDocumentPanelsComponent],
+  imports: [WorldMapControlsComponent, WorldMapConfigComponent, WorldMapTerrainComponent, FormsModule, WorldMapInspectorComponent, WorldMapCanvasComponent, WorldMapDocumentPanelsComponent],
   templateUrl: './world-map-editor.component.html',
   styleUrls: ['./world-map-editor.component.css', './world-map-viewport.css'],
 })
@@ -176,7 +178,7 @@ export class WorldMapEditorComponent implements OnInit {
       const namespace = localStorage.getItem('lodtools.world-map.registry-namespace');
       if (namespace && /^[a-z]+$/.test(namespace)) this.registryNamespace = namespace;
     } catch { /* Use the default namespace. */ }
-    try { this.toolsOpen = localStorage.getItem('lodtools.world-map.tools-open') === 'true'; } catch { /* Default closed. */ }
+    try { this.toolsOpen = localStorage.getItem('lodtools.world-map.tools-open') !== 'false'; } catch { /* Default open. */ }
     try {
       this.includeStoryRefs = localStorage.getItem('lodtools.world-map.include-story-refs') === 'true';
       this.headerCollapsed = localStorage.getItem('lodtools.world-map.header-collapsed') === 'true';
@@ -360,6 +362,8 @@ export class WorldMapEditorComponent implements OnInit {
     if ((event.target as Element)?.closest?.('[data-delete-entity]')) return;
     if (this.mode === 'drawGeometry' && !(event.target as Element)?.closest?.('.canvas-wrap')) this.finishGeometryDrawing();
   }
+  controlsOpen = false;
+  keybindings = new WorldMapKeybindings();
   registryNamespace = 'custom';
   setRegistryNamespace(value: string) {
     if (!/^[a-z]+$/.test(value)) return;
@@ -474,7 +478,7 @@ export class WorldMapEditorComponent implements OnInit {
     this.coolonPortalChoices = [];
     this.mode = 'select';
   }
-  toolsOpen = false;
+  toolsOpen = true;
   toggleJunctionTool() {
     this.finishGeometryDrawing();
     this.mode = this.mode === 'junction' ? 'select' : 'junction';
@@ -1056,52 +1060,42 @@ export class WorldMapEditorComponent implements OnInit {
     });
   }
   mapKey(event: KeyboardEvent) {
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
-      event.preventDefault();
-      const step = event.shiftKey ? 10 : 1;
-      const delta = orientPoint(event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0, event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0, this.rotationTurns);
-      const dx = delta.x;
-      const dz = delta.z;
+    if (this.controlsOpen) return;
+    const matches = (action: Parameters<WorldMapKeybindings['matches']>[0]) => this.keybindings.matches(action, event);
+    const directions = [
+      { normal: 'up', fast: 'fastUp', x: 0, z: -1 }, { normal: 'down', fast: 'fastDown', x: 0, z: 1 },
+      { normal: 'left', fast: 'fastLeft', x: -1, z: 0 }, { normal: 'right', fast: 'fastRight', x: 1, z: 0 },
+    ] as const;
+    const direction = directions.find(item => matches(item.normal) || matches(item.fast));
+    let handled = true;
+    if (direction) {
+      const step = matches(direction.fast) ? 10 : 1;
+      const delta = orientPoint(direction.x * step, direction.z * step, this.rotationTurns);
       const element = this.pointElement || (this.selected?.tagName === 'node' ? this.selected.querySelector('position') : null);
-      if (element)
-        this.mutate(() => {
-          element.setAttribute('x', String(authorNumber(this.number(element, 'x') + dx)));
-          element.setAttribute('z', String(authorNumber(this.number(element, 'z') + dz)));
-        });
-      else {
-        this.view.x += dx * this.unit * 20;
-        this.view.z += dz * this.unit * 20;
-      }
-    }
-    if (event.key === 'Delete' || event.key === 'Backspace') {
-      event.preventDefault();
-      this.deleteSelected(false);
-    }
-    if (event.key.toLowerCase() === 'f') this.fit();
-    if (event.key === '+' || event.key === '=') this.zoom(0.8);
-    if (event.key === '-') this.zoom(1.25);
-    if (event.key === 'Escape') {
+      if (element) this.mutate(() => {
+        element.setAttribute('x', String(authorNumber(this.number(element, 'x') + delta.x)));
+        element.setAttribute('z', String(authorNumber(this.number(element, 'z') + delta.z)));
+      });
+      else { this.view.x += delta.x * this.unit * 20; this.view.z += delta.z * this.unit * 20; }
+    } else if (matches('delete') || matches('deleteAlternate')) this.deleteSelected(false);
+    else if (matches('fit')) this.fit();
+    else if (matches('zoomIn') || matches('zoomInAlternate')) this.zoom(0.8);
+    else if (matches('zoomOut')) this.zoom(1.25);
+    else if (matches('cancel')) {
+      this.finishGeometryDrawing();
       this.selected = null;
       this.pointIndex = -1;
       this.mode = 'select';
-    }
+    } else handled = false;
+    if (handled) { event.preventDefault(); event.stopPropagation(); }
   }
   @HostListener('document:keydown', ['$event'])
   keyboard(event: KeyboardEvent) {
-    if (event.key === 'Escape' && this.fillViewport) {
-      this.fillViewport = false;
-      return;
-    }
-    if ((event.target as HTMLElement).matches('input,textarea,select')) return;
-    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
-      event.preventDefault();
-      if (event.shiftKey) this.redo();
-      else this.undo();
-    }
-    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'y') {
-      event.preventDefault();
-      this.redo();
-    }
+    if (this.controlsOpen || (event.target as HTMLElement).closest('input,textarea,select,[contenteditable="true"]')) return;
+    if (this.keybindings.matches('exitViewport', event) && this.fillViewport) {
+      event.preventDefault(); this.fillViewport = false;
+    } else if (this.keybindings.matches('undo', event)) { event.preventDefault(); this.undo(); }
+    else if (this.keybindings.matches('redo', event) || this.keybindings.matches('redoAlternate', event)) { event.preventDefault(); this.redo(); }
   }
   setTab(tab: 'map' | 'source' | 'assets') {
     this.tab = tab;
@@ -1223,6 +1217,45 @@ export class WorldMapEditorComponent implements OnInit {
   drop(event: DragEvent) {
     event.preventDefault();
     void this.importFiles(event.dataTransfer.files);
+  }
+  saveBrowserPreset() {
+    try {
+      const bytes = writePackage(serializePreset(this.doc), this.assets);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i += 8192) binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
+      localStorage.setItem('lodtools.world-map.saved-preset', JSON.stringify({ filename: this.filename, data: btoa(binary) }));
+      this.status = 'Preset and assets saved in this browser';
+      this.error = '';
+    } catch {
+      this.error = 'Could not save this preset in browser storage. Storage may be full or unavailable; use Export package to keep the preset and its assets.';
+    }
+  }
+  private restoreBrowserPreset(): boolean {
+    try {
+      const saved = JSON.parse(localStorage.getItem('lodtools.world-map.saved-preset') || 'null');
+      if (!saved) return false;
+      const unpacked = readPackage(Uint8Array.from(atob(saved.data), character => character.charCodeAt(0)));
+      this.importSource(unpacked.source, saved.filename);
+      this.assets = unpacked.assets;
+      this.refresh();
+      this.undoStack = [];
+      this.redoStack = [];
+      this.status = 'Restored browser-saved preset';
+      return true;
+    } catch { return false; }
+  }
+  async exportPreset() {
+    const picker = (window as unknown as { showSaveFilePicker?: (options: unknown) => Promise<{ createWritable: () => Promise<{ write: (data: Blob) => Promise<void>; close: () => Promise<void> }> }> }).showSaveFilePicker;
+    if (!picker) { this.download(); return; }
+    try {
+      const handle = await picker.call(window, { suggestedName: this.filename.replace(/\.wmap$/i, '') + '.wmap', types: [{ description: 'World map preset', accept: { 'application/xml': ['.wmap'] } }] });
+      const writable = await handle.createWritable();
+      await writable.write(new Blob([serializePreset(this.doc)], { type: 'application/xml' }));
+      await writable.close();
+      this.status = 'Exported world map preset';
+    } catch (error) {
+      if ((error as DOMException).name !== 'AbortError') this.error = String(error);
+    }
   }
   download(packaged = false) {
     try {

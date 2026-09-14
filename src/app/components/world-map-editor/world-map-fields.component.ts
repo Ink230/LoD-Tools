@@ -44,9 +44,9 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
             <input [type]="presentation(attribute.name).numeric ? 'number' : 'text'" [attr.step]="presentation(attribute.name).integer ? '1' : presentation(attribute.name).numeric ? 'any' : null" [ngModel]="attribute.value" [readOnly]="locked(attribute.name)" (change)="set(attribute.name, $event)" [attr.aria-label]="presentation(attribute.name).label" />
           }
           @if (removableEntry && attribute.name === normalAttributes[0]?.name) {
-            <button class="remove" type="button" (click)="removeEntry.emit($event)" aria-label="Remove entry">×</button>
+            <button class="remove" type="button" (click)="removeEntry.emit($event)" aria-label="Remove entry"><svg width="10" height="10" viewBox="0 0 10 10" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6"/></svg></button>
           } @else if (optionalAttributes.includes(attribute.name)) {
-            <button class="remove" type="button" (click)="removeAttribute(attribute.name)" [attr.aria-label]="'Remove ' + presentation(attribute.name).label">×</button>
+            <button class="remove" type="button" (click)="removeAttribute(attribute.name)" [attr.aria-label]="'Remove ' + presentation(attribute.name).label"><svg width="10" height="10" viewBox="0 0 10 10" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6"/></svg></button>
           }
         </div>
       }
@@ -70,7 +70,7 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
         @if (child.tagName === 'item') {
             <div [class.point-row]="element.tagName === 'points'" (dragover)="pointDragOver($event)" (drop)="dropPoint(child, $event)">
               @if (element.tagName === 'points') {
-                <div class="point-heading"><span draggable="true" role="button" tabindex="0" aria-label="Drag point to reorder" (dragstart)="dragPoint = child; $event.stopPropagation()" (dragend)="dragPoint = null">⠿</span><button type="button" class="point-link" title="Show point on map" (click)="navigate.emit({ element: element.parentElement!, section: 'geometry', point: child })">{{ child === element.firstElementChild ? 'START' : child === element.lastElementChild ? 'END' : 'POINT ' + (normalChildren.indexOf(child) + 1) }}</button> @if (canRemove(child)) { <button type="button" class="point-remove" aria-label="Remove point" (click)="removeChild(child, $event)">×</button> }</div>
+                <div class="point-heading"><span draggable="true" role="button" tabindex="0" aria-label="Drag point to reorder" (dragstart)="dragPoint = child; $event.stopPropagation()" (dragend)="dragPoint = null">⠿</span><button type="button" class="point-link" title="Show point on map" (click)="navigate.emit({ element: element.parentElement!, section: 'geometry', point: child })">{{ child === element.firstElementChild ? 'START' : child === element.lastElementChild ? 'END' : 'POINT ' + (normalChildren.indexOf(child) + 1) }}</button> @if (canRemove(child)) { <button type="button" class="point-remove" aria-label="Remove point" (click)="removeChild(child, $event)"><svg width="10" height="10" viewBox="0 0 10 10" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6"/></svg></button> }</div>
               }
           <app-world-map-fields [namespace]="namespace" [element]="child" [registry]="registry" [registryLabels]="registryLabels" [removableEntry]="element.tagName !== 'points' && canRemove(child)"
             (mutate)="mutate.emit($event)" (navigate)="navigate.emit($event)" (removeEntry)="removeChild(child, $event)" />
@@ -80,7 +80,7 @@ import { fieldPresentation, isCompatibilityAttribute, isCompatibilityChild } fro
           <div class="section-heading">
             {{ childLabelName(child.tagName) }}
             @if (canRemove(child)) {
-              <button type="button" class="remove" (click)="removeChild(child, $event)" [attr.aria-label]="'Remove ' + child.tagName">×</button>
+              <button type="button" class="remove" (click)="removeChild(child, $event)" [attr.aria-label]="'Remove ' + child.tagName"><svg width="10" height="10" viewBox="0 0 10 10" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6"/></svg></button>
             }
           </div>
           <app-world-map-fields [namespace]="namespace" [element]="child" [registry]="registry" [registryLabels]="registryLabels" (mutate)="mutate.emit($event)" (navigate)="navigate.emit($event)" />

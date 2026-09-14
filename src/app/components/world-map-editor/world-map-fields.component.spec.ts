@@ -71,7 +71,7 @@ describe('WorldMapFieldsComponent', () => {
     fixture.detectChanges();
 
     expect((fixture.nativeElement.querySelector('select[aria-label="Atmosphere"]') as HTMLSelectElement).value).toBe('SNOW');
-    expect((fixture.nativeElement.querySelector('input[aria-label="Arrival destination"]') as HTMLInputElement).value).toBe('outside:arrival');
+    expect((fixture.nativeElement.querySelector('input[aria-label="World Map Entry"]') as HTMLInputElement).value).toBe('outside:arrival');
   });
   it('reorders point rows and updates the connected start node', () => {
     const component = new WorldMapFieldsComponent();
