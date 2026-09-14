@@ -4,7 +4,7 @@ import { KEY_ACTIONS, KeyAction, keyboardChord, WorldMapKeybindings } from './wo
 @Component({
   selector: 'app-world-map-controls',
   template: `<dialog #dialog (cancel)="$event.preventDefault(); dismiss.emit()" (click)="outside($event)" (keydown)="capture($event)">
-    <header><div><h2>Controls</h2><p>Click a key to rebind · Saved automatically</p></div><button class="reset" (click)="bindings.reset(); error = ''; recording = undefined">Reset defaults</button><button class="square" aria-label="Close controls" (click)="dismiss.emit()"><svg viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8"/></svg></button></header>
+    <header><div><h2>Controls</h2><p>Click a key to rebind · Saved automatically</p></div><button class="reset" title="Unbind every keyboard shortcut" (click)="bindings.clearAll(); error = ''; recording = undefined">Clear all</button><button class="reset" (click)="bindings.reset(); error = ''; recording = undefined">Reset defaults</button><button class="square" aria-label="Close controls" (click)="dismiss.emit()"><svg viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8"/></svg></button></header>
     @if (error) { <p class="error" role="alert">{{ error }}</p> }
     <div class="groups">@for (group of groups; track group.title) {
       <section><h3>{{ group.title }}</h3>@for (action of group.actions; track action.id) {

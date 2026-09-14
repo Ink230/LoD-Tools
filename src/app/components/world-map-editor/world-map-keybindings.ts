@@ -84,6 +84,10 @@ export class WorldMapKeybindings {
     this.save();
     return undefined;
   }
+  clearAll() {
+    this.values = Object.fromEntries(KEY_ACTIONS.map(action => [action.id, '']));
+    this.save();
+  }
   reset() { this.values = Object.fromEntries(KEY_ACTIONS.map(action => [action.id, action.key])); this.save(); }
   private save() {
     try { localStorage.setItem('lodtools.world-map.keybindings', JSON.stringify(this.values)); } catch { /* Bindings still work this session. */ }
