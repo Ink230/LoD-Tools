@@ -753,8 +753,11 @@ export class WorldMapEditorComponent implements OnInit {
       if (!element) continue;
       const current = this.currentEntity();
       if (current) destination.push(current);
+      const previousRegion = this.region;
+      const previousView = this.view;
       this.region = this.regions.some((region) => region.getAttribute('id') === target.region) ? target.region : '';
       this.goToEntry({ element, section: target.section }, false);
+      if (this.region === previousRegion) this.view = previousView;
       return;
     }
   }
