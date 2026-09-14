@@ -841,7 +841,10 @@ export class WorldMapEditorComponent implements OnInit {
   }
   chooseSection(section: string) {
     this.search = '';
-    const first = entries(this.doc, section)[0];
+    const candidates = entries(this.doc, section).sort((a, b) => (a.getAttribute('id') || '').localeCompare(b.getAttribute('id') || '', undefined, { numeric: true }));
+    const spatial = ['nodes', 'geometry', 'routes', 'places', 'portals', 'teleportLinks', 'coolonDestinations', 'regions'].includes(section);
+    const first = !this.region ? candidates[0] : candidates.find(entry => this.entryRegions(entry, section).has(this.region))
+      || (!spatial ? candidates.find(entry => !this.entryRegions(entry, section).size) : undefined);
     if (first) this.select(first, section);
     else {
       this.section = section;
