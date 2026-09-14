@@ -133,6 +133,9 @@
           <title>Point {{ point.index + 1 }} · X {{ point.x }} / Z {{ point.z }}</title>
         </rect>
       }
+      @for (point of editor.entityLocatorPoints; track $index) {
+        <circle [attr.cx]="point.x" [attr.cy]="point.z" [attr.r]="4 * editor.unit" fill="#ff3030" pointer-events="none" />
+      }
     </g>
   </svg>
   @if (!editor.nodes.length && !editor.routes.length) {

@@ -242,4 +242,15 @@ describe('world map graph editing', () => {
     expect(portal.getAttribute('region')).toBe('custom:a');
     expect(portal.getAttribute('place')).toBeTruthy();
   });
+  it('locates a place through its portal and clears the locator on selection changes', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test"><nodes><node id="custom:n"><position x="12" y="0" z="34"/></node></nodes><routes><route id="custom:r" start="custom:n"/></routes><places><place id="custom:p"/></places><portals><portal id="custom:portal" place="custom:p" route="custom:r"/></portals></worldMapPreset>', 'test.wmap');
+    editor.select(editor.doc.querySelector('place'), 'places');
+    editor.toggleEntityLocator();
+    expect(editor.entityLocatorPoints).toEqual([{ x: 12, z: 34 }]);
+    editor.toggleEntityLocator();
+    expect(editor.entityLocatorPoints).toEqual([]);
+    editor.toggleEntityLocator();
+    editor.select(editor.doc.querySelector('node'), 'nodes');
+    expect(editor.entityLocatorPoints).toEqual([]);
+  });
 });

@@ -193,6 +193,38 @@ export class WorldMapEditorComponent implements OnInit {
     return entries(this.doc, 'regions');
   }
   entityReferences = new Map<string, { element: Element; section: string; fields: string[] }[]>();
+  private locatedEntity?: Element;
+  get entityLocatorPoints(): { x: number; z: number }[] {
+    if (this.selected !== this.locatedEntity) return [];
+    return this.locateEntity(this.selected, this.section);
+  }
+  get canLocateEntity() { return !!this.selected && this.locateEntity(this.selected, this.section).length > 0; }
+  toggleEntityLocator() {
+    this.locatedEntity = this.locatedEntity === this.selected ? undefined : this.selected;
+  }
+  private locateEntity(element: Element, section: string, visited = new Set<Element>()): { x: number; z: number }[] {
+    if (!element || visited.has(element)) return [];
+    visited.add(element);
+    const id = element.getAttribute('id');
+    if (section === 'nodes') {
+      const node = this.filteredNodes.find(node => node.id === id);
+      return node ? [{ x: node.x, z: node.z }] : [];
+    }
+    if (section === 'routes') {
+      const route = this.filteredRoutes.find(route => route.id === id);
+      return route?.start ? [{ x: route.start.x, z: route.start.z }] : [];
+    }
+    if (section === 'portals' || section === 'coolonDestinations' || section === 'teleportLinks') {
+      const targetSection = section === 'portals' ? 'routes' : 'portals';
+      const targetId = element.getAttribute(section === 'portals' ? 'route' : section === 'coolonDestinations' ? 'portal' : 'source');
+      const target = entries(this.doc, targetSection).find(entry => entry.getAttribute('id') === targetId);
+      return target ? this.locateEntity(target, targetSection, visited) : [];
+    }
+    const points = (this.entityReferences.get(`${section}:${id}`) || [])
+      .filter(ref => ['routes', 'portals', 'places', 'coolonDestinations'].includes(ref.section))
+      .flatMap(ref => this.locateEntity(ref.element, ref.section, visited));
+    return points.filter((point, index) => points.findIndex(other => other.x === point.x && other.z === point.z) === index);
+  }
   get correspondingRoutes() {
     const geometry = this.section === 'routes' ? this.selected?.getAttribute('geometry') : null;
     return geometry ? entries(this.doc, 'routes').filter((route) => route !== this.selected && route.getAttribute('geometry') === geometry) : [];
@@ -603,6 +635,7 @@ export class WorldMapEditorComponent implements OnInit {
     }
   }
   select(element: Element, section?: string, recordHistory = true) {
+    this.locatedEntity = undefined;
     const current = this.currentEntity();
     if (recordHistory && current && (this.selected !== element || this.section !== (section || this.section))) {
       this.entityBack.push(current);
