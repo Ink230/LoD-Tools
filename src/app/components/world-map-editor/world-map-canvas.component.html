@@ -137,19 +137,19 @@
         <circle [attr.cx]="point.x" [attr.cy]="point.z" [attr.r]="4 * editor.unit" fill="#ff3030" pointer-events="none" />
       }
       @for (marker of editor.coolonCreationMarkers; track $index) {
-        <g role="button" tabindex="0" aria-label="Create Coolon destination at portal" (pointerdown)="$event.stopPropagation()" (click)="$event.stopPropagation(); editor.chooseCoolonPortal(marker.portals)" (keydown.enter)="editor.chooseCoolonPortal(marker.portals)" (keydown.space)="$event.preventDefault(); editor.chooseCoolonPortal(marker.portals)" style="cursor: pointer">
+        <g role="button" tabindex="0" [attr.aria-label]="editor.mode === 'placeView' ? 'Inspect place' : editor.mode === 'portalView' ? 'Inspect portal' : 'Create Coolon destination at portal'" (pointerdown)="$event.stopPropagation()" (click)="$event.stopPropagation(); editor.chooseCoolonPortal(marker.portals)" (keydown.enter)="editor.chooseCoolonPortal(marker.portals)" (keydown.space)="$event.preventDefault(); editor.chooseCoolonPortal(marker.portals)" style="cursor: pointer">
           <circle [attr.cx]="marker.x" [attr.cy]="marker.z" [attr.r]="8 * editor.unit" fill="var(--wmap-color-4)" stroke="var(--wmap-color-2)" [attr.stroke-width]="2 * editor.unit" />
-          <text [attr.x]="marker.x" [attr.y]="marker.z + 3 * editor.unit" [attr.font-size]="10 * editor.unit" text-anchor="middle" fill="var(--wmap-color-2)">P</text>
+          <path [attr.transform]="'translate(' + marker.x + ' ' + marker.z + ') ' + editor.mapTransform + ' scale(' + (editor.unit * 0.6) + ') translate(-12 -12)'" [attr.d]="editor.mode === 'placeView' ? editor.placeIcon : editor.portalIcon" fill="none" stroke="var(--wmap-color-2)" stroke-width="1.5" pointer-events="none" />
           <title>{{ marker.portals.length }} portal(s) · {{ editor.coolonPortalLabel(marker.portals[0]) }}</title>
         </g>
       }
     </g>
   </svg>
-  @if (editor.mode === 'coolon' && editor.coolonPortalChoices.length) {
+  @if ((editor.mode === 'coolon' || editor.mode === 'portalView' || editor.mode === 'placeView') && editor.coolonPortalChoices.length) {
     <div style="position: absolute; top: 12px; right: 12px; z-index: 6; background: var(--wmap-color-4); border: 1px solid var(--wmap-color-3); padding: 12px; border-radius: 5px; max-height: 60%; overflow: auto; display: grid; gap: 6px">
-      <strong>Choose landing portal</strong>
+      <strong>{{ editor.mode === 'placeView' ? 'Choose place' : editor.mode === 'portalView' ? 'Choose portal' : 'Choose landing portal' }}</strong>
       @for (portal of editor.coolonPortalChoices; track portal) {
-        <button (click)="editor.createCoolonAtPortal(portal)">{{ editor.coolonPortalLabel(portal) }} · {{ portal.getAttribute('id') }} · {{ portal.getAttribute('route') }}</button>
+        <button (click)="editor.pickPortalMarker(portal)">{{ editor.coolonPortalLabel(portal) }} · {{ portal.getAttribute('id') }} · {{ portal.getAttribute('route') }}</button>
       }
       <button (click)="editor.coolonPortalChoices = []">Cancel</button>
     </div>

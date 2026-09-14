@@ -90,7 +90,7 @@ export class WorldMapEditorComponent implements OnInit {
   selected: Element | null = null;
   search = '';
   region = '';
-  mode: 'select' | 'node' | 'point' | 'junction' | 'drawGeometry' | 'coolon' = 'select';
+  mode: 'select' | 'node' | 'point' | 'junction' | 'drawGeometry' | 'coolon' | 'portalView' | 'placeView' = 'select';
   tab: 'map' | 'source' | 'assets' = 'map';
   filename = 'world-map.wmap';
   status = 'Load the vanilla preset or import a .wmap to begin';
@@ -366,19 +366,40 @@ export class WorldMapEditorComponent implements OnInit {
     this.registryNamespace = value;
     try { localStorage.setItem('lodtools.world-map.registry-namespace', value); } catch { /* Configuration works without storage. */ }
   }
+  readonly portalIcon = 'M5 21V9a7 7 0 0 1 14 0v12H5M9 21V9a3 3 0 0 1 6 0v12M14 14h1';
+  readonly placeIcon = 'M12 22S4 14 4 9a8 8 0 0 1 16 0c0 5-8 13-8 13ZM15 9a3 3 0 1 1-6 0a3 3 0 0 1 6 0';
   coolonPortalChoices: Element[] = [];
+  togglePlaceView() {
+    this.finishGeometryDrawing();
+    this.coolonPortalChoices = [];
+    this.mode = this.mode === 'placeView' ? 'select' : 'placeView';
+  }
+  togglePortalView() {
+    this.finishGeometryDrawing();
+    this.coolonPortalChoices = [];
+    this.mode = this.mode === 'portalView' ? 'select' : 'portalView';
+  }
+  pickPortalMarker(portal: Element) {
+    if (this.mode === 'placeView') {
+      this.goToEntry({ element: portal, section: 'places' });
+      this.coolonPortalChoices = [];
+    } else if (this.mode === 'portalView') {
+      this.goToEntry({ element: portal, section: 'portals' });
+      this.coolonPortalChoices = [];
+    } else this.createCoolonAtPortal(portal);
+  }
   toggleCoolonTool() {
     this.finishGeometryDrawing();
     this.coolonPortalChoices = [];
     this.mode = this.mode === 'coolon' ? 'select' : 'coolon';
   }
   get coolonCreationMarkers() {
-    if (this.mode !== 'coolon') return [];
+    if (this.mode !== 'coolon' && this.mode !== 'portalView' && this.mode !== 'placeView') return [];
     const groups = new Map<string, { x: number; z: number; portals: Element[] }>();
     for (const portal of entries(this.doc, 'portals')) {
       if (this.region && !this.entryRegions(portal, 'portals').has(this.region)) continue;
       const route = this.filteredRoutes.find(route => route.id === portal.getAttribute('route'));
-      if (!route?.start) continue;
+      if (!route?.start || (this.mode === 'placeView' && !portal.getAttribute('place'))) continue;
       const key = `${route.start.x}:${route.start.z}`;
       if (!groups.has(key)) groups.set(key, { x: route.start.x, z: route.start.z, portals: [] });
       groups.get(key).portals.push(portal);
@@ -386,16 +407,39 @@ export class WorldMapEditorComponent implements OnInit {
     return [...groups.values()];
   }
   chooseCoolonPortal(portals: Element[]) {
-    if (portals.length === 1) this.createCoolonAtPortal(portals[0]);
+    if (this.mode === 'placeView') {
+      portals = [...new Set(portals.map(portal => entries(this.doc, 'places').find(place => place.getAttribute('id') === portal.getAttribute('place'))).filter(Boolean))];
+    }
+    if (portals.length === 1) this.pickPortalMarker(portals[0]);
     else this.coolonPortalChoices = portals;
   }
   coolonPortalLabel(portal: Element) {
+    if (portal.tagName === 'place') return portal.getAttribute('name') || portal.getAttribute('id');
     const place = entries(this.doc, 'places').find(place => place.getAttribute('id') === portal.getAttribute('place'));
     return place?.getAttribute('name') || portal.getAttribute('id');
+  }
+  private inferCoolonPlacement(portal: Element, x: number, z: number) {
+    const regions = this.entryRegions(portal, 'portals');
+    const anchors = entries(this.doc, 'coolonDestinations').flatMap(destination => {
+      const linked = entries(this.doc, 'portals').find(entry => entry.getAttribute('id') === destination.getAttribute('portal'));
+      if (!linked || ![...this.entryRegions(linked, 'portals')].some(region => regions.has(region))) return [];
+      const node = this.routes.find(route => route.id === linked.getAttribute('route'))?.start;
+      if (!node) return [];
+      const distance = (node.x - x) ** 2 + (node.z - z) ** 2;
+      return [{ destination, distance: linked === portal ? 0 : distance }];
+    }).sort((a, b) => a.distance - b.distance).slice(0, 3);
+    if (!anchors.length) return undefined;
+    const closest = anchors[0];
+    const selected = closest.distance < 0.000001 ? [closest] : anchors;
+    const weights = selected.map(anchor => 1 / Math.max(anchor.distance, 0.000001));
+    const total = weights.reduce((sum, value) => sum + value, 0);
+    const average = (field: string, position = false) => authorNumber(selected.reduce((sum, anchor, i) => sum + weights[i] * this.number(position ? anchor.destination.querySelector('position') : anchor.destination, field), 0) / total);
+    return { x: Math.round(average('x')), y: Math.round(average('y')), position: ['x', 'y', 'z'].map(axis => average(axis, true)) };
   }
   createCoolonAtPortal(portal: Element) {
     const route = this.routes.find(route => route.id === portal.getAttribute('route'));
     if (!route?.start) return;
+    const placement = this.inferCoolonPlacement(portal, route.start.x, route.start.z);
     this.mutate(() => {
       const destination = this.doc.importNode(new DOMParser().parseFromString(TEMPLATES['coolonDestination'], 'application/xml').documentElement, true);
       const id = this.drawingId('coolonDestinations', 'coolon_destination');
@@ -408,6 +452,11 @@ export class WorldMapEditorComponent implements OnInit {
       destination.setAttribute('worldMapArrival', 'true');
       const source = route.start.element.querySelector('position');
       for (const axis of ['x', 'y', 'z']) destination.querySelector('position').setAttribute(axis, source.getAttribute(axis));
+      if (placement) {
+        destination.setAttribute('x', String(placement.x));
+        destination.setAttribute('y', String(placement.y));
+        ['x', 'y', 'z'].forEach((axis, i) => destination.querySelector('position').setAttribute(axis, String(placement.position[i])));
+      }
       this.appendDrawingEntry('coolonDestinations', destination);
       this.select(destination, 'coolonDestinations');
       this.search = '';
@@ -423,7 +472,7 @@ export class WorldMapEditorComponent implements OnInit {
   toggleTools() {
     this.finishGeometryDrawing();
     this.toolsOpen = !this.toolsOpen;
-    if (!this.toolsOpen && (this.mode === 'junction' || this.mode === 'coolon')) this.mode = 'select';
+    if (!this.toolsOpen && (this.mode === 'junction' || this.mode === 'coolon' || this.mode === 'portalView' || this.mode === 'placeView')) this.mode = 'select';
     try { localStorage.setItem('lodtools.world-map.tools-open', String(this.toolsOpen)); } catch { /* Tools work without storage. */ }
   }
   clickMapRoute(route: Element, event: MouseEvent, map: HTMLElement | SVGSVGElement) {
