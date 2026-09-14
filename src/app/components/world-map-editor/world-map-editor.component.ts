@@ -1066,6 +1066,7 @@ export class WorldMapEditorComponent implements OnInit {
     });
   }
   mapKey(event: KeyboardEvent) {
+    if (this.categoryShortcut(event)) return;
     if (this.controlsOpen) return;
     const matches = (action: Parameters<WorldMapKeybindings['matches']>[0]) => this.keybindings.matches(action, event);
     const directions = [
@@ -1121,8 +1122,37 @@ export class WorldMapEditorComponent implements OnInit {
     this.selected = null;
     this.pointIndex = -1;
   }
+  private categoryPrefix: string | undefined;
+  private categoryPrefixExpires = 0;
+  private categoryShortcut(event: KeyboardEvent): boolean {
+    if (this.controlsOpen || this.commandOpen || event.isComposing || (event.target as HTMLElement)?.closest('input,textarea,select,[contenteditable="true"],dialog')) {
+      this.categoryPrefix = undefined;
+      return false;
+    }
+    if (Date.now() > this.categoryPrefixExpires) this.categoryPrefix = undefined;
+    if (event.ctrlKey || event.metaKey || event.altKey) {
+      this.categoryPrefix = undefined;
+      return false;
+    }
+    if (event.key === ':') {
+      this.categoryPrefix = '';
+      this.categoryPrefixExpires = Date.now() + 2000;
+    } else if (this.categoryPrefix !== undefined) {
+      if (event.key === 'Shift') return false;
+      const prefix = this.categoryPrefix + event.key.toLowerCase();
+      const matches = Object.entries(SEARCH_PREFIXES).filter(([, value]) => value.startsWith(prefix));
+      const exact = matches.find(([, value]) => value === prefix);
+      if (exact) this.chooseSection(exact[0]);
+      this.categoryPrefix = matches.some(([, value]) => value !== prefix) ? prefix : undefined;
+      this.categoryPrefixExpires = Date.now() + 2000;
+    } else return false;
+    event.preventDefault();
+    event.stopPropagation();
+    return true;
+  }
   @HostListener('document:keydown', ['$event'])
   keyboard(event: KeyboardEvent) {
+    if (this.categoryShortcut(event)) return;
     if (this.controlsOpen || this.commandOpen) return;
     const target = event.target as HTMLElement;
     const inspector = target.closest('.inspector');
