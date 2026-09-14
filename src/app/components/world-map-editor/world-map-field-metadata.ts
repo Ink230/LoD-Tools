@@ -20,8 +20,8 @@ const FIELDS: Record<string, FieldPresentation> = {
   modelIndex: { label: 'Native avatar index', description: 'Retail player-model index used only when an avatar ID is absent', numeric: true, integer: true },
   legacyEncounterPlaceholder: { label: 'Native encounter slot', description: 'Retail encounter-table placeholder retained for compatibility', numeric: true, integer: true },
   legacyBit: { label: 'Native service bit', description: 'Optional retail service bit whose presentation label this definition follows', numeric: true, integer: true },
-  fromId: { label: 'Arrival destination', description: 'Submap destination registry ID used when entering the world map' },
-  toId: { label: 'Departure destination', description: 'Submap destination registry ID used when leaving the world map' },
+  fromId: { label: 'World Map Entry', description: 'The submap you were last on when entering the world map. Matches the submap exit to this world-map portal.' },
+  toId: { label: 'World Map Exit', description: 'The submap you load into when exiting the world map through this portal.' },
   cut: { label: 'Submap cut', description: 'SC submap cut number represented by this destination', numeric: true, integer: true },
   scene: { label: 'Submap scene', description: 'SC submap scene number represented by this destination', numeric: true, integer: true },
   effectFlags: { label: 'Native effect flags', description: 'Retail atmosphere and smoke bitfield fallback', numeric: true, integer: true },
@@ -59,9 +59,9 @@ export function fieldPresentation(element: Element, attribute: string): FieldPre
   if (element.tagName === 'coolonDestination') {
     const fields: Record<string, FieldPresentation> = {
       defaultDestination: { label: 'Default Destination', description: 'Destination initially selected when opening Coolon travel from this origin. It does not automatically travel there; the player can select another destination.' },
-      opensMenuOnArrival: { label: 'Opens Menu On Arrival', description: 'Automatically opens the Coolon travel menu when entering the world map from the submap exit matching this portal\'s arrival mapping. This controls opening the menu, not where a Coolon flight lands.' },
+      opensMenuOnArrival: { label: 'Opens Menu On Arrival', description: 'Automatically opens the Coolon travel menu when entering the world map from the submap exit matching this portal\'s World Map Entry mapping. This controls opening the menu, not where a Coolon flight lands.' },
       order: { label: 'Order', description: 'Position in the ordered Coolon destination list; lower values come first. Each destination must have a unique order. This is not its map position or flight priority.', numeric: true, integer: true },
-      worldMapArrival: { label: 'World Map Arrival', description: 'When flying to this destination: true returns to the world map using the portal\'s arrival mapping; false enters the submap specified by its departure mapping. Separate from automatically opening the Coolon menu.' },
+      worldMapArrival: { label: 'World Map Arrival', description: 'When flying to this destination: true returns to the world map using the portal\'s World Map Entry mapping; false enters the submap specified by its World Map Exit mapping. Separate from automatically opening the Coolon menu.' },
     };
     if (fields[attribute]) return fields[attribute];
   }
