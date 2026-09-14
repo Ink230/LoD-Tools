@@ -66,7 +66,7 @@
         <h3 style="margin: 12px 12px 4px; color: var(--wmap-color-47); font-size: 12px; font-weight: 600">{{ group.title }}</h3>
         <div class="section-list">
           @for (name of group.sections; track name) {
-            <button [class.active]="section === name" (click)="chooseSection(name)">
+            <button [class.active]="selected && section === name" (click)="chooseSection(name)">
               <span>{{ label(name) }}</span><small>{{ count(name) }}</small>
             </button>
           }
