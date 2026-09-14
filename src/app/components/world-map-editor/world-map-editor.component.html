@@ -66,12 +66,12 @@
         <h3 style="margin: 12px 12px 4px; color: var(--wmap-color-47); font-size: 12px; font-weight: 600">{{ group.title }}</h3>
         <div class="section-list">
           @for (name of group.sections; track name) {
-            <button [class.active]="selected && section === name" (click)="chooseSection(name)">
+            <button (click)="chooseSection(name)">
               <span>{{ label(name) }}</span><small>{{ count(name) }}</small>
             </button>
           }
           @if (group.title === 'Preset') {
-            <button [class.active]="!selected" (click)="selected = null; pointIndex = -1">Preset Details</button>
+            <button (click)="selected = null; pointIndex = -1">Preset Details</button>
           }
         </div>
       }
@@ -79,7 +79,7 @@
       <input class="search" aria-label="Search registry IDs" placeholder="Search registry IDs…" [(ngModel)]="search" />
       <div class="entry-list">
         @for (item of items; track item) {
-          <button [class.active]="selected === item" (click)="select(item)">
+          <button (click)="select(item)">
           <span>{{ entryLabel(item) }}</span
           ><small>{{ item.getAttribute('id') || item.tagName }}</small>
           </button>
