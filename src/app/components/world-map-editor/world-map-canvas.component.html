@@ -14,13 +14,13 @@
     (keydown)="editor.mapKey($event)"
   >
     <defs>
-      <pattern id="wmap-grid" [attr.width]="50 * editor.unit" [attr.height]="50 * editor.unit" patternUnits="userSpaceOnUse">
-        <path [attr.d]="'M ' + 50 * editor.unit + ' 0 L 0 0 0 ' + 50 * editor.unit" fill="none" stroke="var(--wmap-color-30)" [attr.stroke-width]="editor.unit" />
+      <pattern id="wmap-grid" [attr.width]="editor.gridStep" [attr.height]="editor.gridStep" patternUnits="userSpaceOnUse">
+        <path [attr.d]="'M ' + editor.gridStep + ' 0 L 0 0 0 ' + editor.gridStep" fill="none" stroke="var(--wmap-color-30)" [attr.stroke-width]="editor.unit" />
       </pattern>
       <marker id="wmap-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--wmap-color-31)" /></marker>
     </defs>
     <g [attr.transform]="editor.mapTransform">
-      <rect [attr.x]="editor.view.x" [attr.y]="editor.view.z" [attr.width]="editor.view.width" [attr.height]="editor.view.height" fill="url(#wmap-grid)" />
+      <rect [attr.x]="editor.view.x" [attr.y]="editor.view.z" [attr.width]="editor.view.width" [attr.height]="editor.view.height" [attr.fill]="editor.showCoordinates ? 'url(#wmap-grid)' : 'none'" />
       @if (terrain.visible && terrain.active; as guide) {
         <image
           [attr.href]="guide.image"
@@ -161,6 +161,13 @@
       <p>Load the complete vanilla world map, or import a preset to explore its graph.</p>
       <button class="primary" (click)="editor.loadVanilla()" [disabled]="editor.loading">Load vanilla world</button>
       <p class="muted">You can also drop .wmap or .wmap.zip files here</p>
+    </div>
+  }
+  @if (editor.showCoordinates) {
+    <div style="position:absolute;top:12px;left:72px;display:flex;gap:10px;align-items:center;padding:6px;background:var(--wmap-color-4);color:var(--wmap-color-2);font:12px monospace" (pointerdown)="$event.stopPropagation()">
+      <span>X {{ editor.coordinatePointer.x.toFixed(2) }} · Z {{ editor.coordinatePointer.z.toFixed(2) }}</span>
+      <label>Grid <input aria-label="Coordinate grid interval" type="number" min="0" step="0.01" [(ngModel)]="editor.coordinateGridStep" style="width:70px" title="0 uses automatic grid spacing" /></label>
+      <span>{{ editor.gridStep }} units</span>
     </div>
   }
   <div class="axis" role="button" tabindex="0" aria-label="Reset map to north" title="Reset to north. SC X / Y / Z coordinates are preserved in the inspector and export" style="cursor: pointer" (click)="editor.orientation = 0; editor.stageRotation = 0" (keydown.enter)="editor.orientation = 0; editor.stageRotation = 0" (keydown.space)="$event.preventDefault(); editor.orientation = 0; editor.stageRotation = 0">

@@ -1,11 +1,12 @@
+import { SEARCH_PREFIXES, WorldMapCommandComponent } from './world-map-command.component';
 import { WorldMapControlsComponent } from './world-map-controls.component';
-import { WorldMapKeybindings } from './world-map-keybindings';
+import { KEY_ACTIONS, KeyAction, WorldMapKeybindings } from './world-map-keybindings';
 import { authorNumber } from './world-map-number';
 import { WorldMapConfigComponent } from './world-map-config.component';
 import { splitJunction } from './world-map-junction';
 import { WORLD_MAP_THEME_COLORS } from './world-map-theme';
 import { WorldMapTerrainComponent } from './world-map-terrain.component';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, inject, OnInit, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { WorldMapInspectorComponent } from './world-map-inspector.component';
 import { WorldMapCanvasComponent } from './world-map-canvas.component';
@@ -48,11 +49,12 @@ interface EditorSnapshot {
   // XML DOM nodes mutate in place; refresh this isolated editor subtree when its owner changes.
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default,
-  imports: [WorldMapControlsComponent, WorldMapConfigComponent, WorldMapTerrainComponent, FormsModule, WorldMapInspectorComponent, WorldMapCanvasComponent, WorldMapDocumentPanelsComponent],
+  imports: [WorldMapCommandComponent, WorldMapControlsComponent, WorldMapConfigComponent, WorldMapTerrainComponent, FormsModule, WorldMapInspectorComponent, WorldMapCanvasComponent, WorldMapDocumentPanelsComponent],
   templateUrl: './world-map-editor.component.html',
   styleUrls: ['./world-map-editor.component.css', './world-map-viewport.css'],
 })
 export class WorldMapEditorComponent implements OnInit {
+  private readonly host: ElementRef<HTMLElement> = inject(ElementRef);
   private readonly changeDetector = inject(ChangeDetectorRef);
   doc = parsePreset('<worldMapPreset version="1" id="custom:world_map" name="Untitled world map" description=""/>');
   fillViewport = true;
@@ -994,6 +996,7 @@ export class WorldMapEditorComponent implements OnInit {
     svg.setPointerCapture(event.pointerId);
   }
   pointerMove(event: PointerEvent, svg: HTMLElement | SVGSVGElement) {
+    if (this.showCoordinates) this.coordinatePointer = this.coordinates(event, svg);
     if (this.rotationDrag) {
       if (!event.ctrlKey || !(event.buttons & 4)) { this.rotationDrag = null; return; }
       const drag = this.rotationDrag;
@@ -1077,25 +1080,117 @@ export class WorldMapEditorComponent implements OnInit {
         element.setAttribute('z', String(authorNumber(this.number(element, 'z') + delta.z)));
       });
       else { this.view.x += delta.x * this.unit * 20; this.view.z += delta.z * this.unit * 20; }
-    } else if (matches('delete') || matches('deleteAlternate')) this.deleteSelected(false);
+    } else if (matches('delete')) this.deleteSelected(false);
     else if (matches('fit')) this.fit();
-    else if (matches('zoomIn') || matches('zoomInAlternate')) this.zoom(0.8);
+    else if (matches('zoomIn')) this.zoom(0.8);
     else if (matches('zoomOut')) this.zoom(1.25);
     else if (matches('cancel')) {
-      this.finishGeometryDrawing();
-      this.selected = null;
-      this.pointIndex = -1;
-      this.mode = 'select';
+      this.cancelContext();
     } else handled = false;
     if (handled) { event.preventDefault(); event.stopPropagation(); }
   }
+  commandOpen = false;
+  searchPrefixes = SEARCH_PREFIXES;
+  showCoordinates = false;
+  coordinatePointer = { x: 0, z: 0 };
+  coordinateGridStep = 0;
+  get gridStep() {
+    if (this.coordinateGridStep > 0) return this.coordinateGridStep;
+    const desired = this.view.width / 12;
+    const power = 10 ** Math.floor(Math.log10(Math.max(desired, 0.01)));
+    return [1, 2, 5, 10].map(value => value * power).find(value => value >= desired) || power;
+  }
+  entityInRegion(element: Element, section: string, region: string) { return this.entryRegions(element, section).has(region); }
+  private focusStage() { this.tab = 'map'; setTimeout(() => this.host.nativeElement.querySelector<HTMLElement>('svg.map')?.focus()); }
+  private focusInspector() {
+    setTimeout(() => Array.from(this.host.nativeElement.querySelectorAll<HTMLElement>('.inspector app-world-map-fields input:not([disabled]):not([readonly]), .inspector app-world-map-fields select:not([disabled]), .inspector app-world-map-fields textarea:not([disabled])')).find(control => control.tabIndex >= 0 && control.getClientRects().length > 0)?.focus());
+  }
+  private clickEditor(selector: string, showTools = false) {
+    if (showTools && !this.toolsOpen) this.toggleTools();
+    setTimeout(() => this.host.nativeElement.querySelector<HTMLElement>(selector)?.click());
+  }
+  private cancelContext() {
+    const details = this.host.nativeElement.querySelector<HTMLDetailsElement>('details[open]');
+    if (details) { details.open = false; return; }
+    if (this.labelMenuOpen) { this.labelMenuOpen = false; return; }
+    if (this.coolonPortalChoices.length) { this.coolonPortalChoices = []; return; }
+    if (this.mode !== 'select') { this.finishGeometryDrawing(); this.mode = 'select'; return; }
+    this.selected = null;
+    this.pointIndex = -1;
+  }
   @HostListener('document:keydown', ['$event'])
   keyboard(event: KeyboardEvent) {
-    if (this.controlsOpen || (event.target as HTMLElement).closest('input,textarea,select,[contenteditable="true"]')) return;
-    if (this.keybindings.matches('exitViewport', event) && this.fillViewport) {
-      event.preventDefault(); this.fillViewport = false;
-    } else if (this.keybindings.matches('undo', event)) { event.preventDefault(); this.undo(); }
-    else if (this.keybindings.matches('redo', event) || this.keybindings.matches('redoAlternate', event)) { event.preventDefault(); this.redo(); }
+    if (this.controlsOpen || this.commandOpen) return;
+    const target = event.target as HTMLElement;
+    const inspector = target.closest('.inspector');
+    if (inspector && (this.keybindings.matches('inspectorNext', event) || this.keybindings.matches('inspectorPrevious', event))) {
+      const controls = Array.from(inspector.querySelectorAll<HTMLElement>('app-world-map-fields input, app-world-map-fields select, app-world-map-fields textarea, app-world-map-fields button')).filter(control => !control.hasAttribute('disabled') && !control.hasAttribute('readonly') && control.tabIndex >= 0 && control.getClientRects().length);
+      if (controls.length) {
+        event.preventDefault();
+        const delta = this.keybindings.matches('inspectorPrevious', event) ? -1 : 1;
+        controls[(controls.indexOf(target) + delta + controls.length) % controls.length].focus();
+      }
+      return;
+    }
+    if (inspector && this.keybindings.matches('cancel', event)) { event.preventDefault(); this.focusStage(); return; }
+    if (this.keybindings.matches('command', event)) { event.preventDefault(); this.commandOpen = true; return; }
+    if (this.keybindings.matches('focusStage', event)) { event.preventDefault(); this.focusStage(); return; }
+    if (target.closest('input,textarea,select,[contenteditable="true"]')) return;
+    const action = KEY_ACTIONS.find(action => action.scope === 'Page' && this.keybindings.matches(action.id, event));
+    if (!action) return;
+    event.preventDefault();
+    this.runKeyAction(action.id);
+  }
+  runKeyAction(action: KeyAction) {
+    switch (action) {
+      case 'undo': this.undo(); break;
+      case 'redo': this.redo(); break;
+      case 'tools': this.toggleTools(); break;
+      case 'pin': this.clickEditor('app-world-map-tools .handle', true); break;
+      case 'story': this.toggleStoryRefs(); break;
+      case 'north': case 'east': case 'south': case 'west': this.orientation = ['north', 'east', 'south', 'west'].indexOf(action); this.stageRotation = 0; break;
+      case 'rotateLeft': this.stageRotation -= 5; break;
+      case 'rotateRight': this.stageRotation += 5; break;
+      case 'coords': this.showCoordinates = !this.showCoordinates; break;
+      case 'labels': this.showLabels = !this.showLabels; this.saveLabelSettings(); break;
+      case 'labelConfig': this.clickEditor('button[aria-label="Configure labels"]', true); break;
+      case 'fit': this.fit(); break;
+      case 'zoomIn': this.zoom(0.8); break;
+      case 'zoomOut': this.zoom(1.25); break;
+      case 'back': this.navigateEntity(false); break;
+      case 'forward': this.navigateEntity(true); break;
+      case 'previousRegion': case 'nextRegion': {
+        const ids = ['', ...this.regions.map(region => region.getAttribute('id'))];
+        const index = Math.max(0, Math.min(ids.length - 1, ids.indexOf(this.region) + (action === 'nextRegion' ? 1 : -1)));
+        this.changeRegion(ids[index]); break;
+      }
+      case 'select': case 'node': this.finishGeometryDrawing(); this.mode = action; break;
+      case 'geometry': this.startGeometryDrawing(); break;
+      case 'junction': this.toggleJunctionTool(); break;
+      case 'coolon': this.toggleCoolonTool(); break;
+      case 'portals': this.togglePortalView(); break;
+      case 'places': this.togglePlaceView(); break;
+      case 'registrySearch': this.host.nativeElement.querySelector<HTMLElement>('input.search')?.focus(); break;
+      case 'inspector': this.focusInspector(); break;
+      case 'diagnostics': this.showDiagnostics = !this.showDiagnostics; break;
+      case 'config': this.clickEditor('app-world-map-config button'); break;
+      case 'background': this.clickEditor('app-world-map-terrain summary'); break;
+      case 'map': this.setTab('map'); break;
+      case 'xml': this.setTab('source'); break;
+      case 'assets': this.setTab('assets'); break;
+      case 'vanilla': void this.loadVanilla(); break;
+      case 'save': this.saveBrowserPreset(); break;
+      case 'import': this.clickEditor('input[type="file"]'); break;
+      case 'export': void this.exportPreset(); break;
+      case 'package': this.download(true); break;
+      case 'controls': this.controlsOpen = true; break;
+      case 'viewport': this.fillViewport = !this.fillViewport; break;
+      case 'header': this.toggleHeader(); break;
+      case 'theme': this.cycleTheme(); break;
+      case 'cancel': this.cancelContext(); break;
+      case 'command': this.commandOpen = true; break;
+      case 'focusStage': this.focusStage(); break;
+    }
   }
   setTab(tab: 'map' | 'source' | 'assets') {
     this.tab = tab;

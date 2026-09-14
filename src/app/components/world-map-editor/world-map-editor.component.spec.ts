@@ -1,4 +1,4 @@
-import { ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, ElementRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { WorldMapEditorComponent } from './world-map-editor.component';
@@ -6,7 +6,7 @@ import { WorldMapEditorComponent } from './world-map-editor.component';
 describe('world map graph editing', () => {
   let editor: WorldMapEditorComponent;
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [{ provide: ChangeDetectorRef, useValue: { markForCheck: (): void => undefined } }] });
+    TestBed.configureTestingModule({ providers: [{ provide: ElementRef, useValue: { nativeElement: document.createElement('div') } }, { provide: ChangeDetectorRef, useValue: { markForCheck: (): void => undefined } }] });
     editor = TestBed.runInInjectionContext(() => new WorldMapEditorComponent());
     editor.ngOnInit();
   });

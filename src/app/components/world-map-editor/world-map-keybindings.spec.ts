@@ -16,3 +16,9 @@ describe('editor keybindings', () => {
     expect(keyboardChord(new KeyboardEvent('keydown', { key: 'Shift', shiftKey: true }))).toBe('');
   });
 });
+
+it('gives every action exactly one distinct default chord', () => {
+  expect(new Set(KEY_ACTIONS.map(action => action.id)).size).toBe(KEY_ACTIONS.length);
+  expect(new Set(KEY_ACTIONS.map(action => action.key)).size).toBe(KEY_ACTIONS.length);
+  for (const action of KEY_ACTIONS) expect(action.key.length).toBeGreaterThan(0);
+});
