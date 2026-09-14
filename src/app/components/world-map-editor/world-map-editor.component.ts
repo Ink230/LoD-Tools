@@ -393,18 +393,28 @@ export class WorldMapEditorComponent implements OnInit {
     this.coolonPortalChoices = [];
     this.mode = this.mode === 'coolon' ? 'select' : 'coolon';
   }
+  private portalMarkerCache?: { region: string; mode: string; markers: { x: number; z: number; portals: Element[]; label: string }[] };
   get coolonCreationMarkers() {
     if (this.mode !== 'coolon' && this.mode !== 'portalView' && this.mode !== 'placeView') return [];
+    if (this.portalMarkerCache?.region === this.region && this.portalMarkerCache.mode === this.mode) return this.portalMarkerCache.markers;
+    const markers = this.buildPortalMarkers();
+    this.portalMarkerCache = { region: this.region, mode: this.mode, markers };
+    return markers;
+  }
+  private buildPortalMarkers() {
+    if (this.mode !== 'coolon' && this.mode !== 'portalView' && this.mode !== 'placeView') return [];
     const groups = new Map<string, { x: number; z: number; portals: Element[] }>();
+    const routes = new Map(this.filteredRoutes.map(route => [route.id, route]));
+    const places = new Map(entries(this.doc, 'places').map(place => [place.getAttribute('id'), place]));
     for (const portal of entries(this.doc, 'portals')) {
       if (this.region && !this.entryRegions(portal, 'portals').has(this.region)) continue;
-      const route = this.filteredRoutes.find(route => route.id === portal.getAttribute('route'));
+      const route = routes.get(portal.getAttribute('route'));
       if (!route?.start || (this.mode === 'placeView' && !portal.getAttribute('place'))) continue;
       const key = `${route.start.x}:${route.start.z}`;
       if (!groups.has(key)) groups.set(key, { x: route.start.x, z: route.start.z, portals: [] });
       groups.get(key).portals.push(portal);
     }
-    return [...groups.values()];
+    return [...groups.values()].map(marker => ({ ...marker, label: places.get(marker.portals[0].getAttribute('place'))?.getAttribute('name') || marker.portals[0].getAttribute('id') }));
   }
   chooseCoolonPortal(portals: Element[]) {
     if (this.mode === 'placeView') {
@@ -599,6 +609,7 @@ export class WorldMapEditorComponent implements OnInit {
     return entries(this.doc, section).length;
   }
   refresh() {
+    this.portalMarkerCache = undefined;
     this.nodeNames.clear();
     this.nodePlaces.clear();
     const routeEntries = new Map(entries(this.doc, 'routes').map((route) => [route.getAttribute('id'), route]));

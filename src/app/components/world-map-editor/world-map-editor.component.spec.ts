@@ -268,4 +268,14 @@ describe('world map graph editing', () => {
     editor.undo();
     expect(editor.doc.querySelectorAll('coolonDestination')).toHaveLength(0);
   });
+  it('reuses portal markers across selections and rebuilds them after graph edits', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test"><nodes><node id="custom:n"><position x="12" y="0" z="34"/></node></nodes><routes><route id="custom:r" start="custom:n"/></routes><portals><portal id="custom:p" route="custom:r"/></portals></worldMapPreset>', 'test.wmap');
+    editor.togglePortalView();
+    const markers = editor.coolonCreationMarkers;
+    editor.select(editor.doc.querySelector('portal'), 'portals');
+    expect(editor.coolonCreationMarkers).toBe(markers);
+    editor.mutate(() => editor.doc.querySelector('position').setAttribute('x', '25'));
+    expect(editor.coolonCreationMarkers).not.toBe(markers);
+    expect(editor.coolonCreationMarkers[0].x).toBe(25);
+  });
 });
