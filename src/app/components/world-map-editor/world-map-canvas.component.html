@@ -139,7 +139,7 @@
       @for (marker of editor.coolonCreationMarkers; track $index) {
         <g role="button" tabindex="0" [attr.aria-label]="editor.mode === 'placeView' ? 'Inspect place' : editor.mode === 'portalView' ? 'Inspect portal' : 'Create Coolon destination at portal'" (pointerdown)="$event.stopPropagation()" (click)="$event.stopPropagation(); editor.chooseCoolonPortal(marker.portals)" (keydown.enter)="editor.chooseCoolonPortal(marker.portals)" (keydown.space)="$event.preventDefault(); editor.chooseCoolonPortal(marker.portals)" style="cursor: pointer">
           <circle [attr.cx]="marker.x" [attr.cy]="marker.z" [attr.r]="8 * editor.unit" fill="var(--wmap-color-4)" stroke="var(--wmap-color-2)" [attr.stroke-width]="2 * editor.unit" />
-          <path [attr.transform]="'translate(' + marker.x + ' ' + marker.z + ') ' + editor.mapTransform + ' scale(' + (editor.unit * 0.6) + ') translate(-12 -12)'" [attr.d]="editor.mode === 'placeView' ? editor.placeIcon : editor.portalIcon" fill="none" stroke="var(--wmap-color-2)" stroke-width="1.5" pointer-events="none" />
+          <path [attr.transform]="'translate(' + marker.x + ' ' + marker.z + ') ' + editor.mapTransform + ' scale(' + (editor.unit * 0.48) + ') translate(-12 -12)'" [attr.d]="editor.mode === 'placeView' ? editor.placeIcon : editor.portalIcon" fill="none" stroke="var(--wmap-color-2)" stroke-width="1.5" pointer-events="none" />
           <title>{{ marker.portals.length }} portal(s) · {{ editor.coolonPortalLabel(marker.portals[0]) }}</title>
         </g>
       }
