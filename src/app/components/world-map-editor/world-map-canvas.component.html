@@ -136,8 +136,24 @@
       @for (point of editor.entityLocatorPoints; track $index) {
         <circle [attr.cx]="point.x" [attr.cy]="point.z" [attr.r]="4 * editor.unit" fill="#ff3030" pointer-events="none" />
       }
+      @for (marker of editor.coolonCreationMarkers; track $index) {
+        <g role="button" tabindex="0" aria-label="Create Coolon destination at portal" (pointerdown)="$event.stopPropagation()" (click)="$event.stopPropagation(); editor.chooseCoolonPortal(marker.portals)" (keydown.enter)="editor.chooseCoolonPortal(marker.portals)" (keydown.space)="$event.preventDefault(); editor.chooseCoolonPortal(marker.portals)" style="cursor: pointer">
+          <circle [attr.cx]="marker.x" [attr.cy]="marker.z" [attr.r]="8 * editor.unit" fill="var(--wmap-color-4)" stroke="var(--wmap-color-2)" [attr.stroke-width]="2 * editor.unit" />
+          <text [attr.x]="marker.x" [attr.y]="marker.z + 3 * editor.unit" [attr.font-size]="10 * editor.unit" text-anchor="middle" fill="var(--wmap-color-2)">P</text>
+          <title>{{ marker.portals.length }} portal(s) · {{ editor.coolonPortalLabel(marker.portals[0]) }}</title>
+        </g>
+      }
     </g>
   </svg>
+  @if (editor.mode === 'coolon' && editor.coolonPortalChoices.length) {
+    <div style="position: absolute; top: 12px; right: 12px; z-index: 6; background: var(--wmap-color-4); border: 1px solid var(--wmap-color-3); padding: 12px; border-radius: 5px; max-height: 60%; overflow: auto; display: grid; gap: 6px">
+      <strong>Choose landing portal</strong>
+      @for (portal of editor.coolonPortalChoices; track portal) {
+        <button (click)="editor.createCoolonAtPortal(portal)">{{ editor.coolonPortalLabel(portal) }} · {{ portal.getAttribute('id') }} · {{ portal.getAttribute('route') }}</button>
+      }
+      <button (click)="editor.coolonPortalChoices = []">Cancel</button>
+    </div>
+  }
   @if (!editor.nodes.length && !editor.routes.length) {
     <div class="empty-state">
       <span class="empty-icon">⌘</span>

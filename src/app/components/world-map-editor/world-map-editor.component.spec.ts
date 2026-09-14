@@ -253,4 +253,19 @@ describe('world map graph editing', () => {
     editor.select(editor.doc.querySelector('node'), 'nodes');
     expect(editor.entityLocatorPoints).toEqual([]);
   });
+  it('groups overlapping portals and creates an undoable Coolon destination from the chosen portal', () => {
+    editor.importSource('<worldMapPreset version="1" id="custom:test"><nodes><node id="custom:n"><position x="12" y="5" z="34"/></node></nodes><routes><route id="custom:r" start="custom:n"/></routes><portals><portal id="custom:a" route="custom:r"/><portal id="custom:b" route="custom:r"/></portals></worldMapPreset>', 'test.wmap');
+    editor.toggleCoolonTool();
+    expect(editor.coolonCreationMarkers).toHaveLength(1);
+    editor.chooseCoolonPortal(editor.coolonCreationMarkers[0].portals);
+    expect(editor.coolonPortalChoices).toHaveLength(2);
+    editor.createCoolonAtPortal(editor.coolonPortalChoices[1]);
+    expect(editor.section).toBe('coolonDestinations');
+    expect(editor.mode).toBe('select');
+    expect(editor.selected.getAttribute('portal')).toBe('custom:b');
+    expect(editor.selected.querySelector('position').getAttribute('y')).toBe('5');
+    expect(editor.selected.getAttribute('defaultDestination')).toBe(editor.selected.getAttribute('id'));
+    editor.undo();
+    expect(editor.doc.querySelectorAll('coolonDestination')).toHaveLength(0);
+  });
 });
