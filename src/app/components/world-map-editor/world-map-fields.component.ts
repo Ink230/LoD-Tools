@@ -207,7 +207,9 @@ export class WorldMapFieldsComponent {
   get compactReference() { return this.element.tagName === 'item' && this.attributes.length === 1 && Boolean(this.reference('id')); }
 
   get attributes() {
-    const first = ['id', 'name', 'label', 'start', 'end', 'geometry', 'fromId', 'toId'];
+    const first = this.element.tagName === 'portal'
+      ? ['id', 'route', 'place', 'fromId', 'toId', 'atmosphere', 'smoke', 'fullBrightness']
+      : ['id', 'name', 'label', 'start', 'end', 'geometry', 'fromId', 'toId'];
     const rank = (name: string) => first.includes(name) ? first.indexOf(name) : first.length;
     return Array.from(this.element.attributes).sort((a, b) => rank(a.name) - rank(b.name) || a.name.localeCompare(b.name));
   }
