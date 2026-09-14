@@ -297,6 +297,7 @@ export class WorldMapFieldsComponent {
     return section ? this.registryLabels[section]?.[value] || '' : '';
   }
   childLabelName(name: string) {
+    if (name === 'regions' && this.element.tagName === 'presentationProfile') return 'Region transition labels';
     if (name === 'serviceIds') return 'Services';
     if (name === 'soundIds') return 'Sounds';
     return name.replace('Ids', '').replace(/([A-Z])/g, ' $1').replace(/^./, (character) => character.toUpperCase());
