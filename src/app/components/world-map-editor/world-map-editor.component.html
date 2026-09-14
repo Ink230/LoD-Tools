@@ -62,14 +62,16 @@
   <div class="workspace">
     <aside class="library" aria-label="Preset sections">
       <div class="panel-title" style="min-height: 0; padding: 20px 12px 8px">WORLD CONTENT</div>
-      <div class="section-list">
-        @for (name of sections; track name) {
-          <button [class.active]="section === name" (click)="chooseSection(name)">
-            <span>{{ label(name) }}</span
-            ><small>{{ count(name) }}</small>
-          </button>
-        }
-      </div>
+      @for (group of contentGroups; track group.title) {
+        <h3 style="margin: 12px 12px 4px; color: var(--wmap-color-2); font-size: 12px; font-weight: 600">{{ group.title }}</h3>
+        <div class="section-list">
+          @for (name of group.sections; track name) {
+            <button [class.active]="section === name" (click)="chooseSection(name)">
+              <span>{{ label(name) }}</span><small>{{ count(name) }}</small>
+            </button>
+          }
+        </div>
+      }
       <div class="panel-title">{{ label(section) }} <button (click)="createEntry()" aria-label="Add entry">+</button></div>
       <input class="search" aria-label="Search registry IDs" placeholder="Search registry IDs…" [(ngModel)]="search" />
       <div class="entry-list">

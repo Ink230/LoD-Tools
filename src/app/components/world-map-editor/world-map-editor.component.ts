@@ -80,6 +80,13 @@ export class WorldMapEditorComponent implements OnInit {
   }
   section = 'nodes';
   sections = Object.keys(SECTIONS);
+  contentGroups = [
+    { title: 'World Primitives', sections: ['nodes', 'geometry', 'routes', 'places', 'portals', 'teleportLinks', 'coolonDestinations', 'regions'] },
+    { title: 'Story', sections: ['storyPresets', 'behaviours', 'rules', 'traversalProfiles', 'presentationProfiles'] },
+    { title: 'Assets', sections: ['avatars', 'thumbnails', 'thumbnailDefinitions'] },
+    { title: 'Data', sections: ['battleStageDefinitions', 'encounterPools', 'soundDefinitions', 'serviceDefinitions', 'submapDestinations'] },
+    { title: 'Preset', sections: ['requiredMods', 'removals'] },
+  ];
   selected: Element | null = null;
   search = '';
   region = '';
