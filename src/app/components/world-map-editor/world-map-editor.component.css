@@ -177,9 +177,9 @@ code {
   font-size: 12px;
   align-items: center;
   gap: 6px;
-  padding: 7px 5px;
+  padding: 4px 5px;
   background: transparent;
-  border-color: transparent;
+  border-color: var(--wmap-color-3);
 }
 .section-list small { font-size: 11px; flex-shrink: 0; }
 .section-list button.active,
@@ -203,9 +203,10 @@ code {
   display: grid;
   gap: 3px;
   background: transparent;
-  border-color: transparent;
+  border-color: var(--wmap-color-3);
   border-radius: 4px;
   margin-bottom: 3px;
+  padding: 5px 7px;
 }
 .entry-list span,
 .entry-list small {
