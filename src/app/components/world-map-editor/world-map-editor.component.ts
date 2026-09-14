@@ -581,6 +581,8 @@ export class WorldMapEditorComponent implements OnInit {
     return this.nodes.filter((n) => ids.has(n.id) || !this.entryRegions(n.element, 'nodes').size);
   }
   label(value: string) {
+    const names: Record<string, string> = { battleStageDefinitions: 'Battle Stage', soundDefinitions: 'Sounds', serviceDefinitions: 'Services' };
+    if (names[value]) return names[value];
     return value.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase());
   }
   shortId(value: string) {
