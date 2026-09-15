@@ -44,8 +44,8 @@
           @for (item of categories; track item.id) { <button (click)="chooseCategory(item.id)" [class.active]="category.id === item.id" [attr.aria-pressed]="category.id === item.id">{{ item.name }}</button> }
         </div>
         <div class="catalog-filters">
-          @if (browseMode === 'format') { <select aria-label="Filter asset format" [(ngModel)]="formatFilter"><option value="">All formats</option>@for (format of availableFormats; track format) { <option [value]="format">{{ format }}</option> }</select> }
-          @else { <select aria-label="Filter game asset" [(ngModel)]="gameFilter"><option value="">All game assets</option>@for (name of gameAssets; track name) { <option [value]="name">{{ name }}</option> }</select> }
+          @if (browseMode === 'game') { <select aria-label="Filter game asset" [(ngModel)]="gameFilter" (ngModelChange)="formatFilter = ''"><option value="">All game assets</option>@for (name of gameAssets; track name) { <option [value]="name">{{ name }}</option> }</select> }
+          <select aria-label="Filter asset format" [(ngModel)]="formatFilter"><option value="">All formats</option>@for (format of availableFormats; track format) { <option [value]="format">{{ format }}</option> }</select>
           <input [(ngModel)]="search" placeholder="Search assets…" aria-label="Search assets" />
         </div>
         @if (catalogLoading) { <p class="empty-copy" role="status">Loading asset catalog…</p> }

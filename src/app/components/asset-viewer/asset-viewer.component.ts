@@ -132,7 +132,7 @@ export class AssetViewerComponent implements OnInit {
   }
   get visibleAssets() { return this.filteredAssets.slice(this.page * this.pageSize, (this.page + 1) * this.pageSize); }
   get totalPages() { return Math.ceil(this.filteredAssets.length / this.pageSize); }
-  get availableFormats() { return [...new Set((this.catalog?.assets || []).filter(asset => asset.category === this.categoryId).map(asset => asset.format))]; }
+  get availableFormats() { return [...new Set((this.catalog?.assets || []).filter(asset => (this.browseMode === 'game' ? asset.gameCategory === this.categoryId && (!this.gameFilter || asset.gameAsset === this.gameFilter) : asset.category === this.categoryId)).map(asset => asset.format))]; }
   get gameAssets() { return [...new Set((this.catalog?.assets || []).filter(asset => asset.gameCategory === this.categoryId).map(asset => asset.gameAsset))].sort(); }
   get relatedAssets() {
     if (!this.selectedAsset) return [];

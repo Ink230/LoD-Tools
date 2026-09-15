@@ -1,8 +1,27 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { AssetViewerComponent } from './asset-viewer.component';
+import { AssetRecord, gameIdentity, assetCategory } from './asset-catalog';
 
 describe('asset explorer', () => {
+  it('separates archive categories and filters formats within By game asset', () => {
+    const viewer = TestBed.createComponent(AssetViewerComponent).componentInstance;
+    const asset = (path: string, format: AssetRecord['format']): AssetRecord => ({ path, name: path, format, size: 1, category: assetCategory(format), ...gameIdentity(path) });
+    const submapModel = asset('SECT/DRGN21.BIN/5/33', 'TMD');
+    const submapTexture = asset('SECT/DRGN21.BIN/5/textures/1', 'TIM');
+    const gameModel = asset('SECT/DRGN0.BIN/0', 'TMD');
+    viewer.catalog = { version: 1, extractionVersion: 'test', assets: [submapModel, submapTexture, gameModel] };
+    viewer.setBrowseMode('game');
+    viewer.chooseCategory('submap-resources');
+    expect(viewer.filteredAssets).toEqual([submapModel, submapTexture]);
+    expect(viewer.availableFormats).toEqual(['TMD', 'TIM']);
+    viewer.gameFilter = submapModel.gameAsset;
+    viewer.formatFilter = 'TIM';
+    expect(viewer.filteredAssets).toEqual([submapTexture]);
+    viewer.chooseCategory('game-resources');
+    expect(viewer.filteredAssets).toEqual([gameModel]);
+    expect(viewer.availableFormats).toEqual(['TMD']);
+  });
   it('navigates imported entity history without opening a folder and truncates forward history', async () => {
     const viewer = TestBed.createComponent(AssetViewerComponent).componentInstance;
     const open = async (name: string) => {

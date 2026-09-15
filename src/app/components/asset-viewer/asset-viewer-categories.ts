@@ -50,8 +50,10 @@ export const GAME_ASSET_CATEGORIES: AssetCategory[] = [
     { name: 'Monsters', description: 'Battle models, textures, animations, sounds, and scripts' },
     { name: 'NPCs', description: 'Scene models, textures, animations, and behavior scripts' },
   ] },
-  { id: 'locations', name: 'Locations', description: 'The environments where exploration and battles take place.', entries: [
-    { name: 'Submaps', description: 'Backgrounds, foregrounds, objects, cameras, collision, and scripts' },
+  { id: 'submap-resources', name: 'Submap resources', description: 'Submap objects, textures, animations, and scene data.', entries: [
+      { name: 'Submaps', description: 'Backgrounds, foregrounds, objects, cameras, collision, and scripts' },
+  ] },
+  { id: 'game-resources', name: 'Game resources', description: 'Other extracted game archive resources.', entries: [
     { name: 'Battle stages', description: 'Arena models, textures, animation, and backdrops' },
     { name: 'World map', description: 'Terrain, location imagery, and world objects' },
   ] },

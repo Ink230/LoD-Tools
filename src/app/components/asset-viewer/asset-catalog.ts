@@ -52,7 +52,7 @@ export function gameIdentity(path: string): { gameCategory: string; gameAsset: s
   if (parts[0] === 'monsters') return { gameCategory: 'monsters', gameAsset: `Monster ${parts[1]}` };
   if (parts[0] === 'SUBMAP') return { gameCategory: 'interface', gameAsset: 'Field effects' };
   if (parts[0] === 'XA' || parts[0] === 'STR') return { gameCategory: 'media', gameAsset: parts.slice(0, -1).join('/') };
-  if (/^SECT\/DRGN2[1-4]\.BIN\//.test(path)) return { gameCategory: 'locations', gameAsset: `Submap resources · ${parts[1]}/${parts[2]}` };
-  if (parts[0] === 'SECT') return { gameCategory: 'locations', gameAsset: `Game resources · ${parts[1]}/${parts[2]}` };
+  if (/^SECT\/DRGN2[1-4]\.BIN\//.test(path)) return { gameCategory: 'submap-resources', gameAsset: `Submap resources · ${parts[1]}/${parts[2]}` };
+  if (parts[0] === 'SECT') return { gameCategory: 'game-resources', gameAsset: `Game resources · ${parts[1]}/${parts[2]}` };
   return { gameCategory: 'interface', gameAsset: parts[0] === 'goods' ? title(parts[1]) : 'Interface & shared assets' };
 }
