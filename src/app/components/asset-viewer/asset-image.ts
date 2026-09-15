@@ -180,23 +180,30 @@ export function texturePage(bytes: Uint8Array, clut: number, tpage: number): Pix
  * Renders one PSX texture page after TIMs have been uploaded in order to a shared VRAM.
  * This is needed when a model's image pixels and its CLUT are separate TIM resources.
  */
-export function texturePageFromTims(textures: Uint8Array[], clut: number, tpage: number): PixelImage {
+export function texturePageFromTims(textures: Uint8Array[], clut: number, tpage: number): PixelImage & { coverage: Uint8Array } {
   if (textures.length === 0) throw new Error('At least one TIM is required to build a texture page');
   if (textures.length > 1024) throw new Error('Too many TIM resources for one texture page');
   const vram = new Uint16Array(1024 * 512);
+  const uploaded = new Uint8Array(vram.length);
   for (const bytes of textures) {
     const tim = parseTim(bytes);
     for (let y = 0; y < tim.imageHeight; y++) for (let x = 0; x < tim.imageWidthWords; x++) {
       const targetX = tim.imageX + x;
       const targetY = tim.imageY + y;
       const offset = (y * tim.imageWidthWords + x) * 2;
-      if (targetX >= 0 && targetX < 1024 && targetY >= 0 && targetY < 512 && offset + 1 < tim.image.length) vram[targetY * 1024 + targetX] = u16(tim.image, offset);
+      if (targetX >= 0 && targetX < 1024 && targetY >= 0 && targetY < 512 && offset + 1 < tim.image.length) {
+        vram[targetY * 1024 + targetX] = u16(tim.image, offset);
+        uploaded[targetY * 1024 + targetX] = 1;
+      }
     }
     if (tim.clut !== null) for (let y = 0; y < tim.clutHeight; y++) for (let x = 0; x < tim.clutWidth; x++) {
       const targetX = tim.clutX + x;
       const targetY = tim.clutY + y;
       const offset = (y * tim.clutWidth + x) * 2;
-      if (targetX >= 0 && targetX < 1024 && targetY >= 0 && targetY < 512 && offset + 1 < tim.clut.length) vram[targetY * 1024 + targetX] = u16(tim.clut, offset);
+      if (targetX >= 0 && targetX < 1024 && targetY >= 0 && targetY < 512 && offset + 1 < tim.clut.length) {
+        vram[targetY * 1024 + targetX] = u16(tim.clut, offset);
+        uploaded[targetY * 1024 + targetX] = 1;
+      }
     }
   }
   const bpp = tpage >>> 7 & 0x3;
@@ -206,16 +213,42 @@ export function texturePageFromTims(textures: Uint8Array[], clut: number, tpage:
   const paletteX = (clut & 0x3f) * 16;
   const paletteY = clut >>> 6;
   const pixels = new Uint8ClampedArray(256 * 256 * 4);
+  const coverage = new Uint8Array(256 * 256);
   for (let y = 0; y < 256; y++) for (let x = 0; x < 256; x++) {
-    const packed = vram[(pageY + y) * 1024 + (bpp === 0 ? pageX + (x >> 2) : bpp === 1 ? pageX + (x >> 1) : pageX + x)];
+    const wordX = bpp === 0 ? pageX + (x >> 2) : bpp === 1 ? pageX + (x >> 1) : pageX + x;
+    const address = (pageY + y) * 1024 + wordX;
+    const packed = vram[address];
+    let covered = wordX < 1024 && uploaded[address] === 1;
     let pixel: Rgba;
     if (bpp === 0 || bpp === 1) {
       const index = bpp === 0 ? packed >>> (x & 3) * 4 & 0xf : packed >>> (x & 1) * 8 & 0xff;
       pixel = colour15(vram[paletteY * 1024 + paletteX + index]);
+      covered = covered && paletteX + index < 1024 && uploaded[paletteY * 1024 + paletteX + index] === 1;
     } else pixel = colour15(packed);
     copy(pixel, pixels, (y * 256 + x) * 4);
+    coverage[y * 256 + x] = covered ? 1 : 0;
   }
-  return { width: 256, height: 256, pixels };
+  return { width: 256, height: 256, pixels, coverage };
+}
+
+/** Checks the sampled UV triangles, independently of pixel alpha (zero may be valid transparency). */
+export function textureCoversPrimitive(coverage: Uint8Array, uvs: [number, number][]): boolean {
+  if (uvs.some(([u, v]) => coverage[(v & 255) * 256 + (u & 255)] !== 1)) return false;
+  const triangles = uvs.length === 4 ? [[0, 1, 2], [1, 2, 3]] : [[0, 1, 2]];
+  for (const indices of triangles) {
+    const points = indices.map(index => uvs[index]);
+    if (points.some(point => !point)) return false;
+    const [a, b, c] = points;
+    const edge = (p: number[], q: number[], x: number, y: number) => (q[0] - p[0]) * (y - p[1]) - (q[1] - p[1]) * (x - p[0]);
+    if (edge(a, b, c[0], c[1]) === 0) continue;
+    for (let y = Math.min(a[1], b[1], c[1]); y <= Math.max(a[1], b[1], c[1]); y++) {
+      for (let x = Math.min(a[0], b[0], c[0]); x <= Math.max(a[0], b[0], c[0]); x++) {
+        const edges = [edge(a, b, x, y), edge(b, c, x, y), edge(c, a, x, y)];
+        if ((edges.every(value => value >= 0) || edges.every(value => value <= 0)) && coverage[(y & 255) * 256 + (x & 255)] !== 1) return false;
+      }
+    }
+  }
+  return true;
 }
 
 export function decodeMcq(bytes: Uint8Array): TextureImage {

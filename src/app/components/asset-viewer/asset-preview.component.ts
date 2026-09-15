@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import { FormsModule } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
 import { AssetRecord, AssetFormat, PREVIEW_FORMATS, assetCategory, gameIdentity } from './asset-catalog';
-import { decodeTim, decodeMcq, texturePageFromTims } from './asset-image';
+import { decodeTim, decodeMcq, texturePageFromTims, textureCoversPrimitive } from './asset-image';
 import { decodeModel } from './asset-model';
 import { decodeAnimation, decodeLmb, decodeAnm, decodeClutAnimationDetails, DecodedClutAnimation, LmbType } from './asset-animation';
 import { copyPaletteRow } from './asset-palette';
@@ -47,6 +47,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   clut: DecodedClutAnimation | null = null;
   overlay: SceneOverlay | null = null;
   texturePages = new Map<string, PixelImage>();
+  textureMappingWarning = '';
   textures: Uint8Array[] = [];
   palette = 0;
   paletteCount = 1;
@@ -84,6 +85,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     const version = ++this.loadVersion; this.picker = null; this.selectedAnimation = null;
     ++this.companionVersion;
     this.loadedCompanions = { texture: [], model: [], animation: [] };
+    this.textureMappingWarning = '';
     this.playing = false; this.frame = 0; this.loading = true; this.error = ''; this.warnings = [];
     this.image = null; this.model = null; this.animation = null; this.sprite = null; this.clut = null; this.overlay = null;
     this.texturePages = new Map(); this.textures = []; this.palette = 0; this.samples = []; this.animationPath = ''; this.showRecords = false;
@@ -185,17 +187,25 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   }
   private buildTexturePages() {
     const pages = new Map<string, PixelImage>();
+    const decoded = new Map<string, ReturnType<typeof texturePageFromTims>>();
+    const missing = new Set<string>();
+    this.textureMappingWarning = '';
     if (this.textures.length) {
       for (const primitive of this.model?.parts.flatMap(part => part.primitives) || []) {
         if (primitive.clut === undefined || primitive.tpage === undefined) continue;
         const key = `${primitive.clut}:${primitive.tpage}`;
-        if (!pages.has(key) && pages.size < 256) pages.set(key, texturePageFromTims(this.textures, primitive.clut, primitive.tpage));
+          if (!decoded.has(key) && decoded.size < 256) decoded.set(key, texturePageFromTims(this.textures, primitive.clut, primitive.tpage));
+          const page = decoded.get(key);
+          if (page && primitive.uvs && !textureCoversPrimitive(page.coverage, primitive.uvs)) missing.add(key);
+          if (page) pages.set(key, page);
       }
       for (const frame of this.sprite?.frames || []) for (const piece of frame.pieces) {
         const key = `${piece.clut}:${piece.tpage}`;
         if (!pages.has(key) && pages.size < 256) pages.set(key, texturePageFromTims(this.textures, piece.clut, this.record.path.startsWith('SUBMAP/savepoint/') ? 31 : piece.tpage));
       }
     }
+    for (const key of missing) pages.delete(key);
+    if (missing.size) this.textureMappingWarning = `Selected textures do not cover ${missing.size} texture/palette mappings used by this model. Affected surfaces are shown without textures. Choose the model's companion texture set.`;
     this.texturePages = pages;
   }
   async chooseAnimation(path: string) {

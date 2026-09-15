@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decodeMcq, decodeTim, sampleTim, texturePage, texturePageFromTims } from './asset-image';
+import { decodeMcq, decodeTim, sampleTim, texturePage, texturePageFromTims, textureCoversPrimitive } from './asset-image';
 
 function u16(bytes: Uint8Array, offset: number, value: number) { new DataView(bytes.buffer).setUint16(offset, value, true); }
 function u32(bytes: Uint8Array, offset: number, value: number) { new DataView(bytes.buffer).setUint32(offset, value, true); }
@@ -25,6 +25,24 @@ function tim(bpp: 0 | 1 | 2 | 3, words: number, image: number[], clut?: number[]
 }
 
 describe('asset image decoders', () => {
+  it('distinguishes missing texture uploads from valid transparent texels', () => {
+    const bytes = tim(0, 1, [0, 0], Array(16).fill(0));
+    u16(bytes, 56, 64);
+    const page = texturePageFromTims([bytes], 0, 1);
+    expect(page.pixels[3]).toBe(0);
+    expect(page.coverage[0]).toBe(1);
+    expect(textureCoversPrimitive(page.coverage, [[0, 0], [3, 0], [0, 0]])).toBe(true);
+    expect(texturePageFromTims([bytes], 0, 2).coverage[0]).toBe(0);
+    expect(texturePageFromTims([bytes], 64, 1).coverage[0]).toBe(0);
+  });
+
+  it('detects missing interior UV data even when triangle corners are uploaded', () => {
+    const coverage = new Uint8Array(256 * 256).fill(1);
+    coverage[257] = 0;
+    expect(textureCoversPrimitive(coverage, [[0, 0], [4, 0], [0, 4]])).toBe(false);
+    coverage[257] = 1;
+    expect(textureCoversPrimitive(coverage, [[0, 0], [4, 0], [0, 4]])).toBe(true);
+  });
   it('decodes paletted, direct-colour, and 24-bit TIM images', () => {
     const palette = Array.from({ length: 16 }, (_, index) => index === 1 ? 0x7fff : 0);
     const fourBit = decodeTim(tim(0, 1, [0x11, 0x11], palette));
