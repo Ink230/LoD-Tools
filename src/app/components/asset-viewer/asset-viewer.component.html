@@ -87,12 +87,24 @@
         <dl><dt>Game asset</dt><dd>{{ selectedAsset.gameAsset }}</dd><dt>Format</dt><dd>{{ selectedAsset.format }}</dd><dt>Path</dt><dd><code>{{ selectedPath }}</code></dd><dt>Size</dt><dd>{{ selected.size.toLocaleString() }} bytes</dd><dt>Last modified</dt><dd>{{ selected.lastModified | date:'medium' }}</dd>@if (selectedAsset.offset) { <dt>Resource offset</dt><dd>{{ selectedAsset.offset }}</dd> }</dl>
       } @else { <p class="empty-copy muted">Select an asset to inspect its details.</p> }
       @if (selectedAsset) {
-        <div class="panel-title">Entity attachments</div>
+        @for (group of entityAttachments; track group.label) {
+          @if (group.label === 'Model') {
+            <div class="entity-attachments">
+              <h3>Model</h3>
+              @for (asset of group.assets; track assetKey(asset)) {
+                <button (click)="openEntity(asset)" [disabled]="busy" [class.active]="assetKey(asset) === assetKey(selectedAsset)" [attr.aria-current]="assetKey(asset) === assetKey(selectedAsset) ? 'true' : null" [title]="asset.path + ' · offset ' + (asset.offset || 0)">{{ asset.gameAsset }} / {{ asset.name }}<small>{{ asset.format }}@if (asset.offset) { · offset {{ asset.offset }} }</small></button>
+              }
+            </div>
+          }
+        }
+        <div class="panel-title">Referenced Entities for Model</div>
         <div class="entity-attachments">
           @for (group of entityAttachments; track group.label) {
-            <h3>{{ group.label }}</h3>
-            @for (asset of group.assets; track assetKey(asset)) {
-              <button (click)="openEntity(asset)" [disabled]="busy" [title]="asset.path + ' · offset ' + (asset.offset || 0)">{{ asset.gameAsset }} / {{ asset.name }}<small>{{ asset.format }}@if (asset.offset) { · offset {{ asset.offset }} }</small></button>
+            @if (group.label !== 'Model') {
+              <h3>{{ group.label }}</h3>
+              @for (asset of group.assets; track assetKey(asset)) {
+                <button (click)="openEntity(asset)" [disabled]="busy" [class.active]="assetKey(asset) === assetKey(selectedAsset)" [attr.aria-current]="assetKey(asset) === assetKey(selectedAsset) ? 'true' : null" [title]="asset.path + ' · offset ' + (asset.offset || 0)">{{ asset.gameAsset }} / {{ asset.name }}<small>{{ asset.format }}@if (asset.offset) { · offset {{ asset.offset }} }</small></button>
+              }
             }
           } @empty { <p class="muted">No linked resources recorded for this entity.</p> }
         </div>
