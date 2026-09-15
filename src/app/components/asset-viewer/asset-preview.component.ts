@@ -46,6 +46,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   mediaUrl = '';
   image: PixelImage | null = null;
   model: ModelAsset | null = null;
+  get modelUsesTextures() { return !!this.model?.parts.some(part => part.primitives.some(primitive => primitive.uvs?.length)); }
   animation: ModelAnimation | null = null;
   sprite: SpriteAnimation | null = null;
   clut: DecodedClutAnimation | null = null;
