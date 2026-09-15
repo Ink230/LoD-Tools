@@ -111,6 +111,7 @@ for (const asset of assets) {
       const size = (await stat(resolve(root, envPath))).size;
       if (size >= 24 + header[20] * 36) {
         asset.format = 'Collision'; asset.category = 'scenes'; asset.collisionInfo = `${directory}/1`; asset.environment = envPath;
+        assets.push({ path: asset.collisionInfo, name: 'Collision information', format: 'CollisionInfo', category: 'scenes', ...gameIdentity(asset.collisionInfo), size: (await stat(resolve(root, asset.collisionInfo))).size, environment: envPath, collision: asset.path, textures: asset.textures });
         assets.push({ path: envPath, name: 'Environment', format: 'Environment', category: 'scenes', ...gameIdentity(envPath), size, collision: asset.path, collisionInfo: asset.collisionInfo, textures: asset.textures });
       }
     }

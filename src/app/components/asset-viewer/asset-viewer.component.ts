@@ -1,3 +1,4 @@
+import { CollisionSelection } from './asset-preview-types';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
@@ -87,6 +88,8 @@ export class AssetViewerComponent implements OnInit {
     const index = this.filteredAssets.findIndex(item => this.assetKey(item) === this.assetKey(asset));
     this.page = Math.max(0, Math.floor(index / this.pageSize));
   }
+  selectedPolygon: CollisionSelection | null = null;
+  get polygonDetails() { return Object.entries(this.selectedPolygon?.values || {}); }
   selectedBytes: Uint8Array = new Uint8Array();
   page = 0;
   formatFilter = '';
@@ -153,7 +156,7 @@ export class AssetViewerComponent implements OnInit {
       const file = imported || await this.source!.file(asset.path);
       const bytes = await fileBytes(file);
       this.selected = file; this.selectedPath = asset.path; this.selectedAsset = asset;
-      this.selectedBytes = bytes.subarray(asset.offset || 0);
+      this.selectedPolygon = null; this.selectedBytes = bytes.subarray(asset.offset || 0);
       if (remember) this.rememberEntity(asset);
       return true;
     } catch (error) { this.error = `Unable to load ${asset.path}. Check that the selected folder is SC's extracted files folder. ${error instanceof Error ? error.message : ''}`; return false; }
@@ -169,7 +172,7 @@ export class AssetViewerComponent implements OnInit {
       const format = identifyAsset(bytes, file.name);
       this.selected = file; this.selectedPath = file.name;
       this.selectedAsset = { path: file.name, name: file.name, format, category: assetCategory(format), ...gameIdentity(file.name), size: file.size };
-      this.selectedBytes = bytes;
+      this.selectedPolygon = null; this.selectedBytes = bytes;
       this.importedFiles.set(file.name, file);
       this.importedRecords = [...this.importedRecords.filter(record => record.path !== file.name), this.selectedAsset!];
       this.companionAssets = [...(this.catalog?.assets || []), ...this.importedRecords];
@@ -259,7 +262,7 @@ export class AssetViewerComponent implements OnInit {
     this.search = '';
     this.selected = null;
     this.selectedPath = '';
-    this.selectedAsset = null; this.selectedBytes = new Uint8Array();
+    this.selectedAsset = null; this.selectedPolygon = null; this.selectedBytes = new Uint8Array();
   }
 
   async open(entry: AssetDirectoryHandle | AssetFileHandle) {
@@ -276,7 +279,7 @@ export class AssetViewerComponent implements OnInit {
         this.selected = file;
         this.selectedPath = relativePath;
         this.selectedAsset = this.catalog?.assets.find(asset => asset.path === relativePath) || { path: relativePath, name: file.name, format, category: assetCategory(format), ...gameIdentity(relativePath), size: file.size };
-        this.selectedBytes = bytes.subarray(this.selectedAsset.offset || 0);
+        this.selectedPolygon = null; this.selectedBytes = bytes.subarray(this.selectedAsset.offset || 0);
         this.rememberEntity(this.selectedAsset);
       }
     } catch {

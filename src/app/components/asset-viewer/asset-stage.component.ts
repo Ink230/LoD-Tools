@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, NgZone, OnChanges, OnDestroy, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Output, Input, NgZone, OnChanges, OnDestroy, ViewChild, inject } from '@angular/core';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { ModelAsset, ModelAnimation, PixelImage, SceneOverlay } from './asset-preview-types';
@@ -6,7 +6,7 @@ import { ModelAsset, ModelAnimation, PixelImage, SceneOverlay } from './asset-pr
 @Component({
   selector: 'app-asset-stage',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<div #surface class="surface" aria-label="3D asset viewport"></div>',
+  template: '<div #surface (pointerdown)="beginPick($event)" (pointerup)="pickPolygon($event)" class="surface" aria-label="3D asset viewport"></div>',
   styles: [':host { display:block; height:100%; min-height:360px; } .surface { width:100%; height:100%; min-height:360px; }'],
 })
 export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy {
@@ -15,6 +15,18 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
   @Input() animation: ModelAnimation | null = null;
   @Input() overlay: SceneOverlay | null = null;
   @Input() frame = 0;
+  @Input() selectedPolygon: number | null = null;
+  @Output() polygonSelected = new EventEmitter<number | null>();
+  private pickStart = { x: 0, y: 0 };
+  beginPick(event: PointerEvent) { this.pickStart = { x: event.clientX, y: event.clientY }; }
+  pickPolygon(event: PointerEvent) {
+    if (event.button !== 0 || !this.overlay?.polygons.length || Math.hypot(event.clientX - this.pickStart.x, event.clientY - this.pickStart.y) > 4) return;
+    const bounds = this.surface.nativeElement.getBoundingClientRect();
+    const ray = new THREE.Raycaster();
+    ray.setFromCamera(new THREE.Vector2((event.clientX - bounds.left) / bounds.width * 2 - 1, 1 - (event.clientY - bounds.top) / bounds.height * 2), this.camera);
+    const hits = ray.intersectObjects(this.root.children.filter(object => object.userData['collisionPick']), false);
+    this.polygonSelected.emit(hits.length ? hits[0].object.userData['polygonIndex'] : null);
+  }
   @Input() wireframe = false;
   @Input() texturePages = new Map<string, PixelImage>();
   private readonly zone = inject(NgZone);
@@ -137,10 +149,20 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
       }
     }
     if (this.overlay) {
-      for (const polygon of this.overlay.polygons) {
+      for (const [index, polygon] of this.overlay.polygons.entries()) {
         if (polygon.points.length < 2) continue;
         const points = [...polygon.points, polygon.points[0]].map(point => new THREE.Vector3(...point));
-        this.root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: 0xa4d77b })));
+                const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: 0xa4d77b }));
+        line.userData['polygonIndex'] = index;
+        this.root.add(line);
+        const positions: number[] = [];
+        for (let i = 1; i + 1 < polygon.points.length; i++) positions.push(...polygon.points[0], ...polygon.points[i], ...polygon.points[i + 1]);
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true, opacity: 0, depthWrite: false }));
+        mesh.userData['collisionPick'] = true;
+        mesh.userData['polygonIndex'] = index;
+        this.root.add(mesh);
       }
       if (this.overlay.camera) {
         const data = this.overlay.camera;
@@ -153,6 +175,9 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.pose(); this.fit();
   }
   private pose() {
+    for (const object of this.root.children) {
+      if (object instanceof THREE.Line && object.userData['polygonIndex'] !== undefined) (object.material as THREE.LineBasicMaterial).color.setHex(object.userData['polygonIndex'] === this.selectedPolygon ? 0xffcc55 : 0xa4d77b);
+    }
     const transforms = this.animation?.frames[Math.floor(this.frame) % this.animation.frames.length];
     for (let i = 0; i < this.parts.length; i++) {
       const transform = transforms?.[i];
@@ -162,7 +187,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
     this.root.traverse(object => {
       const material = (object as THREE.Mesh).material;
-      if (material instanceof THREE.MeshBasicMaterial) material.wireframe = this.wireframe;
+      if (material instanceof THREE.MeshBasicMaterial && !object.userData['collisionPick']) material.wireframe = this.wireframe;
     });
     this.render();
   }

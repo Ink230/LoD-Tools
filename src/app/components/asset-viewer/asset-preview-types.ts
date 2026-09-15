@@ -36,3 +36,10 @@ export interface SceneOverlay {
   records: { label: string; values: Record<string, string | number> }[];
   warnings: string[];
 }
+
+export interface CollisionSelection {
+  index: number;
+  label: string;
+  points: Vec3[];
+  values: Record<string, string | number>;
+}

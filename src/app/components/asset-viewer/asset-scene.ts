@@ -66,11 +66,13 @@ function readCollisionInfo(data: AssetBinary, primitiveCount: number, records: S
 
   for (let index = 0; index < primitiveCount; index++) {
     const offset = index * 12;
+    const vertexOffset = data.u16(offset + 2), vertexCount = data.u8(offset);
+    if (vertexCount > 4 || required + (vertexOffset + vertexCount) * 12 > data.bytes.length) warnings.push(`Collision primitive ${index}: vertex-info records are out of bounds`);
     records.push({
       label: `Collision primitive info ${index}`,
       values: {
-        vertexCount: data.u8(offset), flatEnoughToWalkOn: data.i8(offset + 1) === 0 ? 0 : 1,
-        vertexInfoOffset: data.u16(offset + 2), primitiveOffset: data.i32(offset + 4), planeOffset: data.i32(offset + 8),
+        vertexCount: data.u8(offset), sourceWalkableFlag: data.i8(offset + 1) === 0 ? 0 : 1,
+        vertexInfoOffset: data.u16(offset + 2), primitiveOffset: data.i32(offset + 4), planeConstant: data.i32(offset + 8),
       },
     });
   }

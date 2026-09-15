@@ -10,7 +10,7 @@ import { copyPaletteRow } from './asset-palette';
 import { decodeEnvironment, decodeCollision } from './asset-scene';
 import { decodeSpuSample, listSpuSamples, encodeWav } from './asset-audio';
 import { AssetCompanionPickerComponent, CompanionKind, companionFormats, companionResourceIncluded } from './asset-companion-picker.component';
-import { ModelAsset, ModelAnimation, PixelImage, SceneOverlay, SpriteAnimation } from './asset-preview-types';
+import { ModelAsset, ModelAnimation, PixelImage, SceneOverlay, CollisionSelection, SpriteAnimation } from './asset-preview-types';
 import { AssetStageComponent } from './asset-stage.component';
 
 @Component({
@@ -26,6 +26,9 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   @Input() thumbnails = new Map<string, string>();
   @Output() previewLoaded = new EventEmitter<{ key: string; url: string }>();
   @Output() navigateAsset = new EventEmitter<AssetRecord>();
+  @Output() polygonSelected = new EventEmitter<CollisionSelection | null>();
+  selectedPolygon: number | null = null;
+  private pointerStart = { x: 0, y: 0 };
   loadedCompanions: Record<CompanionKind, AssetRecord[]> = { texture: [], model: [], animation: [] };
   picker: CompanionKind | null = null;
   readonly companionKinds: CompanionKind[] = ['texture', 'model', 'animation'];
@@ -77,6 +80,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.imageZoom = zoom;
   }
   startImagePan(event: PointerEvent) {
+    this.pointerStart = { x: event.clientX, y: event.clientY };
     if (!this.zoomableImage || event.button !== 0 || (event.target as Element).closest('button')) return;
     event.preventDefault();
     (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
@@ -129,12 +133,35 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   environmentBytes: Uint8Array | null = null;
   sceneView: 'composition' | 'geometry' | 'both' = 'composition';
   hiddenLayers = new Set<number>();
-  get sceneResource() { return this.format === 'Environment' || this.format === 'Collision'; }
+  get sceneResource() { return this.format === 'Environment' || this.format === 'Collision' || this.format === 'CollisionInfo'; }
   get visibleCompanionKinds(): CompanionKind[] { return this.sceneResource ? ['texture'] : this.companionKinds; }
   updateSceneView() {
     this.image = this.submap && this.sceneView !== 'geometry' ? renderSubmapComposition(this.submap, this.hiddenLayers) : null;
     this.cdr.detectChanges();
     this.draw();
+  }
+  selectPolygon(index: number | null) {
+    this.selectedPolygon = index;
+    const polygon = index === null ? undefined : this.overlay?.polygons[index];
+    this.polygonSelected.emit(polygon ? { index: index!, ...polygon, values: this.overlay?.records.find(record => record.label === `Collision primitive info ${index}`)?.values || {} } : null);
+    this.draw();
+  }
+  pickComposition(event: MouseEvent) {
+    if ((event.target as Element).closest('button') || this.sceneView !== 'both' || !this.overlay?.camera || !this.submap || Math.hypot(event.clientX - this.pointerStart.x, event.clientY - this.pointerStart.y) > 4) return;
+    const canvas = this.canvas!.nativeElement, bounds = canvas.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) * canvas.width / bounds.width, y = (event.clientY - bounds.top) * canvas.height / bounds.height;
+    let selected: number | null = null;
+    this.overlay.polygons.forEach((polygon, index) => {
+      const points = polygon.points.map(point => projectSubmapPoint(point, this.overlay!.camera!, this.submap!));
+      if (points.some(point => !point)) return;
+      let inside = false;
+      for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+        const a = points[i]!, b = points[j]!;
+        if ((a[1] > y) !== (b[1] > y) && x < (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]) + a[0]) inside = !inside;
+      }
+      if (inside) selected = index;
+    });
+    this.selectPolygon(selected);
   }
   toggleLayer(index: number) {
     if (this.hiddenLayers.has(index)) this.hiddenLayers.delete(index);
@@ -148,6 +175,8 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.updateSceneView();
   }
   async load() {
+    this.selectedPolygon = null;
+    this.polygonSelected.emit(null);
     this.submap = null;
     this.environmentBytes = null;
     this.sceneView = 'composition';
@@ -213,7 +242,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
           break;
         }
         case 'ANM': this.sprite = decodeAnm(this.bytes); this.loadedCompanions.animation = [this.record]; this.warnings.push(...this.sprite.warnings); break;
-        case 'Environment': case 'Collision': {
+        case 'Environment': case 'Collision': case 'CollisionInfo': {
           this.environmentBytes = this.format === 'Environment' ? this.bytes : null;
           let environment: SceneOverlay | null = this.format === 'Environment' ? decodeEnvironment(this.bytes) : null;
           let collision: SceneOverlay | null = this.format === 'Collision' ? decodeCollision(this.bytes) : null;
@@ -221,7 +250,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
             try {
               const envBytes = this.record.environment ? await this.readFile(this.record.environment) : null;
               const colBytes = this.record.collision ? await this.readFile(this.record.collision) : null;
-              const infoBytes = this.record.collisionInfo ? await this.readFile(this.record.collisionInfo) : undefined;
+              const infoBytes = this.format === 'CollisionInfo' ? this.bytes : this.record.collisionInfo ? await this.readFile(this.record.collisionInfo) : undefined;
               if (version !== this.loadVersion || this.destroyed) return;
               if (envBytes) {
                 environment = decodeEnvironment(envBytes);
@@ -414,7 +443,9 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
       if (this.sceneView === 'both' && this.submap && this.overlay?.camera) {
         context.strokeStyle = '#b8ed83';
         context.lineWidth = 0.8;
-        for (const polygon of this.overlay.polygons) {
+        for (const [index, polygon] of this.overlay.polygons.entries()) {
+          context.strokeStyle = index === this.selectedPolygon ? '#ffcc55' : '#b8ed83';
+          context.lineWidth = index === this.selectedPolygon ? 2 : 0.8;
           const points = polygon.points.map(point => projectSubmapPoint(point, this.overlay!.camera!, this.submap!));
           context.beginPath();
           for (let i = 0; i < points.length; i++) {

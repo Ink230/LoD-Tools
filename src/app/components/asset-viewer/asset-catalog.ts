@@ -1,4 +1,4 @@
-export type AssetFormat = 'PNG' | 'TIM' | 'MCQ' | 'Opus' | 'TMD' | 'Animation' | 'CMB' | 'LMB' | 'ANM' | 'CLUT' | 'SPU' | 'Environment' | 'Collision' | 'Unknown';
+export type AssetFormat = 'PNG' | 'TIM' | 'MCQ' | 'Opus' | 'TMD' | 'Animation' | 'CMB' | 'LMB' | 'ANM' | 'CLUT' | 'SPU' | 'Environment' | 'Collision' | 'CollisionInfo' | 'Unknown';
 export interface AssetRecord {
   path: string;
   name: string;
@@ -17,7 +17,7 @@ export interface AssetRecord {
   lmbType?: number;
 }
 export interface AssetCatalog { version: number; extractionVersion: string; assets: AssetRecord[]; }
-export const PREVIEW_FORMATS: AssetFormat[] = ['PNG', 'TIM', 'MCQ', 'Opus', 'TMD', 'Animation', 'CMB', 'LMB', 'ANM', 'CLUT', 'SPU', 'Environment', 'Collision'];
+export const PREVIEW_FORMATS: AssetFormat[] = ['PNG', 'TIM', 'MCQ', 'Opus', 'TMD', 'Animation', 'CMB', 'LMB', 'ANM', 'CLUT', 'SPU', 'Environment', 'Collision', 'CollisionInfo'];
 
 /** Header recognition is deliberately conservative: numeric filenames are not extensions. */
 export function identifyAsset(bytes: Uint8Array, path: string): AssetFormat {
@@ -41,7 +41,7 @@ export function assetCategory(format: AssetFormat): string {
   if (['PNG', 'TIM', 'MCQ'].includes(format)) return 'images';
   if (['TMD', 'Animation', 'CMB', 'LMB', 'ANM', 'CLUT'].includes(format)) return 'models';
   if (['Opus', 'SPU'].includes(format)) return 'audio';
-  if (['Environment', 'Collision'].includes(format)) return 'scenes';
+  if (['Environment', 'Collision', 'CollisionInfo'].includes(format)) return 'scenes';
   return 'effects';
 }
 

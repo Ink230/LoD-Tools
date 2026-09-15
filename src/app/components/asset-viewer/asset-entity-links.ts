@@ -16,6 +16,6 @@ export function entityLinks(entity: AssetRecord, catalog: AssetRecord[]): Entity
     { label: 'Animations', assets: animations },
     { label: 'Environment', assets: entity.environment ? [resolve(entity.environment, 'Environment')] : [] },
     { label: 'Collision', assets: entity.collision ? [resolve(entity.collision, 'Collision')] : [] },
-    { label: 'Collision information', assets: entity.collisionInfo ? [resolve(entity.collisionInfo, 'Unknown')] : [] },
+    { label: 'Collision information', assets: entity.collisionInfo ? [resolve(entity.collisionInfo, 'CollisionInfo')] : [] },
   ].filter(group => group.assets.length);
 }
