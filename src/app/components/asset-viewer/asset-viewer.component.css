@@ -1,5 +1,6 @@
 .editor { min-width: 0; }
 .icon-button { width: 34px; height: 34px; padding: 7px; display: inline-grid; place-items: center; }
+.theme-button { font-weight: 700; }
 .workspace { grid-template-columns: 310px minmax(0, 1fr) 310px; }
 .main-panel { min-width: 0; overflow: auto; background: var(--wmap-color-67); }
 .empty-state { min-height: 360px; height: calc(100% - 48px); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 32px; text-align: center; }
