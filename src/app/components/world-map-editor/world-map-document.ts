@@ -56,7 +56,7 @@ export const TEMPLATES: Record<string, string> = {
 export const OPTIONAL_ATTRIBUTES: Record<string, string[]> = {
   worldMapPreset: ['standalone', 'startingPortal', 'recoveryPortal'],
   geometry: ['motion', 'unitsPerStep'],
-  region: ['legacyTemplate', 'provider', 'presentationProvider'],
+  region: ['legacyTemplate'],
   resources: ['background', 'omitBackground', 'music', 'musicChapter', 'omitLocationSounds'],
   leader: ['texture'],
   place: ['name', 'thumbnailId'],
