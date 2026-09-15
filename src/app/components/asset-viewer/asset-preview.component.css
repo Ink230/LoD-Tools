@@ -2,6 +2,9 @@
 .preview-toolbar,.playback { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px; border-bottom:1px solid var(--wmap-color-0); }
 button,select,input { color:var(--wmap-color-2); background:var(--wmap-color-4); border:1px solid var(--wmap-color-3); border-radius:4px; padding:5px; font:12px system-ui; }
 button { cursor:pointer; } label { display:inline-flex; align-items:center; gap:6px; font-size:12px; }
+.companion-controls { display:inline-flex; align-items:center; gap:4px; }
+.random-companion { display:grid; place-items:center; width:28px; height:28px; padding:4px; }
+.random-companion:disabled { opacity:.45; cursor:default; }
 input[type=number] { width:65px; } .playback input { flex:1; min-width:100px; }
 .preview-surface { position:relative; flex:1; min-height:360px; overflow:auto; display:grid; place-items:center; background:repeating-conic-gradient(#18221c 0% 25%,#202b24 0% 50%) 0/20px 20px; }
 .preview-surface canvas,.preview-surface img { max-width:100%; max-height:75vh; object-fit:contain; image-rendering:pixelated; }

@@ -3,6 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { AssetRecord } from './asset-catalog';
 
 export type CompanionKind = 'texture' | 'model' | 'animation';
+export function companionFormats(kind: CompanionKind): string[] {
+  return kind === 'texture' ? ['TIM'] : kind === 'model' ? ['TMD'] : ['Animation', 'CMB', 'LMB'];
+}
 
 @Component({
   selector: 'app-asset-companion-picker',
@@ -52,7 +55,7 @@ export class AssetCompanionPickerComponent implements AfterViewInit, OnDestroy {
   get filtered() {
     const key = `${this.kind}:${this.search}`;
     if (key !== this.filterKey || this.previousAssets !== this.assets) {
-      const formats = this.kind === 'texture' ? ['TIM'] : this.kind === 'model' ? ['TMD'] : ['Animation', 'CMB', 'LMB'];
+      const formats = companionFormats(this.kind);
       const query = this.search.toLowerCase();
       this.matches = this.assets.filter(asset => formats.includes(asset.format) && `${asset.path} ${asset.name} ${asset.gameAsset}`.toLowerCase().includes(query));
       this.filterKey = key;

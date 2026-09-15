@@ -8,7 +8,7 @@ import { decodeAnimation, decodeLmb, decodeAnm, decodeClutAnimationDetails, Deco
 import { copyPaletteRow } from './asset-palette';
 import { decodeEnvironment, decodeCollision } from './asset-scene';
 import { decodeSpuSample, listSpuSamples, encodeWav } from './asset-audio';
-import { AssetCompanionPickerComponent, CompanionKind } from './asset-companion-picker.component';
+import { AssetCompanionPickerComponent, CompanionKind, companionFormats } from './asset-companion-picker.component';
 import { ModelAsset, ModelAnimation, PixelImage, SceneOverlay, SpriteAnimation } from './asset-preview-types';
 import { AssetStageComponent } from './asset-stage.component';
 
@@ -25,6 +25,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   @Input() thumbnails = new Map<string, string>();
   @Output() previewLoaded = new EventEmitter<{ key: string; url: string }>();
   picker: CompanionKind | null = null;
+  readonly companionKinds: CompanionKind[] = ['texture', 'model', 'animation'];
   selectedAnimation: AssetRecord | null = null;
   @Input() readFile?: (path: string) => Promise<Uint8Array>;
   @ViewChild('canvas') canvas?: ElementRef<HTMLCanvasElement>;
@@ -206,8 +207,13 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   }
   key(record: AssetRecord) { return `${record.path}@${record.offset || 0}`; }
   closePicker() { this.picker = null; ++this.companionVersion; }
-  async attach(records: AssetRecord[]) {
-    const kind = this.picker;
+  async randomCompanion(kind: CompanionKind) {
+    const formats = companionFormats(kind);
+    const candidates = this.assets.filter(asset => formats.includes(asset.format) && (kind !== 'texture' || asset.size <= 32 * 1024 * 1024));
+    if (!candidates.length) { this.error = `No compatible ${kind} assets are available`; return; }
+    await this.attach([candidates[Math.floor(Math.random() * candidates.length)]], kind);
+  }
+  async attach(records: AssetRecord[], kind = this.picker) {
     if (!kind || !this.readFile || !records.length) return;
     const version = this.loadVersion;
     const request = ++this.companionVersion;
