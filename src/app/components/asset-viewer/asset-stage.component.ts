@@ -181,6 +181,13 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     const transforms = this.animation?.frames[Math.floor(this.frame) % this.animation.frames.length];
     for (let i = 0; i < this.parts.length; i++) {
       const transform = transforms?.[i];
+      this.parts[i].visible = transform?.visible !== false;
+      this.parts[i].userData['billboardRotation'] = transform?.rotation[2] || 0;
+      this.parts[i].userData['screenRotation'] = transform?.screenRotation;
+      this.parts[i].traverse(object => {
+        const material = (object as THREE.Mesh).material;
+        if (material instanceof THREE.MeshBasicMaterial) material.color.setRGB(...((transform?.colour || [128, 128, 128]).map(value => value / 128) as [number, number, number]));
+      });
       this.parts[i].position.set(...(transform?.translation || [0, 0, 0]));
       this.parts[i].rotation.set(...(transform?.rotation || [0, 0, 0]), 'ZYX');
       this.parts[i].scale.set(...(transform?.scale || [1, 1, 1]));
@@ -195,6 +202,16 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     if (!this.controls) return;
     this.root.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(this.root);
+    if (this.animation?.format === 'Effect runtime') {
+      const radii = this.model!.parts.map(part => part.vertices.reduce((radius, vertex) => Math.max(radius, Math.hypot(...vertex)), 1));
+      for (const frame of this.animation.frames) frame.forEach((part, index) => {
+        if (part.visible === false) return;
+        const radius = radii[index] * Math.max(...part.scale.map(Math.abs));
+        const center = new THREE.Vector3(...part.translation).multiply(this.root.scale);
+        box.expandByPoint(center.clone().addScalar(radius));
+        box.expandByPoint(center.clone().addScalar(-radius));
+      });
+    }
     const center = box.isEmpty() ? new THREE.Vector3() : box.getCenter(new THREE.Vector3());
     const extent = Math.max(100, box.isEmpty() ? 100 : box.getSize(new THREE.Vector3()).length());
     this.camera.near = Math.max(0.01, extent / 10000); this.camera.far = extent * 100;
@@ -213,6 +230,13 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.renderer!.setSize(width, height, false);
       this.renderer!.domElement.style.width = '100%'; this.renderer!.domElement.style.height = '100%';
       this.camera.aspect = width / height; this.camera.updateProjectionMatrix();
+      for (let i = 0; i < this.parts.length; i++) {
+        if (!this.model?.parts[i]?.billboard && !this.parts[i].userData['screenRotation']) continue;
+        this.parts[i].quaternion.copy(this.root.getWorldQuaternion(new THREE.Quaternion()).invert()).multiply(this.camera.getWorldQuaternion(new THREE.Quaternion()));
+        const rotation = this.parts[i].userData['screenRotation'] as [number, number, number] | undefined;
+        if (rotation) this.parts[i].quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI)).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(...rotation, 'XYZ')));
+        else this.parts[i].rotateZ(this.parts[i].userData['billboardRotation'] || 0);
+      }
       this.renderer!.render(this.scene, this.camera);
     });
   }

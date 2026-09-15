@@ -1,3 +1,4 @@
+import type { EffectRuntimeMetadata } from './asset-effect-runtime';
 export type AssetFormat = 'PNG' | 'TIM' | 'MCQ' | 'Opus' | 'TMD' | 'Animation' | 'CMB' | 'LMB' | 'ANM' | 'CLUT' | 'SPU' | 'Environment' | 'Collision' | 'CollisionInfo' | 'Unknown';
 export interface AssetRecord {
   path: string;
@@ -15,7 +16,7 @@ export interface AssetRecord {
   offset?: number;
   modelOffset?: number;
   lmbType?: number;
-  lmbSetup?: { script: string; scriptOffset: number; slots: { slot: number; options: { path: string; flags: number; offset: number }[] }[] };
+  effectRuntime?: EffectRuntimeMetadata;
 }
 export interface AssetCatalog { version: number; extractionVersion: string; assets: AssetRecord[]; }
 export const PREVIEW_FORMATS: AssetFormat[] = ['PNG', 'TIM', 'MCQ', 'Opus', 'TMD', 'Animation', 'CMB', 'LMB', 'ANM', 'CLUT', 'SPU', 'Environment', 'Collision', 'CollisionInfo'];
@@ -31,7 +32,7 @@ export function identifyAsset(bytes: Uint8Array, path: string): AssetFormat {
   if (magic === 0x0151434d || magic === 0x0251434d) return 'MCQ';
   if (magic === 0x20424d43) return 'CMB';
   if (magic === 0x00424d4c) return 'LMB';
-  if (magic === 0x41 || u32(4) === 0x41 || (magic >= 12 && magic <= 128 && magic % 4 === 0 && (u32(magic) === 0x41 || u32(magic + 4) === 0x41))) return 'TMD';
+  if ((magic & 0xffff) === 0x41 || (u32(4) & 0xffff) === 0x41 || (magic >= 12 && magic <= 128 && magic % 4 === 0 && ((u32(magic) & 0xffff) === 0x41 || (u32(magic + 4) & 0xffff) === 0x41))) return 'TMD';
   if (magic === 12 && u32(4) === 0 && u32(8) === 0 && bytes.length >= 16 && view.getUint16(12, true) > 0 && view.getUint16(14, true) > 0) return 'Animation';
   if (bytes[0] === 0x21 && bytes[1] === 3 && bytes.length >= 16) return 'ANM';
   if (/\/sounds\/(?:.*\/)?3$/.test(path)) return 'SPU';

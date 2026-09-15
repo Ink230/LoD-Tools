@@ -1,4 +1,5 @@
-import { lmbPartSlots } from './asset-lmb-composition';
+import { EffectPreviewRuntime } from './asset-effect-runtime';
+import { buildEffectScene } from './asset-effect-scene';
 import { SubmapComposition, decodeSubmapComposition, renderSubmapComposition, projectSubmapPoint } from './asset-submap';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, NgZone, OnChanges, OnDestroy, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -175,48 +176,78 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.hiddenLayers = new Set();
     this.updateSceneView();
   }
-  lmbChoices: Record<number, number> = {};
-  lmbComposed = false;
-  async composeLmb() {
-    const setup = this.record.lmbSetup;
-    if (!setup || !this.readFile) return;
+  effectMode: 'runtime' | 'tracks' = 'runtime';
+  effectSeed = 1;
+  effectStart = 0;
+  effectPreparing = false;
+  runtimeInfo = '';
+  runtimeDiagnostics: string[] = [];
+  async runEffectPreview() {
+    const metadata = this.record.effectRuntime;
+    if (!metadata || !this.readFile) return;
     const version = this.loadVersion, request = ++this.companionVersion;
+    this.effectPreparing = true;
+    this.playing = false;
+    this.runtimeInfo = '';
+    this.runtimeDiagnostics = [];
+    const read = async (path: string) => {
+      if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed) throw new Error('Effect preview superseded');
+      const bytes = await this.readFile!(path);
+      if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed) throw new Error('Effect preview superseded');
+      return bytes;
+    };
     try {
-      const selected = setup.slots.map(slot => slot.options[this.lmbChoices[slot.slot] || 0]);
-      const decoded = new Map<number, ModelAsset>();
-      const references: AssetRecord[] = [];
-      let total = 0;
-      for (let i = 0; i < selected.length; i++) {
-        const option = selected[i];
-        const bytes = await this.readFile(option.path);
-        if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed) return;
-        total += bytes.length;
-        if (total > 32 * 1024 * 1024) throw new Error('LMB model set exceeds 32 MiB preview limit');
-        const model = decodeModel(bytes.subarray(option.offset));
-        decoded.set(setup.slots[i].slot, model);
-        references.push(this.reference(option.path, 'TMD', bytes.length, option.offset));
-      }
-      const slots = lmbPartSlots(this.bytes, this.lmbType);
-      this.animation = decodeLmb(this.bytes, this.lmbType);
-      this.animationPath = this.key(this.record);
-      this.loadedCompanions.animation = [this.record];
-      this.frame = 0;
-      this.playing = false;
-      this.model = { format: 'LMB effect composition', parts: slots.map(slot => decoded.get(slot)?.parts[0] || { vertices: [], normals: [], primitives: [] }), warnings: [] };
-      this.loadedCompanions.model = references;
-      this.lmbComposed = true;
-      this.error = '';
+      const script = await read(metadata.script);
+      if (script.length > 4 * 1024 * 1024) throw new Error('Effect script exceeds 4 MiB limit');
+      const hash = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new Uint8Array(script)))].map(value => value.toString(16).padStart(2, '0')).join('');
+      if (hash !== metadata.program.sha256) throw new Error('This script differs from the script-tool metadata. Rebuild the asset catalog for this SC extraction.');
+      const start = metadata.program.starts[String(metadata.flags)][this.effectStart] ?? metadata.program.starts[String(metadata.flags)][0];
+      if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed) return;
+      const result = new EffectPreviewRuntime(script, metadata.program, start, this.effectSeed).run();
+      const scene = await buildEffectScene(result, metadata, read);
+      if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed) return;
+      this.model = scene.model.parts.length ? scene.model : null;
+      this.animation = scene.model.parts.length ? scene.animation : decodeLmb(this.bytes, this.lmbType);
+      this.runtimeDiagnostics = scene.warnings;
+      if (result.diagnostics.some(note => note.startsWith('Script ')))
+        this.runtimeDiagnostics.unshift('Partial preview: script setup stopped. Already-bound animation tracks continue; later setup and battle placement are unavailable.');
+      if (!scene.model.parts.length) this.runtimeDiagnostics.push('This setup produced no renderable parts. Showing animation tracks.');
+      this.runtimeInfo = `${result.frames.length} ticks · ${result.instructions} instructions · ${scene.model.parts.length} render parts`;
+      this.loadedCompanions.model = scene.resources.filter(resource => resource.kind === 'TMD').map(resource => this.reference(resource.path, 'TMD', 0, resource.offset));
+      this.frame = scene.model.parts.length ? Math.max(0, scene.animation.frames.findIndex(frame => frame.some(part => part.visible !== false && part.colour?.some(value => value > 0)))) : 0;
+      this.durations = [];
+      this.playbackFps = this.nativeFps;
       this.buildTexturePages();
+      this.error = '';
       this.cdr.detectChanges();
       this.capturePreview();
     } catch (error) {
-      if (version === this.loadVersion && request === this.companionVersion) this.error = `LMB composition: ${String(error)}`;
+      if (version === this.loadVersion && request === this.companionVersion) this.error = `Effect runtime: ${error instanceof Error ? error.message : String(error)}`;
+    } finally {
+      if (version === this.loadVersion && request === this.companionVersion) this.effectPreparing = false;
+      this.cdr.markForCheck();
     }
-    this.cdr.markForCheck();
   }
-  async load() {
-    this.lmbChoices = {};
-    this.lmbComposed = false;
+  changeEffectMode() {
+    if (this.effectMode === 'runtime') { void this.runEffectPreview(); return; }
+    ++this.companionVersion;
+    this.effectPreparing = false;
+    this.playing = false;
+    this.frame = 0;
+    this.runtimeInfo = '';
+    this.runtimeDiagnostics = [];
+    this.error = '';
+    this.model = null;
+    this.loadedCompanions.model = [];
+    this.animation = decodeLmb(this.bytes, this.lmbType);
+    this.durations = [];
+    this.playbackFps = this.nativeFps;
+  }  async load() {
+    this.effectMode = 'runtime';
+    this.effectPreparing = false;
+    this.effectStart = 0;
+    this.runtimeInfo = '';
+    this.runtimeDiagnostics = [];
     this.selectedPolygon = null;
     this.polygonSelected.emit(null);
     this.submap = null;
@@ -281,7 +312,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
               this.loadedCompanions.model = [this.reference(this.record.model, 'TMD', bytes.length, this.record.modelOffset || 0)];
             } catch { if (version === this.loadVersion) this.warnings.push('The companion model could not be loaded. Showing animated part axes; you can choose a model file.'); }
           }
-          if (this.format === 'LMB' && !this.record.model && this.record.lmbSetup) await this.composeLmb();
+          if (this.format === 'LMB' && !this.record.model && this.record.effectRuntime) await this.runEffectPreview();
           if (version !== this.loadVersion || this.destroyed) return;
           break;
         }
@@ -407,6 +438,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   }
   async attach(records: AssetRecord[], kind = this.picker) {
     if (!kind || !this.readFile || !records.length) return;
+    this.effectPreparing = false;
     const version = this.loadVersion;
     const request = ++this.companionVersion;
     try {
@@ -419,11 +451,18 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
       if (kind === 'texture') this.textures = bytes;
       if (kind === 'texture') records.forEach((record, index) => this.captureTexture(bytes[index], this.key(record)));
       if (kind === 'model') {
-        this.lmbComposed = false;
+        if (this.effectMode === 'runtime') {
+          this.animation = undefined;
+          this.frame = 0;
+          this.playing = false;
+          this.runtimeInfo = '';
+          this.runtimeDiagnostics = [];
+        }
+        this.effectMode = 'tracks';
         this.model = decodeModel(bytes[0]);
       }
       if (kind === 'animation') {
-        this.lmbComposed = false;
+        this.effectMode = 'tracks';
         this.animation = records[0].format === 'LMB' ? decodeLmb(bytes[0], (records[0].lmbType || 0) as LmbType) : decodeAnimation(bytes[0]);
         this.animationPath = this.key(records[0]); this.frame = 0; this.playing = false; this.durations = [];
         this.selectedAnimation = records[0];

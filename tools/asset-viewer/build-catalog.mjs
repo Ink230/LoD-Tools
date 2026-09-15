@@ -140,34 +140,45 @@ for (const asset of assets) {
   asset.textures = (byDirectory.get(`SECT/DRGN0.BIN/${id - 1}`) || [])
     .filter(item => item.format === 'TIM').sort((a, b) => Number(a.name) - Number(b.name)).map(item => item.path);
 }
-// Resolve the script's LMB slot assignments without executing battle behaviour.
-const { build } = await import('esbuild');
-const resolverBundle = await build({ entryPoints: ['src/app/components/asset-viewer/asset-lmb-composition.ts'], bundle: true, write: false, format: 'esm', platform: 'node' });
-const { resolveLmbSetups } = await import('data:text/javascript;base64,' + Buffer.from(resolverBundle.outputFiles[0].text).toString('base64'));
-const effectScripts = new Map();
+// SC's script tool supplies instruction boundaries and setup entry points. The browser
+// loads the user's script bytes lazily and executes them in its bounded preview VM.
+const { mkdtemp, rm, rmdir } = await import('node:fs/promises');
+const { tmpdir } = await import('node:os');
+const { execFileSync } = await import('node:child_process');
+const scriptPaths = [...new Set(assets.filter(asset => asset.format === 'LMB' && !asset.model)
+  .map(asset => /^(SECT\/DRGN0\.BIN\/\d+)\/0\/\d+$/.exec(asset.path)?.[1]).filter(Boolean)
+  .map(path => `${path}/1`).filter(path => allPaths.has(path)))];
+const temp = await mkdtemp(resolve(tmpdir(), 'lod-effect-metadata-'));
+const input = resolve(temp, 'input.txt'), outputMetadata = resolve(temp, 'metadata.json');
+let scriptMetadata;
+try {
+  await writeFile(input, scriptPaths.join('\n'));
+  execFileSync('java', ['-cp', resolve(root, '../build/libs/libs/*'), resolve('tools/asset-viewer/ExportEffectScripts.java'), resolve(root, '..'), input, outputMetadata], { stdio: 'pipe', maxBuffer: 16 * 1024 * 1024, timeout: 120000 });
+  scriptMetadata = JSON.parse(await readFile(outputMetadata, 'utf8'));
+} finally {
+  await rm(input, { force: true }); await rm(outputMetadata, { force: true }); await rmdir(temp);
+}
+const packageResources = new Map();
 for (const lmb of assets.filter(asset => asset.format === 'LMB' && !asset.model)) {
   const match = /^(SECT\/DRGN0\.BIN\/\d+)\/0\/\d+$/.exec(lmb.path);
   if (!match) continue;
-  const scriptPath = `${match[1]}/1`;
-  if (!allPaths.has(scriptPath)) continue;
-  if (!effectScripts.has(scriptPath)) effectScripts.set(scriptPath, await readFile(resolve(root, scriptPath)));
-  const flags = (await readFile(resolve(root, lmb.path))).readUInt32LE(0);
-  const setups = resolveLmbSetups(effectScripts.get(scriptPath), flags);
-  // Multiple different setup sites require a user/runtime choice; do not silently merge them.
-  if (setups.length !== 1) continue;
-  const packageModels = assets.filter(asset => asset.format === 'TMD' && asset.path.startsWith(`${match[1]}/0/`));
-  const modelFlags = new Map();
-  for (const model of packageModels) {
-    const bytes = await readFile(resolve(root, model.path));
-    modelFlags.set(bytes.readUInt32LE(0), model);
+  const script = `${match[1]}/1`, program = scriptMetadata[script];
+  if (!program || program.error) continue;
+  if (!packageResources.has(match[1])) {
+    const resources = [];
+    for (const path of files.filter(path => path.startsWith(`${match[1]}/0/`) && /^\d+$/.test(path.split('/').at(-1)))) {
+      const bytes = await readFile(resolve(root, path));
+      if (bytes.length < 16) continue;
+      const flags = bytes.readUInt32LE(0), type = flags >>> 24;
+      if (type === 0) resources.push({ path, flags, kind: 'LMB', offset: bytes.readUInt32LE(8), lmbType: bytes.readUInt32LE(4) });
+      else if ([1, 2, 3, 5].includes(type) && bytes.length >= 24 && bytes.readUInt32LE(12) !== bytes.readUInt32LE(20)) resources.push({ path, flags, kind: 'TMD', offset: bytes.readUInt32LE(12) });
+      else if (type === 4) resources.push({ path, flags, kind: 'Sprite', offset: bytes.readUInt32LE(12) });
+    }
+    packageResources.set(match[1], resources);
   }
-  const slots = Object.entries(setups[0].slots).map(([slot, flags]) => ({ slot: Number(slot), options: flags.flatMap(flag => {
-    const model = modelFlags.get(flag);
-    return model ? [{ path: model.path, flags: flag, offset: model.offset || 0 }] : [];
-  }) }));
-  // All options must be understood: unsupported sprites/child effects remain explicit fallbacks.
-  if (slots.some(slot => slot.options.length !== setups[0].slots[slot.slot].length)) continue;
-  lmb.lmbSetup = { script: scriptPath, scriptOffset: setups[0].scriptOffset, slots };
+  const flags = (await readFile(resolve(root, lmb.path))).readUInt32LE(0);
+  if (!program.starts[String(flags)]?.length) continue;
+  lmb.effectRuntime = { script, flags, program, resources: packageResources.get(match[1]) };
 }
 // CContainer's optional CLUT-animation table points to four instruction streams.
 for (const model of assets.filter(asset => asset.format === 'TMD')) {
