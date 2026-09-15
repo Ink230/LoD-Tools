@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, NgZone, OnChanges, OnDestroy, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
-import { AssetRecord, AssetFormat, PREVIEW_FORMATS } from './asset-catalog';
+import { AssetRecord, AssetFormat, PREVIEW_FORMATS, assetCategory, gameIdentity } from './asset-catalog';
 import { decodeTim, decodeMcq, texturePageFromTims } from './asset-image';
 import { decodeModel } from './asset-model';
 import { decodeAnimation, decodeLmb, decodeAnm, decodeClutAnimationDetails, DecodedClutAnimation, LmbType } from './asset-animation';
@@ -24,6 +24,8 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   @Input() assets: AssetRecord[] = [];
   @Input() thumbnails = new Map<string, string>();
   @Output() previewLoaded = new EventEmitter<{ key: string; url: string }>();
+  @Output() navigateAsset = new EventEmitter<AssetRecord>();
+  loadedCompanions: Record<CompanionKind, AssetRecord[]> = { texture: [], model: [], animation: [] };
   picker: CompanionKind | null = null;
   readonly companionKinds: CompanionKind[] = ['texture', 'model', 'animation'];
   selectedAnimation: AssetRecord | null = null;
@@ -81,6 +83,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   async load() {
     const version = ++this.loadVersion; this.picker = null; this.selectedAnimation = null;
     ++this.companionVersion;
+    this.loadedCompanions = { texture: [], model: [], animation: [] };
     this.playing = false; this.frame = 0; this.loading = true; this.error = ''; this.warnings = [];
     this.image = null; this.model = null; this.animation = null; this.sprite = null; this.clut = null; this.overlay = null;
     this.texturePages = new Map(); this.textures = []; this.palette = 0; this.samples = []; this.animationPath = ''; this.showRecords = false;
@@ -99,6 +102,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
             break;
           }
           textures.push(bytes);
+          if (version === this.loadVersion) this.loadedCompanions.texture.push(this.reference(path, 'TIM', bytes.length));
           if (version === this.loadVersion) this.captureTexture(bytes, `${path}@0`);
           } catch { if (version === this.loadVersion) this.warnings.push(`Texture unavailable: ${path}`); }
           if (version !== this.loadVersion || this.destroyed) return;
@@ -114,6 +118,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
         case 'SPU': this.samples = listSpuSamples(this.bytes); this.sampleIndex = 0; this.updateSample(); break;
         case 'TMD': {
           this.model = decodeModel(this.bytes); this.warnings.push(...this.model.warnings);
+          this.loadedCompanions.model = [this.record];
           const idle = this.animations.find(item => item.format === 'Animation' && item.model === this.record.path && (item.modelOffset || 0) === (this.record.offset || 0));
           if (idle) await this.chooseAnimation(this.key(idle));
           if (version !== this.loadVersion || this.destroyed) return;
@@ -122,17 +127,19 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
         case 'Animation': case 'CMB': case 'LMB': {
           this.animation = this.format === 'LMB' ? decodeLmb(this.bytes, this.lmbType) : decodeAnimation(this.bytes);
           this.animationPath = this.key(this.record);
+          this.loadedCompanions.animation = [this.record];
           this.warnings.push(...this.animation.warnings);
           if (this.record.model && this.readFile) {
             try {
               const bytes = await this.readFile(this.record.model);
               if (version !== this.loadVersion || this.destroyed) return;
               this.model = decodeModel(bytes.subarray(this.record.modelOffset || 0));
+              this.loadedCompanions.model = [this.reference(this.record.model, 'TMD', bytes.length, this.record.modelOffset || 0)];
             } catch { if (version === this.loadVersion) this.warnings.push('The companion model could not be loaded. Showing animated part axes; you can choose a model file.'); }
           }
           break;
         }
-        case 'ANM': this.sprite = decodeAnm(this.bytes); this.warnings.push(...this.sprite.warnings); break;
+        case 'ANM': this.sprite = decodeAnm(this.bytes); this.loadedCompanions.animation = [this.record]; this.warnings.push(...this.sprite.warnings); break;
         case 'Environment': case 'Collision': {
           let environment: SceneOverlay | null = this.format === 'Environment' ? decodeEnvironment(this.bytes) : null;
           let collision: SceneOverlay | null = this.format === 'Collision' ? decodeCollision(this.bytes) : null;
@@ -194,7 +201,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   async chooseAnimation(path: string) {
     const request = ++this.companionVersion;
     this.playing = false; this.frame = 0; this.animationPath = path;
-    if (!path) { this.animation = null; return; }
+    if (!path) { this.animation = null; this.loadedCompanions.animation = []; return; }
     const record = this.animations.find(item => this.key(item) === path);
     if (!record || !this.readFile) return;
     const version = this.loadVersion;
@@ -202,14 +209,31 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
       const bytes = (await this.readFile(record.path)).subarray(record.offset || 0);
       if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed) return;
       this.animation = record.format === 'LMB' ? decodeLmb(bytes, (record.lmbType || 0) as LmbType) : decodeAnimation(bytes);
+      this.loadedCompanions.animation = [record];
     } catch (error) { if (version === this.loadVersion && request === this.companionVersion) this.error = String(error); }
     this.cdr.markForCheck();
   }
   key(record: AssetRecord) { return `${record.path}@${record.offset || 0}`; }
+  reference(path: string, format: AssetFormat, size: number, offset = 0): AssetRecord {
+    return this.assets.find(asset => asset.path === path && (asset.offset || 0) === offset && asset.format === format)
+      || { path, name: path.split('/').at(-1) || path, format, offset, size, category: assetCategory(format), ...gameIdentity(path) };
+  }
+  companionName(asset: AssetRecord) { return `${asset.gameAsset} / ${asset.name}`; }
+  companionCandidates(kind: CompanionKind) {
+    const formats = companionFormats(kind);
+    return this.assets.filter(asset => formats.includes(asset.format) && (kind !== 'texture' || asset.size <= 32 * 1024 * 1024));
+  }
+  async stepCompanion(kind: CompanionKind, direction: number) {
+    const candidates = this.companionCandidates(kind);
+    if (!candidates.length) { this.error = `No compatible ${kind} assets are available`; return; }
+    const current = this.loadedCompanions[kind].at(-1);
+    const index = current ? candidates.findIndex(asset => this.key(asset) === this.key(current)) : -1;
+    const next = index < 0 ? (direction > 0 ? 0 : candidates.length - 1) : (index + direction + candidates.length) % candidates.length;
+    await this.attach([candidates[next]], kind);
+  }
   closePicker() { this.picker = null; ++this.companionVersion; }
   async randomCompanion(kind: CompanionKind) {
-    const formats = companionFormats(kind);
-    const candidates = this.assets.filter(asset => formats.includes(asset.format) && (kind !== 'texture' || asset.size <= 32 * 1024 * 1024));
+    const candidates = this.companionCandidates(kind);
     if (!candidates.length) { this.error = `No compatible ${kind} assets are available`; return; }
     await this.attach([candidates[Math.floor(Math.random() * candidates.length)]], kind);
   }
@@ -233,6 +257,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
         this.selectedAnimation = records[0];
       }
       this.picker = null; this.error = '';
+      this.loadedCompanions[kind] = [...records];
       this.buildTexturePages(); this.cdr.detectChanges(); this.draw();
       if (kind !== 'texture') this.capturePreview(this.key(records[0]));
       this.capturePreview();

@@ -45,7 +45,24 @@ describe('virtual companion chooser', () => {
     expect(preview.readFile).toHaveBeenCalledExactlyOnceWith('package/0');
     expect(preview.animation?.frames[0][0].translation[0]).toBe(123);
     expect(preview.animationPath).toBe('package/0@4');
+    expect(preview.loadedCompanions.animation).toEqual([animation]);
     expect(preview.animations).toContain(animation);
     expect(preview.picker).toBeNull();
+  });
+
+  it('steps compatible entities in catalog order and wraps at either end', async () => {
+    TestBed.overrideComponent(AssetPreviewComponent, { set: { template: '' } });
+    const preview = TestBed.createComponent(AssetPreviewComponent).componentInstance;
+    const first = record('package', 'Animation', 4), second = record('package', 'CMB', 40);
+    preview.assets = [first, record('texture', 'TIM'), second];
+    preview.loadedCompanions.animation = [first];
+    const attach = vi.spyOn(preview, 'attach').mockResolvedValue();
+    await preview.stepCompanion('animation', 1);
+    expect(attach).toHaveBeenLastCalledWith([second], 'animation');
+    await preview.stepCompanion('animation', -1);
+    expect(attach).toHaveBeenLastCalledWith([second], 'animation');
+    preview.loadedCompanions.animation = [second];
+    await preview.stepCompanion('animation', 1);
+    expect(attach).toHaveBeenLastCalledWith([first], 'animation');
   });
 });

@@ -3,6 +3,25 @@ import { describe, expect, it, vi } from 'vitest';
 import { AssetViewerComponent } from './asset-viewer.component';
 
 describe('asset explorer', () => {
+  it('navigates imported entity history without opening a folder and truncates forward history', async () => {
+    const viewer = TestBed.createComponent(AssetViewerComponent).componentInstance;
+    const open = async (name: string) => {
+      const input = document.createElement('input');
+      Object.defineProperty(input, 'files', { value: [new File(['asset'], name)] });
+      await viewer.importFile({ target: input } as unknown as Event);
+    };
+    const connect = vi.spyOn(viewer, 'connectFolder');
+    await open('first'); await open('second');
+    await viewer.navigateHistory(-1);
+    expect(viewer.selectedPath).toBe('first');
+    await viewer.navigateHistory(1);
+    expect(viewer.selectedPath).toBe('second');
+    await viewer.navigateHistory(-1);
+    await open('third');
+    expect(viewer.entityHistory.map(asset => asset.path)).toEqual(['first', 'third']);
+    expect(viewer.historyIndex).toBe(1);
+    expect(connect).not.toHaveBeenCalled();
+  });
   it('starts with formats and switches browse modes without discarding the open file', async () => {
     const fixture = TestBed.createComponent(AssetViewerComponent);
     const viewer = fixture.componentInstance;

@@ -49,6 +49,33 @@ export class AssetViewerComponent implements OnInit {
   catalogError = '';
   source: AssetSource | null = null;
   selectedAsset: AssetRecord | null = null;
+  entityHistory: AssetRecord[] = [];
+  historyIndex = -1;
+  private rememberEntity(asset: AssetRecord) {
+    if (this.historyIndex >= 0 && this.assetKey(this.entityHistory[this.historyIndex]) === this.assetKey(asset)) return;
+    this.entityHistory = [...this.entityHistory.slice(0, this.historyIndex + 1), asset];
+    this.historyIndex = this.entityHistory.length - 1;
+  }
+  async navigateHistory(direction: number) {
+    const index = this.historyIndex + direction;
+    if (this.busy || index < 0 || index >= this.entityHistory.length) return;
+    if (await this.selectAsset(this.entityHistory[index], false)) {
+      this.historyIndex = index;
+      this.focusEntity(this.entityHistory[index]);
+    }
+    this.changeDetector.markForCheck();
+  }
+  async openEntity(asset: AssetRecord) {
+    if (await this.selectAsset(asset)) this.focusEntity(asset);
+    this.changeDetector.markForCheck();
+  }
+  private focusEntity(asset: AssetRecord) {
+    if (this.browseMode === 'files') this.browseMode = 'format';
+    this.categoryId = this.browseMode === 'game' ? asset.gameCategory : asset.category;
+    this.search = ''; this.formatFilter = ''; this.gameFilter = '';
+    const index = this.filteredAssets.findIndex(item => this.assetKey(item) === this.assetKey(asset));
+    this.page = Math.max(0, Math.floor(index / this.pageSize));
+  }
   selectedBytes: Uint8Array = new Uint8Array();
   page = 0;
   formatFilter = '';
@@ -105,17 +132,20 @@ export class AssetViewerComponent implements OnInit {
     return this.relatedCache;
   }
   assetKey(asset: AssetRecord) { return `${asset.path}@${asset.offset || 0}`; }
-  async selectAsset(asset: AssetRecord) {
-    if (this.busy) return;
-    if (!this.source) await this.connectFolder();
-    if (!this.source) return;
+  async selectAsset(asset: AssetRecord, remember = true): Promise<boolean> {
+    if (this.busy) return false;
+    const imported = this.importedFiles.get(asset.path);
+    if (!this.source && !imported) await this.connectFolder();
+    if (!this.source && !imported) return false;
     this.busy = true; this.error = '';
     try {
-      const file = await this.source.file(asset.path);
+      const file = imported || await this.source!.file(asset.path);
       const bytes = await fileBytes(file);
       this.selected = file; this.selectedPath = asset.path; this.selectedAsset = asset;
       this.selectedBytes = bytes.subarray(asset.offset || 0);
-    } catch (error) { this.error = `Unable to load ${asset.path}. Check that the selected folder is SC's extracted files folder. ${error instanceof Error ? error.message : ''}`; }
+      if (remember) this.rememberEntity(asset);
+      return true;
+    } catch (error) { this.error = `Unable to load ${asset.path}. Check that the selected folder is SC's extracted files folder. ${error instanceof Error ? error.message : ''}`; return false; }
     finally { this.busy = false; this.changeDetector.markForCheck(); }
   }
   async importFile(event: Event) {
@@ -132,6 +162,7 @@ export class AssetViewerComponent implements OnInit {
       this.importedFiles.set(file.name, file);
       this.importedRecords = [...this.importedRecords.filter(record => record.path !== file.name), this.selectedAsset!];
       this.companionAssets = [...(this.catalog?.assets || []), ...this.importedRecords];
+      this.rememberEntity(this.selectedAsset);
     } catch (error) { this.error = String(error); }
     finally { this.busy = false; this.changeDetector.markForCheck(); }
   }
@@ -235,6 +266,7 @@ export class AssetViewerComponent implements OnInit {
         this.selectedPath = relativePath;
         this.selectedAsset = this.catalog?.assets.find(asset => asset.path === relativePath) || { path: relativePath, name: file.name, format, category: assetCategory(format), ...gameIdentity(relativePath), size: file.size };
         this.selectedBytes = bytes.subarray(this.selectedAsset.offset || 0);
+        this.rememberEntity(this.selectedAsset);
       }
     } catch {
       this.error = 'Unable to open this entry. It may have moved or folder access may have expired.';

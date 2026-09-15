@@ -4,6 +4,8 @@ The viewer uses a metadata catalog for **By format** and **By game asset**, with
 
 The **Choose textures**, **Choose model**, and **Choose animation** controls open the viewer's own searchable asset chooser. They select catalog references or previously imported files, preserving embedded offsets and LMB subtypes. Textures support ordered multiple selection. Cached thumbnails identify recently loaded resources (up to 256 thumbnails); opening or searching the chooser does not read payloads. Applying the selection uses the current SC folder connection or imported file reference, never a native companion file picker.
 
+Each companion control lists its loaded asset names, including automatically resolved companions. Clicking a name opens that entity in the main viewer. Previous/next controls step through compatible catalog entries and wrap at the ends; texture stepping replaces the current texture set with one texture. The main preview header provides Back/Forward through successfully opened entities, including imported files. Opening a new entity after going back starts a new forward history.
+
 ## Supported previews
 
 | Resource | Preview |

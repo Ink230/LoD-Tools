@@ -69,8 +69,8 @@
     </aside>
     <section class="main-panel" aria-label="Asset preview">
       @if (selectedAsset && selectedBytes.length) {
-        <div class="panel-title">{{ selectedAsset.gameAsset }} / {{ selectedAsset.name }}</div>
-        <app-asset-preview [record]="selectedAsset" [bytes]="selectedBytes" [related]="relatedAssets" [readFile]="readAssetFile" [assets]="companionAssets" [thumbnails]="thumbnails" (previewLoaded)="rememberPreview($event)" />
+        <div class="panel-title"><button (click)="navigateHistory(-1)" [disabled]="busy || historyIndex <= 0" title="Back to previous entity" aria-label="Back to previous entity">←</button><button (click)="navigateHistory(1)" [disabled]="busy || historyIndex + 1 >= entityHistory.length" title="Forward to next entity" aria-label="Forward to next entity">→</button> {{ selectedAsset.gameAsset }} / {{ selectedAsset.name }}</div>
+        <app-asset-preview [record]="selectedAsset" [bytes]="selectedBytes" [related]="relatedAssets" [readFile]="readAssetFile" [assets]="companionAssets" [thumbnails]="thumbnails" (previewLoaded)="rememberPreview($event)" (navigateAsset)="openEntity($event)" />
       } @else {
         <div class="empty-state"><p class="eyebrow">THE LEGEND OF DRAGOON</p><h2>Your asset library</h2><p>Select an asset by format or by game asset to preview it.</p><button class="primary" (click)="connectFolder()" [disabled]="busy || !supportsFolders">Open SC files folder</button><button (click)="singleFile.click()">Open individual file</button><input #singleFile hidden type="file" (change)="importFile($event)" /><p class="muted">Asset files stay on your computer. Only selected resources and their companions are read.</p>@if (!supportsFolders) { <p>Use Chrome or Edge for folder access, or open individual files here.</p> }</div>
       }

@@ -2,7 +2,10 @@
 .preview-toolbar,.playback { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px; border-bottom:1px solid var(--wmap-color-0); }
 button,select,input { color:var(--wmap-color-2); background:var(--wmap-color-4); border:1px solid var(--wmap-color-3); border-radius:4px; padding:5px; font:12px system-ui; }
 button { cursor:pointer; } label { display:inline-flex; align-items:center; gap:6px; font-size:12px; }
-.companion-controls { display:inline-flex; align-items:center; gap:4px; }
+.companion-controls { display:inline-flex; align-items:center; gap:4px; flex-wrap:wrap; max-width:100%; }
+.companion-names { display:flex; flex-wrap:wrap; gap:4px; flex-basis:100%; max-width:360px; max-height:76px; overflow:auto; }
+.companion-link { border:0; padding:2px 0; text-decoration:underline; text-align:left; font-size:11px; overflow-wrap:anywhere; }
+.companion-empty { font-size:11px; opacity:.6; }
 .random-companion { display:grid; place-items:center; width:28px; height:28px; padding:4px; }
 .random-companion:disabled { opacity:.45; cursor:default; }
 input[type=number] { width:65px; } .playback input { flex:1; min-width:100px; }
