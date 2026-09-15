@@ -262,7 +262,7 @@ export class WorldMapFieldsComponent {
     const options: Record<string, string[]> = {
       place: ['serviceIds', 'soundIds'],
       region: ['assets', 'scene', 'resources'],
-      resources: ['uiTextures', 'transportTextures', 'transports', 'leader', 'layout'],
+      resources: ['uiTextures', 'transportTextures', 'transports', 'leader', 'layout', 'locationSoundFiles'],
       submapDestination: ['data'],
       avatar: ['assets'],
       traversalProfile: ['visualOffset'],
@@ -282,6 +282,7 @@ export class WorldMapFieldsComponent {
   presentation(attribute: string) { return fieldPresentation(this.element, attribute); }
   reference(attribute: string) { return referenceSection(this.element, attribute); }
   choices(attribute: string): string[] {
+    if (this.element.tagName === 'locationSoundFiles') return this.registry['assetPaths'] || [];
     if (attribute === 'background' || (attribute === 'value' && ['uiTextures', 'transportTextures'].includes(this.element.parentElement?.tagName))) return this.registry['assetPaths'] || [];
     const section = this.reference(attribute);
     if (section) return this.registry[section] || [];
@@ -348,6 +349,7 @@ export class WorldMapFieldsComponent {
   }
   removeAttribute(attribute: string) { this.mutate.emit(() => this.element.removeAttribute(attribute)); }
   canRemove(child: Element) {
+    if (child.tagName === 'locationSoundFiles') return true;
     if (['scene', 'resources', 'data', 'entry', 'uiTextures', 'transportTextures', 'transports', 'leader', 'layout'].includes(child.tagName)) return true;
     if (['serviceIds', 'soundIds', 'sounds'].includes(child.tagName)) return false;
     if (['lights', 'percentages'].includes(this.element.tagName) && child.tagName === 'item') return false;
@@ -355,6 +357,7 @@ export class WorldMapFieldsComponent {
     return ['item', 'capability', 'assets', 'visualOffset', 'overviewPosition', 'minimum', 'maximum', 'lighting', 'percentages', 'serviceIds', 'soundIds'].includes(child.tagName) || this.element.tagName === 'portals';
   }
   locked(attribute: string) {
+    if (this.element.ownerDocument.documentElement.getAttribute('standalone') === 'true') return false;
     const index = Number(this.element.getAttribute('legacyIndex'));
     return this.element.tagName === 'portal' && this.element.hasAttribute('legacyIndex') && index >= 0 && index < 256 && ['id', 'legacyIndex'].includes(attribute);
   }

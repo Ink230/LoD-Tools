@@ -181,7 +181,7 @@ export interface Diagnostic {
 
 export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegistry: Record<string, string[]> = {}): Diagnostic[] {
   const result: Diagnostic[] = [];
-  const registryIds = new Map([...new Set([...Object.keys(SECTIONS), ...Object.keys(nativeRegistry)])].map((section) => [section, new Set([...entries(doc, section).map((entry) => entry.getAttribute('id')), ...(nativeRegistry[section] || [])])]));
+  const registryIds = new Map([...new Set([...Object.keys(SECTIONS), ...Object.keys(nativeRegistry)])].map((section) => [section, new Set([...entries(doc, section).map((entry) => entry.getAttribute('id')), ...(doc.documentElement.getAttribute('standalone') === 'true' && ['nodes', 'geometry', 'routes', 'places', 'portals'].includes(section) ? [] : nativeRegistry[section] || [])])]));
   const removedIds = new Set(entries(doc, 'removals').map((entry) => `${entry.getAttribute('kind')}:${entry.getAttribute('id')}`));
   const add = (element: Element, message: string, severity: 'error' | 'warning' = 'error') => {
     if (!result.some((issue) => issue.message === message)) result.push({ element, message, severity });
@@ -334,6 +334,7 @@ export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegist
         element.getAttribute('texture'),
         element.getAttribute('asset'),
         element.getAttribute('background'),
+        ...Array.from(element.querySelectorAll('locationSoundFiles')).flatMap((e) => ['header', 'indices', 'sequence', 'bank'].map((name) => e.getAttribute(name))),
         ...Array.from(element.querySelectorAll('leader, transports > item')).flatMap((e) => [e.getAttribute('model'), e.getAttribute('texture')]),
         ...Array.from(element.querySelectorAll('uiTextures > item, transportTextures > item')).map((e) => e.getAttribute('value')),
         ...Array.from(element.querySelectorAll('textures > item, animations > item')).map((e) => e.getAttribute('value')),
@@ -351,6 +352,7 @@ export function childTemplate(parent: Element, name?: string): string {
   const tag = name || 'item';
   if (name === 'scene') return `<scene><translation ${POINT}/><xAxis x="1" y="0" z="0"/><yAxis x="0" y="1" z="0"/><zAxis x="0" y="0" z="1"/></scene>`;
   if (name === 'resources') return '<resources/>';
+  if (name === 'locationSoundFiles') return '<locationSoundFiles header="" indices="" sequence="" bank=""/>';
   if (name === 'data') return '<data type="map"/>';
   if (parent.tagName === 'data' || parent.tagName === 'entry') return parent.getAttribute('type') === 'map' ? '<entry key="newKey" type="string" value=""/>' : '<entry type="string" value=""/>';
   if (name === 'layout') return TEMPLATES['presentationProfile'].replaceAll('presentationProfile', 'layout');

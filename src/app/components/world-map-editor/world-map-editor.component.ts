@@ -648,7 +648,7 @@ export class WorldMapEditorComponent implements OnInit {
         if (id && label) this.registryLabels[section][id] = label;
       }
     }
-    for (const [section, ids] of Object.entries(this.nativeRegistry)) this.registry[section] = Array.from(new Set([...(this.registry[section] || []), ...ids]));
+    for (const [section, ids] of Object.entries(this.nativeRegistry)) this.registry[section] = Array.from(new Set([...(this.registry[section] || []), ...(this.root.getAttribute('standalone') === 'true' && ['nodes', 'geometry', 'routes', 'places', 'portals'].includes(section) ? [] : ids)]));
     this.registry['assetPaths'] = Array.from(this.assets.keys());
     for (const ids of Object.values(this.registry)) ids.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
     this.nodes = entries(this.doc, 'nodes').map((element) => ({
@@ -890,13 +890,13 @@ export class WorldMapEditorComponent implements OnInit {
       return;
     }
     if (!this.selected) return;
-    if (this.selected.tagName === 'portal' && this.selected.hasAttribute('legacyIndex') && this.number(this.selected, 'legacyIndex') >= 0 && this.number(this.selected, 'legacyIndex') < 256) {
+    if (this.root.getAttribute('standalone') !== 'true' && this.selected.tagName === 'portal' && this.selected.hasAttribute('legacyIndex') && this.number(this.selected, 'legacyIndex') >= 0 && this.number(this.selected, 'legacyIndex') < 256) {
       this.error = 'Native portal slots 0–255 are reserved. Their entries can be edited but not removed.';
       return;
     }
     this.mutate(() => {
       const id = this.selected.getAttribute('id');
-      if (this.nativeRegistry[this.section]?.includes(id) && ['nodes', 'geometry', 'routes', 'places', 'portals'].includes(this.section)) {
+      if (this.root.getAttribute('standalone') !== 'true' && this.nativeRegistry[this.section]?.includes(id) && ['nodes', 'geometry', 'routes', 'places', 'portals'].includes(this.section)) {
         let removals = Array.from(this.root.children).find((e) => e.tagName === 'removals');
         if (!removals) {
           removals = this.doc.createElement('removals');
