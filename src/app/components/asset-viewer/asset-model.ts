@@ -38,11 +38,11 @@ export function decodeModel(bytes: Uint8Array): ModelAsset {
 
 function locateTmd(data: AssetBinary): TmdLocation {
   if (data.bytes.length < 12) throw new Error('Truncated model header');
-  if (data.u32(0) === TMD_FLAG && looksLikeTmdHeader(data, 4)) return { start: 4, format: 'TMD with ID' };
+  if ((data.u32(0) & 0xffff) === TMD_FLAG && looksLikeTmdHeader(data, 4)) return { start: 4, format: 'TMD with ID' };
   if (looksLikeTmdHeader(data, 0)) return { start: 0, format: 'TMD' };
 
   const tmdWithId = data.u32(0);
-  if (tmdWithId >= 12 && tmdWithId <= data.bytes.length - 12 && data.u32(tmdWithId) === TMD_FLAG && looksLikeTmdHeader(data, tmdWithId + 4))
+  if (tmdWithId >= 12 && tmdWithId <= data.bytes.length - 12 && (data.u32(tmdWithId) & 0xffff) === TMD_FLAG && looksLikeTmdHeader(data, tmdWithId + 4))
     return { start: tmdWithId + 4, format: 'CContainer' };
   if (tmdWithId >= 12 && looksLikeTmdHeader(data, tmdWithId)) return { start: tmdWithId, format: 'CContainer' };
 

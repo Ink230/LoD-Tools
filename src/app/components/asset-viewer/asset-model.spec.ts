@@ -41,6 +41,11 @@ function directContainerBytes(): Uint8Array {
 }
 
 describe('decodeModel', () => {
+  it('accepts extended TmdWithId IDs inside effect containers', () => {
+    const bytes = modelBytes(true);
+    new DataView(bytes.buffer).setUint32(12, 0x10041, true);
+    expect(decodeModel(bytes).parts[0].primitives).toHaveLength(1);
+  });
   it('decodes an untextured lit TMD polygon', () => {
     const model = decodeModel(modelBytes());
     expect(model.format).toBe('TMD');
