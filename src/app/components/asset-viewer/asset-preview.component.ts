@@ -1,3 +1,4 @@
+import { SubmapComposition, decodeSubmapComposition, renderSubmapComposition } from './asset-submap';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, NgZone, OnChanges, OnDestroy, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
@@ -59,7 +60,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   imagePanX = 0;
   imagePanY = 0;
   private imageDrag: { id: number; x: number; y: number } | null = null;
-  get zoomableImage() { return this.format === 'TIM' || this.format === 'PNG'; }
+  get zoomableImage() { return this.format === 'TIM' || this.format === 'PNG' || (!!this.submap && this.sceneView === 'composition'); }
   get imageTransform() { return this.zoomableImage ? `translate(${this.imagePanX}px, ${this.imagePanY}px) scale(${this.imageZoom})` : null; }
   resetImageZoom() { this.imageZoom = 1; this.imagePanX = 0; this.imagePanY = 0; this.imageDrag = null; }
   zoomImage(event: WheelEvent) {
@@ -124,7 +125,33 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     if (this.mediaUrl) URL.revokeObjectURL(this.mediaUrl);
     this.mediaUrl = URL.createObjectURL(new Blob([new Uint8Array(bytes)], { type }));
   }
+  submap: SubmapComposition | null = null;
+  environmentBytes: Uint8Array | null = null;
+  sceneView: 'composition' | 'geometry' | 'both' = 'composition';
+  hiddenLayers = new Set<number>();
+  get sceneResource() { return this.format === 'Environment' || this.format === 'Collision'; }
+  get visibleCompanionKinds(): CompanionKind[] { return this.sceneResource ? ['texture'] : this.companionKinds; }
+  updateSceneView() {
+    this.image = this.submap && this.sceneView !== 'geometry' ? renderSubmapComposition(this.submap, this.hiddenLayers) : null;
+    this.cdr.detectChanges();
+    this.draw();
+  }
+  toggleLayer(index: number) {
+    if (this.hiddenLayers.has(index)) this.hiddenLayers.delete(index);
+    else this.hiddenLayers.add(index);
+    this.updateSceneView();
+  }
+  private rebuildSubmap() {
+    if (!this.environmentBytes) return;
+    this.submap = decodeSubmapComposition(this.environmentBytes, this.textures);
+    this.hiddenLayers = new Set();
+    this.updateSceneView();
+  }
   async load() {
+    this.submap = null;
+    this.environmentBytes = null;
+    this.sceneView = 'composition';
+    this.hiddenLayers = new Set();
     this.resetImageZoom();
     const version = ++this.loadVersion; this.picker = null; this.selectedAnimation = null;
     ++this.companionVersion;
@@ -138,7 +165,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     try {
       const textures: Uint8Array[] = [];
       let textureSize = 0;
-      if (this.readFile && !['PNG', 'Opus', 'SPU', 'TIM', 'MCQ', 'Environment', 'Collision', 'Unknown'].includes(this.format)) {
+      if (this.readFile && !['PNG', 'Opus', 'SPU', 'TIM', 'MCQ', 'Unknown'].includes(this.format)) {
         for (const path of (this.record.textures || []).slice(0, 32)) {
           try {
             const bytes = await this.readFile(path);
@@ -187,6 +214,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
         }
         case 'ANM': this.sprite = decodeAnm(this.bytes); this.loadedCompanions.animation = [this.record]; this.warnings.push(...this.sprite.warnings); break;
         case 'Environment': case 'Collision': {
+          this.environmentBytes = this.format === 'Environment' ? this.bytes : null;
           let environment: SceneOverlay | null = this.format === 'Environment' ? decodeEnvironment(this.bytes) : null;
           let collision: SceneOverlay | null = this.format === 'Collision' ? decodeCollision(this.bytes) : null;
           if (this.readFile) {
@@ -195,12 +223,16 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
               const colBytes = this.record.collision ? await this.readFile(this.record.collision) : null;
               const infoBytes = this.record.collisionInfo ? await this.readFile(this.record.collisionInfo) : undefined;
               if (version !== this.loadVersion || this.destroyed) return;
-              if (envBytes) environment = decodeEnvironment(envBytes);
+              if (envBytes) {
+                environment = decodeEnvironment(envBytes);
+                this.environmentBytes = envBytes;
+              }
               if (colBytes || this.format === 'Collision') collision = decodeCollision(colBytes || this.bytes, infoBytes);
             } catch { if (version === this.loadVersion) this.warnings.push('Some companion scene resources could not be loaded'); }
           }
           this.overlay = { format: 'Environment & collision', camera: environment?.camera, polygons: collision?.polygons || [], records: [...(environment?.records || []), ...(collision?.records || [])], warnings: [...(environment?.warnings || []), ...(collision?.warnings || [])] };
-          this.warnings.push(...this.overlay.warnings); break;
+          this.warnings.push(...this.overlay.warnings);
+          if (!this.environmentBytes) this.sceneView = 'geometry'; break;
         }
         case 'CLUT': {
           this.clut = decodeClutAnimationDetails(this.bytes);
@@ -230,6 +262,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     } catch (error) { this.error = String(error); }
   }
   private buildTexturePages() {
+    if (this.sceneResource) this.rebuildSubmap();
     const pages = new Map<string, PixelImage>();
     const decoded = new Map<string, ReturnType<typeof texturePageFromTims>>();
     const missing = new Set<string>();

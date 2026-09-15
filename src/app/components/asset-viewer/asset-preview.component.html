@@ -1,15 +1,24 @@
+@if (sceneResource && submap) {
+  <div class="preview-toolbar">
+    <label>View <select [(ngModel)]="sceneView" (change)="updateSceneView()"><option value="composition">Composition</option><option value="geometry">Geometry</option><option value="both">Both</option></select></label>
+    @if (sceneView !== 'geometry') {
+      @for (layer of submap.layers; track $index) { <label><input type="checkbox" [checked]="!hiddenLayers.has($index)" (change)="toggleLayer($index)" />{{ layer.name }}</label> }
+    }
+  </div>
+  @if (submap.warnings.length) { <details class="warnings"><summary>Composition notes ({{ submap.warnings.length }})</summary>@for (warning of submap.warnings; track $index) { <p>{{ warning }}</p> }</details> }
+}
 <div class="preview-toolbar">
   <label>Format <select [(ngModel)]="format" (change)="load()"><option value="Unknown">Auto / unknown</option>@for (item of formats; track item) { <option [value]="item">{{ item }}</option> }</select></label>
   @if (format === 'TIM' && paletteCount > 1) { <label>Palette <input type="number" min="0" [max]="paletteCount - 1" [(ngModel)]="palette" (change)="updatePalette()" /></label><span>/ {{ paletteCount }}</span> }
   @if (format === 'LMB') { <label>Subtype <select [(ngModel)]="lmbType" (change)="load()"><option [ngValue]="0">0</option><option [ngValue]="1">1</option><option [ngValue]="2">2</option></select></label> }
-  @if (model || animation || sprite || clut) {
+  @if (model || animation || sprite || clut || sceneResource) {
     <span class="companion-resource-filters">
       <span>Preview composition</span>
       <label><input type="checkbox" [(ngModel)]="includeGameResources" /> Include game resources</label>
       <label><input type="checkbox" [(ngModel)]="includeSubmapResources" /> Include submap resources</label>
       <label><input type="checkbox" [(ngModel)]="includeFieldEffects" /> Include field effects</label>
     </span>
-    @for (kind of companionKinds; track kind) {
+    @for (kind of visibleCompanionKinds; track kind) {
       <span class="companion-controls">
         <button class="random-companion" (click)="stepCompanion(kind, -1)" [disabled]="loading || !assets.length" [title]="'Previous ' + kind" [attr.aria-label]="'Previous ' + kind">‹</button>
         <button (click)="picker = kind">Choose {{ kind === 'texture' ? 'textures' : kind }}</button>
@@ -39,13 +48,13 @@
 @if (model && modelUsesTextures && !textures.length) { <p role="status">No textures loaded. Textured surfaces display without their image detail. Choose the companion textures.</p> }
 @if (animation && !model) { <p role="status">Showing animation transforms as axes. Choose a matching model to see its animated mesh.</p> }
 @if (frameCount) { <div class="playback"><button (click)="togglePlayback()" [attr.aria-label]="playing ? 'Pause animation' : 'Play animation'">{{ playing ? 'Pause' : 'Play' }}</button><input aria-label="Animation frame" type="range" min="0" [max]="frameCount - 1" [(ngModel)]="frame" (input)="scrub()" /><span>{{ frame + 1 }} / {{ frameCount }}</span></div> }
-<div class="preview-surface" [class.image-stage]="zoomableImage" (wheel)="zoomImage($event)" (pointerdown)="startImagePan($event)" (pointermove)="moveImagePan($event)" (pointerup)="endImagePan($event)" (pointercancel)="endImagePan($event)">
+<div class="preview-surface" [class.scene-both]="sceneResource && sceneView === 'both'" [class.image-stage]="zoomableImage" (wheel)="zoomImage($event)" (pointerdown)="startImagePan($event)" (pointermove)="moveImagePan($event)" (pointerup)="endImagePan($event)" (pointercancel)="endImagePan($event)">
   <canvas #canvas [hidden]="!image && !sprite && !clut" [style.transform]="imageTransform" aria-label="Decoded image or sprite preview"></canvas>
   @if (format === 'PNG' && mediaUrl) { <img [src]="mediaUrl" [style.transform]="imageTransform" draggable="false" alt="Selected asset" /> }
   @if (zoomableImage && (image || mediaUrl)) { <button class="reset-image-zoom" (click)="resetImageZoom()" title="Reset zoom and center image">Reset zoom</button> }
-  @if ((format === 'Environment' || format === 'Collision') && overlay && (overlay.polygons.length || overlay.camera)) { <button class="reset-image-zoom" (click)="stage?.fit()" title="Restore the default scene orientation and framing">Reset orientation</button> }
+  @if (sceneView !== 'composition' && (format === 'Environment' || format === 'Collision') && overlay && (overlay.polygons.length || overlay.camera)) { <button class="reset-image-zoom" (click)="stage?.fit()" title="Restore the default scene orientation and framing">Reset orientation</button> }
   @if ((format === 'Opus' || format === 'SPU') && mediaUrl) { <audio controls [src]="mediaUrl" preload="metadata"></audio> }
-  @if (model || animation || (overlay && (overlay.polygons.length || overlay.camera))) { <app-asset-stage [model]="model" [animation]="animation" [overlay]="overlay" [frame]="frame" [wireframe]="wireframe" [texturePages]="texturePages" /> }
+  @if (model || animation || ((!sceneResource || sceneView !== 'composition') && overlay && (overlay.polygons.length || overlay.camera))) { <app-asset-stage [model]="model" [animation]="animation" [overlay]="overlay" [frame]="frame" [wireframe]="wireframe" [texturePages]="texturePages" /> }
   @if (sprite && !textures.length) { <p>Choose a TIM texture to display this sprite animation.</p> }
   @if (clut && !textures.length) { <p>Choose the companion TIM to play its palette animation.</p> }
 </div>
