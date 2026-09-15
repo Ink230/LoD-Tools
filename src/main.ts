@@ -4,6 +4,10 @@ import { AppComponent } from './app/components/app-default/app.component';
 
 const routes: Routes = [
   {
+    path: 'asset-viewer',
+    loadComponent: () => import('./app/components/asset-viewer/asset-viewer.component').then((m) => m.AssetViewerComponent),
+  },
+  {
     path: 'world-map-editor',
     loadComponent: () => import('./app/components/world-map-editor/world-map-editor.component').then((m) => m.WorldMapEditorComponent),
   },
