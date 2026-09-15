@@ -1,6 +1,12 @@
 .editor { min-width: 0; }
 .icon-button { width: 34px; height: 34px; padding: 7px; display: inline-grid; place-items: center; }
 .theme-button { font-weight: 700; }
+.browse-modes .file-mode { margin-left: 12px; }
+.document-bar > div:first-child { min-width: 0; }
+.catalog { padding: 20px; display: grid; gap: 20px; }
+.catalog-list { display: grid; gap: 8px; }
+.catalog-list button { padding: 16px; text-align: left; display: grid; gap: 6px; }
+.catalog-status { padding-top: 16px; border-top: 1px solid var(--line); }
 .workspace { grid-template-columns: 310px minmax(0, 1fr) 310px; }
 .main-panel { min-width: 0; overflow: auto; background: var(--wmap-color-67); }
 .empty-state { min-height: 360px; height: calc(100% - 48px); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 32px; text-align: center; }
@@ -26,6 +32,7 @@ dd { margin: 0 0 18px; overflow-wrap: anywhere; }
 @media (max-width: 650px) {
   .editor { padding: 12px; }
   .editor-header { flex-wrap: wrap; }
+  .document-bar { flex-wrap: wrap; }
   .workspace { display: flex; flex-direction: column; height: auto; }
   .library { max-height: 280px; flex-shrink: 0; border-right: 0; }
   .main-panel, .inspector { flex-shrink: 0; }

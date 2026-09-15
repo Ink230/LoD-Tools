@@ -3,9 +3,31 @@ import { describe, expect, it, vi } from 'vitest';
 import { AssetViewerComponent } from './asset-viewer.component';
 
 describe('asset explorer', () => {
+  it('starts with formats and switches browse modes without discarding the open file', async () => {
+    const fixture = TestBed.createComponent(AssetViewerComponent);
+    const viewer = fixture.componentInstance;
+    fixture.detectChanges();
+    expect(viewer.browseMode).toBe('format');
+    expect(fixture.nativeElement.querySelector('.catalog').textContent).toContain('TIM');
+    const file = new File(['asset'], 'test.tim');
+    await viewer.open({ kind: 'file', name: file.name, getFile: async () => file });
+    viewer.search = 'nothing';
+    const buttons: HTMLButtonElement[] = Array.from(fixture.nativeElement.querySelectorAll('.browse-modes button'));
+    buttons[1].click();
+    fixture.detectChanges();
+    expect(viewer.browseMode).toBe('game');
+    expect(viewer.search).toBe('');
+    expect(fixture.nativeElement.querySelector('.catalog').textContent).toContain('Battle & Dragoon forms');
+    buttons[2].click();
+    fixture.detectChanges();
+    expect(viewer.selected).toBe(file);
+    expect(fixture.nativeElement.querySelector('.inspector').textContent).toContain('test.tim');
+  });
+
   it('lists handles without reading files and only gets metadata for the selected file', async () => {
     const fixture = TestBed.createComponent(AssetViewerComponent);
     const viewer = fixture.componentInstance;
+    viewer.setBrowseMode('files');
     const file = new File(['asset'], '1');
     const readContents = vi.spyOn(file, 'arrayBuffer');
     const getFile = vi.fn(async () => file);

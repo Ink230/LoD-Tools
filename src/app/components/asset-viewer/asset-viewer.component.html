@@ -19,7 +19,7 @@
   @if (controlsOpen) {
     <section id="asset-controls" class="help-panel" aria-label="Asset Viewer controls">
       <div class="panel-title">Controls <button (click)="dismissControls()" aria-label="Close controls">×</button></div>
-      <p>Open your Severed Chains <code>files</code> folder to browse local assets. Select a folder to enter it, or use the path buttons to go back. Search filters the current folder.</p>
+      <p>Browse by format or by game asset. File explorer provides direct access to your Severed Chains <code>files</code> folder. Search filters the current category or folder.</p>
       <p>Tab moves between controls; Enter activates them; Escape closes this panel. Your theme and layout are saved in this browser.</p>
       <p>Folder access is read-only. Asset decoding and editing are not available yet.</p>
     </section>
@@ -27,10 +27,23 @@
   @if (error) { <div class="error" role="alert">{{ error }} <button (click)="error = ''" aria-label="Dismiss error">×</button></div> }
   <div class="document-bar">
     <div><strong>{{ directories.length ? directories[0].name : 'Severed Chains assets' }}</strong><code class="document-file">{{ path || 'Local files / No folder connected' }}</code></div>
-    <span class="muted">Read-only · {{ entries.length }} entries</span>
+    <nav class="actions browse-modes" aria-label="Browse assets">
+      <button (click)="setBrowseMode('format')" [class.active]="browseMode === 'format'" [attr.aria-pressed]="browseMode === 'format'">By format</button>
+      <button (click)="setBrowseMode('game')" [class.active]="browseMode === 'game'" [attr.aria-pressed]="browseMode === 'game'">By game asset</button>
+      <button class="file-mode" (click)="setBrowseMode('files')" [class.active]="browseMode === 'files'" [attr.aria-pressed]="browseMode === 'files'">File explorer</button>
+    </nav>
+    <span class="muted">Read-only</span>
   </div>
   <div class="workspace" [attr.aria-busy]="busy">
     <aside class="library" aria-label="Asset explorer">
+      @if (browseMode !== 'files') {
+        <div class="panel-title">{{ browseMode === 'format' ? 'Formats' : 'Game assets' }}</div>
+        <div class="section-list">
+          @for (item of categories; track item.id) {
+            <button (click)="chooseCategory(item.id)" [class.active]="category.id === item.id" [attr.aria-pressed]="category.id === item.id">{{ item.name }}</button>
+          }
+        </div>
+      } @else {
       <div class="panel-title">File explorer <button (click)="connectFolder()" [disabled]="busy || !supportsFolders">Open folder</button></div>
       @if (directories.length) {
         <nav class="breadcrumbs" aria-label="Folder path">
@@ -43,8 +56,24 @@
           } @empty { <p class="empty-copy muted">{{ search ? 'No matching entries' : 'This folder is empty' }}</p> }
         </div>
       } @else { <p class="empty-copy muted">Connect your extracted files to begin browsing.</p> }
+      }
     </aside>
     <section class="main-panel" aria-label="Asset preview">
+      @if (browseMode !== 'files') {
+        <div class="panel-title">{{ category.name }}</div>
+        <div class="catalog">
+          <p class="muted">{{ category.description }}</p>
+          <input [(ngModel)]="search" placeholder="Search this category…" aria-label="Search this category" />
+          <div class="catalog-list">
+            @for (entry of visibleCatalogEntries; track entry.name) {
+              <button (click)="catalogSelection = entry" [class.active]="catalogSelection === entry" [attr.aria-pressed]="catalogSelection === entry">
+                <strong>{{ entry.name }}</strong><span class="muted">{{ entry.description }}</span>
+              </button>
+            } @empty { <p class="muted">No matching entries</p> }
+          </div>
+          <p class="muted catalog-status">Asset listings and previews are not available yet. Use File explorer to browse your local files.</p>
+        </div>
+      } @else {
       <div class="panel-title">Preview <span class="muted">{{ busy ? 'Loading…' : 'Viewer foundation' }}</span></div>
       <div class="empty-state">
         <p class="eyebrow">THE LEGEND OF DRAGOON</p>
@@ -56,10 +85,19 @@
         @if (!supportsFolders) { <p role="status">Folder browsing requires Chrome or Edge on a secure connection.</p> }
         <p class="muted">Folders are listed as you open them. File contents are not loaded into memory.</p>
       </div>
+      }
     </section>
     <aside class="inspector" aria-label="Asset details">
       <div class="panel-title">Asset details</div>
-      @if (selected) {
+      @if (browseMode !== 'files') {
+        <dl>
+          <dt>Category</dt><dd>{{ category.name }}</dd>
+          @if (catalogSelection) {
+            <dt>{{ browseMode === 'format' ? 'Format' : 'Game asset group' }}</dt><dd>{{ catalogSelection.name }}</dd>
+            <dt>Contents</dt><dd>{{ catalogSelection.description }}</dd>
+          }
+        </dl>
+      } @else if (selected) {
         <dl>
           <dt>Name</dt><dd>{{ selected.name }}</dd>
           <dt>Path</dt><dd><code>{{ selectedPath }}</code></dd>

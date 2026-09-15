@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { FORMAT_CATEGORIES, GAME_ASSET_CATEGORIES } from './asset-viewer-categories';
 import { WORLD_MAP_THEME_COLORS } from '../world-map-editor/world-map-theme';
 
 interface AssetFileHandle {
@@ -40,6 +41,25 @@ export class AssetViewerComponent {
   busy = false;
   error = '';
   search = '';
+  browseMode: 'format' | 'game' | 'files' = 'format';
+  categoryId = FORMAT_CATEGORIES[0].id;
+  catalogSelection: { name: string; description: string } | null = null;
+  get categories() { return this.browseMode === 'game' ? GAME_ASSET_CATEGORIES : FORMAT_CATEGORIES; }
+  get category() { return this.categories.find(category => category.id === this.categoryId) || this.categories[0]; }
+  get visibleCatalogEntries() { return this.category.entries.filter(entry => `${entry.name} ${entry.description}`.toLowerCase().includes(this.search.toLowerCase())); }
+
+  setBrowseMode(mode: 'format' | 'game' | 'files') {
+    this.browseMode = mode;
+    this.categoryId = this.categories[0].id;
+    this.catalogSelection = null;
+    this.search = '';
+  }
+
+  chooseCategory(id: string) {
+    this.categoryId = id;
+    this.catalogSelection = null;
+    this.search = '';
+  }
   directories: AssetDirectoryHandle[] = [];
   entries: (AssetDirectoryHandle | AssetFileHandle)[] = [];
   selected: File | null = null;
