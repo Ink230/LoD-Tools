@@ -117,6 +117,29 @@ for (const asset of assets) {
     }
   }
 }
+// Flat DRGN0 resource groups contain a TMD, its TIM, then consecutive animations.
+// Require the recognized TMD/TIM pair; never assign every root-level TIM to a model.
+for (const model of assets.filter(asset => asset.format === 'TMD' && /^SECT\/DRGN0\.BIN\/\d+$/.test(asset.path))) {
+  const index = Number(model.name), texture = byPath.get(`SECT/DRGN0.BIN/${index + 1}`);
+  if (texture?.format !== 'TIM') continue;
+  model.textures = [texture.path];
+  for (let next = index + 2; ; next++) {
+    const animation = byPath.get(`SECT/DRGN0.BIN/${next}`);
+    if (animation?.format !== 'Animation') break;
+    animation.model = model.path;
+    animation.textures = [texture.path];
+  }
+}
+// Battle.loadDeff: item/enemy/boss packages pair an even DEFF directory with
+// the preceding TIM directory. Registry packages use the same layout.
+for (const asset of assets) {
+  const match = /^SECT\/DRGN0\.BIN\/(\d+)\/0\/\d+$/.exec(asset.path);
+  if (!match || !asset.offset || asset.textures?.length) continue;
+  const id = Number(match[1]);
+  if (id % 2 || !(id >= 4308 && id <= 5504 || effectNames.has(id))) continue;
+  asset.textures = (byDirectory.get(`SECT/DRGN0.BIN/${id - 1}`) || [])
+    .filter(item => item.format === 'TIM').sort((a, b) => Number(a.name) - Number(b.name)).map(item => item.path);
+}
 // CContainer's optional CLUT-animation table points to four instruction streams.
 for (const model of assets.filter(asset => asset.format === 'TMD')) {
   const file = await open(resolve(root, model.path), 'r');
