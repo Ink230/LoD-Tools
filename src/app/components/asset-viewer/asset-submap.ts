@@ -1,9 +1,9 @@
 import { AssetBinary } from './asset-binary';
 import { decodeTim } from './asset-image';
-import { PixelImage, TextureImage } from './asset-preview-types';
+import { PixelImage, TextureImage, SceneOverlay, Vec3 } from './asset-preview-types';
 
 export interface SubmapLayer { name: string; foreground: boolean; x: number; y: number; image: PixelImage; }
-export interface SubmapComposition { width: number; height: number; layers: SubmapLayer[]; warnings: string[]; }
+export interface SubmapComposition { width: number; height: number; originX: number; originY: number; layers: SubmapLayer[]; warnings: string[]; }
 
 /** RetailSubmap.prepareEnv: resolve TIM by page origin, crop UV rectangle, place at screen offset. */
 export function decodeSubmapComposition(bytes: Uint8Array, textures: Uint8Array[]): SubmapComposition {
@@ -39,7 +39,11 @@ export function decodeSubmapComposition(bytes: Uint8Array, textures: Uint8Array[
     }
     layers.push({ name: `${r.index < backgrounds ? 'Background' : 'Foreground'} ${r.index}`, foreground: r.index >= backgrounds, x: r.x - left, y: r.y - top, image: { width: w, height: h, pixels } });
   }
-  return { width, height, layers, warnings };
+  const backgroundsOnly = records.filter(r => r.index < backgrounds && data.i16(24 + r.index * 36 + 6) === 0x4e);
+  const bounds = backgroundsOnly.length ? backgroundsOnly : records;
+  const backgroundWidth = Math.max(...bounds.map(r => r.x + r.width)) - Math.min(...bounds.map(r => r.x));
+  const backgroundHeight = Math.max(...bounds.map(r => r.y + r.height)) - Math.min(...bounds.map(r => r.y));
+  return { width, height, originX: Math.trunc(backgroundWidth / 2) - left, originY: Math.trunc(backgroundHeight / 2) - top, layers, warnings };
 }
 
 export function renderSubmapComposition(scene: SubmapComposition, hidden: Set<number>): PixelImage {
@@ -53,4 +57,23 @@ export function renderSubmapComposition(scene: SubmapComposition, hidden: Set<nu
     }
   });
   return { width: scene.width, height: scene.height, pixels };
+}
+
+/** Graphics.GsSetSmapRefView2L, in PSX screen coordinates (positive Y down). */
+export function projectSubmapPoint(point: Vec3, camera: NonNullable<SceneOverlay['camera']>, scene: Pick<SubmapComposition, 'originX' | 'originY'>): [number, number] | null {
+  const [dx, dy, dz] = camera.target.map((value, index) => value - camera.position[index]);
+  const length = Math.trunc(Math.hypot(dx, dy, dz));
+  if (!length) return null;
+  const horizontal = Math.trunc(Math.hypot(dx, dz));
+  const fixed = (value: number, divisor: number) => Math.trunc(value * 4096 / divisor) / 4096;
+  const sy = fixed(dy, length), cy = fixed(horizontal, length);
+  const sx = horizontal ? fixed(dx, horizontal) : 0, cx = horizontal ? fixed(dz, horizontal) : 1;
+  const [x, y, z] = point.map((value, index) => value - camera.position[index]);
+  const yawX = cx * x - sx * z, yawZ = sx * x + cx * z;
+  const pitchY = cy * y - sy * yawZ, depth = sy * y + cy * yawZ;
+  if (depth <= 0) return null;
+  const angle = camera.rotation * Math.PI / 180;
+  const screenX = Math.cos(angle) * yawX + Math.sin(angle) * pitchY;
+  const screenY = -Math.sin(angle) * yawX + Math.cos(angle) * pitchY;
+  return [scene.originX + camera.projectionDistance * screenX / depth, scene.originY + camera.projectionDistance * screenY / depth];
 }

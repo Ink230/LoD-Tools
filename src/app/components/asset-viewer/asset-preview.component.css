@@ -21,6 +21,3 @@ input[type=number] { width:65px; } .playback input { flex:1; min-width:100px; }
 .image-stage canvas,.image-stage img { transform-origin:center; user-select:none; }
 .reset-image-zoom { position:absolute; right:12px; bottom:12px; z-index:1; }
 
-.preview-surface.scene-both { grid-template-columns:minmax(0,1fr) minmax(0,1fr); overflow:hidden; }
-.scene-both > canvas { grid-column:1; grid-row:1; }
-.scene-both > app-asset-stage { grid-column:2; grid-row:1; min-width:0; }

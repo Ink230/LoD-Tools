@@ -1,4 +1,4 @@
-import { SubmapComposition, decodeSubmapComposition, renderSubmapComposition } from './asset-submap';
+import { SubmapComposition, decodeSubmapComposition, renderSubmapComposition, projectSubmapPoint } from './asset-submap';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, NgZone, OnChanges, OnDestroy, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
@@ -60,7 +60,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   imagePanX = 0;
   imagePanY = 0;
   private imageDrag: { id: number; x: number; y: number } | null = null;
-  get zoomableImage() { return this.format === 'TIM' || this.format === 'PNG' || (!!this.submap && this.sceneView === 'composition'); }
+  get zoomableImage() { return this.format === 'TIM' || this.format === 'PNG' || (!!this.submap && this.sceneView !== 'geometry'); }
   get imageTransform() { return this.zoomableImage ? `translate(${this.imagePanX}px, ${this.imagePanY}px) scale(${this.imageZoom})` : null; }
   resetImageZoom() { this.imageZoom = 1; this.imagePanX = 0; this.imagePanY = 0; this.imageDrag = null; }
   zoomImage(event: WheelEvent) {
@@ -411,6 +411,21 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     if (this.image) {
       canvas.width = this.image.width; canvas.height = this.image.height;
       context.putImageData(new ImageData(new Uint8ClampedArray(this.image.pixels), this.image.width, this.image.height), 0, 0);
+      if (this.sceneView === 'both' && this.submap && this.overlay?.camera) {
+        context.strokeStyle = '#b8ed83';
+        context.lineWidth = 0.8;
+        for (const polygon of this.overlay.polygons) {
+          const points = polygon.points.map(point => projectSubmapPoint(point, this.overlay!.camera!, this.submap!));
+          context.beginPath();
+          for (let i = 0; i < points.length; i++) {
+            const a = points[i], b = points[(i + 1) % points.length];
+            if (!a || !b) continue;
+            context.moveTo(a[0], a[1]);
+            context.lineTo(b[0], b[1]);
+          }
+          context.stroke();
+        }
+      }
     } else if (this.sprite) {
       canvas.width = 512; canvas.height = 512;
       context.imageSmoothingEnabled = false;

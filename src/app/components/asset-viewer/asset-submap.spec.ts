@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decodeSubmapComposition, renderSubmapComposition } from './asset-submap';
+import { decodeSubmapComposition, renderSubmapComposition, projectSubmapPoint } from './asset-submap';
 
 function fixture() {
   const env = new Uint8Array(96);
@@ -36,5 +36,22 @@ describe('submap composition', () => {
   });
   it('rejects truncated environment records', () => {
     expect(() => decodeSubmapComposition(fixture().env.subarray(0, 30), [])).toThrow();
+  });
+});
+
+describe('submap game-camera projection', () => {
+  const scene = { originX: 192, originY: 128 };
+  const camera = { position: [0, 0, 0] as [number, number, number], target: [0, 0, 100] as [number, number, number], projectionDistance: 100, rotation: 0 };
+  it('projects around the background center with positive screen Y down', () => {
+    expect(projectSubmapPoint([10, 20, 100], camera, scene)).toEqual([202, 148]);
+    expect(projectSubmapPoint([10, 20, -100], camera, scene)).toBeNull();
+  });
+  it('uses camera translation and heading instead of the orbit camera', () => {
+    expect(projectSubmapPoint([110, 20, 30], { ...camera, position: [10, 20, 30], target: [110, 20, 30] }, scene)).toEqual([192, 128]);
+  });
+  it('applies the environment camera twist in degrees', () => {
+    const point = projectSubmapPoint([10, 0, 100], { ...camera, rotation: 90 }, scene)!;
+    expect(point[0]).toBeCloseTo(192);
+    expect(point[1]).toBeCloseTo(118);
   });
 });
