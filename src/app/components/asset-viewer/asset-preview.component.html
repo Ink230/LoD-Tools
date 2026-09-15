@@ -15,7 +15,10 @@
 @if (format === 'SPU') {
   <div class="preview-toolbar"><label>Sample <select [(ngModel)]="sampleIndex" (change)="updateSample()">@for (sample of samples; track sample.offset; let i = $index) { <option [ngValue]="i">{{ i + 1 }} · offset {{ sample.offset }}</option> }</select></label><label>Rate <select [(ngModel)]="sampleRate" (change)="updateSample()">@for (rate of [11025, 22050, 32000, 44100, 48000]; track rate) { <option [ngValue]="rate">{{ rate }} Hz</option> }</select></label><span>{{ sampleDetails }}</span></div>
 }
-@if (model && animations.length) { <label class="animation-picker">Animation <select [ngModel]="animationPath" (ngModelChange)="chooseAnimation($event)"><option value="">Bind pose</option>@for (item of animations; track key(item)) { <option [value]="key(item)">{{ item.name }} · {{ item.format }}</option> }</select></label> }
+@if (model && animations.length) { <label class="animation-picker">Animation <select [ngModel]="animationPath" (ngModelChange)="chooseAnimation($event)"><option value="">Raw part coordinates</option>@for (item of animations; track key(item)) { <option [value]="key(item)">{{ item.name }} · {{ item.format }}</option> }</select></label> }
+@if (model && !animation && model.parts.length > 1) { <p role="status">No pose loaded. Mesh parts may overlap at the origin. Choose a matching animation to assemble the model.</p> }
+@if (model && !textures.length) { <p role="status">No textures loaded. Textured surfaces display without their image detail. Choose the companion textures.</p> }
+@if (animation && !model) { <p role="status">Showing animation transforms as axes. Choose a matching model to see its animated mesh.</p> }
 @if (frameCount) { <div class="playback"><button (click)="togglePlayback()" [attr.aria-label]="playing ? 'Pause animation' : 'Play animation'">{{ playing ? 'Pause' : 'Play' }}</button><input aria-label="Animation frame" type="range" min="0" [max]="frameCount - 1" [(ngModel)]="frame" (input)="scrub()" /><span>{{ frame + 1 }} / {{ frameCount }}</span></div> }
 <div class="preview-surface">
   <canvas #canvas [hidden]="!image && !sprite && !clut" aria-label="Decoded image or sprite preview"></canvas>
