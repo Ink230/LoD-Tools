@@ -30,7 +30,8 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   readonly companionKinds: CompanionKind[] = ['texture', 'model', 'animation'];
   includeGameResources = false;
   includeSubmapResources = false;
-  get animationChoices() { return this.animations.filter(asset => companionResourceIncluded(asset, this.includeGameResources, this.includeSubmapResources)); }
+  includeFieldEffects = false;
+  get animationChoices() { return this.animations.filter(asset => companionResourceIncluded(asset, this.includeGameResources, this.includeSubmapResources, this.includeFieldEffects)); }
   selectedAnimation: AssetRecord | null = null;
   @Input() readFile?: (path: string) => Promise<Uint8Array>;
   @ViewChild('canvas') canvas?: ElementRef<HTMLCanvasElement>;
@@ -234,7 +235,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   companionName(asset: AssetRecord) { return `${asset.gameAsset} / ${asset.name}`; }
   companionCandidates(kind: CompanionKind) {
     const formats = companionFormats(kind);
-    return this.assets.filter(asset => formats.includes(asset.format) && companionResourceIncluded(asset, this.includeGameResources, this.includeSubmapResources) && (kind !== 'texture' || asset.size <= 32 * 1024 * 1024));
+    return this.assets.filter(asset => formats.includes(asset.format) && companionResourceIncluded(asset, this.includeGameResources, this.includeSubmapResources, this.includeFieldEffects) && (kind !== 'texture' || asset.size <= 32 * 1024 * 1024));
   }
   async stepCompanion(kind: CompanionKind, direction: number) {
     const candidates = this.companionCandidates(kind);

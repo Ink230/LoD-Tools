@@ -6,7 +6,8 @@ export type CompanionKind = 'texture' | 'model' | 'animation';
 export function companionFormats(kind: CompanionKind): string[] {
   return kind === 'texture' ? ['TIM'] : kind === 'model' ? ['TMD'] : ['Animation', 'CMB', 'LMB'];
 }
-export function companionResourceIncluded(asset: AssetRecord, includeGameResources: boolean, includeSubmapResources: boolean): boolean {
+export function companionResourceIncluded(asset: AssetRecord, includeGameResources: boolean, includeSubmapResources: boolean, includeFieldEffects = false): boolean {
+  if (asset.path.startsWith('SUBMAP/')) return includeFieldEffects;
   if (/^SECT\/DRGN2[1-4]\.BIN\//.test(asset.path)) return includeSubmapResources;
   if (asset.path.startsWith('SECT/')) return includeGameResources;
   return true;
@@ -50,6 +51,7 @@ export class AssetCompanionPickerComponent implements AfterViewInit, OnDestroy {
   @Input() error = '';
   @Input() includeGameResources = false;
   @Input() includeSubmapResources = false;
+  @Input() includeFieldEffects = false;
   @Output() picked = new EventEmitter<AssetRecord[]>();
   @Output() closed = new EventEmitter<void>();
   search = '';
@@ -60,11 +62,11 @@ export class AssetCompanionPickerComponent implements AfterViewInit, OnDestroy {
   private matches: AssetRecord[] = [];
   key(asset: AssetRecord) { return `${asset.path}@${asset.offset || 0}`; }
   get filtered() {
-    const key = `${this.kind}:${this.search}:${this.includeGameResources}:${this.includeSubmapResources}`;
+    const key = `${this.kind}:${this.search}:${this.includeGameResources}:${this.includeSubmapResources}:${this.includeFieldEffects}`;
     if (key !== this.filterKey || this.previousAssets !== this.assets) {
       const formats = companionFormats(this.kind);
       const query = this.search.toLowerCase();
-      this.matches = this.assets.filter(asset => formats.includes(asset.format) && companionResourceIncluded(asset, this.includeGameResources, this.includeSubmapResources) && `${asset.path} ${asset.name} ${asset.gameAsset}`.toLowerCase().includes(query));
+      this.matches = this.assets.filter(asset => formats.includes(asset.format) && companionResourceIncluded(asset, this.includeGameResources, this.includeSubmapResources, this.includeFieldEffects) && `${asset.path} ${asset.name} ${asset.gameAsset}`.toLowerCase().includes(query));
       this.page = 0;
       this.filterKey = key;
       this.previousAssets = this.assets;

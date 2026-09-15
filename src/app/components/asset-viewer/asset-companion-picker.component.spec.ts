@@ -11,9 +11,10 @@ describe('virtual companion chooser', () => {
     const named = record('characters/albert/textures/combat', 'TIM');
     const game = record('SECT/DRGN0.BIN/4153/0', 'TIM');
     const submap = record('SECT/DRGN21.BIN/10/3', 'TIM');
+    const field = record('SUBMAP/savepoint.tim', 'TIM');
     const picker = new AssetCompanionPickerComponent();
     const preview = TestBed.createComponent(AssetPreviewComponent).componentInstance;
-    picker.assets = preview.assets = [named, game, submap];
+    picker.assets = preview.assets = [named, game, submap, field];
     expect(picker.filtered).toEqual([named]);
     expect(preview.companionCandidates('texture')).toEqual([named]);
     picker.includeGameResources = preview.includeGameResources = true;
@@ -26,6 +27,11 @@ describe('virtual companion chooser', () => {
     picker.includeGameResources = preview.includeGameResources = true;
     expect(picker.filtered).toEqual([named, game, submap]);
     expect(preview.companionCandidates('texture')).toEqual([named, game, submap]);
+    picker.includeGameResources = preview.includeGameResources = false;
+    picker.includeSubmapResources = preview.includeSubmapResources = false;
+    picker.includeFieldEffects = preview.includeFieldEffects = true;
+    expect(picker.filtered).toEqual([named, field]);
+    expect(preview.companionCandidates('texture')).toEqual([named, field]);
   });
   it('filters compatible references and preserves ordered multi-texture selection', () => {
     const picker = new AssetCompanionPickerComponent();
