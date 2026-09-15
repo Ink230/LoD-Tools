@@ -40,3 +40,4 @@ dd { margin: 0 0 18px; overflow-wrap: anywhere; }
   .library { max-height: 280px; flex-shrink: 0; border-right: 0; }
   .main-panel, .inspector { flex-shrink: 0; }
 }
+.inspector-navigation { display: flex; align-items: center; gap: 6px; }

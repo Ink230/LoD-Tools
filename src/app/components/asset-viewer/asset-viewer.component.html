@@ -7,8 +7,6 @@
     </div>
     @if (headerCollapsed) { <span class="compact-credit">Asset Viewer by Ink</span> }
     <div class="actions">
-      <button (click)="navigateHistory(-1)" [disabled]="busy || historyIndex <= 0" title="Back to previous entity" aria-label="Back to previous entity" class="icon-button">←</button>
-      <button (click)="navigateHistory(1)" [disabled]="busy || historyIndex + 1 >= entityHistory.length" title="Forward to next entity" aria-label="Forward to next entity" class="icon-button">→</button>
       <button (click)="importAsset.click()" [disabled]="busy" title="Open individual file" aria-label="Open individual file" class="icon-button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M14 2H5v20h14V7l-5-5v5h5M12 18V10m-3 3 3-3 3 3"/></svg></button>
       <input #importAsset hidden type="file" (change)="importFile($event)" />
       <button (click)="connectFolder()" [disabled]="busy || !supportsFolders" title="Open Severed Chains files folder" aria-label="Open Severed Chains files folder" class="icon-button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 7V4h6l3 3h9v13H3V7Z"/><path d="M3 10h18"/></svg></button>
@@ -78,7 +76,13 @@
       }
     </section>
     <aside class="inspector" aria-label="Asset details">
-      <div class="panel-title">Asset details</div>
+      <div class="panel-title">
+        <div class="inspector-navigation">
+          <button (click)="navigateHistory(-1)" [disabled]="busy || historyIndex <= 0" title="Previous entity" aria-label="Previous entity">←</button>
+          <button (click)="navigateHistory(1)" [disabled]="busy || historyIndex + 1 >= entityHistory.length" title="Next entity" aria-label="Next entity">→</button>
+        </div>
+        <span>Asset details</span>
+      </div>
       @if (selected && selectedAsset) {
         <dl><dt>Game asset</dt><dd>{{ selectedAsset.gameAsset }}</dd><dt>Format</dt><dd>{{ selectedAsset.format }}</dd><dt>Path</dt><dd><code>{{ selectedPath }}</code></dd><dt>Size</dt><dd>{{ selected.size.toLocaleString() }} bytes</dd><dt>Last modified</dt><dd>{{ selected.lastModified | date:'medium' }}</dd>@if (selectedAsset.offset) { <dt>Resource offset</dt><dd>{{ selectedAsset.offset }}</dd> }</dl>
       } @else { <p class="empty-copy muted">Select an asset to inspect its details.</p> }
