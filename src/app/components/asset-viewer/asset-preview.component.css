@@ -16,3 +16,7 @@ input[type=number] { width:65px; } .playback input { flex:1; min-width:100px; }
 .records pre { white-space:pre-wrap; font-size:11px; }.warnings { padding:10px; font-size:12px; }
 .error { color:#ffaaaa; padding:12px; } audio { width:min(90%,600px); } p { padding:6px 10px; }
 .companion-resource-filters { display:flex; flex-wrap:wrap; gap:12px; flex-basis:100%; }
+.preview-surface.image-stage { overflow:hidden; touch-action:none; cursor:grab; }
+.image-stage:active { cursor:grabbing; }
+.image-stage canvas,.image-stage img { transform-origin:center; user-select:none; }
+.reset-image-zoom { position:absolute; right:12px; bottom:12px; z-index:1; }

@@ -54,6 +54,44 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   textureMappingWarning = '';
   textures: Uint8Array[] = [];
   palette = 0;
+  imageZoom = 1;
+  imagePanX = 0;
+  imagePanY = 0;
+  private imageDrag: { id: number; x: number; y: number } | null = null;
+  get zoomableImage() { return this.format === 'TIM' || this.format === 'PNG'; }
+  get imageTransform() { return this.zoomableImage ? `translate(${this.imagePanX}px, ${this.imagePanY}px) scale(${this.imageZoom})` : null; }
+  resetImageZoom() { this.imageZoom = 1; this.imagePanX = 0; this.imagePanY = 0; this.imageDrag = null; }
+  zoomImage(event: WheelEvent) {
+    if (!this.zoomableImage) return;
+    event.preventDefault();
+    const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = event.clientX - bounds.left - bounds.width / 2;
+    const y = event.clientY - bounds.top - bounds.height / 2;
+    const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? bounds.height : 1);
+    const zoom = Math.max(0.1, Math.min(32, this.imageZoom * Math.exp(-delta * 0.002)));
+    const ratio = zoom / this.imageZoom;
+    this.imagePanX = x - (x - this.imagePanX) * ratio;
+    this.imagePanY = y - (y - this.imagePanY) * ratio;
+    this.imageZoom = zoom;
+  }
+  startImagePan(event: PointerEvent) {
+    if (!this.zoomableImage || event.button !== 0 || (event.target as Element).closest('button')) return;
+    event.preventDefault();
+    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+    this.imageDrag = { id: event.pointerId, x: event.clientX, y: event.clientY };
+  }
+  moveImagePan(event: PointerEvent) {
+    if (!this.imageDrag || this.imageDrag.id !== event.pointerId) return;
+    this.imagePanX += event.clientX - this.imageDrag.x;
+    this.imagePanY += event.clientY - this.imageDrag.y;
+    this.imageDrag = { id: event.pointerId, x: event.clientX, y: event.clientY };
+  }
+  endImagePan(event: PointerEvent) {
+    if (this.imageDrag?.id !== event.pointerId) return;
+    this.imageDrag = null;
+    const surface = event.currentTarget as HTMLElement;
+    if (surface.hasPointerCapture(event.pointerId)) surface.releasePointerCapture(event.pointerId);
+  }
   paletteCount = 1;
   lmbType: LmbType = 0;
   frame = 0;
@@ -86,6 +124,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.mediaUrl = URL.createObjectURL(new Blob([new Uint8Array(bytes)], { type }));
   }
   async load() {
+    this.resetImageZoom();
     const version = ++this.loadVersion; this.picker = null; this.selectedAnimation = null;
     ++this.companionVersion;
     this.loadedCompanions = { texture: [], model: [], animation: [] };
