@@ -1,0 +1,29 @@
+<div class="preview-toolbar">
+  <label>Format <select [(ngModel)]="format" (change)="load()"><option value="Unknown">Auto / unknown</option>@for (item of formats; track item) { <option [value]="item">{{ item }}</option> }</select></label>
+  @if (format === 'TIM' && paletteCount > 1) { <label>Palette <input type="number" min="0" [max]="paletteCount - 1" [(ngModel)]="palette" (change)="updatePalette()" /></label><span>/ {{ paletteCount }}</span> }
+  @if (format === 'LMB') { <label>Subtype <select [(ngModel)]="lmbType" (change)="load()"><option [ngValue]="0">0</option><option [ngValue]="1">1</option><option [ngValue]="2">2</option></select></label> }
+  @if (model || animation || sprite || clut) {
+    <button (click)="textureInput.click()">Choose textures</button><input #textureInput hidden type="file" multiple (change)="attach($event, 'texture')" />
+    <button (click)="modelInput.click()">Choose model</button><input #modelInput hidden type="file" (change)="attach($event, 'model')" />
+    <button (click)="animationInput.click()">Choose animation</button><input #animationInput hidden type="file" (change)="attach($event, 'animation')" />
+  }
+  @if (model || animation || overlay?.polygons?.length) { <button (click)="stage?.fit()">Fit view</button><label><input type="checkbox" [(ngModel)]="wireframe" /> Wireframe</label> }
+  @if (overlay?.records?.length) { <button (click)="showRecords = !showRecords" [attr.aria-pressed]="showRecords">Records</button> }
+</div>
+@if (loading) { <p role="status">Loading preview…</p> }
+@if (error) { <p class="error" role="alert">{{ error }}</p> }
+@if (format === 'SPU') {
+  <div class="preview-toolbar"><label>Sample <select [(ngModel)]="sampleIndex" (change)="updateSample()">@for (sample of samples; track sample.offset; let i = $index) { <option [ngValue]="i">{{ i + 1 }} · offset {{ sample.offset }}</option> }</select></label><label>Rate <select [(ngModel)]="sampleRate" (change)="updateSample()">@for (rate of [11025, 22050, 32000, 44100, 48000]; track rate) { <option [ngValue]="rate">{{ rate }} Hz</option> }</select></label><span>{{ sampleDetails }}</span></div>
+}
+@if (model && animations.length) { <label class="animation-picker">Animation <select [ngModel]="animationPath" (ngModelChange)="chooseAnimation($event)"><option value="">Bind pose</option>@for (item of animations; track key(item)) { <option [value]="key(item)">{{ item.name }} · {{ item.format }}</option> }</select></label> }
+@if (frameCount) { <div class="playback"><button (click)="togglePlayback()" [attr.aria-label]="playing ? 'Pause animation' : 'Play animation'">{{ playing ? 'Pause' : 'Play' }}</button><input aria-label="Animation frame" type="range" min="0" [max]="frameCount - 1" [(ngModel)]="frame" (input)="scrub()" /><span>{{ frame + 1 }} / {{ frameCount }}</span></div> }
+<div class="preview-surface">
+  <canvas #canvas [hidden]="!image && !sprite && !clut" aria-label="Decoded image or sprite preview"></canvas>
+  @if (format === 'PNG' && mediaUrl) { <img [src]="mediaUrl" alt="Selected asset" /> }
+  @if ((format === 'Opus' || format === 'SPU') && mediaUrl) { <audio controls [src]="mediaUrl" preload="metadata"></audio> }
+  @if (model || animation || (overlay && (overlay.polygons.length || overlay.camera))) { <app-asset-stage [model]="model" [animation]="animation" [overlay]="overlay" [frame]="frame" [wireframe]="wireframe" [texturePages]="texturePages" /> }
+  @if (sprite && !textures.length) { <p>Choose a TIM texture to display this sprite animation.</p> }
+  @if (clut && !textures.length) { <p>Choose the companion TIM to play its palette animation.</p> }
+</div>
+@if (showRecords && overlay) { <div class="records">@for (record of overlay.records.slice(0, 500); track $index) { <details><summary>{{ record.label }}</summary><pre>{{ record.values | json }}</pre></details> }</div> }
+@if (warnings.length) { <details class="warnings"><summary>Preview notes ({{ warnings.length }})</summary>@for (warning of warnings; track $index) { <p>{{ warning }}</p> }</details> }

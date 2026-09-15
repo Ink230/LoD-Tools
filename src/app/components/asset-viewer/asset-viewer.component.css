@@ -1,13 +1,16 @@
 .editor { min-width: 0; }
 .icon-button { width: 34px; height: 34px; padding: 7px; display: inline-grid; place-items: center; }
 .theme-button { font-weight: 700; }
+.catalog-filters { display:grid; gap:8px; padding:10px; }
+.catalog-filters select { width:100%; background:var(--wmap-color-4); color:var(--wmap-color-2); border:1px solid var(--wmap-color-3); padding:6px; }
+.pagination { display:flex; align-items:center; justify-content:space-between; gap:6px; padding:10px; font-size:11px; }
+.main-panel { display:flex; flex-direction:column; }
+.library { display:flex; flex-direction:column; }
+.library > :not(.entry-list) { flex-shrink:0; }
+.library .entry-list { overflow:auto; flex:1; min-height:0; }
+app-asset-preview { flex:1; min-height:0; }
 .browse-modes .file-mode { margin-left: 12px; }
 .document-bar > div:first-child { min-width: 0; }
-.catalog { padding: 20px; display: grid; gap: 20px; }
-.catalog-list { display: grid; gap: 8px; }
-.catalog-list button { padding: 16px; text-align: left; display: grid; gap: 6px; }
-.catalog-status { padding-top: 16px; border-top: 1px solid var(--line); }
-.workspace { grid-template-columns: 310px minmax(0, 1fr) 310px; }
 .main-panel { min-width: 0; overflow: auto; background: var(--wmap-color-67); }
 .empty-state { min-height: 360px; height: calc(100% - 48px); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 32px; text-align: center; }
 .empty-state > p { max-width: 460px; }

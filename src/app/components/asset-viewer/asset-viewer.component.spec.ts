@@ -8,7 +8,7 @@ describe('asset explorer', () => {
     const viewer = fixture.componentInstance;
     fixture.detectChanges();
     expect(viewer.browseMode).toBe('format');
-    expect(fixture.nativeElement.querySelector('.catalog').textContent).toContain('TIM');
+    expect(fixture.nativeElement.querySelector('.section-list').textContent).toContain('Images & textures');
     const file = new File(['asset'], 'test.tim');
     await viewer.open({ kind: 'file', name: file.name, getFile: async () => file });
     viewer.search = 'nothing';
@@ -17,14 +17,14 @@ describe('asset explorer', () => {
     fixture.detectChanges();
     expect(viewer.browseMode).toBe('game');
     expect(viewer.search).toBe('');
-    expect(fixture.nativeElement.querySelector('.catalog').textContent).toContain('Battle & Dragoon forms');
+    expect(fixture.nativeElement.querySelector('.section-list').textContent).toContain('Party members');
     buttons[2].click();
     fixture.detectChanges();
     expect(viewer.selected).toBe(file);
     expect(fixture.nativeElement.querySelector('.inspector').textContent).toContain('test.tim');
   });
 
-  it('lists handles without reading files and only gets metadata for the selected file', async () => {
+  it('lists handles without reading files and reads only the selected payload', async () => {
     const fixture = TestBed.createComponent(AssetViewerComponent);
     const viewer = fixture.componentInstance;
     viewer.setBrowseMode('files');
@@ -39,8 +39,8 @@ describe('asset explorer', () => {
     expect(getFile).not.toHaveBeenCalled();
     await viewer.open(entry);
     expect(getFile).toHaveBeenCalledOnce();
-    expect(readContents).not.toHaveBeenCalled();
-    expect(viewer.selectedPath).toBe('files/1');
+    expect(readContents).toHaveBeenCalledOnce();
+    expect(viewer.selectedPath).toBe('1');
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('5 bytes');
   });

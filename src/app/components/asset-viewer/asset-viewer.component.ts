@@ -1,30 +1,22 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { FORMAT_CATEGORIES, GAME_ASSET_CATEGORIES } from './asset-viewer-categories';
 import { WORLD_MAP_THEME_COLORS } from '../world-map-editor/world-map-theme';
-
-interface AssetFileHandle {
-  kind: 'file';
-  name: string;
-  getFile(): Promise<File>;
-}
-
-interface AssetDirectoryHandle {
-  kind: 'directory';
-  name: string;
-  values(): AsyncIterable<AssetDirectoryHandle | AssetFileHandle>;
-}
+import { gunzipSync, strFromU8 } from 'fflate';
+import { AssetCatalog, AssetRecord, identifyAsset, assetCategory, gameIdentity } from './asset-catalog';
+import { AssetSource, AssetFileHandle, AssetDirectoryHandle, fileBytes } from './asset-source';
+import { AssetPreviewComponent } from './asset-preview.component';
 
 @Component({
   selector: 'app-asset-viewer',
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe, AssetPreviewComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '[class.viewport-host]': 'fillViewport', '[style.--wmap-hue-shift]': 'theme.shift', '[style]': 'themeColors' },
   templateUrl: './asset-viewer.component.html',
   styleUrls: ['../world-map-editor/world-map-editor.component.css', '../world-map-editor/world-map-viewport.css', './asset-viewer.component.css'],
 })
-export class AssetViewerComponent {
+export class AssetViewerComponent implements OnInit {
   private readonly changeDetector = inject(ChangeDetectorRef);
   readonly themeColors = WORLD_MAP_THEME_COLORS;
   readonly themes = [
@@ -41,6 +33,92 @@ export class AssetViewerComponent {
   busy = false;
   error = '';
   search = '';
+  catalog: AssetCatalog | null = null;
+  catalogLoading = false;
+  catalogError = '';
+  source: AssetSource | null = null;
+  selectedAsset: AssetRecord | null = null;
+  selectedBytes: Uint8Array = new Uint8Array();
+  page = 0;
+  formatFilter = '';
+  gameFilter = '';
+  private filterKey = '';
+  private filtered: AssetRecord[] = [];
+  private catalogReference: AssetCatalog | null = null;
+  private relatedRecord: AssetRecord | null = null;
+  private relatedCatalog: AssetCatalog | null = null;
+  private relatedCache: AssetRecord[] = [];
+  readonly pageSize = 80;
+  readonly readAssetFile = async (path: string) => {
+    if (!this.source) throw new Error('Open your SC files folder to load related resources');
+    return this.source.read(path);
+  };
+  async ngOnInit() { await this.loadCatalog(); }
+  async loadCatalog() {
+    this.catalogLoading = true; this.catalogError = '';
+    try {
+      const response = await fetch('assets/asset-viewer/catalog.json.gz');
+      if (!response.ok) throw new Error('Asset catalog could not be loaded');
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      // Some hosts serve .gz with Content-Encoding; fetch has already decompressed that response.
+      const catalog = JSON.parse(strFromU8(bytes[0] === 0x1f && bytes[1] === 0x8b ? gunzipSync(bytes) : bytes)) as AssetCatalog;
+      if (catalog.version !== 1 || !Array.isArray(catalog.assets)) throw new Error('Unsupported asset catalog');
+      this.catalog = catalog;
+    } catch { this.catalogError = 'The asset catalog could not be loaded. Retry or use File explorer.'; }
+    finally { this.catalogLoading = false; this.changeDetector.markForCheck(); }
+  }
+  get filteredAssets() {
+    const key = `${this.browseMode}|${this.categoryId}|${this.search}|${this.formatFilter}|${this.gameFilter}`;
+    if (this.filterKey !== key || this.catalogReference !== this.catalog) {
+      this.filterKey = key; this.catalogReference = this.catalog; this.page = 0;
+      const query = this.search.toLowerCase();
+      this.filtered = (this.catalog?.assets || []).filter(asset =>
+        (this.browseMode === 'game' ? asset.gameCategory === this.categoryId : asset.category === this.categoryId) &&
+        (!this.formatFilter || asset.format === this.formatFilter) && (!this.gameFilter || asset.gameAsset === this.gameFilter) &&
+        (!query || `${asset.name} ${asset.path} ${asset.gameAsset} ${asset.format}`.toLowerCase().includes(query)));
+    }
+    return this.filtered;
+  }
+  get visibleAssets() { return this.filteredAssets.slice(this.page * this.pageSize, (this.page + 1) * this.pageSize); }
+  get totalPages() { return Math.ceil(this.filteredAssets.length / this.pageSize); }
+  get availableFormats() { return [...new Set((this.catalog?.assets || []).filter(asset => asset.category === this.categoryId).map(asset => asset.format))]; }
+  get gameAssets() { return [...new Set((this.catalog?.assets || []).filter(asset => asset.gameCategory === this.categoryId).map(asset => asset.gameAsset))].sort(); }
+  get relatedAssets() {
+    if (!this.selectedAsset) return [];
+    if (this.relatedRecord === this.selectedAsset && this.relatedCatalog === this.catalog) return this.relatedCache;
+    this.relatedRecord = this.selectedAsset; this.relatedCatalog = this.catalog;
+    const directory = this.selectedAsset.path.slice(0, this.selectedAsset.path.lastIndexOf('/'));
+    this.relatedCache = (this.catalog?.assets || []).filter(asset => asset.path.slice(0, asset.path.lastIndexOf('/')) === directory && ['TMD', 'Animation', 'CMB', 'LMB'].includes(asset.format));
+    return this.relatedCache;
+  }
+  assetKey(asset: AssetRecord) { return `${asset.path}@${asset.offset || 0}`; }
+  async selectAsset(asset: AssetRecord) {
+    if (this.busy) return;
+    if (!this.source) await this.connectFolder();
+    if (!this.source) return;
+    this.busy = true; this.error = '';
+    try {
+      const file = await this.source.file(asset.path);
+      const bytes = await fileBytes(file);
+      this.selected = file; this.selectedPath = asset.path; this.selectedAsset = asset;
+      this.selectedBytes = bytes.subarray(asset.offset || 0);
+    } catch (error) { this.error = `Unable to load ${asset.path}. Check that the selected folder is SC's extracted files folder. ${error instanceof Error ? error.message : ''}`; }
+    finally { this.busy = false; this.changeDetector.markForCheck(); }
+  }
+  async importFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0]; input.value = '';
+    if (!file || this.busy) return;
+    this.busy = true; this.error = '';
+    try {
+      const bytes = await fileBytes(file);
+      const format = identifyAsset(bytes, file.name);
+      this.selected = file; this.selectedPath = file.name;
+      this.selectedAsset = { path: file.name, name: file.name, format, category: assetCategory(format), ...gameIdentity(file.name), size: file.size };
+      this.selectedBytes = bytes;
+    } catch (error) { this.error = String(error); }
+    finally { this.busy = false; this.changeDetector.markForCheck(); }
+  }
   browseMode: 'format' | 'game' | 'files' = 'format';
   categoryId = FORMAT_CATEGORIES[0].id;
   catalogSelection: { name: string; description: string } | null = null;
@@ -53,12 +131,14 @@ export class AssetViewerComponent {
     this.categoryId = this.categories[0].id;
     this.catalogSelection = null;
     this.search = '';
+    this.formatFilter = ''; this.gameFilter = ''; this.page = 0;
   }
 
   chooseCategory(id: string) {
     this.categoryId = id;
     this.catalogSelection = null;
     this.search = '';
+    this.formatFilter = ''; this.gameFilter = ''; this.page = 0;
   }
   directories: AssetDirectoryHandle[] = [];
   entries: (AssetDirectoryHandle | AssetFileHandle)[] = [];
@@ -103,6 +183,7 @@ export class AssetViewerComponent {
       const picker = window as unknown as { showDirectoryPicker(options: { mode: 'read' }): Promise<AssetDirectoryHandle> };
       const directory = await picker.showDirectoryPicker({ mode: 'read' });
       await this.readDirectory([directory]);
+      this.source = new AssetSource(directory);
     } catch (error) {
       if (!(error instanceof DOMException && error.name === 'AbortError')) this.error = 'Unable to open the folder. Check folder access and try again.';
     } finally {
@@ -120,6 +201,7 @@ export class AssetViewerComponent {
     this.search = '';
     this.selected = null;
     this.selectedPath = '';
+    this.selectedAsset = null; this.selectedBytes = new Uint8Array();
   }
 
   async open(entry: AssetDirectoryHandle | AssetFileHandle) {
@@ -130,8 +212,13 @@ export class AssetViewerComponent {
       if (entry.kind === 'directory') await this.readDirectory([...this.directories, entry]);
       else {
         const file = await entry.getFile();
+        const bytes = await fileBytes(file);
+        const relativePath = [...this.directories.slice(1).map(directory => directory.name), entry.name].join('/');
+        const format = identifyAsset(bytes, relativePath);
         this.selected = file;
-        this.selectedPath = `${this.path}/${entry.name}`;
+        this.selectedPath = relativePath;
+        this.selectedAsset = this.catalog?.assets.find(asset => asset.path === relativePath) || { path: relativePath, name: file.name, format, category: assetCategory(format), ...gameIdentity(relativePath), size: file.size };
+        this.selectedBytes = bytes.subarray(this.selectedAsset.offset || 0);
       }
     } catch {
       this.error = 'Unable to open this entry. It may have moved or folder access may have expired.';
