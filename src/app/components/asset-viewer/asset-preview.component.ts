@@ -110,6 +110,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
         }
         case 'Animation': case 'CMB': case 'LMB': {
           this.animation = this.format === 'LMB' ? decodeLmb(this.bytes, this.lmbType) : decodeAnimation(this.bytes);
+          this.animationPath = this.key(this.record);
           this.warnings.push(...this.animation.warnings);
           if (this.record.model && this.readFile) {
             try {

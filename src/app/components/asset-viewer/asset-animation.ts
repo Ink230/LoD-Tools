@@ -180,7 +180,10 @@ function decodeCmb(binary: AssetBinary): ModelAnimation {
     for (let part = 0; part < parts; part++) applyCmbDelta(current[part], binary, base + ((frame - 1) * parts + part) * 8);
     frames.push(cloneFrame(current));
   }
-  return modelAnimation('CMB', frames);
+  const animation = modelAnimation('CMB', frames);
+  animation.fps = PREVIEW_FPS / 2;
+  animation.warnings.push('CMB shows stored keyframes at 15 Hz; SC interpolates between them at 30 Hz');
+  return animation;
 }
 
 function decodeLmb0(binary: AssetBinary): ModelAnimation {

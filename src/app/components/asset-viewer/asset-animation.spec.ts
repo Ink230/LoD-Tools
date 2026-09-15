@@ -27,6 +27,7 @@ describe('asset animation decoders', () => {
     });
     const animation = decodeAnimation(bytes);
     expect(animation.format).toBe('CMB');
+    expect(animation.fps).toBe(15);
     expect(animation.frames).toHaveLength(2);
     expect(animation.frames[1][0].rotation[0]).toBe(Math.PI / 512);
     expect(animation.frames[1][0].translation).toEqual([22, 0, 0]);

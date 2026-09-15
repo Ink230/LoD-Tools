@@ -82,6 +82,18 @@ for (const asset of assets) {
   const character = asset.path.match(/^(characters\/[^/]+)\/models\/(combat|dragoon)\//);
   if (character) asset.textures = [`${character[1]}/textures/${character[2]}`].filter(path => allPaths.has(path));
   else asset.textures = directory.split('/').length >= 3 ? siblings.filter(item => item.format === 'TIM').map(item => item.path) : [];
+  // RetailSpell.loadDeff / Battle.loadDragoonDeff: 84 paired packages, plus
+  // optional extra TIM directories uploaded before each package's own TIMs.
+  const dragoonPackage = /^SECT\/DRGN0\.BIN\/(\d+)\/0\/\d+$/.exec(asset.path);
+  if (asset.offset && dragoonPackage) {
+    const index = (Number(dragoonPackage[1]) - 4140) / 2;
+    if (Number.isInteger(index) && index >= 0 && index < 84) {
+      const extraTimIds = [4, 9, 10, 11, 11, 13, 20, 22, 27, 28, 30, 36, 40, 42, 44, 46, 65, 66, 70, 71, 73, 75, 78, 82];
+      const directories = extraTimIds.flatMap((id, i) => id === index ? [`SECT/DRGN0.BIN/${4115 + i}`] : []);
+      directories.push(`SECT/DRGN0.BIN/${4139 + index * 2}`);
+      asset.textures = directories.flatMap(path => (byDirectory.get(path) || []).filter(item => item.format === 'TIM').sort((a, b) => Number(a.name) - Number(b.name)).map(item => item.path));
+    }
+  }
   if (submap && ['TMD', 'Animation'].includes(asset.format)) {
     const texture = `${directory}/textures/${Math.floor(Number(submap[1]) / 33)}`;
     if (allPaths.has(texture)) asset.textures = [texture];

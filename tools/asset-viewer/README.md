@@ -16,7 +16,9 @@ The viewer uses a metadata catalog for **By format** and **By game asset**, with
 | CLUT instructions | Timed palette-row copies with a supplied TIM; instruction records |
 | Environment / collision | Camera helper, collision geometry, and parsed records |
 
-Standard animations display stored keyframes at 15 Hz to preserve their duration; SC's interpolated intermediate poses are not reproduced. LMB subtype comes from its DEFF container or manual selection. Model-independent animations require a compatible model. Environment previews show data and geometry, not assembled backgrounds. SPU playback rate is user selected because instrument/pitch context lives outside the sample bank. Browser Opus support depends on the browser.
+Standard and CMB animations display stored keyframes at 15 Hz to preserve their duration; SC's interpolated intermediate poses are not reproduced. LMB subtype comes from its DEFF container or manual selection. Model-independent animations require a compatible model. Environment previews show data and geometry, not assembled backgrounds. SPU playback rate is user selected because instrument/pitch context lives outside the sample bank. Browser Opus support depends on the browser.
+
+Dragoon DEFF packages use SC's paired texture directories and optional extra TIM sets, in upload order. For example, `SECT/DRGN0.BIN/4154/0/0` contains a 29-part model at offset 40 and its 36-keyframe CMB at offset 28620; its 12 textures come from `SECT/DRGN0.BIN/4153`. This does not reproduce script-driven texture animation or mod overrides.
 
 Full scripted effects, complete scene reconstruction, music synthesis, IKI/video decoding, and editing are outside this implementation. Textures in bespoke effect packages are not assumed to be standalone TIMs. PSX blending is approximated through WebGL passes and is not a pixel-exact emulation of the console renderer.
 
