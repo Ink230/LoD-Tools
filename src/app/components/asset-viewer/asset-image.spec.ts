@@ -1,0 +1,127 @@
+import { describe, expect, it } from 'vitest';
+import { decodeMcq, decodeTim, sampleTim, texturePage, texturePageFromTims } from './asset-image';
+
+function u16(bytes: Uint8Array, offset: number, value: number) { new DataView(bytes.buffer).setUint16(offset, value, true); }
+function u32(bytes: Uint8Array, offset: number, value: number) { new DataView(bytes.buffer).setUint32(offset, value, true); }
+
+function tim(bpp: 0 | 1 | 2 | 3, words: number, image: number[], clut?: number[]) {
+  const hasClut = clut !== undefined;
+  const clutBytes = hasClut ? 12 + clut.length * 2 : 0;
+  const imageOffset = 8 + clutBytes;
+  const bytes = new Uint8Array(imageOffset + 12 + image.length);
+  u32(bytes, 0, 0x10);
+  u32(bytes, 4, bpp | (hasClut ? 8 : 0));
+  if (hasClut) {
+    u32(bytes, 8, clutBytes);
+    u16(bytes, 16, clut.length);
+    u16(bytes, 18, 1);
+    clut.forEach((colour, index) => u16(bytes, 20 + index * 2, colour));
+  }
+  u32(bytes, imageOffset, 12 + image.length);
+  u16(bytes, imageOffset + 8, words);
+  u16(bytes, imageOffset + 10, 1);
+  bytes.set(image, imageOffset + 12);
+  return bytes;
+}
+
+describe('asset image decoders', () => {
+  it('decodes paletted, direct-colour, and 24-bit TIM images', () => {
+    const palette = Array.from({ length: 16 }, (_, index) => index === 1 ? 0x7fff : 0);
+    const fourBit = decodeTim(tim(0, 1, [0x11, 0x11], palette));
+    expect(fourBit).toMatchObject({ format: 'TIM', bpp: 4, width: 4, height: 1, paletteCount: 1 });
+    expect(Array.from(fourBit.pixels.slice(0, 4))).toEqual([248, 248, 248, 255]);
+
+    const eightBitPalette = Array.from({ length: 256 }, (_, index) => index === 2 ? 0x03e0 : 0);
+    expect(Array.from(decodeTim(tim(1, 1, [2, 2], eightBitPalette)).pixels.slice(0, 4))).toEqual([0, 248, 0, 255]);
+    expect(Array.from(decodeTim(tim(2, 1, [0x1f, 0])).pixels.slice(0, 4))).toEqual([248, 0, 0, 255]);
+    expect(Array.from(decodeTim(tim(3, 3, [1, 2, 3, 4, 5, 6])).pixels)).toEqual([1, 2, 3, 255, 4, 5, 6, 255]);
+  });
+
+  it('samples PSX texture pages using packed tpage and CLUT coordinates', () => {
+    const palette = Array.from({ length: 16 }, (_, index) => index === 1 ? 0x001f : 0);
+    const bytes = tim(0, 1, [0x11, 0x11], palette);
+    expect(sampleTim(bytes, 0, 0, 0, 0)).toEqual([248, 0, 0, 255]);
+    expect(sampleTim(bytes, 4, 0, 0, 0)).toEqual([0, 0, 0, 0]);
+    expect(texturePage(bytes, 0, 0)).toMatchObject({ width: 256, height: 256 });
+  });
+
+  it('treats zero as transparent, STP as translucent, and exposes every CLUT palette group', () => {
+    const palette = Array.from({ length: 32 }, (_, index) => index === 1 ? 0x7fff : index === 17 ? 0x801f : 0);
+    const bytes = tim(0, 1, [0x11, 0x11], palette);
+    expect(decodeTim(bytes)).toMatchObject({ paletteCount: 2 });
+    expect(Array.from(decodeTim(bytes, 0).pixels.slice(0, 4))).toEqual([248, 248, 248, 255]);
+    expect(Array.from(decodeTim(bytes, 1).pixels.slice(0, 4))).toEqual([248, 0, 0, 128]);
+    expect(sampleTim(bytes, 4, 0, 0, 0)).toEqual([0, 0, 0, 0]);
+  });
+
+  it('uses a shared VRAM when palette and texture TIMs are loaded separately', () => {
+    const transparentPalette = Array.from({ length: 16 }, () => 0);
+    const redPalette = Array.from({ length: 16 }, (_, index) => index === 1 ? 0x001f : 0);
+    const imageTim = tim(0, 1, [0x11, 0x11], transparentPalette);
+    u16(imageTim, 56, 64); // TIM image X and tpage 1 are both VRAM-word coordinates
+    const paletteTim = tim(0, 1, [0, 0], redPalette);
+    u16(paletteTim, 56, 100); // Its placeholder image must not overwrite the first TIM's texture page
+    const page = texturePageFromTims([imageTim, paletteTim], 0, 1);
+    expect(Array.from(page.pixels.slice(0, 4))).toEqual([248, 0, 0, 255]);
+  });
+
+  it('uses TPage origins as VRAM words at non-zero X and Y coordinates', () => {
+    const palette = Array.from({ length: 16 }, (_, index) => index === 1 ? 0x001f : index === 2 ? 0x03e0 : 0);
+    const bytes = tim(0, 1, [0x21, 0x11], palette);
+    u16(bytes, 14, 256); // CLUT Y
+    u16(bytes, 56, 512); // Image X is in VRAM words
+    u16(bytes, 58, 256); // Image Y
+    const clut = 256 << 6;
+    const tpage = 24; // Page X 512 words and page Y 256
+    expect(sampleTim(bytes, 0, 0, clut, tpage)).toEqual([248, 0, 0, 255]);
+    expect(sampleTim(bytes, 1, 0, clut, tpage)).toEqual([0, 248, 0, 255]);
+    const page = texturePageFromTims([bytes], clut, tpage);
+    expect(Array.from(page.pixels.slice(0, 8))).toEqual([248, 0, 0, 255, 0, 248, 0, 255]);
+  });
+
+  it('reconstructs an MCQ tile with McqBuilder CLUT addressing', () => {
+    const imageOffset = 0x2c;
+    const vramWidth = 64;
+    const vramHeight = 16;
+    const bytes = new Uint8Array(imageOffset + vramWidth * vramHeight * 2);
+    u32(bytes, 0, 0x151434d);
+    u32(bytes, 4, imageOffset);
+    u16(bytes, 8, vramWidth);
+    u16(bytes, 10, vramHeight);
+    u16(bytes, 20, 16);
+    u16(bytes, 22, 16);
+    u16(bytes, imageOffset, 1);
+    u16(bytes, imageOffset + 2, 0x801f);
+    const image = decodeMcq(bytes);
+    expect(image).toMatchObject({ format: 'MCQ', bpp: 4, width: 16, height: 16 });
+    expect(Array.from(image.pixels.slice(0, 4))).toEqual([248, 0, 0, 128]);
+  });
+
+  it('rejects malformed assets before allocating an image', () => {
+    expect(() => decodeTim(new Uint8Array(8))).toThrow('Invalid TIM magic');
+    const malformedMcq = new Uint8Array(0x2c);
+    u32(malformedMcq, 0, 0x151434d);
+    expect(() => decodeMcq(malformedMcq)).toThrow('MCQ screen dimensions');
+  });
+
+  it('uses declared TIM rectangles when a valid retail block includes padding', () => {
+    const palette = Array.from({ length: 16 }, (_, index) => index === 1 ? 0x001f : 0);
+    const padded = tim(0, 1, [0x11, 0x11, 0, 0], palette);
+    u32(padded, 52, 16); // Declares a 16-byte image block although the 1x1 rectangle needs only two bytes
+    expect(Array.from(decodeTim(padded).pixels.slice(0, 4))).toEqual([248, 0, 0, 255]);
+  });
+
+  it('decodes partial MCQ edge tiles used by small screens', () => {
+    const imageOffset = 0x2c;
+    const bytes = new Uint8Array(imageOffset + 64 * 16 * 2);
+    u32(bytes, 0, 0x151434d);
+    u32(bytes, 4, imageOffset);
+    u16(bytes, 8, 64);
+    u16(bytes, 10, 16);
+    u16(bytes, 20, 8);
+    u16(bytes, 22, 8);
+    u16(bytes, imageOffset, 1);
+    u16(bytes, imageOffset + 2, 0x801f);
+    expect(decodeMcq(bytes)).toMatchObject({ width: 8, height: 8 });
+  });
+});
