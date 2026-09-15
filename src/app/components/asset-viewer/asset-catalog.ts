@@ -15,6 +15,7 @@ export interface AssetRecord {
   offset?: number;
   modelOffset?: number;
   lmbType?: number;
+  lmbSetup?: { script: string; scriptOffset: number; slots: { slot: number; options: { path: string; flags: number; offset: number }[] }[] };
 }
 export interface AssetCatalog { version: number; extractionVersion: string; assets: AssetRecord[]; }
 export const PREVIEW_FORMATS: AssetFormat[] = ['PNG', 'TIM', 'MCQ', 'Opus', 'TMD', 'Animation', 'CMB', 'LMB', 'ANM', 'CLUT', 'SPU', 'Environment', 'Collision', 'CollisionInfo'];

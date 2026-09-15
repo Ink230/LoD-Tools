@@ -42,12 +42,24 @@
 @if (format === 'SPU') {
   <div class="preview-toolbar"><label>Sample <select [(ngModel)]="sampleIndex" (change)="updateSample()">@for (sample of samples; track sample.offset; let i = $index) { <option [ngValue]="i">{{ i + 1 }} · offset {{ sample.offset }}</option> }</select></label><label>Rate <select [(ngModel)]="sampleRate" (change)="updateSample()">@for (rate of [11025, 22050, 32000, 44100, 48000]; track rate) { <option [ngValue]="rate">{{ rate }} Hz</option> }</select></label><span>{{ sampleDetails }}</span></div>
 }
+@if (record.lmbSetup && format === 'LMB') {
+  <div class="preview-toolbar">
+    <span>Script-linked LMB pieces</span>
+    @for (slot of record.lmbSetup.slots; track slot.slot) {
+      <label>Slot {{ slot.slot }} <select [ngModel]="lmbChoices[slot.slot] || 0" (ngModelChange)="lmbChoices[slot.slot] = $event; composeLmb()">
+        @for (option of slot.options; track option.flags; let index = $index) { <option [ngValue]="index">{{ option.path.split('/').at(-1) }} · {{ option.flags.toString(16) }}</option> }
+      </select></label>
+    }
+    @if (!lmbComposed) { <button (click)="composeLmb()">Restore effect pieces</button> }
+  </div>
+  <p role="status">Previewing script-linked pieces on the LMB tracks. Battle placement, colour fades and child effects are not simulated.</p>
+}
 @if (model && animationChoices.length) { <label class="animation-picker">Animation <select [ngModel]="animationPath" (ngModelChange)="chooseAnimation($event)"><option value="">Raw part coordinates</option>@for (item of animationChoices; track key(item)) { <option [value]="key(item)">{{ item.name }} · {{ item.format }}</option> }</select></label> }
 @if (model && !animation && model.parts.length > 1) { <p role="status">No pose loaded. Mesh parts may overlap at the origin. Choose a matching animation to assemble the model.</p> }
 @if (model && !modelUsesTextures) { <p role="status">This model uses polygon colors and has no texture coordinates. Selecting textures will not change its surfaces. Preview lighting is not applied.</p> }
 @if (model && modelUsesTextures && !textures.length) { <p role="status">No textures loaded. Textured surfaces display without their image detail. Choose the companion textures.</p> }
 @if (animation && !model) { <p role="status">Showing animation transforms as axes. Choose a matching model to see its animated mesh.</p> }
-@if (frameCount) { <div class="playback"><button (click)="togglePlayback()" [attr.aria-label]="playing ? 'Pause animation' : 'Play animation'">{{ playing ? 'Pause' : 'Play' }}</button><input aria-label="Animation frame" type="range" min="0" [max]="frameCount - 1" [(ngModel)]="frame" (input)="scrub()" /><span>{{ frame + 1 }} / {{ frameCount }}</span></div> }
+@if (frameCount) { <div class="playback"><button (click)="togglePlayback()" [attr.aria-label]="playing ? 'Pause animation' : 'Play animation'">{{ playing ? 'Pause' : 'Play' }}</button><input aria-label="Animation frame" type="range" min="0" [max]="frameCount - 1" [(ngModel)]="frame" (input)="scrub()" /><span>{{ frame + 1 }} / {{ frameCount }}</span><label class="playback-speed">FPS <input aria-label="Playback frames per second" type="range" min="1" max="120" step="1" [ngModel]="playbackFps" (ngModelChange)="setPlaybackFps($event)" /><input aria-label="Playback FPS value" type="number" min="1" max="120" step="1" [ngModel]="playbackFps" (ngModelChange)="setPlaybackFps($event)" /></label></div> }
 <div class="preview-surface" (click)="pickComposition($event)" [class.image-stage]="zoomableImage" (wheel)="zoomImage($event)" (pointerdown)="startImagePan($event)" (pointermove)="moveImagePan($event)" (pointerup)="endImagePan($event)" (pointercancel)="endImagePan($event)">
   <canvas #canvas [hidden]="!image && !sprite && !clut" [style.transform]="imageTransform" aria-label="Decoded image or sprite preview"></canvas>
   @if (format === 'PNG' && mediaUrl) { <img [src]="mediaUrl" [style.transform]="imageTransform" draggable="false" alt="Selected asset" /> }

@@ -140,6 +140,35 @@ for (const asset of assets) {
   asset.textures = (byDirectory.get(`SECT/DRGN0.BIN/${id - 1}`) || [])
     .filter(item => item.format === 'TIM').sort((a, b) => Number(a.name) - Number(b.name)).map(item => item.path);
 }
+// Resolve the script's LMB slot assignments without executing battle behaviour.
+const { build } = await import('esbuild');
+const resolverBundle = await build({ entryPoints: ['src/app/components/asset-viewer/asset-lmb-composition.ts'], bundle: true, write: false, format: 'esm', platform: 'node' });
+const { resolveLmbSetups } = await import('data:text/javascript;base64,' + Buffer.from(resolverBundle.outputFiles[0].text).toString('base64'));
+const effectScripts = new Map();
+for (const lmb of assets.filter(asset => asset.format === 'LMB' && !asset.model)) {
+  const match = /^(SECT\/DRGN0\.BIN\/\d+)\/0\/\d+$/.exec(lmb.path);
+  if (!match) continue;
+  const scriptPath = `${match[1]}/1`;
+  if (!allPaths.has(scriptPath)) continue;
+  if (!effectScripts.has(scriptPath)) effectScripts.set(scriptPath, await readFile(resolve(root, scriptPath)));
+  const flags = (await readFile(resolve(root, lmb.path))).readUInt32LE(0);
+  const setups = resolveLmbSetups(effectScripts.get(scriptPath), flags);
+  // Multiple different setup sites require a user/runtime choice; do not silently merge them.
+  if (setups.length !== 1) continue;
+  const packageModels = assets.filter(asset => asset.format === 'TMD' && asset.path.startsWith(`${match[1]}/0/`));
+  const modelFlags = new Map();
+  for (const model of packageModels) {
+    const bytes = await readFile(resolve(root, model.path));
+    modelFlags.set(bytes.readUInt32LE(0), model);
+  }
+  const slots = Object.entries(setups[0].slots).map(([slot, flags]) => ({ slot: Number(slot), options: flags.flatMap(flag => {
+    const model = modelFlags.get(flag);
+    return model ? [{ path: model.path, flags: flag, offset: model.offset || 0 }] : [];
+  }) }));
+  // All options must be understood: unsupported sprites/child effects remain explicit fallbacks.
+  if (slots.some(slot => slot.options.length !== setups[0].slots[slot.slot].length)) continue;
+  lmb.lmbSetup = { script: scriptPath, scriptOffset: setups[0].scriptOffset, slots };
+}
 // CContainer's optional CLUT-animation table points to four instruction streams.
 for (const model of assets.filter(asset => asset.format === 'TMD')) {
   const file = await open(resolve(root, model.path), 'r');

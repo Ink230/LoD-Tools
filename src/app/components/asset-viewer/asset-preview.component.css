@@ -21,3 +21,7 @@ input[type=number] { width:65px; } .playback input { flex:1; min-width:100px; }
 .image-stage canvas,.image-stage img { transform-origin:center; user-select:none; }
 .reset-image-zoom { position:absolute; right:12px; bottom:12px; z-index:1; }
 
+
+.playback-speed { flex:none; }
+.playback .playback-speed input[type=range] { flex:none; width:100px; min-width:60px; }
+.playback .playback-speed input[type=number] { flex:none; min-width:0; width:52px; }

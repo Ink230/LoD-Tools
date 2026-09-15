@@ -1,3 +1,4 @@
+import { lmbPartSlots } from './asset-lmb-composition';
 import { SubmapComposition, decodeSubmapComposition, renderSubmapComposition, projectSubmapPoint } from './asset-submap';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, NgZone, OnChanges, OnDestroy, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -174,7 +175,48 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.hiddenLayers = new Set();
     this.updateSceneView();
   }
+  lmbChoices: Record<number, number> = {};
+  lmbComposed = false;
+  async composeLmb() {
+    const setup = this.record.lmbSetup;
+    if (!setup || !this.readFile) return;
+    const version = this.loadVersion, request = ++this.companionVersion;
+    try {
+      const selected = setup.slots.map(slot => slot.options[this.lmbChoices[slot.slot] || 0]);
+      const decoded = new Map<number, ModelAsset>();
+      const references: AssetRecord[] = [];
+      let total = 0;
+      for (let i = 0; i < selected.length; i++) {
+        const option = selected[i];
+        const bytes = await this.readFile(option.path);
+        if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed) return;
+        total += bytes.length;
+        if (total > 32 * 1024 * 1024) throw new Error('LMB model set exceeds 32 MiB preview limit');
+        const model = decodeModel(bytes.subarray(option.offset));
+        decoded.set(setup.slots[i].slot, model);
+        references.push(this.reference(option.path, 'TMD', bytes.length, option.offset));
+      }
+      const slots = lmbPartSlots(this.bytes, this.lmbType);
+      this.animation = decodeLmb(this.bytes, this.lmbType);
+      this.animationPath = this.key(this.record);
+      this.loadedCompanions.animation = [this.record];
+      this.frame = 0;
+      this.playing = false;
+      this.model = { format: 'LMB effect composition', parts: slots.map(slot => decoded.get(slot)?.parts[0] || { vertices: [], normals: [], primitives: [] }), warnings: [] };
+      this.loadedCompanions.model = references;
+      this.lmbComposed = true;
+      this.error = '';
+      this.buildTexturePages();
+      this.cdr.detectChanges();
+      this.capturePreview();
+    } catch (error) {
+      if (version === this.loadVersion && request === this.companionVersion) this.error = `LMB composition: ${String(error)}`;
+    }
+    this.cdr.markForCheck();
+  }
   async load() {
+    this.lmbChoices = {};
+    this.lmbComposed = false;
     this.selectedPolygon = null;
     this.polygonSelected.emit(null);
     this.submap = null;
@@ -239,6 +281,8 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
               this.loadedCompanions.model = [this.reference(this.record.model, 'TMD', bytes.length, this.record.modelOffset || 0)];
             } catch { if (version === this.loadVersion) this.warnings.push('The companion model could not be loaded. Showing animated part axes; you can choose a model file.'); }
           }
+          if (this.format === 'LMB' && !this.record.model && this.record.lmbSetup) await this.composeLmb();
+          if (version !== this.loadVersion || this.destroyed) return;
           break;
         }
         case 'ANM': this.sprite = decodeAnm(this.bytes); this.loadedCompanions.animation = [this.record]; this.warnings.push(...this.sprite.warnings); break;
@@ -271,6 +315,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
         default: this.error = 'This resource is not recognized. Choose a format to inspect it.';
       }
       this.buildTexturePages();
+      this.playbackFps = this.nativeFps;
       this.durations = this.sprite?.frames.map(frame => frame.duration / this.sprite!.fps) || this.clut?.steps.map(step => Math.max(1, step.durationTicks) / 30) || [];
     } catch (error) { if (version === this.loadVersion) this.error = error instanceof Error ? error.message : 'Unable to decode this resource'; }
     finally {
@@ -332,6 +377,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
       if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed) return;
       this.animation = record.format === 'LMB' ? decodeLmb(bytes, (record.lmbType || 0) as LmbType) : decodeAnimation(bytes);
       this.loadedCompanions.animation = [record];
+      this.playbackFps = this.nativeFps;
     } catch (error) { if (version === this.loadVersion && request === this.companionVersion) this.error = String(error); }
     this.cdr.markForCheck();
   }
@@ -372,11 +418,16 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
       }
       if (kind === 'texture') this.textures = bytes;
       if (kind === 'texture') records.forEach((record, index) => this.captureTexture(bytes[index], this.key(record)));
-      if (kind === 'model') this.model = decodeModel(bytes[0]);
+      if (kind === 'model') {
+        this.lmbComposed = false;
+        this.model = decodeModel(bytes[0]);
+      }
       if (kind === 'animation') {
+        this.lmbComposed = false;
         this.animation = records[0].format === 'LMB' ? decodeLmb(bytes[0], (records[0].lmbType || 0) as LmbType) : decodeAnimation(bytes[0]);
         this.animationPath = this.key(records[0]); this.frame = 0; this.playing = false; this.durations = [];
         this.selectedAnimation = records[0];
+        this.playbackFps = this.nativeFps;
       }
       this.picker = null; this.error = '';
       this.loadedCompanions[kind] = [...records];
@@ -407,6 +458,13 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
       this.previewLoaded.emit({ key, url: canvas.toDataURL() });
     });
   }
+  playbackFps = 30;
+  get nativeFps() { return this.animation?.fps || this.sprite?.fps || 30; }
+  get frameDurationMs() { return (this.durations[this.frame] || 1 / this.nativeFps) * 1000 * this.nativeFps / this.playbackFps; }
+  setPlaybackFps(value: number) {
+    this.playbackFps = Math.max(1, Math.min(120, Number(value) || this.nativeFps));
+    this.lastTick = performance.now();
+  }
   togglePlayback() {
     this.playing = !this.playing;
     cancelAnimationFrame(this.raf);
@@ -414,7 +472,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.lastTick = performance.now();
     const tick = (now: number) => {
       if (!this.playing || this.destroyed) return;
-      const duration = (this.durations[this.frame] || 1 / (this.animation?.fps || 30)) * 1000;
+      const duration = this.frameDurationMs;
       if (now - this.lastTick >= duration) {
         this.lastTick = now;
         this.zone.run(() => { this.frame = (this.frame + 1) % this.frameCount; this.cdr.markForCheck(); this.draw(); });
