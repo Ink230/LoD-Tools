@@ -7,6 +7,18 @@ export interface FieldPresentation {
 }
 
 const FIELDS: Record<string, FieldPresentation> = {
+  standalone: { label: 'Standalone world', description: 'Use only this preset graph instead of overlaying the retail world' },
+  startingPortal: { label: 'Starting portal', description: 'Default entry for a standalone world' },
+  recoveryPortal: { label: 'Recovery portal', description: 'Safe accessible arrival when a saved destination is unavailable' },
+  motion: { label: 'Movement mode', description: 'Distance keeps walking speed independent of point spacing' },
+  unitsPerStep: { label: 'Distance per step', numeric: true, preservePrecision: true },
+  composition: { label: 'Availability composition', description: 'Replace the story baseline, add availability, or restrict it' },
+  combatStageId: { label: 'Combat stage provider', description: 'Registered SC battle-stage ID; native index supplies fallback' },
+  music: { label: 'Music policy' },
+  musicChapter: { label: 'Music chapter', numeric: true, integer: true },
+  omitBackground: { label: 'Omit background' },
+  omitLocationSounds: { label: 'Omit location sounds' },
+  background: { label: 'Background asset' },
   id: { label: 'Registry ID', description: 'Stable namespace:entry identifier used by presets and mods' },
   legacyIndex: { label: 'Native slot', description: 'Retail array slot retained for save and native-data compatibility', numeric: true, integer: true },
   name: { label: 'Name', description: 'Name displayed for this world-map entry' },
@@ -60,6 +72,13 @@ const COMPATIBILITY_CHILDREN: Record<string, string[]> = {
 };
 
 export function fieldPresentation(element: Element, attribute: string): FieldPresentation {
+  if (element.parentElement?.tagName === 'scene' && ['x', 'y', 'z'].includes(attribute)) return { label: attribute.toUpperCase(), numeric: true, preservePrecision: true };
+  if (element.closest('submapDestination > data')) {
+    if (attribute === 'value') return { label: 'Value', numeric: element.getAttribute('type') === 'float', preservePrecision: true };
+    if (attribute === 'type') return { label: 'Value type' };
+    if (attribute === 'key') return { label: 'Map key' };
+  }
+  if (['xAxis', 'yAxis', 'zAxis'].includes(element.tagName) && ['x', 'y', 'z'].includes(attribute)) return { label: attribute.toUpperCase(), numeric: true, preservePrecision: true, description: 'Affine scene basis component' };
   if (element.tagName === 'coolonDestination') {
     const fields: Record<string, FieldPresentation> = {
       defaultDestination: { label: 'Default Destination', description: 'Destination initially selected when opening Coolon travel from this origin. It does not automatically travel there; the player can select another destination.' },

@@ -244,11 +244,15 @@ export class WorldMapFieldsComponent {
   get compatibilityChildren() { return this.children.filter((child) => isCompatibilityChild(this.element, child)); }
   get hasCompatibility() { return Boolean(this.compatibilityAttributes.length || this.compatibilityChildren.length); }
   get optionalAttributes() {
+    if (this.element.closest('submapDestination > data')) return this.element.parentElement?.getAttribute('type') === 'map' ? ['key', 'value'] : ['value'];
+    if (this.element.tagName === 'item' && this.element.parentElement?.tagName === 'transports') return ['texture'];
     if (this.element.tagName === 'item' && this.element.parentElement?.tagName !== 'warps') return [];
     return OPTIONAL_ATTRIBUTES[this.element.tagName] || [];
   }
   get missingAttributes() { return this.optionalAttributes.filter((attribute) => !this.element.hasAttribute(attribute)); }
   get isList() {
+    if (this.element.closest('submapDestination > data')) return ['map', 'list'].includes(this.element.getAttribute('type'));
+    if (['uiTextures', 'transportTextures', 'transports'].includes(this.element.tagName)) return true;
     return (
       ['points', 'sounds', 'soundIds', 'serviceIds', 'encounters', 'enabledPortals', 'routes', 'markers', 'warps', 'mapPositions', 'regions', 'services', 'waterClutYs', 'playerAvatarVramSlots', 'textureAdjustments', 'textures', 'animations', 'capabilities'].includes(this.element.tagName) ||
       (this.element.tagName === 'portals' && this.element.parentElement?.tagName === 'rules')
@@ -257,7 +261,9 @@ export class WorldMapFieldsComponent {
   get optionalChildren() {
     const options: Record<string, string[]> = {
       place: ['serviceIds', 'soundIds'],
-      region: ['assets'],
+      region: ['assets', 'scene', 'resources'],
+      resources: ['uiTextures', 'transportTextures', 'transports', 'leader', 'layout'],
+      submapDestination: ['data'],
       avatar: ['assets'],
       traversalProfile: ['visualOffset'],
       camera: ['overviewPosition', 'minimum', 'maximum', 'lighting'],
@@ -276,6 +282,7 @@ export class WorldMapFieldsComponent {
   presentation(attribute: string) { return fieldPresentation(this.element, attribute); }
   reference(attribute: string) { return referenceSection(this.element, attribute); }
   choices(attribute: string): string[] {
+    if (attribute === 'background' || (attribute === 'value' && ['uiTextures', 'transportTextures'].includes(this.element.parentElement?.tagName))) return this.registry['assetPaths'] || [];
     const section = this.reference(attribute);
     if (section) return this.registry[section] || [];
     if (attribute === 'texture' || attribute === 'model' || attribute === 'asset' || (attribute === 'value' && ['textures', 'animations'].includes(this.element.parentElement?.tagName)))
@@ -283,6 +290,14 @@ export class WorldMapFieldsComponent {
     return [];
   }
   closedChoices(attribute: string): string[] {
+    if (attribute === 'motion') return ['LEGACY_INTERVAL', 'DISTANCE'];
+    if (attribute === 'composition' && this.element.tagName === 'storyPreset') return ['REPLACE', 'ENABLE', 'DISABLE'];
+    if (attribute === 'music') return ['RETAIL_CHAPTER', 'FIXED_CHAPTER', 'SILENT', 'KEEP'];
+    if (['standalone', 'omitBackground', 'omitLocationSounds'].includes(attribute)) return ['false', 'true'];
+    if (this.element.closest('submapDestination > data')) {
+      if (attribute === 'type') return ['map', 'list', 'string', 'int', 'long', 'float', 'bool', 'registry', 'enum', 'raw'];
+      if (attribute === 'value' && this.element.getAttribute('type') === 'bool') return ['true', 'false'];
+    }
     if (attribute === 'id' && this.element.tagName === 'capability') return ['COOLON', 'QUEEN_FURY_BOARDING'];
     if (attribute === 'continent' || attribute === 'legacyTemplate')
       return ['SOUTH_SERDIO_0', 'NORTH_SERDIO_1', 'TIBEROA_2', 'ILLISA_BAY_3', 'MILLE_SESEAU_4', 'GLORIANO_5', 'DEATH_FRONTIER_6', 'ENDINESS_7', ...(attribute === 'continent' ? ['NONE_8'] : [])];
@@ -327,9 +342,13 @@ export class WorldMapFieldsComponent {
       }
     });
   }
-  addAttribute(attribute: string) { this.mutate.emit(() => this.element.setAttribute(attribute, '')); }
+  addAttribute(attribute: string) {
+    const defaults: Record<string, string> = { standalone: 'false', motion: 'LEGACY_INTERVAL', unitsPerStep: '1', composition: 'REPLACE', music: 'RETAIL_CHAPTER', musicChapter: '0', omitBackground: 'false', omitLocationSounds: 'false' };
+    this.mutate.emit(() => this.element.setAttribute(attribute, defaults[attribute] ?? ''));
+  }
   removeAttribute(attribute: string) { this.mutate.emit(() => this.element.removeAttribute(attribute)); }
   canRemove(child: Element) {
+    if (['scene', 'resources', 'data', 'entry', 'uiTextures', 'transportTextures', 'transports', 'leader', 'layout'].includes(child.tagName)) return true;
     if (['serviceIds', 'soundIds', 'sounds'].includes(child.tagName)) return false;
     if (['lights', 'percentages'].includes(this.element.tagName) && child.tagName === 'item') return false;
     if (this.element.tagName === 'points' && (child === this.element.firstElementChild || child === this.element.lastElementChild)) return false;

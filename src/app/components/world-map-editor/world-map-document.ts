@@ -29,7 +29,7 @@ export const SECTIONS: Record<string, string> = {
 const POINT = 'x="0" y="0" z="0"';
 export const TEMPLATES: Record<string, string> = {
   node: `<node><position ${POINT}/></node>`,
-  geometry: `<geometry legacyIndex="-1"><points><item ${POINT}/><item x="100" y="0" z="0"/></points></geometry>`,
+  geometry: `<geometry legacyIndex="-1" motion="DISTANCE" unitsPerStep="1"><points><item ${POINT}/><item x="100" y="0" z="0"/></points></geometry>`,
   place: '<place legacyIndex="-1" name="New place" thumbnail="0" services="0"><serviceIds/><soundIds/><sounds><item value="-1"/><item value="-1"/><item value="-1"/><item value="-1"/></sounds></place>',
   route: '<route legacyIndex="-1" start="" end="" geometry="" direction="1" encounterRate="0" battleStage="0" modelIndex="0" legacyEncounterPlaceholder="0"/>',
   portal: '<portal legacyIndex="-1" junctionIndex="0" continent="SOUTH_SERDIO_0" fullBrightness="false" effectFlags="0" atmosphere="NONE" smoke="NONE"><from cut="0" scene="0"/><to cut="0" scene="0"/></portal>',
@@ -54,15 +54,20 @@ export const TEMPLATES: Record<string, string> = {
 };
 
 export const OPTIONAL_ATTRIBUTES: Record<string, string[]> = {
+  worldMapPreset: ['standalone', 'startingPortal', 'recoveryPortal'],
+  geometry: ['motion', 'unitsPerStep'],
+  region: ['legacyTemplate', 'provider', 'presentationProvider'],
+  resources: ['background', 'omitBackground', 'music', 'musicChapter', 'omitLocationSounds'],
+  leader: ['texture'],
   place: ['name', 'thumbnailId'],
   route: ['encounterPool', 'avatar', 'battleStageId'],
   portal: ['route', 'place', 'region', 'fromId', 'toId', 'atmosphere', 'smoke'],
   thumbnailDefinition: ['asset', 'provider', 'label'],
   serviceDefinition: ['legacyBit'],
   soundDefinition: ['label'],
-  battleStageDefinition: ['label'],
-  submapDestination: ['label'],
-  storyPreset: ['place'],
+  battleStageDefinition: ['label', 'combatStageId'],
+  submapDestination: ['label', 'provider'],
+  storyPreset: ['place', 'composition'],
   avatar: ['provider'],
   traversalProfile: ['provider', 'avatar'],
   item: ['marker'],
@@ -126,6 +131,8 @@ export function renameRegistryEntry(element: Element, value: string): void {
   element.setAttribute('id', value);
 }
 export function referenceSection(element: Element, attribute: string): string | undefined {
+  if (element.closest('submapDestination > data')) return undefined;
+  if (element.tagName === 'worldMapPreset' && ['startingPortal', 'recoveryPortal'].includes(attribute)) return 'portals';
   const fields: Record<string, string> = {
     start: 'nodes',
     end: 'nodes',
@@ -195,6 +202,54 @@ export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegist
     }
   }
   for (const element of [doc.documentElement, ...Array.from(doc.querySelectorAll('*'))]) {
+    for (const attribute of ['standalone', 'omitBackground', 'omitLocationSounds']) {
+      if (element.hasAttribute(attribute) && !['true', 'false'].includes(element.getAttribute(attribute))) add(element, `${attribute} must be true or false`);
+    }
+    if (element.tagName === 'submapDestination' && (element.hasAttribute('provider') || element.querySelector(':scope > data')) && (Number(element.getAttribute('cut')) < 2 || Number(element.getAttribute('cut')) >= 2048)) add(element, 'Custom submap destinations require a retail fallback cut from 2 through 2047');
+    if (element.tagName === 'resources') {
+      if (element.hasAttribute('music') && !['RETAIL_CHAPTER', 'FIXED_CHAPTER', 'SILENT', 'KEEP'].includes(element.getAttribute('music'))) add(element, 'Choose a supported music policy');
+      if (Number(element.getAttribute('musicChapter')) < 0) add(element, 'Music chapter must be nonnegative');
+      if (element.hasAttribute('background') && element.getAttribute('omitBackground') === 'true') add(element, 'Choose a background asset or omit it, not both');
+      for (const name of ['transportTextures', 'transports']) {
+        const list = element.querySelector(`:scope > ${name}`);
+        if (list && list.children.length !== 3) add(list, 'Transport resources require ship, Coolon and teleport entries');
+      }
+      const leader = element.querySelector(':scope > leader');
+      if (leader && (!leader.getAttribute('texture') || leader.querySelectorAll(':scope > animations > item').length < 3)) add(leader, 'Leader resources require texture and idle, walk and run animations');
+    }
+    if (element.tagName === 'worldMapPreset' && element.getAttribute('standalone') !== 'true' && (element.hasAttribute('startingPortal') || element.hasAttribute('recoveryPortal'))) add(element, 'Starting and recovery portals require standalone mode');
+    if (element.tagName === 'geometry') {
+      if (element.hasAttribute('motion') && !['LEGACY_INTERVAL', 'DISTANCE'].includes(element.getAttribute('motion'))) add(element, 'Movement mode must be LEGACY_INTERVAL or DISTANCE');
+      if (element.hasAttribute('unitsPerStep') && (!finiteAttribute(element, 'unitsPerStep') || Number(element.getAttribute('unitsPerStep')) <= 0)) add(element, 'Distance per step must be positive and finite');
+    }
+    if (element.tagName === 'storyPreset' && element.hasAttribute('composition') && !['REPLACE', 'ENABLE', 'DISABLE'].includes(element.getAttribute('composition'))) add(element, 'Story composition must be REPLACE, ENABLE or DISABLE');
+    if (element.closest('submapDestination > data')) {
+      const type = element.getAttribute('type');
+      const value = element.getAttribute('value');
+      if (!['map', 'list', 'string', 'int', 'long', 'float', 'bool', 'registry', 'enum', 'raw'].includes(type)) add(element, 'Destination data requires a supported value type');
+      if (['map', 'list'].includes(type)) {
+        if (value !== null) add(element, 'Container data cannot have a value attribute');
+        const keys = new Set<string>();
+        for (const child of Array.from(element.children)) {
+          if (child.tagName !== 'entry') add(child, 'Destination data containers require entry children');
+          const key = child.getAttribute('key');
+          if (type === 'map' && (key === null || keys.has(key))) add(child, 'Map entries require unique keys');
+          if (key !== null) keys.add(key);
+          if (type === 'list' && key !== null) add(child, 'List entries cannot have map keys');
+        }
+      } else {
+        if (type === 'float' && (!value?.trim() || !Number.isFinite(Math.fround(Number(value))))) add(element, 'Float data must fit a finite 32-bit float');
+        if (value === null || element.children.length) add(element, 'Scalar data requires a value and no child entries');
+        if (type === 'bool' && !['true', 'false'].includes(value)) add(element, 'Boolean data must be true or false');
+        if (['int', 'long'].includes(type)) {
+          if (!/^[-+]?\d+$/.test(value || '')) add(element, 'Integer data requires a whole number');
+          else {
+            const number = BigInt(value);
+            if (number < (type === 'int' ? -2147483648n : -9223372036854775808n) || number > (type === 'int' ? 2147483647n : 9223372036854775807n)) add(element, 'Integer data exceeds its value type range');
+          }
+        }
+      }
+    }
     for (const attribute of Array.from(element.attributes)) {
       const target = referenceSection(element, attribute.name);
       if (target && attribute.value && !/^[a-z0-9_.-]+:[a-z0-9_./-]+$/.test(attribute.value)) add(element, `${attribute.name} must use namespace:entry syntax`);
@@ -273,11 +328,14 @@ export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegist
       (!element.hasAttribute('cut') || !element.getAttribute('cut').trim() || !Number.isInteger(Number(element.getAttribute('cut'))) || !element.hasAttribute('scene') || !element.getAttribute('scene').trim() || !Number.isInteger(Number(element.getAttribute('scene'))))
     )
       add(element, 'Submap destinations require integer cut and scene numbers');
-    if (element.tagName === 'assets' || element.tagName === 'thumbnail' || element.tagName === 'thumbnailDefinition') {
+    if (element.tagName === 'assets' || element.tagName === 'thumbnail' || element.tagName === 'thumbnailDefinition' || element.tagName === 'resources') {
       const paths = [
         element.getAttribute('model'),
         element.getAttribute('texture'),
         element.getAttribute('asset'),
+        element.getAttribute('background'),
+        ...Array.from(element.querySelectorAll('leader, transports > item')).flatMap((e) => [e.getAttribute('model'), e.getAttribute('texture')]),
+        ...Array.from(element.querySelectorAll('uiTextures > item, transportTextures > item')).map((e) => e.getAttribute('value')),
         ...Array.from(element.querySelectorAll('textures > item, animations > item')).map((e) => e.getAttribute('value')),
       ].filter(Boolean);
       for (const path of paths) {
@@ -291,6 +349,17 @@ export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegist
 
 export function childTemplate(parent: Element, name?: string): string {
   const tag = name || 'item';
+  if (name === 'scene') return `<scene><translation ${POINT}/><xAxis x="1" y="0" z="0"/><yAxis x="0" y="1" z="0"/><zAxis x="0" y="0" z="1"/></scene>`;
+  if (name === 'resources') return '<resources/>';
+  if (name === 'data') return '<data type="map"/>';
+  if (parent.tagName === 'data' || parent.tagName === 'entry') return parent.getAttribute('type') === 'map' ? '<entry key="newKey" type="string" value=""/>' : '<entry type="string" value=""/>';
+  if (name === 'layout') return TEMPLATES['presentationProfile'].replaceAll('presentationProfile', 'layout');
+  if (name === 'leader') return '<leader model="" texture=""><animations><item value=""/><item value=""/><item value=""/></animations></leader>';
+  if (name === 'transports') return '<transports>' + '<item model=""><animations><item value=""/></animations></item>'.repeat(3) + '</transports>';
+  if (name === 'transportTextures') return '<transportTextures><item value=""/><item value=""/><item value=""/></transportTextures>';
+  if (name === 'uiTextures') return '<uiTextures/>';
+  if (['uiTextures', 'transportTextures'].includes(parent.tagName)) return '<item value=""/>';
+  if (parent.tagName === 'transports') return '<item model=""><animations><item value=""/></animations></item>';
   if (parent.tagName === 'camera' && tag === 'lighting') return '<lighting overviewBrightness="0.125" transitionBrightness="0.25" transitionStep="0.140625"><ambient x="0.375" y="0.375" z="0.375"/><lights><item><direction x="0.24414062" y="0.024414062" z="0"/><colour x="0.125" y="0.125" z="0.125"/></item><item><direction x="0.24414062" y="0.024414062" z="0"/><colour x="0.125" y="0.125" z="0.125"/></item><item><direction x="0.24414062" y="0.024414062" z="0"/><colour x="0.125" y="0.125" z="0.125"/></item></lights></lighting>';
   if (parent.tagName === 'encounterPool' && tag === 'percentages') return '<percentages><item value="35"/><item value="35"/><item value="20"/><item value="10"/></percentages>';
   if (name && ['position', 'translation', 'viewpoint', 'refpoint', 'overviewPosition', 'minimum', 'maximum', 'visualOffset', 'scale'].includes(name)) return `<${name} ${POINT}/>`;
