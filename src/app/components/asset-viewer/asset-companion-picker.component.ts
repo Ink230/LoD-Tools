@@ -6,6 +6,11 @@ export type CompanionKind = 'texture' | 'model' | 'animation';
 export function companionFormats(kind: CompanionKind): string[] {
   return kind === 'texture' ? ['TIM'] : kind === 'model' ? ['TMD'] : ['Animation', 'CMB', 'LMB'];
 }
+export function companionResourceIncluded(asset: AssetRecord, includeGameResources: boolean, includeSubmapResources: boolean): boolean {
+  if (/^SECT\/DRGN2[1-4]\.BIN\//.test(asset.path)) return includeSubmapResources;
+  if (asset.path.startsWith('SECT/')) return includeGameResources;
+  return true;
+}
 
 @Component({
   selector: 'app-asset-companion-picker',
@@ -43,6 +48,8 @@ export class AssetCompanionPickerComponent implements AfterViewInit, OnDestroy {
   @Input() assets: AssetRecord[] = [];
   @Input() thumbnails = new Map<string, string>();
   @Input() error = '';
+  @Input() includeGameResources = false;
+  @Input() includeSubmapResources = false;
   @Output() picked = new EventEmitter<AssetRecord[]>();
   @Output() closed = new EventEmitter<void>();
   search = '';
@@ -53,11 +60,12 @@ export class AssetCompanionPickerComponent implements AfterViewInit, OnDestroy {
   private matches: AssetRecord[] = [];
   key(asset: AssetRecord) { return `${asset.path}@${asset.offset || 0}`; }
   get filtered() {
-    const key = `${this.kind}:${this.search}`;
+    const key = `${this.kind}:${this.search}:${this.includeGameResources}:${this.includeSubmapResources}`;
     if (key !== this.filterKey || this.previousAssets !== this.assets) {
       const formats = companionFormats(this.kind);
       const query = this.search.toLowerCase();
-      this.matches = this.assets.filter(asset => formats.includes(asset.format) && `${asset.path} ${asset.name} ${asset.gameAsset}`.toLowerCase().includes(query));
+      this.matches = this.assets.filter(asset => formats.includes(asset.format) && companionResourceIncluded(asset, this.includeGameResources, this.includeSubmapResources) && `${asset.path} ${asset.name} ${asset.gameAsset}`.toLowerCase().includes(query));
+      this.page = 0;
       this.filterKey = key;
       this.previousAssets = this.assets;
     }

@@ -3,6 +3,10 @@
   @if (format === 'TIM' && paletteCount > 1) { <label>Palette <input type="number" min="0" [max]="paletteCount - 1" [(ngModel)]="palette" (change)="updatePalette()" /></label><span>/ {{ paletteCount }}</span> }
   @if (format === 'LMB') { <label>Subtype <select [(ngModel)]="lmbType" (change)="load()"><option [ngValue]="0">0</option><option [ngValue]="1">1</option><option [ngValue]="2">2</option></select></label> }
   @if (model || animation || sprite || clut) {
+    <span class="companion-resource-filters">
+      <label><input type="checkbox" [(ngModel)]="includeGameResources" /> Include game resources</label>
+      <label><input type="checkbox" [(ngModel)]="includeSubmapResources" /> Include submap resources</label>
+    </span>
     @for (kind of companionKinds; track kind) {
       <span class="companion-controls">
         <button class="random-companion" (click)="stepCompanion(kind, -1)" [disabled]="loading || !assets.length" [title]="'Previous ' + kind" [attr.aria-label]="'Previous ' + kind">‹</button>
@@ -20,14 +24,14 @@
   @if (model || animation || overlay?.polygons?.length) { <button (click)="stage?.fit()">Fit view</button><label><input type="checkbox" [(ngModel)]="wireframe" /> Wireframe</label> }
   @if (overlay?.records?.length) { <button (click)="showRecords = !showRecords" [attr.aria-pressed]="showRecords">Records</button> }
 </div>
-@if (picker) { <app-asset-companion-picker [kind]="picker" [assets]="assets" [thumbnails]="thumbnails" [error]="error" (picked)="attach($event)" (closed)="closePicker()" /> }
+@if (picker) { <app-asset-companion-picker [kind]="picker" [assets]="assets" [thumbnails]="thumbnails" [error]="error" [includeGameResources]="includeGameResources" [includeSubmapResources]="includeSubmapResources" (picked)="attach($event)" (closed)="closePicker()" /> }
 @if (loading) { <p role="status">Loading preview…</p> }
 @if (error) { <p class="error" role="alert">{{ error }}</p> }
 @if (textureMappingWarning) { <p role="status">{{ textureMappingWarning }}</p> }
 @if (format === 'SPU') {
   <div class="preview-toolbar"><label>Sample <select [(ngModel)]="sampleIndex" (change)="updateSample()">@for (sample of samples; track sample.offset; let i = $index) { <option [ngValue]="i">{{ i + 1 }} · offset {{ sample.offset }}</option> }</select></label><label>Rate <select [(ngModel)]="sampleRate" (change)="updateSample()">@for (rate of [11025, 22050, 32000, 44100, 48000]; track rate) { <option [ngValue]="rate">{{ rate }} Hz</option> }</select></label><span>{{ sampleDetails }}</span></div>
 }
-@if (model && animations.length) { <label class="animation-picker">Animation <select [ngModel]="animationPath" (ngModelChange)="chooseAnimation($event)"><option value="">Raw part coordinates</option>@for (item of animations; track key(item)) { <option [value]="key(item)">{{ item.name }} · {{ item.format }}</option> }</select></label> }
+@if (model && animationChoices.length) { <label class="animation-picker">Animation <select [ngModel]="animationPath" (ngModelChange)="chooseAnimation($event)"><option value="">Raw part coordinates</option>@for (item of animationChoices; track key(item)) { <option [value]="key(item)">{{ item.name }} · {{ item.format }}</option> }</select></label> }
 @if (model && !animation && model.parts.length > 1) { <p role="status">No pose loaded. Mesh parts may overlap at the origin. Choose a matching animation to assemble the model.</p> }
 @if (model && !textures.length) { <p role="status">No textures loaded. Textured surfaces display without their image detail. Choose the companion textures.</p> }
 @if (animation && !model) { <p role="status">Showing animation transforms as axes. Choose a matching model to see its animated mesh.</p> }

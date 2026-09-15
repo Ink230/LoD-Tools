@@ -15,3 +15,4 @@ input[type=number] { width:65px; } .playback input { flex:1; min-width:100px; }
 .animation-picker { padding:8px 10px; } .records { padding:10px; max-height:260px; overflow:auto; }
 .records pre { white-space:pre-wrap; font-size:11px; }.warnings { padding:10px; font-size:12px; }
 .error { color:#ffaaaa; padding:12px; } audio { width:min(90%,600px); } p { padding:6px 10px; }
+.companion-resource-filters { display:flex; flex-wrap:wrap; gap:12px; flex-basis:100%; }

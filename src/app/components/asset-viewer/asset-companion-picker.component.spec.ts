@@ -7,6 +7,26 @@ import { AssetRecord } from './asset-catalog';
 const record = (path: string, format: AssetRecord['format'], offset = 0): AssetRecord => ({ path, format, offset, name: path, size: 32, category: 'models', gameCategory: 'characters', gameAsset: 'Dart' });
 
 describe('virtual companion chooser', () => {
+  it('excludes game and submap resources by default and enables each source independently', () => {
+    const named = record('characters/albert/textures/combat', 'TIM');
+    const game = record('SECT/DRGN0.BIN/4153/0', 'TIM');
+    const submap = record('SECT/DRGN21.BIN/10/3', 'TIM');
+    const picker = new AssetCompanionPickerComponent();
+    const preview = TestBed.createComponent(AssetPreviewComponent).componentInstance;
+    picker.assets = preview.assets = [named, game, submap];
+    expect(picker.filtered).toEqual([named]);
+    expect(preview.companionCandidates('texture')).toEqual([named]);
+    picker.includeGameResources = preview.includeGameResources = true;
+    expect(picker.filtered).toEqual([named, game]);
+    expect(preview.companionCandidates('texture')).toEqual([named, game]);
+    picker.includeGameResources = preview.includeGameResources = false;
+    picker.includeSubmapResources = preview.includeSubmapResources = true;
+    expect(picker.filtered).toEqual([named, submap]);
+    expect(preview.companionCandidates('texture')).toEqual([named, submap]);
+    picker.includeGameResources = preview.includeGameResources = true;
+    expect(picker.filtered).toEqual([named, game, submap]);
+    expect(preview.companionCandidates('texture')).toEqual([named, game, submap]);
+  });
   it('filters compatible references and preserves ordered multi-texture selection', () => {
     const picker = new AssetCompanionPickerComponent();
     const texture = record('textures/one', 'TIM'), second = record('textures/two', 'TIM');

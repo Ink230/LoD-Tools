@@ -8,7 +8,7 @@ import { decodeAnimation, decodeLmb, decodeAnm, decodeClutAnimationDetails, Deco
 import { copyPaletteRow } from './asset-palette';
 import { decodeEnvironment, decodeCollision } from './asset-scene';
 import { decodeSpuSample, listSpuSamples, encodeWav } from './asset-audio';
-import { AssetCompanionPickerComponent, CompanionKind, companionFormats } from './asset-companion-picker.component';
+import { AssetCompanionPickerComponent, CompanionKind, companionFormats, companionResourceIncluded } from './asset-companion-picker.component';
 import { ModelAsset, ModelAnimation, PixelImage, SceneOverlay, SpriteAnimation } from './asset-preview-types';
 import { AssetStageComponent } from './asset-stage.component';
 
@@ -28,6 +28,9 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   loadedCompanions: Record<CompanionKind, AssetRecord[]> = { texture: [], model: [], animation: [] };
   picker: CompanionKind | null = null;
   readonly companionKinds: CompanionKind[] = ['texture', 'model', 'animation'];
+  includeGameResources = false;
+  includeSubmapResources = false;
+  get animationChoices() { return this.animations.filter(asset => companionResourceIncluded(asset, this.includeGameResources, this.includeSubmapResources)); }
   selectedAnimation: AssetRecord | null = null;
   @Input() readFile?: (path: string) => Promise<Uint8Array>;
   @ViewChild('canvas') canvas?: ElementRef<HTMLCanvasElement>;
@@ -231,7 +234,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   companionName(asset: AssetRecord) { return `${asset.gameAsset} / ${asset.name}`; }
   companionCandidates(kind: CompanionKind) {
     const formats = companionFormats(kind);
-    return this.assets.filter(asset => formats.includes(asset.format) && (kind !== 'texture' || asset.size <= 32 * 1024 * 1024));
+    return this.assets.filter(asset => formats.includes(asset.format) && companionResourceIncluded(asset, this.includeGameResources, this.includeSubmapResources) && (kind !== 'texture' || asset.size <= 32 * 1024 * 1024));
   }
   async stepCompanion(kind: CompanionKind, direction: number) {
     const candidates = this.companionCandidates(kind);
