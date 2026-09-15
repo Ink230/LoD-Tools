@@ -1,5 +1,5 @@
 import { AssetBinary } from './asset-binary';
-import { ModelAnimation, PaletteAnimation, PartTransform, SpriteAnimation, SpritePiece } from './asset-preview-types';
+import { ModelAnimation, PaletteAnimation, PartTransform, SpriteAnimation, SpritePiece, Vec3 } from './asset-preview-types';
 
 /** PSX angles use 4096 units per turn. SC keeps model transforms in radians. */
 const PSX_ANGLE_TO_RADIAN = (Math.PI * 2) / 4096;
@@ -239,6 +239,9 @@ function decodeLmb2(binary: AssetBinary): ModelAnimation {
   const frames: PartTransform[][] = [current.map(toPartTransform)];
   for (let frame = 1; frame < frameCount; frame++) {
     const nibbles = unpackSignedNibbles(binary, dataOffset + (frame - 1) * packedBytesPerTransition, packedBytesPerTransition);
+    // SC unpacks into a persistent 0x300-byte scratch array. Some valid LMBs
+    // (Gravity Grabber's second component) consume its untouched tail.
+    while (nibbles.length < 0x300) nibbles.push(0);
     let cursor = 0;
     for (let part = 0; part < parts; part++) cursor = applyLmb2Delta(current[part], flags[part], nibbles, cursor);
     if (cursor > nibbles.length) throw new Error(`LMB 2 transition ${frame} exceeds its packed transform data`);
@@ -286,6 +289,56 @@ function applyCmbDelta(transform: PartTransform, binary: AssetBinary, offset: nu
   transform.translation[0] += binary.i8(offset + 5) * translationScale;
   transform.translation[1] += binary.i8(offset + 6) * translationScale;
   transform.translation[2] += binary.i8(offset + 7) * translationScale;
+}
+
+/** Stateful SC type-2 sampler. The scene shares scratch across LMB managers,
+ * matching LmbAnimationEffect5c rather than decoding each resource in isolation. */
+export class Lmb2Playback {
+  private binary: AssetBinary;
+  private flags: number[];
+  private initial: LmbTransform[];
+  private current: LmbTransform[];
+  private previous = 0;
+  private pairs: number;
+  private frames: number;
+  private offset: number;
+  constructor(bytes: Uint8Array) {
+    this.binary = new AssetBinary(bytes);
+    const parts = readLmbPartCount(this.binary);
+    this.pairs = this.binary.u16(8);
+    this.frames = count(this.binary.u16(10), 'LMB 2 keyframe');
+    ensureTransformCount(this.frames, parts);
+    this.offset = this.binary.u32(20);
+    this.binary.check(this.offset, this.pairs * (this.frames - 1));
+    this.flags = Array.from({ length: parts }, (_, i) => this.binary.u32(this.binary.u32(12) + i * 4));
+    this.initial = Array.from({ length: parts }, (_, i) => readLmbTransform(this.binary, this.binary.u32(16) + i * 20));
+    this.current = structuredClone(this.initial);
+  }
+  sample(age: number, animateRotation: boolean, scratch: number[]): PartTransform[] {
+    const tick = Math.max(0, age) % (this.frames * 2), keyframe = Math.floor(tick / 2), amount = tick % 2 / 2;
+    if (keyframe < this.previous) { this.current = structuredClone(this.initial); this.previous = 0; }
+    const unpack = (index: number) => {
+      const values = unpackSignedNibbles(this.binary, this.offset + index * this.pairs, this.pairs);
+      if (values.length > 0x300) throw new Error('LMB 2 scratch capacity exceeded');
+      values.forEach((value, i) => scratch[i] = value);
+    };
+    while (this.previous < keyframe) {
+      unpack(this.previous++);
+      let cursor = 0;
+      this.current.forEach((value, i) => cursor = applyLmb2Delta(value, this.flags[i], scratch, cursor));
+    }
+    const next = structuredClone(keyframe === this.frames - 1 ? this.initial : this.current);
+    if (keyframe < this.frames - 1) {
+      unpack(keyframe);
+      let cursor = 0;
+      next.forEach((value, i) => cursor = applyLmb2Delta(value, this.flags[i], scratch, cursor));
+    }
+    return this.current.map((value, i) => ({
+      translation: value.translation.map((n, axis) => n + (next[i].translation[axis] - n) * amount) as Vec3,
+      scale: value.scale.map((n, axis) => n + (next[i].scale[axis] - n) * amount) as Vec3,
+      rotation: [...(animateRotation ? value.rotation : this.initial[i].rotation)],
+    }));
+  }
 }
 
 function readLmbTransform(binary: AssetBinary, offset: number): LmbTransform {

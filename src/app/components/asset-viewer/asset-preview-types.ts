@@ -21,7 +21,7 @@ export interface ModelPart {
   billboard?: boolean; vertices: Vec3[]; normals: Vec3[]; primitives: ModelPrimitive[]; }
 export interface ModelAsset { format: string; parts: ModelPart[]; warnings: string[]; }
 export interface PartTransform { colour?: Vec3; visible?: boolean; screenRotation?: Vec3; translation: Vec3; rotation: Vec3; scale: Vec3; }
-export interface ModelAnimation { format: string; fps: number; frames: PartTransform[][]; warnings: string[]; }
+export interface ModelAnimation { format: string; fps: number; frames: PartTransform[][]; warnings: string[]; cameras?: ({ position: Vec3; target: Vec3 } | undefined)[]; flashes?: (Vec3 | undefined)[]; }
 export interface SpritePiece {
   x: number; y: number; width: number; height: number;
   u: number; v: number; clut: number; tpage: number;

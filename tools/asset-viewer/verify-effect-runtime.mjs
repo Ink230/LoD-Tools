@@ -42,3 +42,22 @@ for (const side of ['player', 'enemy']) {
     if (![...part.translation, ...part.rotation, ...part.scale].every(Number.isFinite)) throw new Error('Non-finite Gravity transform');
   console.log(`PASS: Gravity Grabber ${side}: 54 parts, 15 ticks, script position/scale/blending, double-speed clock and deallocation`);
 }
+// Whole Gravity Grabber: do not accept an isolated shard phase as the spell.
+for (const side of ['player', 'enemy']) {
+  const start = gravity.program.starts[gravity.flags][0];
+  const context = effectSetupContext(gravity, start, side, 'spell');
+  const run = new EffectPreviewRuntime(gravityScript, gravity.program, start, 1, context).run();
+  const replay = new EffectPreviewRuntime(gravityScript, gravity.program, start, 1, context).run();
+  if (JSON.stringify(run) !== JSON.stringify(replay)) throw new Error('Spell replay changed with the same seed');
+  const scene = await buildEffectScene(run, gravity, read);
+  if (scene.warnings.length || run.frames.length !== 220 || run.frames.at(-1).effects.length) throw new Error(JSON.stringify({ notes: scene.warnings, ticks: run.frames.length }));
+  for (const path of ['4414/0/2', '4414/0/5', '4414/0/7', '4414/0/0', '4414/0/1', '4114/2/17', '4114/2/34'])
+    if (!scene.resources.some(resource => resource.path.endsWith(path))) throw new Error(`Spell resource missing: ${path}`);
+  if (!run.frames.some(frame => frame.effects.some(effect => effect.kind === 'Animated'))) throw new Error('Missing animated model body');
+  if (!run.frames.some(frame => frame.effects.some(effect => effect.trail))) throw new Error('Missing attached trails');
+  if (!run.frames.some(frame => frame.effects.some(effect => effect.particles?.instances.some(p => p.visible)))) throw new Error('Missing live particles');
+  if (!run.frames[40].camera || !run.frames.some(frame => frame.flash?.some(value => value > 0))) throw new Error('Missing camera or flash sequence');
+  for (const frame of scene.animation.frames) for (const part of frame)
+    if (![...part.translation, ...part.rotation, ...part.scale].every(Number.isFinite)) throw new Error('Non-finite spell transform');
+  console.log(`PASS: Gravity Grabber ${side} spell: 220 ticks, animated body, both LMBs, pillars, trails, particles, camera, flash and cleanup`);
+}

@@ -180,11 +180,20 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   effectMode: 'runtime' | 'tracks' = 'runtime';
   effectSeed = 1;
   effectBattleSide: EffectBattleSide = 'player';
+  effectScope: 'spell' | 'phase' = 'spell';
+  followEffectCamera = true;
+  private commonEffectTextures: Uint8Array[] = [];
   get hasEffectContext(): boolean {
     const metadata = this.record.effectRuntime;
     if (!metadata) return false;
     const start = metadata.program.starts[String(metadata.flags)][this.effectStart];
-    return !!effectSetupContext(metadata, start, this.effectBattleSide);
+    return !!effectSetupContext(metadata, start, this.effectBattleSide, 'spell');
+  }
+  get hasEffectPhaseContext(): boolean {
+    const metadata = this.record.effectRuntime;
+    if (!metadata) return false;
+    const start = metadata.program.starts[String(metadata.flags)][this.effectStart];
+    return !!effectSetupContext(metadata, start, this.effectBattleSide, 'phase');
   }
   effectStart = 0;
   effectPreparing = false;
@@ -210,10 +219,22 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
       const hash = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new Uint8Array(script)))].map(value => value.toString(16).padStart(2, '0')).join('');
       if (hash !== metadata.program.sha256) throw new Error('This script differs from the script-tool metadata. Rebuild the asset catalog for this SC extraction.');
       const start = metadata.program.starts[String(metadata.flags)][this.effectStart] ?? metadata.program.starts[String(metadata.flags)][0];
+      if (this.effectScope === 'phase' && !effectSetupContext(metadata, start, this.effectBattleSide, 'phase') && effectSetupContext(metadata, start, this.effectBattleSide, 'spell')) this.effectScope = 'spell';
       if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed) return;
-      const context = effectSetupContext(metadata, start, this.effectBattleSide);
+      const context = effectSetupContext(metadata, start, this.effectBattleSide, this.effectScope);
       const result = new EffectPreviewRuntime(script, metadata.program, start, this.effectSeed, context).run();
       const scene = await buildEffectScene(result, metadata, read);
+      if (context?.scene && !this.commonEffectTextures.length) {
+        const textures: Uint8Array[] = [];
+        let totalBytes = 0;
+        for (let i = 0; i < 40; i++) {
+          const texture = await read(`SECT/DRGN0.BIN/4114/3/${i}`);
+          totalBytes += texture.length;
+          if (totalBytes > 32 * 1024 * 1024) throw new Error('Common effect textures exceed 32 MiB');
+          textures.push(texture);
+        }
+        this.commonEffectTextures = textures;
+      }
       if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed) return;
       this.model = scene.model.parts.length ? scene.model : null;
       this.animation = scene.model.parts.length ? scene.animation : decodeLmb(this.bytes, this.lmbType);
@@ -271,7 +292,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.textureMappingWarning = '';
     this.playing = false; this.frame = 0; this.loading = true; this.error = ''; this.warnings = [];
     this.image = null; this.model = null; this.animation = null; this.sprite = null; this.clut = null; this.overlay = null;
-    this.texturePages = new Map(); this.textures = []; this.palette = 0; this.samples = []; this.animationPath = ''; this.showRecords = false;
+    this.texturePages = new Map(); this.textures = []; this.commonEffectTextures = []; this.palette = 0; this.samples = []; this.animationPath = ''; this.showRecords = false;
     if (this.mediaUrl) URL.revokeObjectURL(this.mediaUrl);
     this.mediaUrl = '';
     try {
@@ -386,7 +407,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
       const modelRecord = this.loadedCompanions.model[0];
       const submap = modelRecord && /^(SECT\/DRGN2[1-4]\.BIN\/\d+)\/(\d+)$/.exec(modelRecord.path);
       const relocateSubmap = !!submap && this.textures.length === 1 && this.loadedCompanions.texture[0]?.path === `${submap[1]}/textures/${Math.floor(Number(submap[2]) / 33)}`;
-      const modelTextures = relocateSubmap ? [submapTextureAtOrigin(this.textures[0])] : this.textures;
+      const modelTextures = relocateSubmap ? [submapTextureAtOrigin(this.textures[0])] : [...(this.effectMode === 'runtime' && this.effectScope === 'spell' ? this.commonEffectTextures : []), ...this.textures];
       for (const primitive of this.model?.parts.flatMap(part => part.primitives) || []) {
         if (primitive.clut === undefined || primitive.tpage === undefined) continue;
         const key = `${primitive.clut}:${primitive.tpage}`;

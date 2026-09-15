@@ -1,7 +1,24 @@
 import { describe, expect, it } from 'vitest';
-import { decodeAnimation, decodeAnm, decodeClutAnimation, decodeClutAnimationDetails, decodeLmb } from './asset-animation';
+import { decodeAnimation, decodeAnm, decodeClutAnimation, decodeClutAnimationDetails, decodeLmb, Lmb2Playback } from './asset-animation';
 
 describe('asset animation decoders', () => {
+  it('preserves the shared SC type-2 scratch tail used by dependent LMB components', () => {
+    const bytes = bytesOf(50, view => {
+      view.setUint32(0, 0x424d4c, true);
+      view.setInt32(4, 1, true);
+      view.setInt16(8, 2, true);
+      view.setInt16(10, 2, true);
+      view.setUint32(12, 24, true);
+      view.setUint32(16, 28, true);
+      view.setUint32(20, 48, true);
+      view.setUint32(24, 0xea80, true);
+      writeLmbTransform(view, 28, 4096, 0, 0, 0, 0);
+    });
+    const scratch = Array(0x300).fill(0);
+    scratch[4] = 5;
+    expect(new Lmb2Playback(bytes).sample(2, true, scratch)[0].rotation[1]).toBeCloseTo(5 * Math.PI / 2048);
+    expect(decodeLmb(bytes, 2).frames[1][0].rotation[1]).toBe(0);
+  });
   it('decodes standard keyframes at half the 30 Hz engine tick rate', () => {
     const bytes = bytesOf(40, (view) => {
       view.setUint16(12, 1, true);

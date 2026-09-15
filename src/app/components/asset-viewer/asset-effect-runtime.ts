@@ -1,21 +1,25 @@
 import { AssetBinary } from './asset-binary';
 import { Vec3 } from './asset-preview-types';
+import { Euler, Vector3 } from 'three';
+import { createSphereParticles, EffectParticles, tickSphereParticles } from './asset-effect-particles';
 
 export interface EffectProgram { offsets: number[]; starts: Record<string, number[]>; entrypoints: number[]; sha256: string; }
 export interface EffectResource { path: string; flags: number; offset: number; kind: 'LMB' | 'TMD' | 'Sprite'; lmbType?: number; }
 export interface EffectRuntimeMetadata { script: string; flags: number; program: EffectProgram; resources: EffectResource[]; }
-export interface EffectPreviewContext { storage?: Record<number, number>; stopBefore?: number; }
+export interface EffectPreviewContext { storage?: Record<number, number>; start?: number; stopBefore?: number; scene?: boolean; actorScripts?: number[]; }
 type Value = number | { missing: string };
 interface Ref { get(): Value; set(value: Value): void; address?: number; }
 interface Thread { id: number; pc: number; storage: Value[]; stack: number[]; alive: boolean; }
 interface Tween { field: 'position' | 'rotation' | 'scale' | 'colour'; start: Vec3; target: Vec3; elapsed: number; ticks: number; }
 export interface PreviewEffect {
-  id: number; kind: 'LMB' | 'TMD' | 'Sprite' | 'Empty'; flags: number; slots: number[];
+  id: number; kind: 'LMB' | 'TMD' | 'Animated' | 'Sprite' | 'Empty'; flags: number; slots: number[];
+  parentPart?: number; trail?: { copies: number; steps: number; flags: number; modifier: number };
+  particles?: EffectParticles;
   position: Vec3; rotation: Vec3; scale: Vec3; colour: Vec3;
   age: number; parent: number; visible: boolean; translucency: number; applyRotationScale: boolean; animateRotation?: boolean; useEffectTranslucency?: boolean;
 }
-interface LiveEffect extends PreviewEffect { tweens: Tween[]; lifespan?: number; clock?: { accumulator: number; speed: number; acceleration: number }; }
-export interface EffectRuntimeFrame { effects: PreviewEffect[]; }
+interface LiveEffect extends PreviewEffect { tweens: Tween[]; lifespan?: number; velocity?: Vec3; acceleration?: Vec3; clock?: { accumulator: number; speed: number; acceleration: number }; }
+export interface EffectRuntimeFrame { effects: PreviewEffect[]; camera?: { position: Vec3; target: Vec3 }; flash?: Vec3; }
 export interface EffectRuntimeResult { frames: EffectRuntimeFrame[]; diagnostics: string[]; instructions: number; }
 
 /** Isolated integer script VM. No filesystem, DOM, or game writes. Unknown battle
@@ -28,6 +32,9 @@ export class EffectPreviewRuntime {
   private readonly threads = new Map<number, Thread>();
   private readonly effects = new Map<number, LiveEffect>();
   private readonly owners = new Map<number, number>();
+  private readonly sceneVars = new Map<number, Value>();
+  private cameraPosition?: Vec3;
+  private cameraTarget?: Vec3;
   private nextId = 1;
   private random: number;
   private executed = 0;
@@ -36,7 +43,7 @@ export class EffectPreviewRuntime {
     this.data = new AssetBinary(new Uint8Array(bytes));
     this.addresses = new Set(program.offsets);
     this.random = seed >>> 0;
-    this.threads.set(0, this.thread(0, start));
+    this.threads.set(0, this.thread(0, context.start ?? start));
     if (context.stopBefore !== undefined && !this.addresses.has(context.stopBefore)) throw new Error('Preview boundary is not an instruction');
     for (const [index, value] of Object.entries(context.storage || {})) this.storage(this.threads.get(0)!, Number(index)).set(value);
   }
@@ -73,7 +80,14 @@ export class EffectPreviewRuntime {
       else if (type === 11) refs.push(mem(relative + this.number(mem(relative + stor(c)).get())));
       else if (type === 0x13) refs.push(mem(relative + c));
       else if (type === 0x14) refs.push(mem(relative + this.number(mem(relative + c).get())));
-      else if (type === 4 || type === 0xd) {
+      else if (type === 3) {
+        const owner = this.threads.get(stor(a));
+        const other = owner && this.threads.get(this.number(this.storage(owner, b).get()));
+        refs.push(other ? this.storage(other, c) : this.missing('external script storage'));
+      } else if (type === 5 && this.context.scene && [11, 12, 13, 25, 96, 109].includes(raw & 0xffffff)) {
+        const index = raw & 0xffffff;
+        refs.push({ get: () => this.sceneVars.get(index) ?? 0, set: value => this.sceneVars.set(index, value) });
+      } else if (type === 4 || type === 0xd) {
         const other = this.threads.get(stor(a));
         refs.push(other ? this.storage(other, b + (type === 4 ? stor(c) : c)) : this.missing('external script storage'));
       } else if ([5, 6, 7, 8, 0xe, 0xf, 0x10, 0x11].includes(type)) refs.push(this.missing(`game variable parameter 0x${raw.toString(16)}`));
@@ -91,9 +105,10 @@ export class EffectPreviewRuntime {
     }
   }
   private allocate(kind: LiveEffect['kind'], flags: number, owner: number): number {
-    if (this.nextId > 64) throw new Error('Effect allocation limit (64) reached');
+    if (this.nextId > 256) throw new Error('Effect allocation limit (256) reached');
     const id = this.nextId++;
     this.owners.set(id, owner);
+    this.threads.set(id, { ...this.thread(id, 0), alive: false });
     this.effects.set(id, { id, kind, flags: flags >>> 0, slots: Array(8).fill(0), position: [0, 0, 0], rotation: [0, 0, 0], scale: [1, 1, 1], colour: [128, 128, 128], age: 0, parent: -1, visible: true, applyRotationScale: true, translucency: 1, tweens: [] });
     if (kind === 'LMB') {
       const effect = this.effects.get(id)!;
@@ -116,14 +131,33 @@ export class EffectPreviewRuntime {
       if (!value) throw new Error(`Effect ${n(0)} is not present in this preview`);
       return value;
     };
-    if ([600, 601, 605, 606].includes(call)) {
-      const kind = call === 600 ? 'Empty' : call === 601 ? 'Sprite' : call === 605 ? 'LMB' : 'TMD';
-      const flags = call === 600 ? 0 : n(1) | (call === 601 ? 0x4000000 : call === 606 ? 0x3000000 : 0);
+    if ([600, 601, 605, 606, 607].includes(call)) {
+      const kind = call === 600 ? 'Empty' : call === 601 ? 'Sprite' : call === 605 ? 'LMB' : call === 607 ? 'Animated' : 'TMD';
+      const flags = call === 600 ? 0 : n(1) | (call === 601 ? 0x4000000 : call === 606 ? 0x3000000 : call === 607 ? 0x1000000 : 0);
       p[0].set(this.allocate(kind, flags, thread.id));
+    } else if (call === 746) {
+      if (n(8) !== 46) throw new Error(`Unsupported particle behaviour ${n(8)}`);
+      if (n(1) !== -1) throw new Error('Particle emitter needs battle parent');
+      const type = n(2) >>> 20;
+      if (type > 1) throw new Error(`Unsupported particle render type ${type}`);
+      const id = this.allocate(type ? 'TMD' : 'Sprite', (n(2) & 0xfffff) | (type ? 0x3000000 : 0x4000000), thread.id);
+      this.effects.get(id)!.particles = createSphereParticles(n(3), n(4), n(5), n(6), n(7), bound => {
+        this.random = (Math.imul(this.random, 1664525) + 1013904223) >>> 0;
+        return this.random % bound;
+      });
+      p[0].set(id);
+    } else if (call === 622) {
+      const kind = (n(1) >>> 24) === 4 ? 'Sprite' : 'TMD';
+      const id = this.allocate(kind, n(1), thread.id);
+      const copies = n(3), steps = n(4);
+      if (copies < 0 || copies > 128 || steps < 0 || steps > 8) throw new Error('Trail exceeds preview limits');
+      this.effects.get(id)!.trail = { copies, steps, flags: n(2), modifier: n(5) };
+      p[0].set(id);
     } else if (call === 618) {
       const id = n(0);
-      if (!this.effects.has(id) || this.threads.size >= 32) throw new Error('Invalid child effect or script limit reached');
+      if (!this.effects.has(id) || [...this.threads.values()].filter(value => value.alive).length >= 32) throw new Error('Invalid child effect or script limit reached');
       if (p[1].address === undefined) throw new Error('Child script requires an inline address');
+      if (this.context.actorScripts?.includes(p[1].address)) return;
       this.threads.set(id, this.thread(id, p[1].address));
     } else if (call === 608) {
       const slot = n(1);
@@ -131,8 +165,44 @@ export class EffectPreviewRuntime {
       effect().slots[slot] = n(2) >>> 0;
     } else if ([545, 547, 549, 551].includes(call)) {
       const field = call === 545 ? 'position' : call === 547 ? 'rotation' : call === 549 ? 'scale' : 'colour';
-      if (n(1) !== -1) throw new Error(`Relative ${field} needs a battle parent`);
       effect()[field] = [2, 3, 4].map(i => call === 549 ? ((n(i) << 16) >> 16) / 4096 : call === 547 ? n(i) * Math.PI / 2048 : call === 551 ? n(i) & 0xffff : n(i)) as Vec3;
+      if (n(1) !== -1) {
+        const parent = this.effects.get(n(1));
+        if (!parent) throw new Error(`Relative ${field} needs a battle parent`);
+        effect()[field] = field === 'position' ? new Vector3(...effect().position).applyEuler(new Euler(...parent.rotation, 'ZYX')).add(new Vector3(...parent.position)).toArray() as Vec3
+          : effect()[field].map((value, i) => field === 'scale' ? value * parent.scale[i] : value + parent[field][i]) as Vec3;
+      }
+    } else if (call === 544 || call === 550) {
+      if (n(1) !== -1) throw new Error('Relative position query needs parent support');
+      effect()[call === 544 ? 'position' : 'colour'].forEach((value, i) => p[i + 2].set(Math.trunc(value)));
+    } else if (call === 564) {
+      if (n(1) !== -1) throw new Error('Look-at needs battle parent');
+      const target = effect();
+      target.rotation = [0, Math.atan2(n(2) - target.position[0], n(4) - target.position[2]), 0];
+    } else if (call === 597 || call === 576) {
+      const target = effect(), field = call === 597 ? 'position' : 'scale', ticks = n(2);
+      let dest = [n(3), n(4), n(5)].map(value => field === 'scale' ? value / 4096 : value) as Vec3;
+      if (n(1) !== -1) {
+        const parent = this.effects.get(n(1));
+        if (!parent) throw new Error('Transform tween needs battle parent');
+        dest = field === 'position' ? new Vector3(...dest).applyEuler(new Euler(...parent.rotation, 'ZYX')).add(new Vector3(...parent.position)).toArray() as Vec3
+          : dest.map((value, i) => value * parent.scale[i]) as Vec3;
+      }
+      target.tweens = target.tweens.filter(tween => tween.field !== field);
+      if (ticks <= 0) target[field] = dest;
+      else target.tweens.push({ field, start: [...target[field]], target: dest, elapsed: 0, ticks });
+    } else if (call === 558) {
+      if (n(1) !== -1) throw new Error('Position velocity needs battle parent');
+      effect().velocity = [n(2), n(3), n(4)].map(value => value / 256) as Vec3;
+      effect().acceleration = [n(5), n(6), n(7)].map(value => value / 256) as Vec3;
+    } else if (this.context.scene && (call === 33 || call === 34)) {
+      const point = [n(1), n(2), n(3)].map(value => value / 256) as Vec3;
+      if (call === 33) this.cameraPosition = point;
+      else this.cameraTarget = point;
+    } else if (this.context.scene && [8, 11, 236, 526, 627].includes(call)) {
+      // Audio, rumble and PS1 depth calls have no host-game side effects.
+      // Geometry and camera instructions still execute within the preview.
+      return;
     } else if ([558, 567, 575, 580].includes(call)) {
       throw new Error(`Effect attachment ${call} is not supported yet`);
     } else if (call === 581) {
@@ -146,7 +216,12 @@ export class EffectPreviewRuntime {
       if (n(1) !== 0) throw new Error(`Unsupported generic attachment parameter ${n(1)}`);
       effect().clock = { accumulator: effect().age << 8, speed: n(2), acceleration: n(3) };
     } else if (call === 553) {
-      if (n(1) === 0) effect().age = n(2);
+      if (effect().particles) {
+        const fields = ['flags', 'size', 'gravity', 'floor'] as const;
+        if (n(1) < 0 || n(1) > 3) throw new Error('Invalid particle parameter');
+        if (n(1) === 0 && (n(2) & ~(1 | 2 | 16 | 64 | 128))) throw new Error('Unsupported particle flags (repeat/collision)');
+        effect().particles![fields[n(1)]] = n(2);
+      } else if (n(1) === 0) effect().age = n(2);
       else if (n(1) === 2 && effect().kind === 'LMB') effect().animateRotation = n(2) !== 0;
       else throw new Error(`Unsupported effect parameter ${n(1)}`);
     } else if (call === 588) effect().lifespan = n(1);
@@ -155,7 +230,7 @@ export class EffectPreviewRuntime {
     else if (call === 590) effect().useEffectTranslucency = n(1) !== 0;
     else if (call === 591) effect().translucency = n(1) & 3;
     else if (call === 611) {
-      if (n(2) !== -1) throw new Error('Attaching to a model part needs battle state');
+      effect().parentPart = n(2);
       effect().parent = n(1);
     } else if ([562, 572, 584, 595].includes(call)) {
       // No-op/lighting flags have no effect on the unlit isolated mesh preview.
@@ -166,6 +241,7 @@ export class EffectPreviewRuntime {
       const start = thread.pc;
       if (thread.id === 0 && start === this.context.stopBefore) {
         thread.alive = false;
+        if (this.context.scene) this.deallocate(0);
         return;
       }
       try {
@@ -234,6 +310,11 @@ export class EffectPreviewRuntime {
           effect[tween.field] = tween.start.map((value, i) => value + (tween.target[i] - value) * amount) as Vec3;
         }
         effect.tweens = effect.tweens.filter(tween => tween.elapsed < tween.ticks);
+        if (effect.particles) tickSphereParticles(effect.particles);
+        if (effect.velocity) {
+          effect.position = effect.position.map((value, i) => value + effect.velocity![i]) as Vec3;
+          effect.velocity = effect.velocity.map((value, i) => value + (effect.acceleration?.[i] || 0)) as Vec3;
+        }
         if (effect.lifespan !== undefined && --effect.lifespan <= 0) this.deallocate(effect.id);
         if (effect.clock) {
           effect.clock.speed = (effect.clock.speed + effect.clock.acceleration) | 0;
@@ -241,7 +322,7 @@ export class EffectPreviewRuntime {
           effect.age = effect.clock.accumulator >> 8;
         }
       }
-      frames.push({ effects: [...this.effects.values()].map(effect => ({ id: effect.id, kind: effect.kind, flags: effect.flags, age: effect.age, parent: effect.parent, visible: effect.visible, translucency: effect.translucency, applyRotationScale: effect.applyRotationScale, animateRotation: effect.animateRotation, useEffectTranslucency: effect.useEffectTranslucency, slots: [...effect.slots], position: [...effect.position], rotation: [...effect.rotation], scale: [...effect.scale], colour: [...effect.colour] })) });
+      frames.push({ camera: this.cameraPosition && this.cameraTarget ? { position: [...this.cameraPosition], target: [...this.cameraTarget] } : undefined, flash: [11, 12, 13].map(index => this.number(this.sceneVars.get(index) ?? 0)) as Vec3, effects: [...this.effects.values()].map(effect => ({ id: effect.id, kind: effect.kind, flags: effect.flags, age: effect.age, parent: effect.parent, parentPart: effect.parentPart, trail: effect.trail, particles: effect.particles ? structuredClone(effect.particles) : undefined, visible: effect.visible, translucency: effect.translucency, applyRotationScale: effect.applyRotationScale, animateRotation: effect.animateRotation, useEffectTranslucency: effect.useEffectTranslucency, slots: [...effect.slots], position: [...effect.position], rotation: [...effect.rotation], scale: [...effect.scale], colour: [...effect.colour] })) });
       for (const effect of this.effects.values()) if (!effect.clock) effect.age++;
       // A blocked script must not freeze already-bound animation tracks. Keep
       // ticking those effects, with the missing setup reported in diagnostics.

@@ -16,6 +16,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
   @Input() overlay: SceneOverlay | null = null;
   @Input() frame = 0;
   @Input() effectBackdrop = false;
+  @Input() followEffectCamera = true;
   @Input() selectedPolygon: number | null = null;
   @Output() polygonSelected = new EventEmitter<number | null>();
   private pickStart = { x: 0, y: 0 };
@@ -33,6 +34,10 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
   private readonly zone = inject(NgZone);
   private renderer?: THREE.WebGLRenderer;
   private readonly scene = new THREE.Scene();
+  private readonly flashScene = new THREE.Scene();
+  private readonly flashCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  private readonly flashGeometry = new THREE.PlaneGeometry(2, 2);
+  private readonly flashMaterial = new THREE.MeshBasicMaterial({ color: 0, blending: THREE.AdditiveBlending, transparent: true, depthTest: false, depthWrite: false, toneMapped: false });
   private readonly camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1e7);
   private readonly root = new THREE.Group();
   private parts: THREE.Group[] = [];
@@ -46,6 +51,9 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
 
   ngAfterViewInit() {
     this.scene.background = this.effectBackdrop ? new THREE.Color('#949ca8') : null;
+    const flash = new THREE.Mesh(this.flashGeometry, this.flashMaterial);
+    flash.position.z = -0.5;
+    this.flashScene.add(flash);
     try {
       this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -199,10 +207,22 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
       const material = (object as THREE.Mesh).material;
       if (material instanceof THREE.MeshBasicMaterial && !object.userData['collisionPick']) material.wireframe = this.wireframe;
     });
+    this.applyEffectCamera();
     this.render();
+  }
+  private applyEffectCamera(): boolean {
+    const pose = this.followEffectCamera && this.animation?.cameras?.[Math.floor(this.frame)];
+    if (!pose || !this.controls) return false;
+    this.camera.position.set(...pose.position).multiply(this.root.scale);
+    this.controls.target.set(...pose.target).multiply(this.root.scale);
+    this.camera.near = 1;
+    this.camera.far = 100000;
+    this.controls.update();
+    return true;
   }
   fit() {
     if (!this.controls) return;
+    if (this.applyEffectCamera()) { this.render(); return; }
     this.root.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(this.root);
     if (this.animation?.format === 'Effect runtime') {
@@ -241,7 +261,14 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
         else this.parts[i].rotateZ(this.parts[i].userData['billboardRotation'] || 0);
       }
       this.renderer!.render(this.scene, this.camera);
+      const flash = this.animation?.flashes?.[Math.floor(this.frame)];
+      if (flash?.some(value => value > 0)) {
+        this.flashMaterial.color.setRGB(...flash.map(value => Math.max(0, Math.min(255, value)) / 255) as [number, number, number]);
+        this.renderer!.autoClear = false;
+        this.renderer!.render(this.flashScene, this.flashCamera);
+        this.renderer!.autoClear = true;
+      }
     });
   }
-  ngOnDestroy() { this.disposed = true; this.resize?.disconnect(); this.controls?.dispose(); this.clear(); this.renderer?.dispose(); }
+  ngOnDestroy() { this.flashGeometry.dispose(); this.flashMaterial.dispose(); this.disposed = true; this.resize?.disconnect(); this.controls?.dispose(); this.clear(); this.renderer?.dispose(); }
 }

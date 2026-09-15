@@ -11,6 +11,10 @@ describe('effect setup context', () => {
     expect(effectSetupContext(metadata, 0x2a30, 'player')?.storage).toEqual({ 9: 1 });
     expect(effectSetupContext(metadata, 0x2a30, 'enemy')?.storage).toEqual({ 9: 0 });
   });
+  it('opens the full visual sequence from either LMB without starting at the shards', () => {
+    expect(effectSetupContext(metadata, 0x2a30, 'player', 'spell')).toMatchObject({ start: 0x2618, stopBefore: 0x37e0, scene: true });
+    expect(effectSetupContext({ ...metadata, flags: 0x34f00 }, 0x2d40, 'enemy', 'spell')?.storage?.[9]).toBe(0);
+  });
   it('refuses stale addresses or another component', () => {
     expect(effectSetupContext({ ...metadata, program: { ...metadata.program, sha256: 'changed' } }, 0x2a30, 'player')).toBeUndefined();
     expect(effectSetupContext(metadata, 0x2b00, 'player')).toBeUndefined();

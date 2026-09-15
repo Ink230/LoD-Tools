@@ -18,6 +18,20 @@ function script() {
   return { words, offsets, op, run };
 }
 describe('effect preview runtime', () => {
+  it('rotates relative positions through the parent and applies scale tweens', () => {
+    const s = script();
+    s.op(56, [stor(18)], 600);
+    s.op(56, [stor(18), literal(-1), literal(100), literal(0), literal(0)], 545);
+    s.op(56, [stor(18), literal(-1), literal(0), literal(1024), literal(0)], 547);
+    s.op(56, [stor(19), literal(1)], 606);
+    s.op(56, [stor(19), stor(18), literal(0), literal(0), literal(20)], 545);
+    s.op(56, [stor(19), literal(-1), literal(2), literal(8192), literal(12288), literal(16384)], 576);
+    s.op(73);
+    const result = s.run(2);
+    expect(result.frames[0].effects[1].position[0]).toBeCloseTo(120);
+    expect(result.frames[0].effects[1].position[2]).toBeCloseTo(0);
+    expect(result.frames[1].effects[1].scale).toEqual([2, 3, 4]);
+  });
   it('uses caller context and stops component setup before unrelated spell instructions', () => {
     const s = script();
     s.op(56, [stor(18), literal(0x34e00)], 605);
