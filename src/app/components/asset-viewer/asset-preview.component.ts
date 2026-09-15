@@ -63,7 +63,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   imagePanX = 0;
   imagePanY = 0;
   private imageDrag: { id: number; x: number; y: number } | null = null;
-  get zoomableImage() { return this.format === 'TIM' || this.format === 'PNG' || (!!this.submap && this.sceneView !== 'geometry'); }
+  get zoomableImage() { return this.format === 'TIM' || this.format === 'PNG' || this.format === 'MCQ' || (!!this.submap && this.sceneView !== 'geometry'); }
   get imageTransform() { return this.zoomableImage ? `translate(${this.imagePanX}px, ${this.imagePanY}px) scale(${this.imageZoom})` : null; }
   resetImageZoom() { this.imageZoom = 1; this.imagePanX = 0; this.imagePanY = 0; this.imageDrag = null; }
   zoomImage(event: WheelEvent) {
