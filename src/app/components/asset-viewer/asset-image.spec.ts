@@ -97,6 +97,31 @@ describe('asset image decoders', () => {
     expect(Array.from(image.pixels.slice(0, 4))).toEqual([248, 0, 0, 128]);
   });
 
+  it('keeps MCQ page origins in VRAM words when tile traversal crosses a page', () => {
+    const imageOffset = 0x2c;
+    const vramWidth = 128;
+    const bytes = new Uint8Array(imageOffset + vramWidth * 256 * 2);
+    u32(bytes, 0, 0x151434d);
+    u32(bytes, 4, imageOffset);
+    u16(bytes, 8, vramWidth);
+    u16(bytes, 10, 256);
+    u16(bytes, 12, 96); // Palettes occupy words 96–127, separate from texture pages
+    u16(bytes, 20, 272); // 17 columns of 16 tiles: the last column starts page X=64
+    u16(bytes, 22, 256);
+    for (let y = 0; y < 256; y++) {
+      for (let x = 0; x < 64; x++) u16(bytes, imageOffset + (y * vramWidth + x) * 2, 0x1111);
+      for (let x = 64; x < 68; x++) u16(bytes, imageOffset + (y * vramWidth + x) * 2, 0x2222);
+      u16(bytes, imageOffset + (y * vramWidth + 97) * 2, 0x001f);
+      u16(bytes, imageOffset + (y * vramWidth + 113) * 2, 0x001f);
+      u16(bytes, imageOffset + (y * vramWidth + 114) * 2, 0x03e0);
+    }
+    const image = decodeMcq(bytes);
+    const pixel = (x: number, y: number) => Array.from(image.pixels.slice((y * image.width + x) * 4, (y * image.width + x + 1) * 4));
+    expect(pixel(255, 255)).toEqual([248, 0, 0, 255]);
+    expect(pixel(256, 0)).toEqual([0, 248, 0, 255]);
+    expect(pixel(271, 255)).toEqual([0, 248, 0, 255]);
+  });
+
   it('rejects malformed assets before allocating an image', () => {
     expect(() => decodeTim(new Uint8Array(8))).toThrow('Invalid TIM magic');
     const malformedMcq = new Uint8Array(0x2c);

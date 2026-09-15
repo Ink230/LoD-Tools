@@ -254,11 +254,12 @@ export function decodeMcq(bytes: Uint8Array): TextureImage {
 
   // This is McqBuilder's chunk traversal: columns first, then rows, with a CLUT row per tile.
   for (let chunkX = 0; chunkX < width; chunkX += 16) for (let chunkY = 0; chunkY < height; chunkY += 16) {
-    for (let py = 0; py < 16; py++) for (let px = 0; px < 16; px++) {
-      const textureX = tpageX + ((u + px) & 0xff);
+    for (let py = 0; py < Math.min(16, height - chunkY); py++) for (let px = 0; px < Math.min(16, width - chunkX); px++) {
+      const textureU = (u + px) & 0xff;
       const textureY = tpageY + ((v + py) & 0xff);
-      const packed = word(textureX >> 2, textureY);
-      const index = packed === null ? 0 : packed >>> (textureX & 3) * 4 & 0xf;
+      // McqBuilder's texture-page X is already in VRAM words; only U is in pixels.
+      const packed = word(tpageX + (textureU >> 2), textureY);
+      const index = packed === null ? 0 : packed >>> (textureU & 3) * 4 & 0xf;
       const colour = word(paletteX + index, paletteY) ?? 0;
       // MCQs are full-screen backgrounds, so palette zero is opaque black rather than a sprite hole.
       copy(colour15(colour, false), pixels, ((chunkY + py) * width + chunkX + px) * 4);
