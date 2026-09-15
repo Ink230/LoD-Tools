@@ -7,6 +7,8 @@
     </div>
     @if (headerCollapsed) { <span class="compact-credit">Asset Viewer by Ink</span> }
     <div class="actions">
+      <button (click)="navigateHistory(-1)" [disabled]="busy || historyIndex <= 0" title="Back to previous entity" aria-label="Back to previous entity" class="icon-button">←</button>
+      <button (click)="navigateHistory(1)" [disabled]="busy || historyIndex + 1 >= entityHistory.length" title="Forward to next entity" aria-label="Forward to next entity" class="icon-button">→</button>
       <button (click)="importAsset.click()" [disabled]="busy" title="Open individual file" aria-label="Open individual file" class="icon-button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M14 2H5v20h14V7l-5-5v5h5M12 18V10m-3 3 3-3 3 3"/></svg></button>
       <input #importAsset hidden type="file" (change)="importFile($event)" />
       <button (click)="connectFolder()" [disabled]="busy || !supportsFolders" title="Open Severed Chains files folder" aria-label="Open Severed Chains files folder" class="icon-button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 7V4h6l3 3h9v13H3V7Z"/><path d="M3 10h18"/></svg></button>
@@ -69,7 +71,7 @@
     </aside>
     <section class="main-panel" aria-label="Asset preview">
       @if (selectedAsset && selectedBytes.length) {
-        <div class="panel-title"><button (click)="navigateHistory(-1)" [disabled]="busy || historyIndex <= 0" title="Back to previous entity" aria-label="Back to previous entity">←</button><button (click)="navigateHistory(1)" [disabled]="busy || historyIndex + 1 >= entityHistory.length" title="Forward to next entity" aria-label="Forward to next entity">→</button> {{ selectedAsset.gameAsset }} / {{ selectedAsset.name }}</div>
+        <div class="panel-title"> {{ selectedAsset.gameAsset }} / {{ selectedAsset.name }}</div>
         <app-asset-preview [record]="selectedAsset" [bytes]="selectedBytes" [related]="relatedAssets" [readFile]="readAssetFile" [assets]="companionAssets" [thumbnails]="thumbnails" (previewLoaded)="rememberPreview($event)" (navigateAsset)="openEntity($event)" />
       } @else {
         <div class="empty-state"><p class="eyebrow">THE LEGEND OF DRAGOON</p><h2>Your asset library</h2><p>Select an asset by format or by game asset to preview it.</p><button class="primary" (click)="connectFolder()" [disabled]="busy || !supportsFolders">Open SC files folder</button><button (click)="singleFile.click()">Open individual file</button><input #singleFile hidden type="file" (change)="importFile($event)" /><p class="muted">Asset files stay on your computer. Only selected resources and their companions are read.</p>@if (!supportsFolders) { <p>Use Chrome or Edge for folder access, or open individual files here.</p> }</div>
