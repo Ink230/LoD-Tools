@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decodeMcq, decodeTim, sampleTim, texturePage, texturePageFromTims, textureCoversPrimitive } from './asset-image';
+import { decodeMcq, decodeTim, sampleTim, texturePage, texturePageFromTims, textureCoversPrimitive, submapTextureAtOrigin } from './asset-image';
 
 function u16(bytes: Uint8Array, offset: number, value: number) { new DataView(bytes.buffer).setUint16(offset, value, true); }
 function u32(bytes: Uint8Array, offset: number, value: number) { new DataView(bytes.buffer).setUint32(offset, value, true); }
@@ -25,6 +25,17 @@ function tim(bpp: 0 | 1 | 2 | 3, words: number, image: number[], clut?: number[]
 }
 
 describe('asset image decoders', () => {
+  it('relocates a submap texture without modifying the source bytes', () => {
+    const bytes = tim(0, 1, [0x11, 0x11], Array.from({ length: 16 }, (_, i) => i === 1 ? 0x001f : 0));
+    u16(bytes, 12, 576); u16(bytes, 14, 368);
+    u16(bytes, 56, 576); u16(bytes, 58, 256);
+    const before = [...bytes];
+    const moved = submapTextureAtOrigin(bytes);
+    const page = texturePageFromTims([moved], (0x5c24 & 0x3c3) | (112 << 6), 0x19 & 0xffe0);
+    expect([...page.pixels.slice(0, 4)]).toEqual([248, 0, 0, 255]);
+    expect(page.coverage[0]).toBe(1);
+    expect([...bytes]).toEqual(before);
+  });
   it('distinguishes missing texture uploads from valid transparent texels', () => {
     const bytes = tim(0, 1, [0, 0], Array(16).fill(0));
     u16(bytes, 56, 64);

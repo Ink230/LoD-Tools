@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import { FormsModule } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
 import { AssetRecord, AssetFormat, PREVIEW_FORMATS, assetCategory, gameIdentity } from './asset-catalog';
-import { decodeTim, decodeMcq, texturePageFromTims, textureCoversPrimitive } from './asset-image';
+import { decodeTim, decodeMcq, texturePageFromTims, textureCoversPrimitive, submapTextureAtOrigin } from './asset-image';
 import { decodeModel } from './asset-model';
 import { decodeAnimation, decodeLmb, decodeAnm, decodeClutAnimationDetails, DecodedClutAnimation, LmbType } from './asset-animation';
 import { copyPaletteRow } from './asset-palette';
@@ -234,10 +234,16 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     const missing = new Set<string>();
     this.textureMappingWarning = '';
     if (this.textures.length) {
+      const modelRecord = this.loadedCompanions.model[0];
+      const submap = modelRecord && /^(SECT\/DRGN2[1-4]\.BIN\/\d+)\/(\d+)$/.exec(modelRecord.path);
+      const relocateSubmap = !!submap && this.textures.length === 1 && this.loadedCompanions.texture[0]?.path === `${submap[1]}/textures/${Math.floor(Number(submap[2]) / 33)}`;
+      const modelTextures = relocateSubmap ? [submapTextureAtOrigin(this.textures[0])] : this.textures;
       for (const primitive of this.model?.parts.flatMap(part => part.primitives) || []) {
         if (primitive.clut === undefined || primitive.tpage === undefined) continue;
         const key = `${primitive.clut}:${primitive.tpage}`;
-          if (!decoded.has(key) && decoded.size < 256) decoded.set(key, texturePageFromTims(this.textures, primitive.clut, primitive.tpage));
+          const clut = relocateSubmap ? (primitive.clut & 0x3c3) | (112 << 6) : primitive.clut;
+          const tpage = relocateSubmap ? primitive.tpage & 0xffe0 : primitive.tpage;
+          if (!decoded.has(key) && decoded.size < 256) decoded.set(key, texturePageFromTims(modelTextures, clut, tpage));
           const page = decoded.get(key);
           if (page && primitive.uvs && !textureCoversPrimitive(page.coverage, primitive.uvs)) missing.add(key);
           if (page) pages.set(key, page);

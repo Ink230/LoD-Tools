@@ -180,6 +180,22 @@ export function texturePage(bytes: Uint8Array, clut: number, tpage: number): Pix
  * Renders one PSX texture page after TIMs have been uploaded in order to a shared VRAM.
  * This is needed when a model's image pixels and its CLUT are separate TIM resources.
  */
+/** RetailSubmap.loadTextures uses a palette 112 rows below the relocated image.
+ * Isolated previews use slot (0, 0); model page/CLUT masks follow UvAdjustmentMetrics14.
+ */
+export function submapTextureAtOrigin(bytes: Uint8Array): Uint8Array {
+  parseTim(bytes);
+  const copy = new Uint8Array(bytes);
+  const view = new DataView(copy.buffer);
+  if (!(view.getUint32(4, true) & 8)) throw new Error('Submap object texture requires a palette');
+  const imageBlock = 8 + view.getUint32(8, true);
+  view.setUint16(12, 0, true);
+  view.setUint16(14, 112, true);
+  view.setUint16(imageBlock + 4, 0, true);
+  view.setUint16(imageBlock + 6, 0, true);
+  return copy;
+}
+
 export function texturePageFromTims(textures: Uint8Array[], clut: number, tpage: number): PixelImage & { coverage: Uint8Array } {
   if (textures.length === 0) throw new Error('At least one TIM is required to build a texture page');
   if (textures.length > 1024) throw new Error('Too many TIM resources for one texture page');
