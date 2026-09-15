@@ -86,6 +86,17 @@
       @if (selected && selectedAsset) {
         <dl><dt>Game asset</dt><dd>{{ selectedAsset.gameAsset }}</dd><dt>Format</dt><dd>{{ selectedAsset.format }}</dd><dt>Path</dt><dd><code>{{ selectedPath }}</code></dd><dt>Size</dt><dd>{{ selected.size.toLocaleString() }} bytes</dd><dt>Last modified</dt><dd>{{ selected.lastModified | date:'medium' }}</dd>@if (selectedAsset.offset) { <dt>Resource offset</dt><dd>{{ selectedAsset.offset }}</dd> }</dl>
       } @else { <p class="empty-copy muted">Select an asset to inspect its details.</p> }
+      @if (selectedAsset) {
+        <div class="panel-title">Entity attachments</div>
+        <div class="entity-attachments">
+          @for (group of entityAttachments; track group.label) {
+            <h3>{{ group.label }}</h3>
+            @for (asset of group.assets; track assetKey(asset)) {
+              <button (click)="openEntity(asset)" [disabled]="busy" [title]="asset.path + ' · offset ' + (asset.offset || 0)">{{ asset.gameAsset }} / {{ asset.name }}<small>{{ asset.format }}@if (asset.offset) { · offset {{ asset.offset }} }</small></button>
+            }
+          } @empty { <p class="muted">No linked resources recorded for this entity.</p> }
+        </div>
+      }
       <div class="panel-title">Source</div><p class="empty-copy muted">Severed Chains / files<br />Local access · Read-only</p>
     </aside>
   </div>

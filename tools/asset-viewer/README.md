@@ -6,6 +6,8 @@ The **Choose textures**, **Choose model**, and **Choose animation** controls ope
 
 Each companion control lists its loaded asset names, including automatically resolved companions. Clicking a name opens that entity in the main viewer. Previous/next controls step through compatible catalog entries and wrap at the ends; texture stepping replaces the current texture set with one texture. The main preview header provides Back/Forward through successfully opened entities, including imported files. Opening a new entity after going back starts a new forward history.
 
+The right-hand inspector's **Entity attachments** lists the selected source entity's linked textures, model, animations, and scene resources. These links remain tied to that entity's catalog metadata. The top **Preview composition** controls change only the current composite preview; they do not rewrite entity attachments, modify files, or save overrides. Reopening an entity rebuilds its preview from its source links.
+
 Companion controls exclude generic game archives, submap archives, and field effects by default. **Include game resources** enables `SECT/` resources other than the submap archives; **Include submap resources** independently enables `SECT/DRGN21.BIN` through `DRGN24.BIN`. **Include field effects** independently enables the `SUBMAP/` field-effect resources. These switches apply to companion pickers, animation options, random selection, and previous/next selection. They do not unload existing companions or prevent automatic loading of an entity's known companions.
 
 ## Supported previews

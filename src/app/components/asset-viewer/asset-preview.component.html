@@ -4,6 +4,7 @@
   @if (format === 'LMB') { <label>Subtype <select [(ngModel)]="lmbType" (change)="load()"><option [ngValue]="0">0</option><option [ngValue]="1">1</option><option [ngValue]="2">2</option></select></label> }
   @if (model || animation || sprite || clut) {
     <span class="companion-resource-filters">
+      <span>Preview composition</span>
       <label><input type="checkbox" [(ngModel)]="includeGameResources" /> Include game resources</label>
       <label><input type="checkbox" [(ngModel)]="includeSubmapResources" /> Include submap resources</label>
       <label><input type="checkbox" [(ngModel)]="includeFieldEffects" /> Include field effects</label>

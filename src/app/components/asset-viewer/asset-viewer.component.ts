@@ -7,6 +7,7 @@ import { gunzipSync, strFromU8 } from 'fflate';
 import { AssetCatalog, AssetRecord, identifyAsset, assetCategory, gameIdentity } from './asset-catalog';
 import { AssetSource, AssetFileHandle, AssetDirectoryHandle, fileBytes } from './asset-source';
 import { AssetPreviewComponent } from './asset-preview.component';
+import { entityLinks, EntityLinkGroup } from './asset-entity-links';
 
 @Component({
   selector: 'app-asset-viewer',
@@ -49,6 +50,16 @@ export class AssetViewerComponent implements OnInit {
   catalogError = '';
   source: AssetSource | null = null;
   selectedAsset: AssetRecord | null = null;
+  private linkedEntity: AssetRecord | null = null;
+  private linkedCatalog: AssetRecord[] | null = null;
+  private cachedEntityLinks: EntityLinkGroup[] = [];
+  get entityAttachments() {
+    if (this.linkedEntity !== this.selectedAsset || this.linkedCatalog !== this.companionAssets) {
+      this.linkedEntity = this.selectedAsset; this.linkedCatalog = this.companionAssets;
+      this.cachedEntityLinks = this.selectedAsset ? entityLinks(this.selectedAsset, this.companionAssets) : [];
+    }
+    return this.cachedEntityLinks;
+  }
   entityHistory: AssetRecord[] = [];
   historyIndex = -1;
   private rememberEntity(asset: AssetRecord) {
