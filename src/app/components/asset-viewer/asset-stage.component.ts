@@ -176,6 +176,10 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.camera.position.copy(center).add(new THREE.Vector3(extent * 0.5, extent * 0.25, extent));
     this.controls.target.copy(center); this.controls.update(); this.render();
   }
+  snapshot(): HTMLCanvasElement | undefined {
+    this.render();
+    return this.renderer?.domElement;
+  }
   private render() {
     if (!this.renderer || this.disposed) return;
     this.zone.runOutsideAngular(() => {

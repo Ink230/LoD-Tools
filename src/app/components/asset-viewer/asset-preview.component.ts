@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnChanges, OnDestroy, SimpleChanges, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, NgZone, OnChanges, OnDestroy, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
 import { AssetRecord, AssetFormat, PREVIEW_FORMATS } from './asset-catalog';
@@ -8,12 +8,12 @@ import { decodeAnimation, decodeLmb, decodeAnm, decodeClutAnimationDetails, Deco
 import { copyPaletteRow } from './asset-palette';
 import { decodeEnvironment, decodeCollision } from './asset-scene';
 import { decodeSpuSample, listSpuSamples, encodeWav } from './asset-audio';
-import { fileBytes } from './asset-source';
+import { AssetCompanionPickerComponent, CompanionKind } from './asset-companion-picker.component';
 import { ModelAsset, ModelAnimation, PixelImage, SceneOverlay, SpriteAnimation } from './asset-preview-types';
 import { AssetStageComponent } from './asset-stage.component';
 
 @Component({
-  selector: 'app-asset-preview', imports: [FormsModule, JsonPipe, AssetStageComponent],
+  selector: 'app-asset-preview', imports: [FormsModule, JsonPipe, AssetStageComponent, AssetCompanionPickerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './asset-preview.component.html', styleUrl: './asset-preview.component.css',
 })
@@ -21,6 +21,11 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   @Input() bytes: Uint8Array = new Uint8Array();
   @Input() record!: AssetRecord;
   @Input() related: AssetRecord[] = [];
+  @Input() assets: AssetRecord[] = [];
+  @Input() thumbnails = new Map<string, string>();
+  @Output() previewLoaded = new EventEmitter<{ key: string; url: string }>();
+  picker: CompanionKind | null = null;
+  selectedAnimation: AssetRecord | null = null;
   @Input() readFile?: (path: string) => Promise<Uint8Array>;
   @ViewChild('canvas') canvas?: ElementRef<HTMLCanvasElement>;
   @ViewChild(AssetStageComponent) stage?: AssetStageComponent;
@@ -59,7 +64,11 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   private lastTick = 0;
   private durations: number[] = [];
   get frameCount() { return this.animation?.frames.length || this.sprite?.frames.length || this.clut?.steps.length || 0; }
-  get animations() { return this.related.filter(item => ['Animation', 'CMB', 'LMB'].includes(item.format)); }
+  get animations() {
+    const records = this.related.filter(item => ['Animation', 'CMB', 'LMB'].includes(item.format));
+    if (this.selectedAnimation && !records.some(item => this.key(item) === this.key(this.selectedAnimation!))) records.push(this.selectedAnimation);
+    return records;
+  }
   get modelChoices() { return this.related.filter(item => item.format === 'TMD'); }
 
   ngAfterViewInit() { this.draw(); }
@@ -69,7 +78,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.mediaUrl = URL.createObjectURL(new Blob([new Uint8Array(bytes)], { type }));
   }
   async load() {
-    const version = ++this.loadVersion;
+    const version = ++this.loadVersion; this.picker = null; this.selectedAnimation = null;
     ++this.companionVersion;
     this.playing = false; this.frame = 0; this.loading = true; this.error = ''; this.warnings = [];
     this.image = null; this.model = null; this.animation = null; this.sprite = null; this.clut = null; this.overlay = null;
@@ -88,7 +97,8 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
             if (version === this.loadVersion) this.warnings.push('Texture set exceeds 32 MiB preview limit');
             break;
           }
-            textures.push(bytes);
+          textures.push(bytes);
+          if (version === this.loadVersion) this.captureTexture(bytes, `${path}@0`);
           } catch { if (version === this.loadVersion) this.warnings.push(`Texture unavailable: ${path}`); }
           if (version !== this.loadVersion || this.destroyed) return;
         }
@@ -149,7 +159,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
       this.durations = this.sprite?.frames.map(frame => frame.duration / this.sprite!.fps) || this.clut?.steps.map(step => Math.max(1, step.durationTicks) / 30) || [];
     } catch (error) { if (version === this.loadVersion) this.error = error instanceof Error ? error.message : 'Unable to decode this resource'; }
     finally {
-      if (version === this.loadVersion && !this.destroyed) { this.loading = false; this.cdr.detectChanges(); this.draw(); }
+      if (version === this.loadVersion && !this.destroyed) { this.loading = false; this.cdr.detectChanges(); this.draw(); this.capturePreview(); }
     }
   }
   updatePalette() {
@@ -195,20 +205,54 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.cdr.markForCheck();
   }
   key(record: AssetRecord) { return `${record.path}@${record.offset || 0}`; }
-  async attach(event: Event, kind: 'texture' | 'model' | 'animation') {
-    const input = event.target as HTMLInputElement;
-    const files = Array.from(input.files || []); input.value = '';
+  closePicker() { this.picker = null; ++this.companionVersion; }
+  async attach(records: AssetRecord[]) {
+    const kind = this.picker;
+    if (!kind || !this.readFile || !records.length) return;
     const version = this.loadVersion;
     const request = ++this.companionVersion;
     try {
-      if (kind === 'texture' && (files.length > 32 || files.reduce((sum, file) => sum + file.size, 0) > 32 * 1024 * 1024)) throw new Error('Select at most 32 textures totaling 32 MiB');
-      const bytes = await Promise.all(files.map(file => fileBytes(file)));
-      if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed || !bytes.length) return;
+      if (kind === 'texture' && (records.length > 32 || records.reduce((sum, record) => sum + record.size, 0) > 32 * 1024 * 1024)) throw new Error('Select at most 32 textures totaling 32 MiB');
+      const bytes: Uint8Array[] = [];
+      for (const record of records) {
+        bytes.push((await this.readFile(record.path)).subarray(record.offset || 0));
+        if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed) return;
+      }
       if (kind === 'texture') this.textures = bytes;
+      if (kind === 'texture') records.forEach((record, index) => this.captureTexture(bytes[index], this.key(record)));
       if (kind === 'model') this.model = decodeModel(bytes[0]);
-      if (kind === 'animation') { this.animation = this.lmbType === undefined ? decodeAnimation(bytes[0]) : (new DataView(bytes[0].buffer).getUint32(0, true) === 0x00424d4c ? decodeLmb(bytes[0], this.lmbType) : decodeAnimation(bytes[0])); this.frame = 0; }
+      if (kind === 'animation') {
+        this.animation = records[0].format === 'LMB' ? decodeLmb(bytes[0], (records[0].lmbType || 0) as LmbType) : decodeAnimation(bytes[0]);
+        this.animationPath = this.key(records[0]); this.frame = 0; this.playing = false; this.durations = [];
+        this.selectedAnimation = records[0];
+      }
+      this.picker = null; this.error = '';
       this.buildTexturePages(); this.cdr.detectChanges(); this.draw();
+      if (kind !== 'texture') this.capturePreview(this.key(records[0]));
+      this.capturePreview();
     } catch (error) { if (version === this.loadVersion && request === this.companionVersion) this.error = String(error); this.cdr.markForCheck(); }
+  }
+  captureTexture(bytes: Uint8Array, key: string) {
+    try {
+      const decoded = decodeTim(bytes);
+      const canvas = document.createElement('canvas');
+      canvas.width = decoded.width; canvas.height = decoded.height;
+      canvas.getContext('2d')?.putImageData(new ImageData(new Uint8ClampedArray(decoded.pixels), decoded.width, decoded.height), 0, 0);
+      this.capturePreview(key, canvas);
+    } catch { /* An unavailable thumbnail must not prevent companion selection. */ }
+  }
+  capturePreview(key = this.key(this.record), texture?: HTMLCanvasElement) {
+    const version = this.loadVersion;
+    queueMicrotask(() => {
+      if (this.destroyed || version !== this.loadVersion) return;
+      const source = texture || (this.image ? this.canvas?.nativeElement : this.stage?.snapshot());
+      if (!source) return;
+      const canvas = document.createElement('canvas');
+      canvas.width = 160; canvas.height = 120;
+      const scale = Math.min(160 / source.width, 120 / source.height);
+      canvas.getContext('2d')?.drawImage(source, (160 - source.width * scale) / 2, (120 - source.height * scale) / 2, source.width * scale, source.height * scale);
+      this.previewLoaded.emit({ key, url: canvas.toDataURL() });
+    });
   }
   togglePlayback() {
     this.playing = !this.playing;

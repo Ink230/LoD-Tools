@@ -3,13 +3,14 @@
   @if (format === 'TIM' && paletteCount > 1) { <label>Palette <input type="number" min="0" [max]="paletteCount - 1" [(ngModel)]="palette" (change)="updatePalette()" /></label><span>/ {{ paletteCount }}</span> }
   @if (format === 'LMB') { <label>Subtype <select [(ngModel)]="lmbType" (change)="load()"><option [ngValue]="0">0</option><option [ngValue]="1">1</option><option [ngValue]="2">2</option></select></label> }
   @if (model || animation || sprite || clut) {
-    <button (click)="textureInput.click()">Choose textures</button><input #textureInput hidden type="file" multiple (change)="attach($event, 'texture')" />
-    <button (click)="modelInput.click()">Choose model</button><input #modelInput hidden type="file" (change)="attach($event, 'model')" />
-    <button (click)="animationInput.click()">Choose animation</button><input #animationInput hidden type="file" (change)="attach($event, 'animation')" />
+    <button (click)="picker = 'texture'">Choose textures</button>
+    <button (click)="picker = 'model'">Choose model</button>
+    <button (click)="picker = 'animation'">Choose animation</button>
   }
   @if (model || animation || overlay?.polygons?.length) { <button (click)="stage?.fit()">Fit view</button><label><input type="checkbox" [(ngModel)]="wireframe" /> Wireframe</label> }
   @if (overlay?.records?.length) { <button (click)="showRecords = !showRecords" [attr.aria-pressed]="showRecords">Records</button> }
 </div>
+@if (picker) { <app-asset-companion-picker [kind]="picker" [assets]="assets" [thumbnails]="thumbnails" [error]="error" (picked)="attach($event)" (closed)="closePicker()" /> }
 @if (loading) { <p role="status">Loading preview…</p> }
 @if (error) { <p class="error" role="alert">{{ error }}</p> }
 @if (format === 'SPU') {

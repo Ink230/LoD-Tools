@@ -34,6 +34,17 @@ export class AssetViewerComponent implements OnInit {
   error = '';
   search = '';
   catalog: AssetCatalog | null = null;
+  companionAssets: AssetRecord[] = [];
+  thumbnails = new Map<string, string>();
+  private importedFiles = new Map<string, File>();
+  private importedRecords: AssetRecord[] = [];
+  rememberPreview(preview: { key: string; url: string }) {
+    this.thumbnails.delete(preview.key);
+    this.thumbnails.set(preview.key, preview.url);
+    if (this.thumbnails.size > 256) this.thumbnails.delete(this.thumbnails.keys().next().value!);
+    this.thumbnails = new Map(this.thumbnails);
+    this.changeDetector.markForCheck();
+  }
   catalogLoading = false;
   catalogError = '';
   source: AssetSource | null = null;
@@ -50,6 +61,8 @@ export class AssetViewerComponent implements OnInit {
   private relatedCache: AssetRecord[] = [];
   readonly pageSize = 80;
   readonly readAssetFile = async (path: string) => {
+    const imported = this.importedFiles.get(path);
+    if (imported) return fileBytes(imported);
     if (!this.source) throw new Error('Open your SC files folder to load related resources');
     return this.source.read(path);
   };
@@ -63,7 +76,7 @@ export class AssetViewerComponent implements OnInit {
       // Some hosts serve .gz with Content-Encoding; fetch has already decompressed that response.
       const catalog = JSON.parse(strFromU8(bytes[0] === 0x1f && bytes[1] === 0x8b ? gunzipSync(bytes) : bytes)) as AssetCatalog;
       if (catalog.version !== 1 || !Array.isArray(catalog.assets)) throw new Error('Unsupported asset catalog');
-      this.catalog = catalog;
+      this.catalog = catalog; this.companionAssets = [...catalog.assets, ...this.importedRecords];
     } catch { this.catalogError = 'The asset catalog could not be loaded. Retry or use File explorer.'; }
     finally { this.catalogLoading = false; this.changeDetector.markForCheck(); }
   }
@@ -116,6 +129,9 @@ export class AssetViewerComponent implements OnInit {
       this.selected = file; this.selectedPath = file.name;
       this.selectedAsset = { path: file.name, name: file.name, format, category: assetCategory(format), ...gameIdentity(file.name), size: file.size };
       this.selectedBytes = bytes;
+      this.importedFiles.set(file.name, file);
+      this.importedRecords = [...this.importedRecords.filter(record => record.path !== file.name), this.selectedAsset!];
+      this.companionAssets = [...(this.catalog?.assets || []), ...this.importedRecords];
     } catch (error) { this.error = String(error); }
     finally { this.busy = false; this.changeDetector.markForCheck(); }
   }

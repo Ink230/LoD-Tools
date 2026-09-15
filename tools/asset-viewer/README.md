@@ -1,6 +1,8 @@
 # Asset Viewer
 
-The viewer uses a metadata catalog for **By format** and **By game asset**, with a secondary local file explorer. Connecting SC's extracted `files` directory grants read access; selecting a resource reads its payload and bounded companion resources. Catalog browsing does not load game payloads. Individual files can also be opened and model/texture/animation companions attached manually.
+The viewer uses a metadata catalog for **By format** and **By game asset**, with a secondary local file explorer. Connecting SC's extracted `files` directory grants read access; selecting a resource reads its payload and bounded companion resources. Catalog browsing does not load game payloads. Individual files can also be imported into the viewer.
+
+The **Choose textures**, **Choose model**, and **Choose animation** controls open the viewer's own searchable asset chooser. They select catalog references or previously imported files, preserving embedded offsets and LMB subtypes. Textures support ordered multiple selection. Cached thumbnails identify recently loaded resources (up to 256 thumbnails); opening or searching the chooser does not read payloads. Applying the selection uses the current SC folder connection or imported file reference, never a native companion file picker.
 
 ## Supported previews
 
