@@ -6,8 +6,8 @@ import { createHash } from 'node:crypto';
 import { build } from 'esbuild';
 const root = process.argv[2];
 if (!root) throw new Error('Pass the SC files directory');
-const bundle = await build({ stdin: { contents: "export * from './src/app/components/asset-viewer/asset-effect-runtime'; export * from './src/app/components/asset-viewer/asset-effect-scene';", resolveDir: process.cwd() }, bundle: true, write: false, format: 'esm', platform: 'node' });
-const { EffectPreviewRuntime, buildEffectScene } = await import('data:text/javascript;base64,' + Buffer.from(bundle.outputFiles[0].text).toString('base64'));
+const bundle = await build({ stdin: { contents: "export * from './src/app/components/asset-viewer/asset-effect-runtime'; export * from './src/app/components/asset-viewer/asset-effect-context'; export * from './src/app/components/asset-viewer/asset-effect-scene';", resolveDir: process.cwd() }, bundle: true, write: false, format: 'esm', platform: 'node' });
+const { EffectPreviewRuntime, buildEffectScene, effectSetupContext } = await import('data:text/javascript;base64,' + Buffer.from(bundle.outputFiles[0].text).toString('base64'));
 const { assets } = JSON.parse(gunzipSync(await readFile('src/assets/asset-viewer/catalog.json.gz')));
 const selected = assets.find(asset => asset.path === 'SECT/DRGN0.BIN/5312/0/0');
 const metadata = selected?.effectRuntime;
@@ -23,16 +23,22 @@ if (scene.warnings.length || scene.model.parts.length !== 3 || result.frames.len
 if (!result.frames.at(-1).effects.length && result.frames[2].effects[0].colour[0] > result.frames[1].effects[0].colour[0]) console.log('PASS: 62 ticks, 3 parts, seeded binding, child script, colour fade, wait and deallocation');
 else throw new Error('Effect lifetime/colour execution failed');
 
-// Gravity Grabber: extended model ID, LMB rotation parameter and partial playback.
+// Gravity Grabber's selected LMB phase: actual setup, attachment clock and lifetime.
 const gravity = assets.find(asset => asset.path === 'SECT/DRGN0.BIN/4414/0/0').effectRuntime;
 const gravityScript = await read(gravity.script);
 if (createHash('sha256').update(gravityScript).digest('hex') !== gravity.program.sha256) throw new Error('Gravity metadata stale');
-const gravityResult = new EffectPreviewRuntime(gravityScript, gravity.program, gravity.program.starts[gravity.flags][0], 1).run();
-const gravityScene = await buildEffectScene(gravityResult, gravity, read);
-if (gravityScene.model.parts.length !== 54 || gravityResult.frames.length !== 300) throw new Error('Gravity bound-track playback failed');
-if (!gravityResult.diagnostics.some(note => note.includes('initial stor[9]'))) throw new Error('Missing battle context must be reported');
-if (gravityScene.warnings.some(note => note.includes('Unrecognized model'))) throw new Error('Gravity model rejected');
-if (JSON.stringify(gravityScene.animation.frames[0]) === JSON.stringify(gravityScene.animation.frames[10])) throw new Error('Gravity transforms are frozen');
-for (const frame of gravityScene.animation.frames) for (const part of frame)
-  if (![...part.translation, ...part.rotation, ...part.scale].every(Number.isFinite)) throw new Error('Non-finite Gravity transform');
-console.log('PASS: Gravity Grabber 54 parts, 300 ticks, changing finite transforms; caller stor[9] explicitly unresolved');
+for (const side of ['player', 'enemy']) {
+  const start = gravity.program.starts[gravity.flags][0];
+  const context = effectSetupContext(gravity, start, side);
+  if (!context) throw new Error('Gravity setup context missing');
+  const result = new EffectPreviewRuntime(gravityScript, gravity.program, start, 1, context).run();
+  const scene = await buildEffectScene(result, gravity, read);
+  if (scene.warnings.length || scene.model.parts.length !== 54 || result.frames.length !== 15) throw new Error(JSON.stringify({ warnings: scene.warnings, parts: scene.model.parts.length, ticks: result.frames.length }));
+  const initial = result.frames[0].effects[0];
+  if (initial.position[0] !== (side === 'player' ? -3840 : 2560) || initial.scale[0] !== 0xa20 / 4096 || initial.age !== 1 || initial.translucency !== 2) throw new Error('Incorrect Gravity initial state');
+  if (result.frames[1].effects[0].age !== 3 || result.frames.at(-1).effects.length) throw new Error('Incorrect Gravity clock/lifetime');
+  if (JSON.stringify(scene.animation.frames[0]) === JSON.stringify(scene.animation.frames[10])) throw new Error('Gravity transforms are frozen');
+  for (const frame of scene.animation.frames) for (const part of frame)
+    if (![...part.translation, ...part.rotation, ...part.scale].every(Number.isFinite)) throw new Error('Non-finite Gravity transform');
+  console.log(`PASS: Gravity Grabber ${side}: 54 parts, 15 ticks, script position/scale/blending, double-speed clock and deallocation`);
+}

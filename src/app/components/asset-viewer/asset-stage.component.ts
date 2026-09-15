@@ -15,6 +15,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
   @Input() animation: ModelAnimation | null = null;
   @Input() overlay: SceneOverlay | null = null;
   @Input() frame = 0;
+  @Input() effectBackdrop = false;
   @Input() selectedPolygon: number | null = null;
   @Output() polygonSelected = new EventEmitter<number | null>();
   private pickStart = { x: 0, y: 0 };
@@ -44,6 +45,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
   private previousAnimation: ModelAnimation | null = null;
 
   ngAfterViewInit() {
+    this.scene.background = this.effectBackdrop ? new THREE.Color('#949ca8') : null;
     try {
       this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -61,6 +63,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
   }
   ngOnChanges() {
+    this.scene.background = this.effectBackdrop ? new THREE.Color('#949ca8') : null;
     if (!this.renderer) return;
     if (this.previousModel !== this.model || this.previousOverlay !== this.overlay || this.previousPages !== this.texturePages || (!this.model && this.previousAnimation !== this.animation)) this.rebuild();
     else this.pose();

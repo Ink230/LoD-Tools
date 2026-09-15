@@ -36,4 +36,10 @@ rtk npm run build
 
 The real-file check verifies Selebus's singing effect (`5312/0/0`): a child script selects a musical-note model, binds it to three LMB parts, fades in, waits, fades out and deallocates over 62 ticks. Unit tests cover branching, waits, seed determinism, resource caching, sprite metrics, unknown inputs and execution limits.
 
-Gravity Grabber (4414/0/0) additionally verifies extended TMD IDs, LMB type-2 rotation selection, translucency source selection, and 54 bound parts with changing finite transforms over 300 ticks. Its setup requires caller storage 9 at 0x2a78; this remains explicitly unresolved. Bound tracks continue after the script stops, labelled as partial playback, without inventing battle placement or executing later setup.
+## Gravity Grabber component setup
+
+The selected `4414/0/0` LMB is a 15-tick component of the spell. A reviewed context in `asset-effect-context.ts` binds its setup boundary and caller input to the exact script SHA256. Player/enemy selection supplies storage 9 (1/0); the original script performs its table lookup, position, scale, model binding, blending and lifespan setup. Execution stops at `0x2ae4`, before returning to unrelated surrounding spell operations; effect attachments continue until deallocation. No script operands or animation transforms are replaced by the context.
+
+Generic attachment 585 uses SC's signed 24.8 accumulator, speed and acceleration. Replacing an attachment resets the accumulator from the current parameter and replaces the old speed. LMB allocation starts at -1 with speed 0x100; this phase replaces it with 0x200, producing animation ticks 1, 3, 5 and so on. The final preview frame has no live effects. The player and enemy integration checks each require 54 render parts, 15 frames, the script's position and scale, changing finite transforms, and zero diagnostics.
+
+Runtime effects use a neutral stage background so subtractive blending has visible destination colour. This is an isolated LMB phase, not the complete spell with battle camera, sprite trails, particles, audio or screen distortion. Unknown script versions do not receive the reviewed context. The prior 300-tick partial fallback is no longer the Gravity Grabber acceptance check.

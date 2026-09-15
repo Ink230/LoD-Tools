@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EffectPreviewRuntime, EffectProgram } from './asset-effect-runtime';
+import { EffectPreviewRuntime, EffectProgram, EffectPreviewContext } from './asset-effect-runtime';
 
 const literal = (n: number) => [0x01000000, n];
 const stor = (n: number) => [0x02000000 | n];
@@ -9,15 +9,36 @@ function script() {
     offsets.push(words.length * 4); words.push((header << 16) | (params.length << 8) | code, ...params.flat());
     return offsets.at(-1)!;
   };
-  const run = (frames = 300, seed = 1) => {
+  const run = (frames = 300, seed = 1, context: EffectPreviewContext = {}) => {
     const data = new Uint8Array(words.length * 4), view = new DataView(data.buffer);
     words.forEach((n, i) => view.setUint32(i * 4, n >>> 0, true));
     const program: EffectProgram = { offsets, starts: {}, entrypoints: [0], sha256: '' };
-    return new EffectPreviewRuntime(data, program, 0, seed).run(frames);
+    return new EffectPreviewRuntime(data, program, 0, seed, context).run(frames);
   };
   return { words, offsets, op, run };
 }
 describe('effect preview runtime', () => {
+  it('uses caller context and stops component setup before unrelated spell instructions', () => {
+    const s = script();
+    s.op(56, [stor(18), literal(0x34e00)], 605);
+    s.op(56, [stor(18), literal(-1), stor(9), literal(0), literal(0)], 545);
+    s.op(56, [stor(18), literal(0), literal(256), literal(0)], 585);
+    s.op(56, [stor(18), literal(0), literal(512), literal(0)], 585);
+    s.op(56, [stor(18), literal(3)], 588);
+    const stopBefore = s.op(56, [], 999);
+    const result = s.run(20, 1, { storage: { 9: -3840 }, stopBefore });
+    expect(result.diagnostics).toEqual([]);
+    expect(result.frames.map(frame => frame.effects[0]?.age)).toEqual([1, 3, undefined]);
+    expect(result.frames[0].effects[0].position).toEqual([-3840, 0, 0]);
+  });
+  it('accumulates fractional animation speed and acceleration without an extra automatic tick', () => {
+    const s = script();
+    s.op(56, [stor(18), literal(1)], 605);
+    s.op(56, [stor(18), literal(0), literal(0)], 553);
+    s.op(56, [stor(18), literal(0), literal(0), literal(128)], 585);
+    s.op(73);
+    expect(s.run(4).frames.map(frame => frame.effects[0].age)).toEqual([0, 1, 3, 5]);
+  });
   it('keeps bound LMB tracks playing when setup needs unavailable battle context', () => {
     const s = script();
     s.op(56, [stor(18), literal(0x34e00)], 605);

@@ -1,4 +1,5 @@
 import { EffectPreviewRuntime } from './asset-effect-runtime';
+import { effectSetupContext, EffectBattleSide } from './asset-effect-context';
 import { buildEffectScene } from './asset-effect-scene';
 import { SubmapComposition, decodeSubmapComposition, renderSubmapComposition, projectSubmapPoint } from './asset-submap';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, NgZone, OnChanges, OnDestroy, SimpleChanges, ViewChild, inject } from '@angular/core';
@@ -178,6 +179,13 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   }
   effectMode: 'runtime' | 'tracks' = 'runtime';
   effectSeed = 1;
+  effectBattleSide: EffectBattleSide = 'player';
+  get hasEffectContext(): boolean {
+    const metadata = this.record.effectRuntime;
+    if (!metadata) return false;
+    const start = metadata.program.starts[String(metadata.flags)][this.effectStart];
+    return !!effectSetupContext(metadata, start, this.effectBattleSide);
+  }
   effectStart = 0;
   effectPreparing = false;
   runtimeInfo = '';
@@ -203,7 +211,8 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
       if (hash !== metadata.program.sha256) throw new Error('This script differs from the script-tool metadata. Rebuild the asset catalog for this SC extraction.');
       const start = metadata.program.starts[String(metadata.flags)][this.effectStart] ?? metadata.program.starts[String(metadata.flags)][0];
       if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed) return;
-      const result = new EffectPreviewRuntime(script, metadata.program, start, this.effectSeed).run();
+      const context = effectSetupContext(metadata, start, this.effectBattleSide);
+      const result = new EffectPreviewRuntime(script, metadata.program, start, this.effectSeed, context).run();
       const scene = await buildEffectScene(result, metadata, read);
       if (version !== this.loadVersion || request !== this.companionVersion || this.destroyed) return;
       this.model = scene.model.parts.length ? scene.model : null;
@@ -213,6 +222,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
         this.runtimeDiagnostics.unshift('Partial preview: script setup stopped. Already-bound animation tracks continue; later setup and battle placement are unavailable.');
       if (!scene.model.parts.length) this.runtimeDiagnostics.push('This setup produced no renderable parts. Showing animation tracks.');
       this.runtimeInfo = `${result.frames.length} ticks · ${result.instructions} instructions · ${scene.model.parts.length} render parts`;
+      if (context) this.runtimeInfo = `${context.label} · ${this.runtimeInfo}`;
       this.loadedCompanions.model = scene.resources.filter(resource => resource.kind === 'TMD').map(resource => this.reference(resource.path, 'TMD', 0, resource.offset));
       this.frame = scene.model.parts.length ? Math.max(0, scene.animation.frames.findIndex(frame => frame.some(part => part.visible !== false && part.colour?.some(value => value > 0)))) : 0;
       this.durations = [];

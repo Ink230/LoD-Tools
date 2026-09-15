@@ -4,6 +4,7 @@ import { Vec3 } from './asset-preview-types';
 export interface EffectProgram { offsets: number[]; starts: Record<string, number[]>; entrypoints: number[]; sha256: string; }
 export interface EffectResource { path: string; flags: number; offset: number; kind: 'LMB' | 'TMD' | 'Sprite'; lmbType?: number; }
 export interface EffectRuntimeMetadata { script: string; flags: number; program: EffectProgram; resources: EffectResource[]; }
+export interface EffectPreviewContext { storage?: Record<number, number>; stopBefore?: number; }
 type Value = number | { missing: string };
 interface Ref { get(): Value; set(value: Value): void; address?: number; }
 interface Thread { id: number; pc: number; storage: Value[]; stack: number[]; alive: boolean; }
@@ -13,7 +14,7 @@ export interface PreviewEffect {
   position: Vec3; rotation: Vec3; scale: Vec3; colour: Vec3;
   age: number; parent: number; visible: boolean; translucency: number; applyRotationScale: boolean; animateRotation?: boolean; useEffectTranslucency?: boolean;
 }
-interface LiveEffect extends PreviewEffect { tweens: Tween[]; lifespan?: number; }
+interface LiveEffect extends PreviewEffect { tweens: Tween[]; lifespan?: number; clock?: { accumulator: number; speed: number; acceleration: number }; }
 export interface EffectRuntimeFrame { effects: PreviewEffect[]; }
 export interface EffectRuntimeResult { frames: EffectRuntimeFrame[]; diagnostics: string[]; instructions: number; }
 
@@ -31,11 +32,13 @@ export class EffectPreviewRuntime {
   private random: number;
   private executed = 0;
   private diagnostics: string[] = [];
-  constructor(bytes: Uint8Array, private readonly program: EffectProgram, start: number, seed = 1) {
+  constructor(bytes: Uint8Array, private readonly program: EffectProgram, start: number, seed = 1, private readonly context: EffectPreviewContext = {}) {
     this.data = new AssetBinary(new Uint8Array(bytes));
     this.addresses = new Set(program.offsets);
     this.random = seed >>> 0;
     this.threads.set(0, this.thread(0, start));
+    if (context.stopBefore !== undefined && !this.addresses.has(context.stopBefore)) throw new Error('Preview boundary is not an instruction');
+    for (const [index, value] of Object.entries(context.storage || {})) this.storage(this.threads.get(0)!, Number(index)).set(value);
   }
   private thread(id: number, pc: number): Thread {
     const storage: Value[] = Array.from({ length: 33 }, (_, index) => ({ missing: `initial stor[${index}]` }));
@@ -92,6 +95,11 @@ export class EffectPreviewRuntime {
     const id = this.nextId++;
     this.owners.set(id, owner);
     this.effects.set(id, { id, kind, flags: flags >>> 0, slots: Array(8).fill(0), position: [0, 0, 0], rotation: [0, 0, 0], scale: [1, 1, 1], colour: [128, 128, 128], age: 0, parent: -1, visible: true, applyRotationScale: true, translucency: 1, tweens: [] });
+    if (kind === 'LMB') {
+      const effect = this.effects.get(id)!;
+      effect.age = -1;
+      effect.clock = { accumulator: -256, speed: 256, acceleration: 0 };
+    }
     return id;
   }
   private deallocate(id: number): void {
@@ -134,6 +142,9 @@ export class EffectPreviewRuntime {
         target.tweens = target.tweens.filter(tween => tween.field !== 'colour');
         target.tweens.push({ field: 'colour', start: [...target.colour], target: [n(3), n(4), n(5)], elapsed: 0, ticks });
       }
+    } else if (call === 585) {
+      if (n(1) !== 0) throw new Error(`Unsupported generic attachment parameter ${n(1)}`);
+      effect().clock = { accumulator: effect().age << 8, speed: n(2), acceleration: n(3) };
     } else if (call === 553) {
       if (n(1) === 0) effect().age = n(2);
       else if (n(1) === 2 && effect().kind === 'LMB') effect().animateRotation = n(2) !== 0;
@@ -153,6 +164,10 @@ export class EffectPreviewRuntime {
   private execute(thread: Thread): void {
     for (let budget = 0; budget < 2048 && thread.alive; budget++) {
       const start = thread.pc;
+      if (thread.id === 0 && start === this.context.stopBefore) {
+        thread.alive = false;
+        return;
+      }
       try {
         if (!this.addresses.has(start)) throw new Error('Address is not an instruction in script-tool metadata');
         const word = this.data.u32(start), code = word & 255, count = (word >>> 8) & 255, header = word >>> 16;
@@ -220,9 +235,14 @@ export class EffectPreviewRuntime {
         }
         effect.tweens = effect.tweens.filter(tween => tween.elapsed < tween.ticks);
         if (effect.lifespan !== undefined && --effect.lifespan <= 0) this.deallocate(effect.id);
+        if (effect.clock) {
+          effect.clock.speed = (effect.clock.speed + effect.clock.acceleration) | 0;
+          effect.clock.accumulator = (effect.clock.accumulator + effect.clock.speed) | 0;
+          effect.age = effect.clock.accumulator >> 8;
+        }
       }
       frames.push({ effects: [...this.effects.values()].map(effect => ({ id: effect.id, kind: effect.kind, flags: effect.flags, age: effect.age, parent: effect.parent, visible: effect.visible, translucency: effect.translucency, applyRotationScale: effect.applyRotationScale, animateRotation: effect.animateRotation, useEffectTranslucency: effect.useEffectTranslucency, slots: [...effect.slots], position: [...effect.position], rotation: [...effect.rotation], scale: [...effect.scale], colour: [...effect.colour] })) });
-      for (const effect of this.effects.values()) effect.age++;
+      for (const effect of this.effects.values()) if (!effect.clock) effect.age++;
       // A blocked script must not freeze already-bound animation tracks. Keep
       // ticking those effects, with the missing setup reported in diagnostics.
       if (![...this.threads.values()].some(thread => thread.alive) && !this.effects.size) break;
