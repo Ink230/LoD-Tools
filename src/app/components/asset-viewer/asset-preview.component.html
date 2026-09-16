@@ -5,7 +5,7 @@
       @for (layer of submap.layers; track $index) { <label><input type="checkbox" [checked]="!hiddenLayers.has($index)" (change)="toggleLayer($index)" />{{ layer.name }}</label> }
     }
   </div>
-  @if (submap.warnings.length) { <details class="warnings"><summary>Composition notes ({{ submap.warnings.length }})</summary>@for (warning of submap.warnings; track $index) { <p>{{ warning }}</p> }</details> }
+  
 }
 <div class="preview-toolbar composition-toolbar" [class.with-animation-choice]="model && animationChoices.length > 0">
 
@@ -16,9 +16,10 @@
     @for (kind of visibleCompanionKinds; track kind) {
       <span class="companion-controls">
         <button class="random-companion" (click)="stepCompanion(kind, -1)" [disabled]="loading || !assets.length" [title]="'Previous ' + kind" [attr.aria-label]="'Previous ' + kind">‹</button>
-        <button (click)="picker = kind">Choose {{ kind === 'texture' ? 'textures' : kind }}</button>
-        <button class="random-companion" (click)="randomCompanion(kind)" [disabled]="loading || !assets.length" [title]="'Random ' + kind" [attr.aria-label]="'Random ' + kind"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 3 3 3-3 3M18 15l3 3-3 3M3 6h3c5 0 7 12 12 12h3M3 18h3c2 0 4-3 6-6s4-6 6-6h3"/></svg></button>
         <button class="random-companion" (click)="stepCompanion(kind, 1)" [disabled]="loading || !assets.length" [title]="'Next ' + kind" [attr.aria-label]="'Next ' + kind">›</button>
+      <button (click)="picker = kind">Choose {{ kind === 'texture' ? 'textures' : kind }}</button>
+        <button class="random-companion" (click)="randomCompanion(kind)" [disabled]="loading || !assets.length" [title]="'Random ' + kind" [attr.aria-label]="'Random ' + kind"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 3 3 3-3 3M18 15l3 3-3 3M3 6h3c5 0 7 12 12 12h3M3 18h3c2 0 4-3 6-6s4-6 6-6h3"/></svg></button>
+  
         <span class="companion-names">
           @for (asset of loadedCompanions[kind]; track key(asset)) {
             <button class="companion-link" (click)="navigateAsset.emit(asset)" [title]="asset.path + ' · offset ' + (asset.offset || 0)">{{ companionName(asset) }}</button>
@@ -38,8 +39,8 @@
 </div>
 @if (picker) { <app-asset-companion-picker [kind]="picker" [assets]="assets" [thumbnails]="thumbnails" [error]="error" [includeGameResources]="includeGameResources" [includeSubmapResources]="includeSubmapResources" [includeFieldEffects]="includeFieldEffects" (picked)="attach($event)" (closed)="closePicker()" /> }
 @if (loading) { <p role="status">Loading preview…</p> }
-@if (error) { <p class="error" role="alert">{{ error }}</p> }
-@if (textureMappingWarning) { <p role="status">{{ textureMappingWarning }}</p> }
+
+
 @if (format === 'SPU') {
   <div class="preview-toolbar"><label>Sample <select [(ngModel)]="sampleIndex" (change)="updateSample()">@for (sample of samples; track sample.offset; let i = $index) { <option [ngValue]="i">{{ i + 1 }} · offset {{ sample.offset }}</option> }</select></label><label>Rate <select [(ngModel)]="sampleRate" (change)="updateSample()">@for (rate of [11025, 22050, 32000, 44100, 48000]; track rate) { <option [ngValue]="rate">{{ rate }} Hz</option> }</select></label><span>{{ sampleDetails }}</span></div>
 }
@@ -58,11 +59,11 @@
       <span>{{ effectPreparing ? 'Preparing effect…' : runtimeInfo }}</span>
     }
   </div>
-  @if (runtimeDiagnostics.length) { <details class="warnings" open><summary>Effect runtime notes</summary>@for (note of runtimeDiagnostics; track $index) { <p>{{ note }}</p> }</details> }
-}@if (model && !animation && model.parts.length > 1) { <p role="status">No pose loaded. Mesh parts may overlap at the origin. Choose a matching animation to assemble the model.</p> }
-@if (model && !modelUsesTextures) { <p role="status">This model uses polygon colors and has no texture coordinates. Selecting textures will not change its surfaces.</p> }
-@if (model && modelUsesTextures && !textures.length) { <p role="status">No textures loaded. Textured surfaces display without their image detail. Choose the companion textures.</p> }
-@if (animation && !model) { <p role="status">Showing animation transforms as axes. Choose a matching model to see its animated mesh.</p> }
+  
+}
+
+
+
 @if (frameCount || model) {
   <div class="preview-toolbar playback-lighting" aria-label="Animation and lighting">
 @if (model && animationChoices.length) { <label class="animation-choice"><select aria-label="Animation" [ngModel]="animationPath" (ngModelChange)="chooseAnimation($event)"><option value="">Raw part coordinates</option>@for (item of animationChoices; track key(item)) { <option [value]="key(item)">{{ item.name }} · {{ item.format }}</option> }</select></label> }
@@ -99,8 +100,9 @@
   @if (sceneView === 'geometry' && sceneResource && overlay && (overlay.polygons.length || overlay.camera)) { <button class="reset-image-zoom" (click)="stage?.fit()" title="Restore the default scene orientation and framing">Reset orientation</button> }
   @if ((format === 'Opus' || format === 'SPU') && mediaUrl) { <audio controls [src]="mediaUrl" preload="metadata"></audio> }
   @if (model || animation || ((!sceneResource || sceneView === 'geometry') && overlay && (overlay.polygons.length || overlay.camera))) { <app-asset-stage [brightness]="brightness" [ambientStrength]="ambientStrength" [ambientColor]="ambientColor" [mainLightColor]="mainLightColor" [selectedPolygon]="selectedPolygon" (polygonSelected)="selectPolygon($event)" [model]="model" [animation]="animation" [overlay]="overlay" [frame]="frame" [wireframe]="wireframe" [texturePages]="texturePages" [followEffectCamera]="followEffectCamera" /> }
-  @if (sprite && !textures.length) { <p>Choose a TIM texture to display this sprite animation.</p> }
+  
   @if (clut && !textures.length) { <p>Choose the companion TIM to play its palette animation.</p> }
 </div>
 @if (showRecords && overlay) { <div class="records">@for (record of overlay.records.slice(0, 500); track $index) { <details><summary>{{ record.label }}</summary><pre>{{ record.values | json }}</pre></details> }</div> }
-@if (warnings.length) { <details class="warnings"><summary>Preview notes ({{ warnings.length }})</summary>@for (warning of warnings; track $index) { <p>{{ warning }}</p> }</details> }
+@let notes = previewNotes;
+@if (notes.length) { <details class="warnings"><summary>Preview notes ({{ notes.length }})</summary>@for (note of notes; track $index) { <p>{{ note }}</p> }</details> }

@@ -30,6 +30,21 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   ambientStrength = 0.65;
   ambientColor = '#ffffff';
   mainLightColor = '#ffffff';
+  get previewNotes(): string[] {
+    return [...new Set([
+      ...this.warnings,
+      this.error,
+      this.textureMappingWarning,
+      ...(this.sceneResource ? this.submap?.warnings || [] : []),
+      ...(this.record?.effectRuntime && this.format === 'LMB' ? this.runtimeDiagnostics : []),
+      this.model && !this.animation && this.model.parts.length > 1 ? 'No pose loaded. Mesh parts may overlap at the origin. Choose a matching animation to assemble the model.' : '',
+      this.model && !this.modelUsesTextures ? 'This model uses polygon colors and has no texture coordinates. Selecting textures will not change its surfaces.' : '',
+      this.model && this.modelUsesTextures && !this.textures.length ? 'No textures loaded. Textured surfaces display without their image detail. Choose the companion textures.' : '',
+      this.animation && !this.model ? 'Showing animation transforms as axes. Choose a matching model to see its animated mesh.' : '',
+      this.sprite && !this.textures.length ? 'Choose a TIM texture to display the sprite animation.' : '',
+      this.clut && !this.textures.length ? 'Choose a companion TIM to play the palette animation.' : '',
+    ].filter(Boolean))];
+  }
   adjustLighting(control: 'brightness' | 'ambientStrength', delta: number) {
     this[control] = Math.max(0, Math.min(control === 'brightness' ? 3 : 2, Math.round((this[control] + delta) * 100) / 100));
   }
