@@ -42,6 +42,8 @@ Opening a stage TMD or its animation loads the package's arena (`0/0`), animatio
 
 Composition follows `Battle.loadStage`, its initial +90-degree stage rotation, and `Battle.renderSkybox` camera-angle scrolling, clear colours, and MCQ2 offsets. The backdrop is independent of model lighting and depth, and is redrawn only when the camera or image changes. Encounter camera scripts, palette cycling, runtime stage effects, and SC's stage-specific lighting are not simulated; the existing orbit, animation, and lighting controls remain available.
 
+Battle-stage wheel zoom moves the orbit target forward as the camera approaches it, allowing travel through the arena instead of stopping at its centre. Right-drag pan uses twice the standard speed and retains an arena-scale minimum pivot distance so it stays useful after zooming in. **Fit view** restores the initial framing.
+
 Read-only validation of all extracted stage models, animation part counts, texture UV/palette coverage, and backdrops:
 
 ```powershell

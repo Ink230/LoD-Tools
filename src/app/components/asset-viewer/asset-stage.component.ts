@@ -2,13 +2,14 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmi
 import * as THREE from 'three';
 import { BattleBackdrop } from './asset-battle-stage';
 import { BattleBackdropRenderer } from './asset-battle-backdrop';
+import { dollyBattleStage } from './asset-stage-navigation';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { ModelAsset, ModelAnimation, PixelImage, SceneOverlay } from './asset-preview-types';
 
 @Component({
   selector: 'app-asset-stage',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<div #surface (pointerdown)="beginPick($event)" (pointerup)="pickPolygon($event)" class="surface" aria-label="3D asset viewport"></div>',
+  template: '<div #surface (pointerdown)="beginPick($event)" (pointerup)="pickPolygon($event)" (wheel)="zoomBattleStage($event)" class="surface" aria-label="3D asset viewport"></div>',
   styles: [':host { display:block; height:100%; min-height:360px; } .surface { width:100%; height:100%; min-height:360px; }'],
 })
 export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy {
@@ -59,6 +60,22 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
   private previousPages = this.texturePages;
   private previousAnimation: ModelAnimation | null = null;
   private previousBattleStage = false;
+  private arenaExtent = 100;
+
+  zoomBattleStage(event: WheelEvent) {
+    if (!this.battleStage || !this.controls) return;
+    event.preventDefault();
+    const pixels = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? this.surface.nativeElement.clientHeight : 1);
+    dollyBattleStage(this.camera.position, this.controls.target, this.arenaExtent, pixels);
+    this.controls.update();
+    this.render();
+  }
+
+  private configureNavigation() {
+    if (!this.controls) return;
+    this.controls.enableZoom = !this.battleStage;
+    this.controls.panSpeed = this.battleStage ? 2 : 1;
+  }
 
   ngAfterViewInit() {
     const flash = new THREE.Mesh(this.flashGeometry, this.flashMaterial);
@@ -88,6 +105,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.ambientLight.color.set(this.ambientColor);
     this.ambientLight.intensity = this.ambientStrength;
     this.mainLight.color.set(this.mainLightColor);
+    this.configureNavigation();
     if (!this.renderer) return;
     if (this.previousModel !== this.model || this.previousOverlay !== this.overlay || this.previousPages !== this.texturePages || this.previousBattleStage !== this.battleStage || (!this.model && this.previousAnimation !== this.animation)) this.rebuild();
     else this.pose();
@@ -253,6 +271,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
   fit() {
     if (!this.controls) return;
+    this.configureNavigation();
     if (this.applyEffectCamera()) { this.render(); return; }
     this.root.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(this.root);
@@ -268,7 +287,8 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
     const center = box.isEmpty() ? new THREE.Vector3() : box.getCenter(new THREE.Vector3());
     const extent = Math.max(100, box.isEmpty() ? 100 : box.getSize(new THREE.Vector3()).length());
-    this.camera.near = Math.max(0.01, extent / 10000); this.camera.far = extent * 100;
+    this.arenaExtent = extent;
+    this.camera.near = Math.max(0.01, extent / (this.battleStage ? 1000000 : 10000)); this.camera.far = extent * 100;
     this.camera.position.copy(center).add(new THREE.Vector3(extent * 0.5, extent * 0.25, extent));
     this.controls.target.copy(center); this.controls.update(); this.render();
   }
