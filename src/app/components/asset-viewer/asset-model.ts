@@ -160,8 +160,14 @@ function decodePacket(data: AssetBinary, offset: number, command: number, header
   }
 
   const cornerIndices: number[] = [];
+  const normalIndices: number[] = [];
+  let normalIndex = 0;
   for (let corner = 0; corner < corners; corner++) {
-    if (!unlit && (gouraud || corner === 0)) cursor += 2;
+    if (!unlit && (gouraud || corner === 0)) {
+      normalIndex = data.u16(cursor);
+      cursor += 2;
+    }
+    if (!unlit) normalIndices.push(normalIndex);
     const vertex = data.u16(cursor);
     if (vertex >= vertexCount) throw new Error(`Primitive references vertex ${vertex}, but the part has ${vertexCount}`);
     cornerIndices.push(vertex);
@@ -170,6 +176,7 @@ function decodePacket(data: AssetBinary, offset: number, command: number, header
 
   return {
     indices: cornerIndices,
+    ...(!unlit ? { normalIndices } : {}),
     colors,
     ...(uvs ? { uvs } : {}),
     ...(clut === undefined ? {} : { clut }),

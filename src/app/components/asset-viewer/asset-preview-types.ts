@@ -10,6 +10,7 @@ export interface TextureImage extends PixelImage {
 }
 export interface ModelPrimitive {
   indices: number[];
+  normalIndices?: number[];
   colors: [number, number, number][];
   uvs?: [number, number][];
   clut?: number;

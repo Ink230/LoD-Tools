@@ -26,6 +26,10 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   @Input() record!: AssetRecord;
   @Input() backgroundColor = '#18221c';
   @Input() backgroundPattern = true;
+  brightness = 1;
+  ambientStrength = 0.65;
+  ambientColor = '#ffffff';
+  mainLightColor = '#ffffff';
   @Input() related: AssetRecord[] = [];
   @Input() assets: AssetRecord[] = [];
   @Input() thumbnails = new Map<string, string>();

@@ -51,7 +51,7 @@ describe('decodeModel', () => {
     expect(model.format).toBe('TMD');
     expect(model.parts[0].vertices).toEqual([[0, 0, 0], [100, 10, 0], [200, 20, 0]]);
     expect(model.parts[0].primitives[0]).toMatchObject({
-      indices: [0, 1, 2], colors: [[51, 34, 17], [51, 34, 17], [51, 34, 17]],
+      indices: [0, 1, 2], normalIndices: [0, 0, 0], colors: [[51, 34, 17], [51, 34, 17], [51, 34, 17]],
     });
   });
 

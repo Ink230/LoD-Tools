@@ -29,6 +29,12 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.polygonSelected.emit(hits.length ? hits[0].object.userData['polygonIndex'] : null);
   }
   @Input() wireframe = false;
+  @Input() brightness = 1;
+  @Input() ambientStrength = 0.65;
+  @Input() ambientColor = '#ffffff';
+  @Input() mainLightColor = '#ffffff';
+  private readonly ambientLight = new THREE.AmbientLight();
+  private readonly mainLight = new THREE.DirectionalLight('#ffffff', 0.65);
   @Input() texturePages = new Map<string, PixelImage>();
   private readonly zone = inject(NgZone);
   private renderer?: THREE.WebGLRenderer;
@@ -58,7 +64,9 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.renderer.outputColorSpace = THREE.SRGBColorSpace;
       this.surface.nativeElement.appendChild(this.renderer.domElement);
       this.root.scale.set(1, -1, -1);
-      this.scene.add(this.root);
+    this.scene.add(this.root);
+    this.mainLight.position.set(-1, 2, 3);
+    this.scene.add(this.ambientLight, this.mainLight);
       this.controls = new OrbitControls(this.camera, this.renderer.domElement);
       this.controls.addEventListener('change', () => this.render());
       this.resize = new ResizeObserver(() => this.render());
@@ -69,6 +77,9 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
   }
   ngOnChanges() {
+    this.ambientLight.color.set(this.ambientColor);
+    this.ambientLight.intensity = this.ambientStrength;
+    this.mainLight.color.set(this.mainLightColor);
     if (!this.renderer) return;
     if (this.previousModel !== this.model || this.previousOverlay !== this.overlay || this.previousPages !== this.texturePages || (!this.model && this.previousAnimation !== this.animation)) this.rebuild();
     else this.pose();
@@ -98,12 +109,13 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
       // Batch primitives by PSX texture page, palette and translucency rather than one draw per polygon.
       const batches = new Map<string, typeof part.primitives>();
       for (const primitive of part.primitives) {
-        const key = `${primitive.clut ?? -1}:${primitive.tpage ?? -1}:${primitive.translucent ? 1 : 0}`;
+      const key = `${primitive.clut ?? -1}:${primitive.tpage ?? -1}:${primitive.translucent ? 1 : 0}:${primitive.unlit ? 1 : 0}`;
         const batch = batches.get(key) || [];
         batch.push(primitive); batches.set(key, batch);
       }
       for (const batch of batches.values()) {
         const positions: number[] = [], colors: number[] = [], uvs: number[] = [];
+        const normals: number[] = [];
         const first = batch[0];
         const page = this.texturePages.get(`${first.clut}:${first.tpage}`);
         // Eyes and mouths can be textured decals coplanar with an untextured face.
@@ -115,6 +127,8 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
             const vertex = part.vertices[primitive.indices[index]];
             if (!vertex) continue;
             positions.push(...vertex);
+            const normal = part.normals[primitive.normalIndices?.[index] ?? -1];
+            normals.push(...(normal || [0, 0, 0]));
             const color = primitive.colors[index] || primitive.colors[0] || [128, 128, 128];
             colors.push(...color.map(channel => channel * (page ? 2 / 255 : 1 / 255)));
             const uv = primitive.uvs?.[index] || [0, 0];
@@ -125,6 +139,13 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
         geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
         geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+        geometry.computeVertexNormals();
+        const normalAttribute = geometry.getAttribute('normal');
+        for (let i = 0; i < normals.length; i += 3) {
+          const normal = new THREE.Vector3(normals[i], normals[i + 1], normals[i + 2]);
+          if (normal.lengthSq()) normalAttribute.setXYZ(i / 3, ...normal.normalize().toArray());
+        }
+        const Material = first.unlit || part.billboard ? THREE.MeshBasicMaterial : THREE.MeshLambertMaterial;
         const makeTexture = (semiPass: boolean) => {
           if (!page) return null;
           const pixels = new Uint8Array(page.pixels);
@@ -138,12 +159,12 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
           return texture;
         };
         if (page || !first.translucent) {
-          const material = new THREE.MeshBasicMaterial({ map: makeTexture(false), vertexColors: true, side: THREE.DoubleSide, alphaTest: 0.01, wireframe: this.wireframe, ...decalDepth });
+          const material = new Material({ map: makeTexture(false), vertexColors: true, side: THREE.DoubleSide, alphaTest: 0.01, wireframe: this.wireframe, ...decalDepth });
           group.add(new THREE.Mesh(geometry, material));
         }
         if (first.translucent) {
           const mode = ((first.tpage || 0) >> 5) & 3;
-          const material = new THREE.MeshBasicMaterial({ map: makeTexture(true), vertexColors: true, side: THREE.DoubleSide, alphaTest: 0.01, transparent: true, depthWrite: false, wireframe: this.wireframe, ...decalDepth });
+          const material = new Material({ map: makeTexture(true), vertexColors: true, side: THREE.DoubleSide, alphaTest: 0.01, transparent: true, depthWrite: false, wireframe: this.wireframe, ...decalDepth });
           material.blending = THREE.CustomBlending;
           material.blendEquation = mode === 2 ? THREE.ReverseSubtractEquation : THREE.AddEquation;
           material.blendSrc = mode === 0 || mode === 3 ? THREE.ConstantAlphaFactor : THREE.OneFactor;
@@ -197,7 +218,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.parts[i].userData['screenRotation'] = transform?.screenRotation;
       this.parts[i].traverse(object => {
         const material = (object as THREE.Mesh).material;
-        if (material instanceof THREE.MeshBasicMaterial) material.color.setRGB(...((transform?.colour || [128, 128, 128]).map(value => value / 128) as [number, number, number]));
+        if ((material instanceof THREE.MeshBasicMaterial || material instanceof THREE.MeshLambertMaterial)) material.color.setRGB(...((transform?.colour || [128, 128, 128]).map(value => value / 128 * this.brightness) as [number, number, number]));
       });
       this.parts[i].position.set(...(transform?.translation || [0, 0, 0]));
       this.parts[i].rotation.set(...(transform?.rotation || [0, 0, 0]), 'ZYX');
@@ -205,7 +226,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
     this.root.traverse(object => {
       const material = (object as THREE.Mesh).material;
-      if (material instanceof THREE.MeshBasicMaterial && !object.userData['collisionPick']) material.wireframe = this.wireframe;
+      if ((material instanceof THREE.MeshBasicMaterial || material instanceof THREE.MeshLambertMaterial) && !object.userData['collisionPick']) material.wireframe = this.wireframe;
     });
     this.applyEffectCamera();
     this.render();
