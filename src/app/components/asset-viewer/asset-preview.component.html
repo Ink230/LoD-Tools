@@ -84,9 +84,9 @@
 
     }
     @if (model) {
-      <div class="lighting-control"><button class="lighting-reset" (click)="brightness = 1" title="Reset brightness to 100%">Brightness</button><span class="lighting-setting"><input aria-label="Colour" type="color" [(ngModel)]="mainLightColor" /><input aria-label="Brightness" type="range" min="0" max="3" step="0.05" [(ngModel)]="brightness" /><span class="lighting-value">{{ (brightness * 100).toFixed(0) }}%</span></span></div>
+      <div class="lighting-control"><button class="lighting-reset" (click)="brightness = 1" title="Reset brightness to 100%">Brightness</button><span class="lighting-value">{{ (brightness * 100).toFixed(0) }}%</span><span class="lighting-setting"><input aria-label="Colour" type="color" [(ngModel)]="mainLightColor" /><input aria-label="Brightness" type="range" min="0" max="3" step="0.05" [(ngModel)]="brightness" /></span></div>
 
-      <div class="lighting-control"><button class="lighting-reset" (click)="ambientStrength = 1" title="Reset glow to 100%">Glow</button><span class="lighting-setting"><input aria-label="Glow colour" type="color" [(ngModel)]="ambientColor" /><input aria-label="Glow" type="range" min="0" max="2" step="0.05" [(ngModel)]="ambientStrength" /><span class="lighting-value">{{ (ambientStrength * 100).toFixed(0) }}%</span></span></div>
+      <div class="lighting-control"><button class="lighting-reset" (click)="ambientStrength = 1" title="Reset glow to 100%">Glow</button><span class="lighting-value">{{ (ambientStrength * 100).toFixed(0) }}%</span><span class="lighting-setting"><input aria-label="Glow colour" type="color" [(ngModel)]="ambientColor" /><input aria-label="Glow" type="range" min="0" max="2" step="0.05" [(ngModel)]="ambientStrength" /></span></div>
 
 
     }

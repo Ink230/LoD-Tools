@@ -8,7 +8,7 @@
 .playback-lighting .frame-position { min-width:48px; padding:0 6px; border:0; background:none; font-variant-numeric:tabular-nums; text-align:center; }
 .frame-position:hover { text-decoration:underline; }
 .frame-position:focus-visible { outline:2px solid var(--wmap-color-2); outline-offset:2px; }
-.playback-lighting .lighting-value { width:38px; font-variant-numeric:tabular-nums; }
+.playback-lighting .lighting-value { width:38px; text-align:right; font-variant-numeric:tabular-nums; }
 .playback-lighting input[type=number] { width:52px; }
 .playback-lighting input[type=color] { width:28px; min-width:28px; height:28px; flex-basis:28px; }
 .playback-lighting input[type=range] { appearance:none; -webkit-appearance:none; width:90px; min-width:90px; padding:0 6px; border:1px solid var(--wmap-color-3); border-radius:4px; background:var(--wmap-color-4); cursor:pointer; }
@@ -32,7 +32,9 @@
 .playback-lighting .fps-step { display:grid; place-items:center; width:28px; height:28px; flex:0 0 28px; padding:0; }
 .fps-step svg { display:block; }
 .playback-lighting .playback-toggle { display:grid; place-items:center; width:28px; min-width:28px; height:28px; flex:0 0 28px; padding:4px; }
-.lighting-control { display:flex; flex-direction:column; align-items:flex-start; gap:5px; }
+.lighting-control { display:grid; grid-template-columns:1fr auto; align-items:center; gap:5px; }
+.lighting-control > .lighting-setting { grid-column:1 / -1; }
+.lighting-control > .lighting-reset { justify-self:start; }
 .playback-lighting .lighting-reset { height:auto; padding:0; border:0; background:none; font:12px system-ui; white-space:nowrap; }
 .lighting-reset:hover { text-decoration:underline; }
 .lighting-reset:focus-visible { outline:2px solid var(--wmap-color-2); outline-offset:2px; }
