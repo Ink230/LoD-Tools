@@ -39,5 +39,5 @@ input[type=number] { width:65px; } .playback input { flex:1; min-width:100px; }
 .companion-resource-filters button { white-space:nowrap; min-height:28px; }
 .companion-resource-filters button[aria-pressed=true] { background:var(--wmap-color-3); color:var(--wmap-color-2); box-shadow:inset 0 0 0 1px currentColor; }
 .composition-toolbar .companion-controls { display:grid; grid-template-columns:28px minmax(0,1fr) 28px 28px; gap:4px; width:220px; }
-.composition-toolbar .companion-names { grid-column:1 / -1; grid-row:1; box-sizing:border-box; width:100%; padding:6px 8px; flex-wrap:nowrap; overflow:hidden; }
-.composition-toolbar .companion-link { display:block; flex:1 1 0; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.composition-toolbar .companion-names { grid-column:1 / -1; grid-row:1; box-sizing:border-box; width:100%; padding:0; flex-wrap:nowrap; overflow:hidden; }
+.composition-toolbar .companion-link { display:block; box-sizing:border-box; flex:1 1 0; min-width:0; padding:6px 10px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
