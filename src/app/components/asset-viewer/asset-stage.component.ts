@@ -58,6 +58,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
   private previousOverlay: SceneOverlay | null = null;
   private previousPages = this.texturePages;
   private previousAnimation: ModelAnimation | null = null;
+  private previousBattleStage = false;
 
   ngAfterViewInit() {
     const flash = new THREE.Mesh(this.flashGeometry, this.flashMaterial);
@@ -88,7 +89,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.ambientLight.intensity = this.ambientStrength;
     this.mainLight.color.set(this.mainLightColor);
     if (!this.renderer) return;
-    if (this.previousModel !== this.model || this.previousOverlay !== this.overlay || this.previousPages !== this.texturePages || (!this.model && this.previousAnimation !== this.animation)) this.rebuild();
+    if (this.previousModel !== this.model || this.previousOverlay !== this.overlay || this.previousPages !== this.texturePages || this.previousBattleStage !== this.battleStage || (!this.model && this.previousAnimation !== this.animation)) this.rebuild();
     else this.pose();
   }
   private clear() {
@@ -110,6 +111,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.previousOverlay = this.overlay;
     this.previousPages = this.texturePages;
     this.previousAnimation = this.animation;
+    this.previousBattleStage = this.battleStage;
     for (const part of this.model?.parts || []) {
       const group = new THREE.Group();
       this.parts.push(group); this.root.add(group);
@@ -152,7 +154,8 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
           const normal = new THREE.Vector3(normals[i], normals[i + 1], normals[i + 2]);
           if (normal.lengthSq()) normalAttribute.setXYZ(i / 3, ...normal.normalize().toArray());
         }
-        const Material = first.unlit || part.billboard ? THREE.MeshBasicMaterial : THREE.MeshLambertMaterial;
+        // Arena textures bake in shading, but still need to respond to the preview lighting controls.
+        const Material = (first.unlit && !this.battleStage) || part.billboard ? THREE.MeshBasicMaterial : THREE.MeshLambertMaterial;
         const makeTexture = (semiPass: boolean) => {
           if (!page) return null;
           const pixels = new Uint8Array(page.pixels);
