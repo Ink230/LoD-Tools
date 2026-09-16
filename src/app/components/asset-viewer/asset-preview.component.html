@@ -12,12 +12,7 @@
   @if (format === 'TIM' && paletteCount > 1) { <label>Palette <input type="number" min="0" [max]="paletteCount - 1" [(ngModel)]="palette" (change)="updatePalette()" /></label><span>/ {{ paletteCount }}</span> }
   @if (format === 'LMB') { <label>Subtype <select [(ngModel)]="lmbType" (change)="load()"><option [ngValue]="0">0</option><option [ngValue]="1">1</option><option [ngValue]="2">2</option></select></label> }
   @if (model || animation || sprite || clut || sceneResource) {
-    <span class="companion-resource-filters" role="group" aria-label="Preview composition resources">
-      
-      <button (click)="includeGameResources = !includeGameResources" [attr.aria-pressed]="includeGameResources">Game resources</button>
-      <button (click)="includeSubmapResources = !includeSubmapResources" [attr.aria-pressed]="includeSubmapResources">Submap resources</button>
-      <button (click)="includeFieldEffects = !includeFieldEffects" [attr.aria-pressed]="includeFieldEffects">Field effects</button>
-    </span>
+  
     @for (kind of visibleCompanionKinds; track kind) {
       <span class="companion-controls">
         <button class="random-companion" (click)="stepCompanion(kind, -1)" [disabled]="loading || !assets.length" [title]="'Previous ' + kind" [attr.aria-label]="'Previous ' + kind">‹</button>
@@ -31,6 +26,12 @@
         </span>
       </span>
     }
+  <span class="companion-resource-filters" role="group" aria-label="Preview composition resources">
+      
+      <button (click)="includeGameResources = !includeGameResources" [attr.aria-pressed]="includeGameResources">Game resources</button>
+      <button (click)="includeSubmapResources = !includeSubmapResources" [attr.aria-pressed]="includeSubmapResources">Submap resources</button>
+      <button (click)="includeFieldEffects = !includeFieldEffects" [attr.aria-pressed]="includeFieldEffects">Field effects</button>
+    </span>
   }
   @if (model || animation || (sceneView === 'geometry' && overlay?.polygons?.length)) { <button (click)="stage?.fit()">Fit view</button><label><input type="checkbox" [(ngModel)]="wireframe" /> Wireframe</label> }
   @if (overlay?.records?.length) { <button (click)="showRecords = !showRecords" [attr.aria-pressed]="showRecords">Records</button> }
