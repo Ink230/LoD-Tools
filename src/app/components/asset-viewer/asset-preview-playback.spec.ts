@@ -1,8 +1,40 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { AssetPreviewComponent } from './asset-preview.component';
 
 describe('animation playback speed', () => {
+  it('renders playback ticks without mouse events or a separate change detection pass', () => {
+    let tick: FrameRequestCallback = (): void => undefined;
+    const raf = vi.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(callback => {
+      tick = callback;
+      return 1;
+    });
+    const cancel = vi.spyOn(globalThis, 'cancelAnimationFrame').mockImplementation((): void => undefined);
+    const fixture = TestBed.createComponent(AssetPreviewComponent);
+    try {
+      const preview = fixture.componentInstance;
+      preview.record = { path: 'test', name: 'test', format: 'LMB', category: '', gameCategory: '', gameAsset: '', size: 0 };
+      preview.animation = { format: 'LMB', fps: 30, frames: [[], [], []], warnings: [] };
+      fixture.detectChanges();
+      const element = fixture.nativeElement as HTMLElement;
+      element.querySelector<HTMLButtonElement>('[aria-label="Play animation"]')!.click();
+      const now = performance.now();
+      tick(now + 100);
+      expect(preview.frame).toBe(1);
+      expect(element.querySelector<HTMLInputElement>('[aria-label="Animation frame"]')!.value).toBe('1');
+      expect(element.querySelector('.frame-position')!.textContent!.trim()).toBe('2 / 3');
+      tick(now + 200);
+      expect(element.querySelector<HTMLInputElement>('[aria-label="Animation frame"]')!.value).toBe('2');
+      element.querySelector<HTMLButtonElement>('[aria-label="Pause animation"]')!.click();
+      tick(now + 300);
+      expect(preview.frame).toBe(2);
+    } finally {
+      fixture.destroy();
+      raf.mockRestore();
+      cancel.mockRestore();
+    }
+  });
+
   it('ignores cursor movement after releasing an animation drag', () => {
     const fixture = TestBed.createComponent(AssetPreviewComponent);
     const preview = fixture.componentInstance;

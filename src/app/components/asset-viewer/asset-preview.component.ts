@@ -560,6 +560,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.lastTick = performance.now();
   }
   togglePlayback() {
+    this.endFrameDrag();
     this.playing = !this.playing;
     cancelAnimationFrame(this.raf);
     if (!this.playing) return;
@@ -569,7 +570,12 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
       const duration = this.frameDurationMs;
       if (now - this.lastTick >= duration) {
         this.lastTick = now;
-        this.zone.run(() => { this.frame = (this.frame + 1) % this.frameCount; this.cdr.markForCheck(); this.draw(); });
+        this.zone.run(() => {
+          this.frame = (this.frame + 1) % this.frameCount;
+          this.draw();
+          // Render the transport and stage inputs on this tick, without waiting for UI events.
+          this.cdr.detectChanges();
+        });
       }
       this.raf = requestAnimationFrame(tick);
     };
