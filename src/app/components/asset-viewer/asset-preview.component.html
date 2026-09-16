@@ -7,6 +7,7 @@
   </div>
   
 }
+@if (!sceneResource) {
 <div class="preview-toolbar composition-toolbar" [class.with-animation-choice]="model && animationChoices.length > 0">
 
   @if (format === 'TIM' && paletteCount > 1) { <label>Palette <input type="number" min="0" [max]="paletteCount - 1" [(ngModel)]="palette" (change)="updatePalette()" /></label><span>/ {{ paletteCount }}</span> }
@@ -37,6 +38,7 @@
   @if (model || animation || (sceneView === 'geometry' && overlay?.polygons?.length)) { <button (click)="stage?.fit()">Fit view</button><label><input type="checkbox" [(ngModel)]="wireframe" /> Wireframe</label> }
   @if (overlay?.records?.length) { <button (click)="showRecords = !showRecords" [attr.aria-pressed]="showRecords">Records</button> }
 </div>
+}
 @if (picker) { <app-asset-companion-picker [kind]="picker" [assets]="assets" [thumbnails]="thumbnails" [error]="error" [includeGameResources]="includeGameResources" [includeSubmapResources]="includeSubmapResources" [includeFieldEffects]="includeFieldEffects" (picked)="attach($event)" (closed)="closePicker()" /> }
 @if (loading) { <p role="status">Loading preview…</p> }
 
