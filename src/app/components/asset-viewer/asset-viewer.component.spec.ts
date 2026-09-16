@@ -41,22 +41,22 @@ describe('asset explorer', () => {
     expect(viewer.historyIndex).toBe(1);
     expect(connect).not.toHaveBeenCalled();
   });
-  it('starts with formats and switches browse modes without discarding the open file', async () => {
+  it('starts in Asset mode and switches browse modes without discarding the open file', async () => {
     const fixture = TestBed.createComponent(AssetViewerComponent);
     const viewer = fixture.componentInstance;
     fixture.detectChanges();
-    expect(viewer.browseMode).toBe('format');
-    expect(fixture.nativeElement.querySelector('.section-list').textContent).toContain('Images & textures');
+    expect(viewer.browseMode).toBe('game');
+    expect(fixture.nativeElement.querySelector('.section-list').textContent).toContain('Party members');
     const file = new File(['asset'], 'test.tim');
     await viewer.open({ kind: 'file', name: file.name, getFile: async () => file });
     viewer.search = 'nothing';
     const buttons: HTMLButtonElement[] = Array.from(fixture.nativeElement.querySelectorAll('.browse-modes button'));
     buttons[1].click();
     fixture.detectChanges();
-    expect(viewer.browseMode).toBe('game');
+    expect(viewer.browseMode).toBe('format');
     expect(viewer.search).toBe('');
-    expect(fixture.nativeElement.querySelector('.section-list').textContent).toContain('Party members');
-    buttons[2].click();
+    expect(fixture.nativeElement.querySelector('.section-list').textContent).toContain('Images & textures');
+    buttons[0].click();
     fixture.detectChanges();
     expect(viewer.selected).toBe(file);
     expect(fixture.nativeElement.querySelector('.inspector').textContent).toContain('test.tim');
