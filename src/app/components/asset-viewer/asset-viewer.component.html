@@ -38,7 +38,7 @@
 
     <div class="background-controls">          <input class="background-swatch" type="color" [(ngModel)]="previewBackground" title="Preview background colour" aria-label="Preview background colour" />
           <button class="background-pattern" (click)="previewPattern = !previewPattern" [attr.aria-pressed]="previewPattern" title="Toggle background checkerboard" aria-label="Toggle background checkerboard"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M0 0h8v8H0zm8 8h8v8H8z"/><path d="M.5.5h15v15H.5z" fill="none" stroke="currentColor"/></svg></button>
-<span class="muted">Read-only</span></div>
+</div><span class="muted document-status">Read-only</span>
   </div>
   <div class="workspace" [attr.aria-busy]="busy">
     <aside class="library" aria-label="Asset explorer">
