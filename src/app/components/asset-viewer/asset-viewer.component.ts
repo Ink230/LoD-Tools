@@ -182,8 +182,8 @@ export class AssetViewerComponent implements OnInit {
     } catch (error) { this.error = String(error); }
     finally { this.busy = false; this.changeDetector.markForCheck(); }
   }
-  browseMode: 'format' | 'game' | 'files' = 'format';
-  categoryId = FORMAT_CATEGORIES[0].id;
+  browseMode: 'format' | 'game' | 'files' = 'game';
+  categoryId = GAME_ASSET_CATEGORIES[0].id;
   catalogSelection: { name: string; description: string } | null = null;
   get categories() { return this.browseMode === 'game' ? GAME_ASSET_CATEGORIES : FORMAT_CATEGORIES; }
   get category() { return this.categories.find(category => category.id === this.categoryId) || this.categories[0]; }
@@ -247,6 +247,7 @@ export class AssetViewerComponent implements OnInit {
       const directory = await picker.showDirectoryPicker({ mode: 'read' });
       await this.readDirectory([directory]);
       this.source = new AssetSource(directory);
+      this.setBrowseMode('game');
     } catch (error) {
       if (!(error instanceof DOMException && error.name === 'AbortError')) this.error = 'Unable to open the folder. Check folder access and try again.';
     } finally {

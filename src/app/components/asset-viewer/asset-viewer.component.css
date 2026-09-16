@@ -10,7 +10,9 @@
 .library .entry-list { overflow:auto; flex:1; min-height:0; }
 app-asset-preview { flex:1; min-height:0; }
 .browse-modes .file-mode { margin-left: 12px; }
-.document-bar > div:first-child { min-width: 0; }
+.document-bar { justify-content:flex-start; padding-inline:18px; gap:18px; }
+.browse-modes { gap:6px; flex-shrink:0; }
+.document-source { min-width:0; flex:1; }
 .main-panel { min-width: 0; overflow: auto; background: var(--wmap-color-67); }
 .empty-state { min-height: 360px; height: calc(100% - 48px); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 32px; text-align: center; }
 .empty-state > p { max-width: 460px; }

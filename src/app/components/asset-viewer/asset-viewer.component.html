@@ -28,12 +28,12 @@
   }
   @if (error) { <div class="error" role="alert">{{ error }} <button (click)="error = ''" aria-label="Dismiss error">×</button></div> }
   <div class="document-bar">
-    <div><strong>{{ directories.length ? directories[0].name : 'Severed Chains assets' }}</strong><code class="document-file">{{ path || 'Local files / No folder connected' }}</code></div>
     <nav class="actions browse-modes" aria-label="Browse assets">
-      <button (click)="setBrowseMode('format')" [class.active]="browseMode === 'format'" [attr.aria-pressed]="browseMode === 'format'">By format</button>
-      <button (click)="setBrowseMode('game')" [class.active]="browseMode === 'game'" [attr.aria-pressed]="browseMode === 'game'">By game asset</button>
-      <button class="file-mode" (click)="setBrowseMode('files')" [class.active]="browseMode === 'files'" [attr.aria-pressed]="browseMode === 'files'">File explorer</button>
+      <button (click)="setBrowseMode('format')" [class.active]="browseMode === 'format'" [attr.aria-pressed]="browseMode === 'format'">Format</button>
+      <button (click)="setBrowseMode('game')" [class.active]="browseMode === 'game'" [attr.aria-pressed]="browseMode === 'game'">Asset</button>
+      <button class="file-mode" (click)="setBrowseMode('files')" [class.active]="browseMode === 'files'" [attr.aria-pressed]="browseMode === 'files'">Files</button>
     </nav>
+    <div class="document-source"><strong>{{ directories.length ? directories[0].name : 'Severed Chains assets' }}</strong><code class="document-file">{{ path || 'Local files / No folder connected' }}</code></div>
     <div class="background-controls">          <input class="background-swatch" type="color" [(ngModel)]="previewBackground" title="Preview background colour" aria-label="Preview background colour" />
           <button class="background-pattern" (click)="previewPattern = !previewPattern" [attr.aria-pressed]="previewPattern" title="Toggle background checkerboard" aria-label="Toggle background checkerboard"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M0 0h8v8H0zm8 8h8v8H8z"/><path d="M.5.5h15v15H.5z" fill="none" stroke="currentColor"/></svg></button>
 <span class="muted">Read-only</span></div>
