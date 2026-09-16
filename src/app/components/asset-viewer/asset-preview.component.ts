@@ -30,6 +30,9 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   ambientStrength = 0.65;
   ambientColor = '#ffffff';
   mainLightColor = '#ffffff';
+  adjustLighting(control: 'brightness' | 'ambientStrength', delta: number) {
+    this[control] = Math.max(0, Math.min(control === 'brightness' ? 3 : 2, Math.round((this[control] + delta) * 100) / 100));
+  }
   @Input() related: AssetRecord[] = [];
   @Input() assets: AssetRecord[] = [];
   @Input() thumbnails = new Map<string, string>();
