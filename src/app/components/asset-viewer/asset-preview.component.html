@@ -36,6 +36,7 @@
     </span>
   }
   @if (model || animation || (sceneView === 'geometry' && overlay?.polygons?.length)) { <button (click)="stage?.fit()">Fit view</button><label><input type="checkbox" [(ngModel)]="wireframe" /> Wireframe</label> }
+  @if (battleStagePreview && battleBackdrop) { <button (click)="showBattleBackdrop = !showBattleBackdrop" [attr.aria-pressed]="showBattleBackdrop">Background</button> }
   @if (overlay?.records?.length) { <button (click)="showRecords = !showRecords" [attr.aria-pressed]="showRecords">Records</button> }
 </div>
 }
@@ -101,7 +102,7 @@
   @if (zoomableImage && (image || mediaUrl)) { <button class="reset-image-zoom" (click)="resetImageZoom()" title="Reset zoom and center image">Reset zoom</button> }
   @if (sceneView === 'geometry' && sceneResource && overlay && (overlay.polygons.length || overlay.camera)) { <button class="reset-image-zoom" (click)="stage?.fit()" title="Restore the default scene orientation and framing">Reset orientation</button> }
   @if ((format === 'Opus' || format === 'SPU') && mediaUrl) { <audio controls [src]="mediaUrl" preload="metadata"></audio> }
-  @if (model || animation || ((!sceneResource || sceneView === 'geometry') && overlay && (overlay.polygons.length || overlay.camera))) { <app-asset-stage [brightness]="brightness" [ambientStrength]="ambientStrength" [ambientColor]="ambientColor" [mainLightColor]="mainLightColor" [selectedPolygon]="selectedPolygon" (polygonSelected)="selectPolygon($event)" [model]="model" [animation]="animation" [overlay]="overlay" [frame]="frame" [wireframe]="wireframe" [texturePages]="texturePages" [followEffectCamera]="followEffectCamera" /> }
+  @if (model || animation || ((!sceneResource || sceneView === 'geometry') && overlay && (overlay.polygons.length || overlay.camera))) { <app-asset-stage [battleStage]="battleStagePreview" [backdrop]="showBattleBackdrop ? battleBackdrop : null" [brightness]="brightness" [ambientStrength]="ambientStrength" [ambientColor]="ambientColor" [mainLightColor]="mainLightColor" [selectedPolygon]="selectedPolygon" (polygonSelected)="selectPolygon($event)" [model]="model" [animation]="animation" [overlay]="overlay" [frame]="frame" [wireframe]="wireframe" [texturePages]="texturePages" [followEffectCamera]="followEffectCamera" /> }
   
   @if (clut && !textures.length) { <p>Choose the companion TIM to play its palette animation.</p> }
 </div>

@@ -53,8 +53,11 @@ export const GAME_ASSET_CATEGORIES: AssetCategory[] = [
   { id: 'submap-resources', name: 'Submap resources', description: 'Submap objects, textures, animations, and scene data.', entries: [
       { name: 'Submaps', description: 'Backgrounds, foregrounds, objects, cameras, collision, and scripts' },
   ] },
-  { id: 'game-resources', name: 'Game resources', description: 'Other extracted game archive resources.', entries: [
+  { id: 'battle-stages', name: 'Battle stages', description: 'Battle arenas with their linked textures, animation, and backgrounds.', entries: [
     { name: 'Battle stages', description: 'Arena models, textures, animation, and backdrops' },
+  ] },
+
+  { id: 'game-resources', name: 'Game resources', description: 'Other extracted game archive resources.', entries: [
     { name: 'World map', description: 'Terrain, location imagery, and world objects' },
   ] },
   { id: 'abilities', name: 'Attacks & magic', description: 'Visual and audio resources for combat abilities and items.', entries: [

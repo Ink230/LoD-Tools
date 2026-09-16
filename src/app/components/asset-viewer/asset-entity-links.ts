@@ -14,6 +14,7 @@ export function entityLinks(entity: AssetRecord, catalog: AssetRecord[]): Entity
     { label: 'Effect package models', assets: (entity.effectRuntime?.resources.filter(resource => resource.kind === 'TMD') || []).map(resource => resolve(resource.path, 'TMD', resource.offset)) },
     { label: 'Effect setup script', assets: entity.effectRuntime ? [resolve(entity.effectRuntime.script, 'Unknown')] : [] },
     { label: 'Textures', assets: (entity.textures || []).map(path => resolve(path, 'TIM')) },
+    { label: 'Background', assets: entity.backdrop ? [resolve(entity.backdrop, 'MCQ')] : [] },
     { label: 'Model', assets: model ? [model] : [] },
     { label: 'Animations', assets: animations },
     { label: 'Environment', assets: entity.environment ? [resolve(entity.environment, 'Environment')] : [] },

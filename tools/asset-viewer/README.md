@@ -34,6 +34,20 @@ Full scripted effects, complete scene reconstruction, music synthesis, IKI/video
 
 SC's `Unpacker` produces extracted/converted resources and its loading pipeline consumes them. Extraction is not a fresh ISO rebuild on every resource selection. This viewer reads the existing output; it does not run SC's unpacker, Java code, script patch/compiler pipeline, or mod runtime. It reconstructs the representations needed for a selected preview. Use an extraction matching the catalog; missing or changed resources report a load error. Runtime-driven effects and mod-specific behavior are not inferred from raw files.
 
+## Battle stages
+
+**By Asset → Battle stages** groups the 96 retail stage package IDs (`SECT/DRGN0.BIN/2497` through `2592`) separately from generic game resources. Empty resources are omitted from the catalog; the current extraction contains 89 non-empty arena models.
+
+Opening a stage TMD or its animation loads the package's arena (`0/0`), animation (`0/1`), TIM (`2`), and MCQ backdrop (`1`) on demand. Source references appear in the inspector, including on the individual TIM and MCQ entries. Selecting those images still opens their standalone image previews. The **Background** toggle changes only the current preview.
+
+Composition follows `Battle.loadStage`, its initial +90-degree stage rotation, and `Battle.renderSkybox` camera-angle scrolling, clear colours, and MCQ2 offsets. The backdrop is independent of model lighting and depth, and is redrawn only when the camera or image changes. Encounter camera scripts, palette cycling, runtime stage effects, and SC's stage-specific lighting are not simulated; the existing orbit, animation, and lighting controls remain available.
+
+Read-only validation of all extracted stage models, animation part counts, texture UV/palette coverage, and backdrops:
+
+```powershell
+rtk proxy node tools/asset-viewer/verify-battle-stages.mjs D:/java/sc/files
+```
+
 ## Generate and validate
 
 Run from `web` with a modern Node version supporting native TypeScript stripping:

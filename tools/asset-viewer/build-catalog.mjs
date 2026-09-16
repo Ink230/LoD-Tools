@@ -3,7 +3,7 @@
 import { open, readdir, readFile, writeFile, mkdir, stat } from 'node:fs/promises';
 import { resolve, dirname } from 'node:path';
 import { gzipSync } from 'node:zlib';
-import { identifyAsset, assetCategory, gameIdentity } from '../../src/app/components/asset-viewer/asset-catalog.ts';
+import { identifyAsset, assetCategory, gameIdentity, linkBattleStages } from '../../src/app/components/asset-viewer/asset-catalog.ts';
 
 const root = resolve(process.argv[2] || '');
 if (!process.argv[2]) throw new Error('Pass the extracted SC files directory');
@@ -200,6 +200,7 @@ for (const model of assets.filter(asset => asset.format === 'TMD')) {
     }
   } finally { await file.close(); }
 }
+linkBattleStages(assets);
 assets.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true }) || (a.offset || 0) - (b.offset || 0));
 await mkdir(dirname(output), { recursive: true });
 await writeFile(output, gzipSync(JSON.stringify({ version: 1, extractionVersion: (await readFile(resolve(root, 'version'), 'utf8')).trim(), assets }), { level: 9 }));

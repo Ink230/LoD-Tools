@@ -1,4 +1,5 @@
 import { EffectPreviewRuntime } from './asset-effect-runtime';
+import { BattleBackdrop, decodeBattleBackdrop } from './asset-battle-stage';
 import { effectSetupContext, EffectBattleSide } from './asset-effect-context';
 import { buildEffectScene } from './asset-effect-scene';
 import { SubmapComposition, decodeSubmapComposition, renderSubmapComposition, projectSubmapPoint } from './asset-submap';
@@ -22,6 +23,9 @@ import { AssetStageComponent } from './asset-stage.component';
   templateUrl: './asset-preview.component.html', styleUrls: ['./asset-preview.component.css', './asset-playback.css'],
 })
 export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestroy {
+  battleBackdrop: BattleBackdrop | null = null;
+  showBattleBackdrop = true;
+  get battleStagePreview() { return this.record?.battleStageId !== undefined && ['TMD', 'Animation'].includes(this.format); }
   @Input() bytes: Uint8Array = new Uint8Array();
   @Input() record!: AssetRecord;
   @Input() backgroundColor = '#18221c';
@@ -297,7 +301,10 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.animation = decodeLmb(this.bytes, this.lmbType);
     this.durations = [];
     this.playbackFps = this.nativeFps;
-  }  async load() {
+  }
+  async load() {
+    this.battleBackdrop = null;
+    this.showBattleBackdrop = true;
     this.effectMode = 'runtime';
     this.effectPreparing = false;
     this.effectStart = 0;
@@ -399,6 +406,19 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
           this.showRecords = true; this.warnings.push(...this.clut.warnings); break;
         }
         default: this.error = 'This resource is not recognized. Choose a format to inspect it.';
+      }
+      if (this.battleStagePreview) {
+        this.warnings.push('Battle stage preview uses the arena’s initial orientation and camera-scrolling backdrop. Encounter camera scripts, animated palette effects, and stage-specific lighting are not simulated.');
+        if (this.record.backdrop && this.readFile) {
+          try {
+            const backdrop = await this.readFile(this.record.backdrop);
+            if (version !== this.loadVersion || this.destroyed) return;
+            this.battleBackdrop = decodeBattleBackdrop(backdrop);
+          } catch {
+            if (version === this.loadVersion) this.warnings.push(`Background ${this.record.backdrop} could not be loaded`);
+          }
+        }
+        if (version !== this.loadVersion || this.destroyed) return;
       }
       this.buildTexturePages();
       this.playbackFps = this.nativeFps;

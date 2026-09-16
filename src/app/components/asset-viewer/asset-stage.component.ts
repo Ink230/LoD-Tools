@@ -1,5 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Output, Input, NgZone, OnChanges, OnDestroy, ViewChild, inject } from '@angular/core';
 import * as THREE from 'three';
+import { BattleBackdrop } from './asset-battle-stage';
+import { BattleBackdropRenderer } from './asset-battle-backdrop';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { ModelAsset, ModelAnimation, PixelImage, SceneOverlay } from './asset-preview-types';
 
@@ -15,6 +17,9 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
   @Input() animation: ModelAnimation | null = null;
   @Input() overlay: SceneOverlay | null = null;
   @Input() frame = 0;
+  @Input() battleStage = false;
+  @Input() backdrop: BattleBackdrop | null = null;
+  private backdropRenderer?: BattleBackdropRenderer;
   @Input() followEffectCamera = true;
   @Input() selectedPolygon: number | null = null;
   @Output() polygonSelected = new EventEmitter<number | null>();
@@ -77,6 +82,8 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
   }
   ngOnChanges() {
+    // SC rotates the stage +90 degrees before the viewer's Y/Z axis conversion.
+    this.root.rotation.y = this.battleStage ? -Math.PI / 2 : 0;
     this.ambientLight.color.set(this.ambientColor);
     this.ambientLight.intensity = this.ambientStrength;
     this.mainLight.color.set(this.mainLightColor);
@@ -281,6 +288,10 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
         if (rotation) this.parts[i].quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI)).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(...rotation, 'XYZ')));
         else this.parts[i].rotateZ(this.parts[i].userData['billboardRotation'] || 0);
       }
+      if (this.backdrop && this.controls) {
+        this.backdropRenderer ??= new BattleBackdropRenderer();
+        this.scene.background = this.backdropRenderer.render(this.backdrop, this.camera, this.controls.target);
+      } else this.scene.background = null;
       this.renderer!.render(this.scene, this.camera);
       const flash = this.animation?.flashes?.[Math.floor(this.frame)];
       if (flash?.some(value => value > 0)) {
@@ -291,5 +302,5 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
       }
     });
   }
-  ngOnDestroy() { this.flashGeometry.dispose(); this.flashMaterial.dispose(); this.disposed = true; this.resize?.disconnect(); this.controls?.dispose(); this.clear(); this.renderer?.dispose(); }
+  ngOnDestroy() { this.backdropRenderer?.dispose(); this.flashGeometry.dispose(); this.flashMaterial.dispose(); this.disposed = true; this.resize?.disconnect(); this.controls?.dispose(); this.clear(); this.renderer?.dispose(); }
 }

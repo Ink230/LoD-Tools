@@ -13,6 +13,8 @@ export interface AssetRecord {
   environment?: string;
   collision?: string;
   collisionInfo?: string;
+  battleStageId?: number;
+  backdrop?: string;
   offset?: number;
   modelOffset?: number;
   lmbType?: number;
@@ -50,6 +52,8 @@ export function assetCategory(format: AssetFormat): string {
 export function gameIdentity(path: string): { gameCategory: string; gameAsset: string } {
   const parts = path.split('/');
   const title = (value: string) => value.replace(/[_-]/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
+  const stage = battleStageId(path);
+  if (stage !== null) return { gameCategory: 'battle-stages', gameAsset: `Battle stage ${stage}` };
   if (parts[0] === 'characters') return { gameCategory: 'party', gameAsset: title(parts[1]) };
   if (parts[0] === 'monsters') return { gameCategory: 'monsters', gameAsset: `Monster ${parts[1]}` };
   if (parts[0] === 'SUBMAP') return { gameCategory: 'interface', gameAsset: 'Field effects' };
@@ -57,4 +61,28 @@ export function gameIdentity(path: string): { gameCategory: string; gameAsset: s
   if (/^SECT\/DRGN2[1-4]\.BIN\//.test(path)) return { gameCategory: 'submap-resources', gameAsset: `Submap resources · ${parts[1]}/${parts[2]}` };
   if (parts[0] === 'SECT') return { gameCategory: 'game-resources', gameAsset: `Game resources · ${parts[1]}/${parts[2]}` };
   return { gameCategory: 'interface', gameAsset: parts[0] === 'goods' ? title(parts[1]) : 'Interface & shared assets' };
+}
+
+/** Battle.loadStage uses DRGN0 packages 2497 + stage; Ambiance defines 96 retail stages. */
+export function battleStageId(path: string): number | null {
+  const match = /^SECT\/DRGN0\.BIN\/(\d+)\//.exec(path);
+  const id = match ? Number(match[1]) - 2497 : -1;
+  return id >= 0 && id < 96 ? id : null;
+}
+
+export function linkBattleStages(assets: AssetRecord[]): void {
+  const byPath = new Map(assets.filter(asset => !asset.offset).map(asset => [asset.path, asset]));
+  for (const asset of assets) {
+    const id = battleStageId(asset.path);
+    if (id === null) continue;
+    const root = `SECT/DRGN0.BIN/${2497 + id}`;
+    const model = byPath.get(`${root}/0/0`);
+    const texture = byPath.get(`${root}/2`);
+    const backdrop = byPath.get(`${root}/1`);
+    Object.assign(asset, gameIdentity(asset.path));
+    asset.battleStageId = id;
+    asset.model = model?.format === 'TMD' ? model.path : undefined;
+    asset.textures = texture?.format === 'TIM' ? [texture.path] : [];
+    asset.backdrop = backdrop?.format === 'MCQ' ? backdrop.path : undefined;
+  }
 }
