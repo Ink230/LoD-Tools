@@ -77,17 +77,18 @@
 
 
       <span class="frame-position">{{ frame + 1 }} / {{ frameCount }}</span>
-      <label class="transport-fps">FPS <input aria-label="Playback FPS value" type="number" min="1" max="120" step="1" [ngModel]="playbackFps" (ngModelChange)="setPlaybackFps($event)" /></label>
+      <span class="transport-fps" role="group" aria-label="Playback speed"><span>FPS</span><button class="fps-step" (click)="setPlaybackFps(playbackFps - 1)" [disabled]="playbackFps <= 1" aria-label="Decrease FPS" title="Decrease FPS">−</button><input aria-label="Playback FPS value" type="number" min="1" max="120" step="1" [ngModel]="playbackFps" (ngModelChange)="setPlaybackFps($event)" /><button class="fps-step" (click)="setPlaybackFps(playbackFps + 1)" [disabled]="playbackFps >= 120" aria-label="Increase FPS" title="Increase FPS">+</button></span>
       </span>
-        <input aria-label="Animation frame" type="range" min="0" [max]="frameCount - 1" step="1" [(ngModel)]="frame" (input)="scrub()" />
+        <input aria-label="Animation frame" type="range" min="0" [max]="frameCount - 1" step="1" [value]="frame" (input)="scrubFrameInput($event)" (pointerdown)="startFrameDrag($event)" (pointermove)="moveFrameDrag($event)" (pointerup)="endFrameDrag()" (pointercancel)="endFrameDrag()" (lostpointercapture)="endFrameDrag()" (window:blur)="endFrameDrag()" />
       </span>
 
     }
     @if (model) {
-      <label>Brightness <span class="lighting-setting"><input type="range" min="0" max="3" step="0.05" [(ngModel)]="brightness" /><span class="lighting-value">{{ (brightness * 100).toFixed(0) }}%</span></span></label>
-      <label>Glow <span class="lighting-setting"><input type="range" min="0" max="2" step="0.05" [(ngModel)]="ambientStrength" /><span class="lighting-value">{{ (ambientStrength * 100).toFixed(0) }}%</span></span></label>
-      <label>Ambient colour <input type="color" [(ngModel)]="ambientColor" /></label>
-      <label>Main light colour <input type="color" [(ngModel)]="mainLightColor" /></label>
+      <div class="lighting-control"><button class="lighting-reset" (click)="brightness = 1" title="Reset brightness to 100%">Brightness</button><span class="lighting-setting"><input aria-label="Brightness" type="range" min="0" max="3" step="0.05" [(ngModel)]="brightness" /><span class="lighting-value">{{ (brightness * 100).toFixed(0) }}%</span></span></div>
+      <div class="lighting-control"><button class="lighting-reset" (click)="mainLightColor = '#ffffff'" title="Reset main light colour to white">Colour</button><input aria-label="Colour" type="color" [(ngModel)]="mainLightColor" /></div>
+      <div class="lighting-control"><button class="lighting-reset" (click)="ambientStrength = 1" title="Reset glow to 100%">Glow</button><span class="lighting-setting"><input aria-label="Glow" type="range" min="0" max="2" step="0.05" [(ngModel)]="ambientStrength" /><span class="lighting-value">{{ (ambientStrength * 100).toFixed(0) }}%</span></span></div>
+      <div class="lighting-control"><button class="lighting-reset" (click)="ambientColor = '#ffffff'" title="Reset glow colour to white">Glow colour</button><input aria-label="Glow colour" type="color" [(ngModel)]="ambientColor" /></div>
+
     }
   </div>
 }

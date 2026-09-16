@@ -561,6 +561,37 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.frame = Math.max(0, Math.min(this.frameCount - 1, Number(this.frame) + direction));
     this.scrub();
   }
+  private frameDrag: { id: number; input: HTMLInputElement } | null = null;
+  startFrameDrag(event: PointerEvent) {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    this.endFrameDrag();
+    const input = event.currentTarget as HTMLInputElement;
+    input.focus();
+    input.setPointerCapture(event.pointerId);
+    this.frameDrag = { id: event.pointerId, input };
+    this.moveFrameDrag(event);
+  }
+  moveFrameDrag(event: PointerEvent) {
+    if (!this.frameDrag || this.frameDrag.id !== event.pointerId) return;
+    if (!(event.buttons & 1)) {
+      this.endFrameDrag();
+      return;
+    }
+    const rect = this.frameDrag.input.getBoundingClientRect();
+    const fraction = Math.max(0, Math.min(1, (event.clientX - rect.left - 11) / Math.max(1, rect.width - 22)));
+    this.frame = Math.round(fraction * Math.max(0, this.frameCount - 1));
+    this.scrub();
+  }
+  endFrameDrag() {
+    const drag = this.frameDrag;
+    this.frameDrag = null;
+    if (drag?.input.hasPointerCapture(drag.id)) drag.input.releasePointerCapture(drag.id);
+  }
+  scrubFrameInput(event: Event) {
+    this.frame = Number((event.target as HTMLInputElement).value);
+    this.scrub();
+  }
   scrub() { this.playing = false; this.frame = Number(this.frame); this.draw(); }
   private draw() {
     if (this.clut && this.textures[0]) {
