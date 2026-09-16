@@ -33,6 +33,8 @@ input[type=number] { width:65px; } .playback input { flex:1; min-width:100px; }
 .preview-toolbar input[type=color]::-moz-color-swatch { border:0; border-radius:2px; }
 .composition-toolbar { flex-wrap:nowrap; align-items:flex-end; overflow-x:auto; gap:18px; padding:14px 12px 10px; }
 .composition-toolbar > * { flex-shrink:0; }
+/* Playback inset (10px) + animation selector (134px) + group gap (12px). */
+.composition-toolbar.with-animation-choice { padding-left:156px; }
 .composition-toolbar > label { min-height:28px; white-space:nowrap; }
 .composition-toolbar > button { min-height:28px; }
 .composition-toolbar .companion-resource-filters { flex-basis:auto; flex-wrap:nowrap; gap:6px; }
