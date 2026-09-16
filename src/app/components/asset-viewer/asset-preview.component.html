@@ -8,7 +8,6 @@
   @if (submap.warnings.length) { <details class="warnings"><summary>Composition notes ({{ submap.warnings.length }})</summary>@for (warning of submap.warnings; track $index) { <p>{{ warning }}</p> }</details> }
 }
 <div class="preview-toolbar composition-toolbar">
-  <span class="asset-heading">{{ record.gameAsset }} / {{ record.name }}</span>
 
   @if (format === 'TIM' && paletteCount > 1) { <label>Palette <input type="number" min="0" [max]="paletteCount - 1" [(ngModel)]="palette" (change)="updatePalette()" /></label><span>/ {{ paletteCount }}</span> }
   @if (format === 'LMB') { <label>Subtype <select [(ngModel)]="lmbType" (change)="load()"><option [ngValue]="0">0</option><option [ngValue]="1">1</option><option [ngValue]="2">2</option></select></label> }

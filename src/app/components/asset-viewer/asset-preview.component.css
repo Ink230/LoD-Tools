@@ -32,7 +32,6 @@ input[type=number] { width:65px; } .playback input { flex:1; min-width:100px; }
 .preview-toolbar input[type=color]::-webkit-color-swatch { border:0; border-radius:2px; }
 .preview-toolbar input[type=color]::-moz-color-swatch { border:0; border-radius:2px; }
 .composition-toolbar { flex-wrap:nowrap; align-items:flex-end; overflow-x:auto; gap:18px; padding:14px 12px 10px; }
-.asset-heading { display:flex; align-items:center; min-height:28px; font:10px monospace; letter-spacing:.06em; }
 .composition-toolbar > * { flex-shrink:0; }
 .composition-toolbar > label { min-height:28px; white-space:nowrap; }
 .composition-toolbar > button { min-height:28px; }
