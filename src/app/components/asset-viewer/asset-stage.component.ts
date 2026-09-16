@@ -109,6 +109,9 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
         const positions: number[] = [], colors: number[] = [], uvs: number[] = [];
         const first = batch[0];
         const page = this.texturePages.get(`${first.clut}:${first.tpage}`);
+        // Eyes and mouths can be textured decals coplanar with an untextured face.
+        // Prefer the decal at equal depth without disabling occlusion by other geometry.
+        const decalDepth = { polygonOffset: !!page && part.primitives.some(primitive => !primitive.uvs), polygonOffsetFactor: -1, polygonOffsetUnits: -1 };
         for (const primitive of batch) {
           const triangles = primitive.indices.length === 4 ? [2, 1, 0, 1, 2, 3] : [2, 1, 0];
           for (const index of triangles) {
@@ -138,12 +141,12 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
           return texture;
         };
         if (page || !first.translucent) {
-          const material = new THREE.MeshBasicMaterial({ map: makeTexture(false), vertexColors: true, side: THREE.DoubleSide, alphaTest: 0.01, wireframe: this.wireframe });
+          const material = new THREE.MeshBasicMaterial({ map: makeTexture(false), vertexColors: true, side: THREE.DoubleSide, alphaTest: 0.01, wireframe: this.wireframe, ...decalDepth });
           group.add(new THREE.Mesh(geometry, material));
         }
         if (first.translucent) {
           const mode = ((first.tpage || 0) >> 5) & 3;
-          const material = new THREE.MeshBasicMaterial({ map: makeTexture(true), vertexColors: true, side: THREE.DoubleSide, alphaTest: 0.01, transparent: true, depthWrite: false, wireframe: this.wireframe });
+          const material = new THREE.MeshBasicMaterial({ map: makeTexture(true), vertexColors: true, side: THREE.DoubleSide, alphaTest: 0.01, transparent: true, depthWrite: false, wireframe: this.wireframe, ...decalDepth });
           material.blending = THREE.CustomBlending;
           material.blendEquation = mode === 2 ? THREE.ReverseSubtractEquation : THREE.AddEquation;
           material.blendSrc = mode === 0 || mode === 3 ? THREE.ConstantAlphaFactor : THREE.OneFactor;
