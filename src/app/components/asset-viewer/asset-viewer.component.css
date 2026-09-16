@@ -10,7 +10,7 @@
 .library > :not(.entry-list) { flex-shrink:0; }
 .library .entry-list { overflow:auto; flex:1; min-height:0; }
 app-asset-preview { flex:1; min-height:0; }
-.browse-modes .file-mode { margin-left: 12px; }
+.browse-modes .file-mode { margin-right: 12px; }
 .document-bar { justify-content:flex-start; padding-inline:18px; gap:18px; }
 .browse-modes { gap:6px; flex-shrink:0; }
 .document-source { min-width:0; flex:0 0 calc(var(--asset-library-width) - 18px); }

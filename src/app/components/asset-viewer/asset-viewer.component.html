@@ -30,9 +30,10 @@
   <div class="document-bar">
     <div class="document-source"><strong>{{ directories.length ? directories[0].name : 'Severed Chains assets' }}</strong><code class="document-file">{{ path || 'Local files / No folder connected' }}</code></div>
     <nav class="actions browse-modes" aria-label="Browse assets">
+      <button class="file-mode" (click)="setBrowseMode('files')" [class.active]="browseMode === 'files'" [attr.aria-pressed]="browseMode === 'files'">Files</button>
       <button (click)="setBrowseMode('format')" [class.active]="browseMode === 'format'" [attr.aria-pressed]="browseMode === 'format'">Format</button>
       <button (click)="setBrowseMode('game')" [class.active]="browseMode === 'game'" [attr.aria-pressed]="browseMode === 'game'">Asset</button>
-      <button class="file-mode" (click)="setBrowseMode('files')" [class.active]="browseMode === 'files'" [attr.aria-pressed]="browseMode === 'files'">Files</button>
+
     </nav>
 
     <div class="background-controls">          <input class="background-swatch" type="color" [(ngModel)]="previewBackground" title="Preview background colour" aria-label="Preview background colour" />
