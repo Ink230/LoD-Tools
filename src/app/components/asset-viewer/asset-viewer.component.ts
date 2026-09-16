@@ -29,6 +29,8 @@ export class AssetViewerComponent implements OnInit {
     { name: 'Blue', shift: 110, color: '#91b8ef' },
   ];
   themeIndex = 0;
+  previewBackground = '#18221c';
+  previewPattern = true;
   fillViewport = true;
   headerCollapsed = false;
   controlsOpen = false;

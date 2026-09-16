@@ -24,6 +24,8 @@ import { AssetStageComponent } from './asset-stage.component';
 export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() bytes: Uint8Array = new Uint8Array();
   @Input() record!: AssetRecord;
+  @Input() backgroundColor = '#18221c';
+  @Input() backgroundPattern = true;
   @Input() related: AssetRecord[] = [];
   @Input() assets: AssetRecord[] = [];
   @Input() thumbnails = new Map<string, string>();

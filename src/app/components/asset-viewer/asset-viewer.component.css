@@ -41,7 +41,15 @@ dd { margin: 0 0 18px; overflow-wrap: anywhere; }
   .main-panel, .inspector { flex-shrink: 0; }
 }
 .inspector-navigation { display: flex; align-items: center; gap: 6px; }
+.background-controls .background-swatch,.background-controls .background-pattern { box-sizing:border-box; width:28px; height:28px; padding:3px; cursor:pointer; border:1px solid var(--wmap-color-3); border-radius:4px; }
+.background-swatch::-webkit-color-swatch-wrapper { padding:0; }
+.background-swatch::-webkit-color-swatch { border:0; border-radius:2px; }
+.background-swatch::-moz-color-swatch { border:0; border-radius:2px; }
+.background-pattern { display:grid; place-items:center; }
+.background-pattern[aria-pressed="true"] { color:var(--wmap-color-2); background:var(--wmap-color-3); }
 .entity-attachments { padding:12px 16px; }
 .entity-attachments h3 { font-size:12px; margin:10px 0 5px; }
 .entity-attachments button { display:block; width:100%; text-align:left; overflow-wrap:anywhere; margin-bottom:4px; }
 .entity-attachments small { display:block; opacity:.65; font-size:10px; }
+
+.background-controls { display:flex; align-items:center; gap:6px; }

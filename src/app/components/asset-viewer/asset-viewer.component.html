@@ -34,7 +34,9 @@
       <button (click)="setBrowseMode('game')" [class.active]="browseMode === 'game'" [attr.aria-pressed]="browseMode === 'game'">By game asset</button>
       <button class="file-mode" (click)="setBrowseMode('files')" [class.active]="browseMode === 'files'" [attr.aria-pressed]="browseMode === 'files'">File explorer</button>
     </nav>
-    <span class="muted">Read-only</span>
+    <div class="background-controls">          <input class="background-swatch" type="color" [(ngModel)]="previewBackground" title="Preview background colour" aria-label="Preview background colour" />
+          <button class="background-pattern" (click)="previewPattern = !previewPattern" [attr.aria-pressed]="previewPattern" title="Toggle background checkerboard" aria-label="Toggle background checkerboard"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M0 0h8v8H0zm8 8h8v8H8z"/><path d="M.5.5h15v15H.5z" fill="none" stroke="currentColor"/></svg></button>
+<span class="muted">Read-only</span></div>
   </div>
   <div class="workspace" [attr.aria-busy]="busy">
     <aside class="library" aria-label="Asset explorer">
@@ -70,7 +72,7 @@
     <section class="main-panel" aria-label="Asset preview">
       @if (selectedAsset && selectedBytes.length) {
         <div class="panel-title"> {{ selectedAsset.gameAsset }} / {{ selectedAsset.name }}</div>
-        <app-asset-preview (polygonSelected)="selectedPolygon = $event" [record]="selectedAsset" [bytes]="selectedBytes" [related]="relatedAssets" [readFile]="readAssetFile" [assets]="companionAssets" [thumbnails]="thumbnails" (previewLoaded)="rememberPreview($event)" (navigateAsset)="openEntity($event)" />
+        <app-asset-preview [backgroundColor]="previewBackground" [backgroundPattern]="previewPattern" (polygonSelected)="selectedPolygon = $event" [record]="selectedAsset" [bytes]="selectedBytes" [related]="relatedAssets" [readFile]="readAssetFile" [assets]="companionAssets" [thumbnails]="thumbnails" (previewLoaded)="rememberPreview($event)" (navigateAsset)="openEntity($event)" />
       } @else {
         <div class="empty-state"><p class="eyebrow">THE LEGEND OF DRAGOON</p><h2>Your asset library</h2><p>Select an asset by format or by game asset to preview it.</p><button class="primary" (click)="connectFolder()" [disabled]="busy || !supportsFolders">Open SC files folder</button><button (click)="singleFile.click()">Open individual file</button><input #singleFile hidden type="file" (change)="importFile($event)" /><p class="muted">Asset files stay on your computer. Only selected resources and their companions are read.</p>@if (!supportsFolders) { <p>Use Chrome or Edge for folder access, or open individual files here.</p> }</div>
       }
