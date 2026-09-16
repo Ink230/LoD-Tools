@@ -218,7 +218,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.parts[i].userData['screenRotation'] = transform?.screenRotation;
       this.parts[i].traverse(object => {
         const material = (object as THREE.Mesh).material;
-        if ((material instanceof THREE.MeshBasicMaterial || material instanceof THREE.MeshLambertMaterial)) material.color.setRGB(...((transform?.colour || [128, 128, 128]).map(value => value / 128 * this.brightness) as [number, number, number]));
+        if ((material instanceof THREE.MeshBasicMaterial || material instanceof THREE.MeshLambertMaterial)) material.color.setRGB(...((transform?.colour || [128, 128, 128]).map(value => value / 128 * this.brightness * 3) as [number, number, number]));
       });
       this.parts[i].position.set(...(transform?.translation || [0, 0, 0]));
       this.parts[i].rotation.set(...(transform?.rotation || [0, 0, 0]), 'ZYX');

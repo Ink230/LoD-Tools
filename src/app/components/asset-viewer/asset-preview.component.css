@@ -27,3 +27,7 @@ input[type=number] { width:65px; } .playback input { flex:1; min-width:100px; }
 .playback .playback-speed input[type=number] { flex:none; min-width:0; width:52px; }
 
 .preview-surface.background-pattern { background-image:repeating-conic-gradient(transparent 0% 25%,#ffffff0d 0% 50%); background-size:20px 20px; }
+.preview-toolbar input[type=color] { box-sizing:border-box; flex:0 0 32px; width:32px; min-width:32px; height:32px; padding:3px; cursor:pointer; }
+.preview-toolbar input[type=color]::-webkit-color-swatch-wrapper { padding:0; }
+.preview-toolbar input[type=color]::-webkit-color-swatch { border:0; border-radius:2px; }
+.preview-toolbar input[type=color]::-moz-color-swatch { border:0; border-radius:2px; }
