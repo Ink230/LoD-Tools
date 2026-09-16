@@ -6,7 +6,6 @@
 .catalog-filters select { width:100%; background:var(--wmap-color-4); color:var(--wmap-color-2); border:1px solid var(--wmap-color-3); padding:6px; }
 .pagination { display:flex; align-items:center; justify-content:space-between; gap:6px; padding:10px; font-size:11px; }
 .main-panel { display:flex; flex-direction:column; }
-.main-panel > .panel-title { padding:14px 12px 8px; }
 .library { display:flex; flex-direction:column; }
 .library > :not(.entry-list) { flex-shrink:0; }
 .library .entry-list { overflow:auto; flex:1; min-height:0; }
