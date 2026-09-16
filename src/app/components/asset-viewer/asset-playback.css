@@ -24,3 +24,4 @@
 .playback-lighting .animation-transport > input[type=range] { width:100%; }
 .playback-lighting .lighting-setting { display:flex; align-items:center; gap:6px; }
 .playback-lighting .transport-fps { flex-direction:row; align-items:center; margin-left:8px; }
+.playback-lighting .playback-toggle { display:grid; place-items:center; width:28px; min-width:28px; height:28px; flex:0 0 28px; padding:4px; }
