@@ -9,7 +9,7 @@
 }
 <div class="preview-toolbar composition-toolbar">
   <span class="asset-heading">{{ record.gameAsset }} / {{ record.name }}</span>
-  <label>Format <select [(ngModel)]="format" (change)="load()"><option value="Unknown">Auto / unknown</option>@for (item of formats; track item) { <option [value]="item">{{ item }}</option> }</select></label>
+
   @if (format === 'TIM' && paletteCount > 1) { <label>Palette <input type="number" min="0" [max]="paletteCount - 1" [(ngModel)]="palette" (change)="updatePalette()" /></label><span>/ {{ paletteCount }}</span> }
   @if (format === 'LMB') { <label>Subtype <select [(ngModel)]="lmbType" (change)="load()"><option [ngValue]="0">0</option><option [ngValue]="1">1</option><option [ngValue]="2">2</option></select></label> }
   @if (model || animation || sprite || clut || sceneResource) {
@@ -59,18 +59,36 @@
     }
   </div>
   @if (runtimeDiagnostics.length) { <details class="warnings" open><summary>Effect runtime notes</summary>@for (note of runtimeDiagnostics; track $index) { <p>{{ note }}</p> }</details> }
-}@if (model && animationChoices.length) { <label class="animation-picker">Animation <select [ngModel]="animationPath" (ngModelChange)="chooseAnimation($event)"><option value="">Raw part coordinates</option>@for (item of animationChoices; track key(item)) { <option [value]="key(item)">{{ item.name }} · {{ item.format }}</option> }</select></label> }
-@if (model && !animation && model.parts.length > 1) { <p role="status">No pose loaded. Mesh parts may overlap at the origin. Choose a matching animation to assemble the model.</p> }
-@if (model && !modelUsesTextures) { <p role="status">This model uses polygon colors and has no texture coordinates. Selecting textures will not change its surfaces. Preview lighting is not applied.</p> }
+}@if (model && !animation && model.parts.length > 1) { <p role="status">No pose loaded. Mesh parts may overlap at the origin. Choose a matching animation to assemble the model.</p> }
+@if (model && !modelUsesTextures) { <p role="status">This model uses polygon colors and has no texture coordinates. Selecting textures will not change its surfaces.</p> }
 @if (model && modelUsesTextures && !textures.length) { <p role="status">No textures loaded. Textured surfaces display without their image detail. Choose the companion textures.</p> }
 @if (animation && !model) { <p role="status">Showing animation transforms as axes. Choose a matching model to see its animated mesh.</p> }
-@if (frameCount) { <div class="playback"><button (click)="togglePlayback()" [disabled]="effectPreparing" [attr.aria-label]="playing ? 'Pause animation' : 'Play animation'">{{ playing ? 'Pause' : 'Play' }}</button><input aria-label="Animation frame" type="range" min="0" [max]="frameCount - 1" [(ngModel)]="frame" (input)="scrub()" /><span>{{ frame + 1 }} / {{ frameCount }}</span><label class="playback-speed">FPS <input aria-label="Playback frames per second" type="range" min="1" max="120" step="1" [ngModel]="playbackFps" (ngModelChange)="setPlaybackFps($event)" /><input aria-label="Playback FPS value" type="number" min="1" max="120" step="1" [ngModel]="playbackFps" (ngModelChange)="setPlaybackFps($event)" /></label></div> }
-@if (model) {
-  <div class="preview-toolbar" aria-label="Model lighting">
-    <label>Brightness <input type="range" min="0" max="3" step="0.05" [(ngModel)]="brightness" /> {{ (brightness * 100).toFixed(0) }}%</label>
-    <label>Ambient glow <input type="range" min="0" max="2" step="0.05" [(ngModel)]="ambientStrength" /> {{ (ambientStrength * 100).toFixed(0) }}%</label>
-    <label>Ambient colour <input type="color" [(ngModel)]="ambientColor" /></label>
-    <label>Main light colour <input type="color" [(ngModel)]="mainLightColor" /></label>
+@if (frameCount || model) {
+  <div class="preview-toolbar playback-lighting" aria-label="Animation and lighting">
+@if (model && animationChoices.length) { <label class="animation-choice"><select aria-label="Animation" [ngModel]="animationPath" (ngModelChange)="chooseAnimation($event)"><option value="">Raw part coordinates</option>@for (item of animationChoices; track key(item)) { <option [value]="key(item)">{{ item.name }} · {{ item.format }}</option> }</select></label> }
+
+    @if (frameCount) {
+      <span class="animation-transport">
+      <span class="transport-actions">
+      <button (click)="togglePlayback()" [disabled]="effectPreparing" [attr.aria-label]="playing ? 'Pause animation' : 'Play animation'">{{ playing ? 'Pause' : 'Play' }}</button>
+
+        <button class="frame-step" (click)="stepFrame(-1)" [disabled]="effectPreparing || frame <= 0" title="Previous frame" aria-label="Previous frame"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+        <button class="frame-step" (click)="stepFrame(1)" [disabled]="effectPreparing || frame >= frameCount - 1" title="Next frame" aria-label="Next frame"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+
+
+      <span class="frame-position">{{ frame + 1 }} / {{ frameCount }}</span>
+      <label class="transport-fps">FPS <input aria-label="Playback FPS value" type="number" min="1" max="120" step="1" [ngModel]="playbackFps" (ngModelChange)="setPlaybackFps($event)" /></label>
+      </span>
+        <input aria-label="Animation frame" type="range" min="0" [max]="frameCount - 1" step="1" [(ngModel)]="frame" (input)="scrub()" />
+      </span>
+
+    }
+    @if (model) {
+      <label>Brightness <span class="lighting-setting"><input type="range" min="0" max="3" step="0.05" [(ngModel)]="brightness" /><span class="lighting-value">{{ (brightness * 100).toFixed(0) }}%</span></span></label>
+      <label>Glow <span class="lighting-setting"><input type="range" min="0" max="2" step="0.05" [(ngModel)]="ambientStrength" /><span class="lighting-value">{{ (ambientStrength * 100).toFixed(0) }}%</span></span></label>
+      <label>Ambient colour <input type="color" [(ngModel)]="ambientColor" /></label>
+      <label>Main light colour <input type="color" [(ngModel)]="mainLightColor" /></label>
+    }
   </div>
 }
 <div class="preview-surface" [style.background-color]="backgroundColor" [class.background-pattern]="backgroundPattern" (click)="pickComposition($event)" [class.image-stage]="zoomableImage" (wheel)="zoomImage($event)" (pointerdown)="startImagePan($event)" (pointermove)="moveImagePan($event)" (pointerup)="endImagePan($event)" (pointercancel)="endImagePan($event)">

@@ -19,7 +19,7 @@ import { AssetStageComponent } from './asset-stage.component';
 @Component({
   selector: 'app-asset-preview', imports: [FormsModule, JsonPipe, AssetStageComponent, AssetCompanionPickerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './asset-preview.component.html', styleUrl: './asset-preview.component.css',
+  templateUrl: './asset-preview.component.html', styleUrls: ['./asset-preview.component.css', './asset-playback.css'],
 })
 export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() bytes: Uint8Array = new Uint8Array();
@@ -556,6 +556,10 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
       this.raf = requestAnimationFrame(tick);
     };
     this.zone.runOutsideAngular(() => { this.raf = requestAnimationFrame(tick); });
+  }
+  stepFrame(direction: -1 | 1) {
+    this.frame = Math.max(0, Math.min(this.frameCount - 1, Number(this.frame) + direction));
+    this.scrub();
   }
   scrub() { this.playing = false; this.frame = Number(this.frame); this.draw(); }
   private draw() {
