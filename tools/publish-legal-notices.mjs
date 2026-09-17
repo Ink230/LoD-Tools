@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 
 const output = resolve('dist/lodtools');
 const notices = [
-  ['LICENSE.txt', await readFile('LICENSE')],
+  ['LICENSE.txt', await readFile('LICENSE.txt')],
   ['THIRD_PARTY_NOTICES.txt', await readFile('THIRD_PARTY_NOTICES.md')],
   ['3rdpartylicenses.txt', await readFile(resolve(output, '3rdpartylicenses.txt'))],
 ];

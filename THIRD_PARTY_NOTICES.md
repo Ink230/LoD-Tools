@@ -4,7 +4,7 @@
 
 - Project: https://github.com/Legend-of-Dragoon-Modding/Severed-Chains
 - Credits: LordMonoxide and the Severed Chains contributors
-- License: GNU Affero General Public License, version 3; the license text is included in [LICENSE](LICENSE)
+- License: GNU Affero General Public License, version 3; the license text is included in [LICENSE.txt](LICENSE.txt)
 - Support LordMonoxide: https://ko-fi.com/monoxide
 
 Reverse-engineering credit belongs to Severed Chains, LordMonoxide, and contributors.
