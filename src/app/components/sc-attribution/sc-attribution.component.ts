@@ -8,6 +8,7 @@ let nextAttributionId = 0;
     <button type="button" aria-label="Severed Chains reverse-engineering credit" [attr.aria-describedby]="tooltipId">?</button>
     <div class="attribution" [id]="tooltipId" role="tooltip">
       <strong>Reverse-engineering credit belongs to Severed Chains, LordMonoxide, and contributors.</strong>
+      <p class="contributor-credit">Ink is an SC contributor</p>
       <p>Our tools build on SC’s work in understanding the game’s files and behaviors. Selected decoding and preview behavior is reproduced in TypeScript from SC’s original implementation.</p>
       <table>
         <thead><tr><th>Layer</th><th>What we use or reproduce</th></tr></thead>
@@ -29,6 +30,7 @@ let nextAttributionId = 0;
     .attribution { display: none; position: absolute; right: 0; top: 100%; z-index: 100; width: 540px; max-width: calc(100vw - 40px); box-sizing: border-box; padding: 16px; border: 1px solid #557449; border-radius: 5px; background: #111a10; color: #e1ecd9; box-shadow: 0 8px 24px #0008; font: 12px/1.5 system-ui; text-align: left; white-space: normal; }
     :host:hover .attribution, :host:focus-within .attribution { display: block; }
     strong { display: block; color: #b9dc9d; font-size: 13px; }
+    .contributor-credit { color: #b9dc9d; }
     p { margin: 10px 0; }
     p:last-child { margin-bottom: 0; }
     table { width: 100%; border-collapse: collapse; }
