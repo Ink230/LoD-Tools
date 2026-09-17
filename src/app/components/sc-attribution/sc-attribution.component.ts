@@ -13,11 +13,11 @@ let nextAttributionId = 0;
       <table>
         <thead><tr><th>Layer</th><th>What we use or reproduce</th></tr></thead>
         <tbody>
-          <tr><th>Extraction</th><td>SC extracts and prepares the files. The Asset Viewer reads that output.</td></tr>
-          <tr><th>Standard images</th><td>PNGs use normal browser image decoding.</td></tr>
-          <tr><th>Bespoke formats</th><td>TypeScript decoders interpret models, textures, animations and scene data using SC’s implementation as the reference.</td></tr>
-          <tr><th>Reconstruction</th><td>Texture and palette mapping, animation transforms, submap composition and effect previews reproduce selected SC behavior.</td></tr>
-          <tr><th>Editor interface</th><td>Navigation, pickers, controls and browser rendering are website code.</td></tr>
+          <tr><th>Extraction</th><td>SC extracts and prepares the files; the Asset Viewer reads that output</td></tr>
+          <tr><th>Standard images</th><td>PNGs use normal browser image decoding</td></tr>
+          <tr><th>Bespoke formats</th><td>TypeScript decoders interpret models, textures, animations and scene data using SC’s implementation as the reference</td></tr>
+          <tr><th>Reconstruction</th><td>Texture and palette mapping, animation transforms, submap composition and effect previews reproduce selected SC behavior</td></tr>
+          <tr><th>Editor interface</th><td>Navigation, pickers, controls and browser rendering are website code</td></tr>
         </tbody>
       </table>
       <p>The browser runs selected preview implementations, not the Java engine. Original game assets are separate from SC’s reverse-engineering and code contributions.</p>
