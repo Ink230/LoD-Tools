@@ -215,10 +215,11 @@ export class AssetViewerComponent implements OnInit {
     try {
       const saved = JSON.parse(localStorage.getItem('lodtools.asset-viewer.preferences') || 'null');
       if (saved) {
-        this.themeIndex = Math.max(0, this.themes.findIndex(theme => theme.name === saved.theme));
         this.fillViewport = saved.fillViewport !== false;
         this.headerCollapsed = saved.headerCollapsed === true;
       }
+      const theme = localStorage.getItem('lodtools.editor.theme') || saved?.theme || localStorage.getItem('lodtools.world-map.theme');
+      this.themeIndex = Math.max(0, this.themes.findIndex(entry => entry.name === theme));
     } catch { /* Defaults remain available when browser storage is unavailable. */ }
   }
 
@@ -234,11 +235,24 @@ export class AssetViewerComponent implements OnInit {
 
   cycleTheme() {
     this.themeIndex = (this.themeIndex + 1) % this.themes.length;
+    try { localStorage.setItem('lodtools.editor.theme', this.theme.name); } catch { /* Theme still works without browser storage. */ }
     this.savePreferences();
   }
 
   @HostListener('document:keydown.escape')
   dismissControls() { this.controlsOpen = false; }
+
+  folderAssetsLoaded = false;
+
+  private async detectFolderAsset(source: AssetSource): Promise<boolean> {
+    for (const asset of this.catalog?.assets || []) {
+      try {
+        const file = await source.file(asset.path);
+        if (file.size > 0) return true;
+      } catch { /* Missing catalog entries are expected in partial extractions. */ }
+    }
+    return false;
+  }
 
   async connectFolder() {
     if (this.busy || !this.supportsFolders) return;
@@ -249,6 +263,8 @@ export class AssetViewerComponent implements OnInit {
       const directory = await picker.showDirectoryPicker({ mode: 'read' });
       await this.readDirectory([directory]);
       this.source = new AssetSource(directory);
+      this.folderAssetsLoaded = false;
+      this.folderAssetsLoaded = await this.detectFolderAsset(this.source);
       this.setBrowseMode('game');
     } catch (error) {
       if (!(error instanceof DOMException && error.name === 'AbortError')) this.error = 'Unable to open the folder. Check folder access and try again.';

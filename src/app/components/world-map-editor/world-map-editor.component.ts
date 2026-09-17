@@ -81,7 +81,7 @@ export class WorldMapEditorComponent implements OnInit {
   get theme() { return this.themes[this.themeIndex]; }
   cycleTheme() {
     this.themeIndex = (this.themeIndex + 1) % this.themes.length;
-    try { localStorage.setItem('lodtools.world-map.theme', this.theme.name); } catch { /* Theme still works without browser storage. */ }
+    try { localStorage.setItem('lodtools.editor.theme', this.theme.name); } catch { /* Theme still works without browser storage. */ }
   }
   section = 'nodes';
   sections = Object.keys(SECTIONS);
@@ -185,7 +185,7 @@ export class WorldMapEditorComponent implements OnInit {
     try {
       this.includeStoryRefs = localStorage.getItem('lodtools.world-map.include-story-refs') === 'true';
       this.headerCollapsed = localStorage.getItem('lodtools.world-map.header-collapsed') === 'true';
-      const stored = localStorage.getItem('lodtools.world-map.theme');
+      const stored = localStorage.getItem('lodtools.editor.theme') || localStorage.getItem('lodtools.world-map.theme') || JSON.parse(localStorage.getItem('lodtools.asset-viewer.preferences') || 'null')?.theme;
       this.themeIndex = Math.max(0, this.themes.findIndex((theme) => theme.name === stored));
     } catch { /* Default to green when browser storage is unavailable. */ }
     this.refresh();
