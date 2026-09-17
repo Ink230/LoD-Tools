@@ -1,4 +1,8 @@
-:host { display: block; width: min(1600px, calc(100vw - 48px)); margin: 16px auto; color: #d6e5ce; }
+:host { display: flex; flex-direction: column; flex: 1; width: min(1600px, calc(100vw - 48px)); margin: 16px auto; color: #d6e5ce; }
+:host > app-grid-display { position: relative; flex: 1; min-height: 34em; }
+:host > app-grid-display ::ng-deep .ag-grid-container { position: absolute; inset: 0; }
+:host > app-grid-display ::ng-deep .ag-grid-container > div { height: 100%; }
+:host > app-grid-display ::ng-deep .ag-grid-prime { height: 100%; }
 nav, .filters { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
 a { color: #b9dc9d; }
 nav a, button { padding: 8px 12px; border: 1px solid #485b40; border-radius: 4px; text-decoration: none; }
