@@ -57,7 +57,7 @@ export class GameDataCatalogComponent {
   readonly hitColumns: ColDef[] = ['damage', 'sp', 'blueSquareFrames', 'actionInputFrames', 'postHitPauseFrames', 'pauseFrames', 'moveToMonsterFrames', 'distance'].map(field => ({ field, headerName: this.label(field), minWidth: 120 }));
   readonly gridOptions: GridOptions<Row> = {
     defaultColDef: { resizable: true, sortable: true, filter: true, minWidth: 95, flex: 1 },
-    pagination: true, paginationPageSize: 25, paginationPageSizeSelector: [25, 50, 100],
+    pagination: true, paginationAutoPageSize: true, paginationPageSizeSelector: false,
     onRowClicked: event => { this.selected = event.data || null; this.cdr.markForCheck(); },
   };
 
