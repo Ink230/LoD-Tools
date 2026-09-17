@@ -121,6 +121,7 @@ export class AssetViewerComponent implements OnInit {
       const catalog = JSON.parse(strFromU8(bytes[0] === 0x1f && bytes[1] === 0x8b ? gunzipSync(bytes) : bytes)) as AssetCatalog;
       if (catalog.version !== 1 || !Array.isArray(catalog.assets)) throw new Error('Unsupported asset catalog');
       this.catalog = catalog; this.companionAssets = [...catalog.assets, ...this.importedRecords];
+      if (this.source) void this.updateFolderAssetStatus(this.source);
     } catch { this.catalogError = 'The asset catalog could not be loaded. Retry or use File explorer.'; }
     finally { this.catalogLoading = false; this.changeDetector.markForCheck(); }
   }
@@ -251,14 +252,36 @@ export class AssetViewerComponent implements OnInit {
   private readonly host = inject(ElementRef<HTMLElement>);
   folderAssetsLoaded = false;
 
-  private async detectFolderAsset(source: AssetSource): Promise<boolean> {
+  private async updateFolderAssetStatus(source: AssetSource): Promise<void> {
+    const roots = new Set<string>();
+    try {
+      for await (const entry of source.root.values()) roots.add(entry.name);
+    } catch { return; /* Folder validation must not block browsing. */ }
+    const directories = new Map<string, Set<string>>();
     for (const asset of this.catalog?.assets || []) {
+      if (!roots.has(asset.path.split('/')[0])) continue;
+      const slash = asset.path.lastIndexOf('/');
+      const path = slash < 0 ? '' : asset.path.slice(0, slash);
+      if (!directories.has(path)) directories.set(path, new Set());
+      directories.get(path)!.add(asset.path.slice(slash + 1));
+    }
+    for (const [path, names] of directories) {
+      if (source !== this.source || this.folderAssetsLoaded) return;
       try {
-        const file = await source.file(asset.path);
-        if (file.size > 0) return true;
+        const directory = await source.directory(path);
+        for await (const entry of directory.values()) {
+          if (source !== this.source || this.folderAssetsLoaded) return;
+          if (entry.kind !== 'file' || !names.has(entry.name)) continue;
+          const file = await entry.getFile();
+          if (source !== this.source) return;
+          if (file.size > 0) {
+            this.folderAssetsLoaded = true;
+            this.changeDetector.markForCheck();
+            return;
+          }
+        }
       } catch { /* Missing catalog entries are expected in partial extractions. */ }
     }
-    return false;
   }
 
   async connectFolder() {
@@ -271,8 +294,8 @@ export class AssetViewerComponent implements OnInit {
       await this.readDirectory([directory]);
       this.source = new AssetSource(directory);
       this.folderAssetsLoaded = false;
-      this.folderAssetsLoaded = await this.detectFolderAsset(this.source);
       this.setBrowseMode('game');
+      void this.updateFolderAssetStatus(this.source);
     } catch (error) {
       if (!(error instanceof DOMException && error.name === 'AbortError')) this.error = 'Unable to open the folder. Check folder access and try again.';
     } finally {
