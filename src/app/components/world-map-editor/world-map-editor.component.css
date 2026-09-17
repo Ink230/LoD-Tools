@@ -8,7 +8,7 @@
 }
 .editor {
   margin: 0 auto;
-  padding: 12px 20px;
+  padding: 3px 20px 12px;
   max-width: 2000px;
   min-width: 1900px;
   --line: var(--wmap-color-0);
@@ -59,7 +59,7 @@ h2 {
   gap: 12px;
 }
 .editor-header {
-  padding: 6px 0 22px;
+  padding: 1px 0 22px;
 }
 .actions {
   display: flex;
