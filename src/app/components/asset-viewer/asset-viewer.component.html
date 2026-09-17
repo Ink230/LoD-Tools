@@ -1,11 +1,11 @@
 <main class="editor" [class.fill-viewport]="fillViewport">
   <header class="editor-header" [class.compact-header]="headerCollapsed">
     <div [hidden]="headerCollapsed">
-      <p class="eyebrow">SEVERED CHAINS / ASSET TOOLS</p>
+      <p class="eyebrow engine-credit"><a href="https://github.com/Legend-of-Dragoon-Modding/Severed-Chains" target="_blank" rel="noopener noreferrer">SEVERED CHAINS</a> created by <a href="https://ko-fi.com/monoxide" target="_blank" rel="noopener noreferrer">LordMonoxide</a></p>
       <h1>Asset Viewer</h1>
       <p class="subtitle">by: Ink</p>
     </div>
-    @if (headerCollapsed) { <span class="compact-credit">Asset Viewer by Ink</span> }
+    @if (headerCollapsed) { <span class="compact-credit"><span>Asset Viewer by Ink</span><span class="engine-credit"><a href="https://github.com/Legend-of-Dragoon-Modding/Severed-Chains" target="_blank" rel="noopener noreferrer">SEVERED CHAINS</a> created by <a href="https://ko-fi.com/monoxide" target="_blank" rel="noopener noreferrer">LordMonoxide</a></span></span> }
     <div class="actions">
       <button (click)="importAsset.click()" [disabled]="busy" title="Open individual file" aria-label="Open individual file" class="icon-button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M14 2H5v20h14V7l-5-5v5h5M12 18V10m-3 3 3-3 3 3"/></svg></button>
       <input #importAsset hidden type="file" (change)="importFile($event)" />

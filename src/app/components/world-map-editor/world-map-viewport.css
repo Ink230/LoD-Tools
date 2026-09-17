@@ -45,5 +45,6 @@
     margin-right: 0;
   }
 .editor-header.compact-header { padding: 0 0 8px; flex-direction: row; align-items: center; }
-.compact-credit { font: 12px system-ui; color: var(--wmap-color-66); }
+.compact-credit { display:flex; align-items:center; gap:24px; font: 12px system-ui; color: var(--wmap-color-66); }
+.engine-credit a { color:inherit; text-decoration:underline; text-underline-offset:3px; }
 .compact-header > .actions > button { width: 34px; height: 34px; padding: 7px; display: inline-grid; place-items: center; }
