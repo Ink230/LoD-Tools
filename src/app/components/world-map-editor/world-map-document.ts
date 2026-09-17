@@ -40,7 +40,7 @@ export const TEMPLATES: Record<string, string> = {
   region: `<region legacyTemplate="SOUTH_SERDIO_0" provider="" presentationProvider=""><camera projectionDistance="320" overviewEnabled="false"><viewpoint ${POINT}/><refpoint ${POINT}/></camera></region>`,
   avatar: '<avatar provider=""/>',
   traversalProfile: '<traversalProfile priority="0" includeReverseRoutes="false" speedMultiplier="1"><routes/><markers/><warps/></traversalProfile>',
-  presentationProfile: '<presentationProfile><mapPositions/><regions/><services/><waterClutYs/><playerAvatarVramSlots/><textureAdjustments/></presentationProfile>',
+  presentationProfile: '<presentationProfile><capabilities retailLabels="false" retailWater="false" retailAvatars="false"/><namedElements/><namedTextures/></presentationProfile>',
   mod: '<mod/>',
   behaviour: '<behaviour/>',
   thumbnailDefinition: '<thumbnailDefinition nativeIndex="-1" label="New thumbnail"/>',
@@ -111,6 +111,17 @@ export function entries(doc: XMLDocument, section: string): Element[] {
 }
 
 export function renameRegistryEntry(element: Element, value: string): void {
+  if (element.parentElement?.tagName === 'namedTextures') {
+    if (!/^[a-z0-9_.-]+:[a-z0-9_./-]+$/.test(value)) throw new Error('Texture identity must be a registry ID');
+    const profile = element.parentElement.parentElement;
+    if (Array.from(element.parentElement.children).some((other) => other !== element && other.getAttribute('id') === value)) throw new Error('Duplicate named texture identity');
+    const previous = element.getAttribute('id');
+    for (const declaration of Array.from(profile.querySelectorAll(':scope > namedElements > item'))) {
+      if (declaration.getAttribute('texture') === previous) declaration.setAttribute('texture', value);
+    }
+    element.setAttribute('id', value);
+    return;
+  }
   const section = element.parentElement?.tagName;
   const doc = element.ownerDocument;
   const previous = element.getAttribute('id');
@@ -202,6 +213,39 @@ export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegist
     }
   }
   for (const element of [doc.documentElement, ...Array.from(doc.querySelectorAll('*'))]) {
+    if (['presentationProfile', 'layout'].includes(element.tagName)) {
+      const capabilities = element.querySelector(':scope > capabilities');
+      if (capabilities) {
+        for (const flag of ['retailLabels', 'retailWater', 'retailAvatars']) {
+          if (!['true', 'false'].includes(capabilities.getAttribute(flag))) add(capabilities, `${flag} must explicitly be true or false`);
+        }
+      } else {
+        for (const [table, minimum] of [['mapPositions', 8], ['regions', 3], ['services', 5], ['waterClutYs', 14], ['playerAvatarVramSlots', 4], ['textureAdjustments', 22]] as const) {
+          if (element.querySelectorAll(`:scope > ${table} > item`).length < minimum) add(element, `Legacy presentation requires at least ${minimum} ${table} entries; add explicit capabilities to author an independent profile`);
+        }
+      }
+      const textures = Array.from(element.querySelectorAll(':scope > namedTextures > item'));
+      const textureIds = new Set(textures.map((item) => item.getAttribute('id')));
+      for (const name of ['namedElements', 'namedTextures']) {
+        const identities = new Set<string>();
+        for (const item of Array.from(element.querySelectorAll(`:scope > ${name} > item`))) {
+          const id = item.getAttribute('id') || '';
+          if (!/^[a-z0-9_.-]+:[a-z0-9_./-]+$/.test(id)) add(item, `${name} requires registry IDs`);
+          if (identities.has(id)) add(item, `Duplicate ${name} identity ${id}`);
+          identities.add(id);
+          if (name === 'namedElements') {
+            const position = item.querySelector(':scope > position');
+            if (!position || ['x', 'y', 'z'].some((axis) => !finiteAttribute(position, axis))) add(item, 'Named elements require finite position coordinates');
+            if (item.hasAttribute('texture') && !textureIds.has(item.getAttribute('texture'))) add(item, `Unknown named texture ${item.getAttribute('texture')}`);
+          } else if (!item.querySelector(':scope > adjustment')) add(item, 'Named textures require a texture adjustment');
+        }
+      }
+      const adjustments = Math.max(capabilities ? 22 : 0, element.querySelectorAll(':scope > textureAdjustments > item').length);
+      for (const slot of Array.from(element.querySelectorAll(':scope > playerAvatarVramSlots > item'))) {
+        const value = Number(slot.getAttribute('value'));
+        if (!slot.getAttribute('value')?.trim() || !Number.isInteger(value) || value < 0 || value >= adjustments) add(slot, 'Avatar slot must reference an available legacy texture adjustment');
+      }
+    }
     for (const attribute of ['standalone', 'omitBackground', 'omitLocationSounds']) {
       if (element.hasAttribute(attribute) && !['true', 'false'].includes(element.getAttribute(attribute))) add(element, `${attribute} must be true or false`);
     }
@@ -350,6 +394,12 @@ export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegist
 
 export function childTemplate(parent: Element, name?: string): string {
   const tag = name || 'item';
+  if (['presentationProfile', 'layout'].includes(parent.tagName)) {
+    if (name === 'capabilities') return '<capabilities retailLabels="false" retailWater="false" retailAvatars="false"/>';
+    if (['namedElements', 'namedTextures', 'mapPositions', 'regions', 'services', 'waterClutYs', 'playerAvatarVramSlots', 'textureAdjustments'].includes(name)) return `<${name}/>`;
+  }
+  if (parent.tagName === 'namedElements') return '<item id="custom:element" label="New element"><position x="0" y="0" z="0"/></item>';
+  if (parent.tagName === 'namedTextures') return '<item id="custom:texture"><adjustment index="0" clutX="0" clutY="0" tpageX="0" tpageY="0" mode="NONE"/></item>';
   if (name === 'scene') return `<scene><translation ${POINT}/><xAxis x="1" y="0" z="0"/><yAxis x="0" y="1" z="0"/><zAxis x="0" y="0" z="1"/></scene>`;
   if (name === 'resources') return '<resources/>';
   if (name === 'locationSoundFiles') return '<locationSoundFiles header="" indices="" sequence="" bank=""/>';

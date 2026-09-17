@@ -11,6 +11,9 @@
 </div>
 @if (editor.selected) {
   <h2>{{ editor.label(editor.selected.tagName) }}</h2>
+  @if (editor.section === 'presentationProfiles') {
+    <p class="notice">Named elements are rendered by your region's presentation provider. Enable retail capabilities to retain built-in labels, water effects or avatars.</p>
+  }
   <p class="selected-id">{{ editor.selected.getAttribute('id') || 'Preset rules' }}</p>
   @if (editor.selected.getAttribute('name') || editor.selected.getAttribute('label'); as name) { <p class="entry-name">{{ name }}</p> }
   @if (editor.section === 'removals') {

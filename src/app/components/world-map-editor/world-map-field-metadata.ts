@@ -7,6 +7,9 @@ export interface FieldPresentation {
 }
 
 const FIELDS: Record<string, FieldPresentation> = {
+  retailLabels: { label: 'Retail labels', description: 'Enable built-in labels and location prompt details' },
+  retailWater: { label: 'Retail water effects', description: 'Enable built-in water palette and wake rendering' },
+  retailAvatars: { label: 'Retail avatar rendering', description: 'Enable built-in avatar rendering fallback; custom renderers remain available' },
   standalone: { label: 'Standalone world', description: 'Use only this preset graph instead of overlaying the retail world' },
   startingPortal: { label: 'Starting portal', description: 'Default entry for a standalone world' },
   recoveryPortal: { label: 'Recovery portal', description: 'Safe accessible arrival when a saved destination is unavailable' },
@@ -72,6 +75,8 @@ const COMPATIBILITY_CHILDREN: Record<string, string[]> = {
 };
 
 export function fieldPresentation(element: Element, attribute: string): FieldPresentation {
+  if (element.parentElement?.tagName === 'namedElements' && attribute === 'texture') return { label: 'Named texture', description: 'Texture identity from this presentation profile' };
+  if (element.tagName === 'position' && element.parentElement?.parentElement?.tagName === 'namedElements' && ['x', 'y', 'z'].includes(attribute)) return { label: attribute.toUpperCase(), numeric: true, preservePrecision: true };
   if (element.parentElement?.tagName === 'scene' && ['x', 'y', 'z'].includes(attribute)) return { label: attribute.toUpperCase(), numeric: true, preservePrecision: true };
   if (element.closest('submapDestination > data')) {
     if (attribute === 'value') return { label: 'Value', numeric: element.getAttribute('type') === 'float', preservePrecision: true };

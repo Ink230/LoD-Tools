@@ -244,6 +244,7 @@ export class WorldMapFieldsComponent {
   get compatibilityChildren() { return this.children.filter((child) => isCompatibilityChild(this.element, child)); }
   get hasCompatibility() { return Boolean(this.compatibilityAttributes.length || this.compatibilityChildren.length); }
   get optionalAttributes() {
+    if (this.element.parentElement?.tagName === 'namedElements') return ['label', 'texture'];
     if (this.element.closest('submapDestination > data')) return this.element.parentElement?.getAttribute('type') === 'map' ? ['key', 'value'] : ['value'];
     if (this.element.tagName === 'item' && this.element.parentElement?.tagName === 'transports') return ['texture'];
     if (this.element.tagName === 'item' && this.element.parentElement?.tagName !== 'warps') return [];
@@ -251,6 +252,8 @@ export class WorldMapFieldsComponent {
   }
   get missingAttributes() { return this.optionalAttributes.filter((attribute) => !this.element.hasAttribute(attribute)); }
   get isList() {
+    if (this.element.tagName === 'capabilities' && ['presentationProfile', 'layout'].includes(this.element.parentElement?.tagName)) return false;
+    if (['namedElements', 'namedTextures'].includes(this.element.tagName)) return true;
     if (this.element.closest('submapDestination > data')) return ['map', 'list'].includes(this.element.getAttribute('type'));
     if (['uiTextures', 'transportTextures', 'transports'].includes(this.element.tagName)) return true;
     return (
@@ -260,6 +263,8 @@ export class WorldMapFieldsComponent {
   }
   get optionalChildren() {
     const options: Record<string, string[]> = {
+      presentationProfile: ['capabilities', 'namedElements', 'namedTextures', 'mapPositions', 'regions', 'services', 'waterClutYs', 'playerAvatarVramSlots', 'textureAdjustments'],
+      layout: ['capabilities', 'namedElements', 'namedTextures', 'mapPositions', 'regions', 'services', 'waterClutYs', 'playerAvatarVramSlots', 'textureAdjustments'],
       place: ['serviceIds', 'soundIds'],
       region: ['assets', 'scene', 'resources'],
       resources: ['uiTextures', 'transportTextures', 'transports', 'leader', 'layout', 'locationSoundFiles'],
@@ -282,6 +287,7 @@ export class WorldMapFieldsComponent {
   presentation(attribute: string) { return fieldPresentation(this.element, attribute); }
   reference(attribute: string) { return referenceSection(this.element, attribute); }
   choices(attribute: string): string[] {
+    if (attribute === 'texture' && this.element.parentElement?.tagName === 'namedElements') return Array.from(this.element.parentElement.parentElement.querySelectorAll(':scope > namedTextures > item')).map((item) => item.getAttribute('id')).filter(Boolean);
     if (this.element.tagName === 'locationSoundFiles') return this.registry['assetPaths'] || [];
     if (attribute === 'background' || (attribute === 'value' && ['uiTextures', 'transportTextures'].includes(this.element.parentElement?.tagName))) return this.registry['assetPaths'] || [];
     const section = this.reference(attribute);
@@ -291,6 +297,7 @@ export class WorldMapFieldsComponent {
     return [];
   }
   closedChoices(attribute: string): string[] {
+    if (['retailLabels', 'retailWater', 'retailAvatars'].includes(attribute)) return ['false', 'true'];
     if (attribute === 'motion') return ['LEGACY_INTERVAL', 'DISTANCE'];
     if (attribute === 'composition' && this.element.tagName === 'storyPreset') return ['REPLACE', 'ENABLE', 'DISABLE'];
     if (attribute === 'music') return ['RETAIL_CHAPTER', 'FIXED_CHAPTER', 'SILENT', 'KEEP'];
@@ -349,6 +356,7 @@ export class WorldMapFieldsComponent {
   }
   removeAttribute(attribute: string) { this.mutate.emit(() => this.element.removeAttribute(attribute)); }
   canRemove(child: Element) {
+    if (['presentationProfile', 'layout'].includes(this.element.tagName)) return true;
     if (child.tagName === 'locationSoundFiles') return true;
     if (['scene', 'resources', 'data', 'entry', 'uiTextures', 'transportTextures', 'transports', 'leader', 'layout'].includes(child.tagName)) return true;
     if (['serviceIds', 'soundIds', 'sounds'].includes(child.tagName)) return false;
