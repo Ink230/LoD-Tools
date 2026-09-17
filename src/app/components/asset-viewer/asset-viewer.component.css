@@ -1,4 +1,4 @@
-.editor { min-width: 0; --asset-library-width:310px; --asset-inspector-width:310px; }
+.editor { min-width: 1900px; --asset-library-width:310px; --asset-inspector-width:310px; }
 .workspace { grid-template-columns:var(--asset-library-width) minmax(0,1fr) var(--asset-inspector-width); }
 .icon-button { width: 34px; height: 34px; padding: 7px; display: inline-grid; place-items: center; }
 .theme-button { font-weight: 700; }
