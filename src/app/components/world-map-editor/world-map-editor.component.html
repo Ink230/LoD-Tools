@@ -64,10 +64,10 @@
     <div class="history-spacer" style="align-items: center; gap: 12px"><span class="muted" style="white-space: nowrap">{{ nodes.length }} nodes · {{ routes.length }} routes</span><button [class.active]="showDiagnostics" (click)="showDiagnostics = !showDiagnostics">{{ issues.length }} diagnostics</button></div></div>
   </div>
   <div class="workspace">
-    <aside class="library" aria-label="Preset sections">
+    <aside class="library preset-library" aria-label="Preset sections">
 
       @for (group of contentGroups; track group.title) {
-        <h3 style="margin: 12px 12px 4px; color: var(--wmap-color-47); font-size: 12px; font-weight: 600">{{ group.title }}</h3>
+        <h3 style="margin: 12px 0 4px; color: var(--wmap-color-47); font-size: 12px; font-weight: 600">{{ group.title }}</h3>
         <div class="section-list">
           @for (name of group.sections; track name) {
             <button [class.active]="selected && section === name" (click)="chooseSection(name)">

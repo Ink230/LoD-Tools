@@ -142,6 +142,10 @@ code {
 .library {
   border-right: 1px solid var(--line);
 }
+.preset-library { padding: 0 14px 18px; box-sizing: border-box; }
+.preset-library .section-list { padding: 6px 0; }
+.library.preset-library .panel-title, .preset-library .entry-list { padding-inline: 0; }
+.preset-library .search { width: 100%; margin: 10px 0; }
 .inspector {
   border-left: 1px solid var(--line);
   padding: 0 14px 18px;
