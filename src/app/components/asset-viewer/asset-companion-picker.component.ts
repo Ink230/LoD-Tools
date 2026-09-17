@@ -3,7 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { AssetRecord } from './asset-catalog';
 
 export type CompanionKind = 'texture' | 'model' | 'animation';
-export function companionFormats(kind: CompanionKind): string[] {
+export type AssetPickerKind = CompanionKind | 'background';
+export function companionFormats(kind: AssetPickerKind): string[] {
+  if (kind === 'background') return ['MCQ'];
   return kind === 'texture' ? ['TIM'] : kind === 'model' ? ['TMD'] : ['Animation', 'CMB', 'LMB'];
 }
 export function companionResourceIncluded(asset: AssetRecord, includeGameResources: boolean, includeSubmapResources: boolean, includeFieldEffects = false): boolean {
@@ -45,7 +47,7 @@ export class AssetCompanionPickerComponent implements AfterViewInit, OnDestroy {
   private previousFocus: HTMLElement | null = null;
   ngAfterViewInit() { this.previousFocus = document.activeElement as HTMLElement; this.searchInput?.nativeElement.focus(); }
   ngOnDestroy() { this.previousFocus?.focus(); }
-  @Input() kind: CompanionKind = 'texture';
+  @Input() kind: AssetPickerKind = 'texture';
   @Input() assets: AssetRecord[] = [];
   @Input() thumbnails = new Map<string, string>();
   @Input() error = '';

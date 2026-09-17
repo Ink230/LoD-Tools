@@ -41,6 +41,7 @@
 </div>
 }
 @if (picker) { <app-asset-companion-picker [kind]="picker" [assets]="assets" [thumbnails]="thumbnails" [error]="error" [includeGameResources]="includeGameResources" [includeSubmapResources]="includeSubmapResources" [includeFieldEffects]="includeFieldEffects" (picked)="attach($event)" (closed)="closePicker()" /> }
+@if (backgroundPicker) { <app-asset-companion-picker kind="background" [assets]="backgroundAssets" [thumbnails]="thumbnails" [error]="error" [includeGameResources]="true" (picked)="attachBackground($event[0])" (closed)="closeBackgroundPicker()" /> }
 @if (loading) { <p role="status">Loading preview…</p> }
 
 

@@ -24,6 +24,43 @@ import { AssetStageComponent } from './asset-stage.component';
 })
 export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestroy {
   battleBackdrop: BattleBackdrop | null = null;
+  backgroundPicker = false;
+  backgroundAsset: AssetRecord | null = null;
+  private backgroundRequest = 0;
+  private backgroundCatalog?: AssetRecord[];
+  private compatibleBackgrounds: AssetRecord[] = [];
+  get backgroundAssets() {
+    if (this.backgroundCatalog !== this.assets) {
+      this.backgroundCatalog = this.assets;
+      this.compatibleBackgrounds = this.assets.filter(asset => asset.format === 'MCQ' && asset.battleStageId !== undefined);
+    }
+    return this.compatibleBackgrounds;
+  }
+  openBackgroundPicker() { this.backgroundPicker = true; this.cdr.markForCheck(); }
+  closeBackgroundPicker() { this.backgroundPicker = false; ++this.backgroundRequest; }
+  clearBackground() {
+    ++this.backgroundRequest;
+    this.battleBackdrop = null;
+    this.backgroundAsset = null;
+    this.cdr.markForCheck();
+  }
+  async attachBackground(asset: AssetRecord) {
+    if (!this.readFile) return;
+    const version = this.loadVersion;
+    const request = ++this.backgroundRequest;
+    try {
+      const bytes = await this.readFile(asset.path);
+      if (version !== this.loadVersion || request !== this.backgroundRequest || this.destroyed) return;
+      this.battleBackdrop = decodeBattleBackdrop(bytes);
+      this.backgroundAsset = asset;
+      this.showBattleBackdrop = true;
+      this.backgroundPicker = false;
+      this.error = '';
+      this.capturePreview();
+    } catch (error) {
+      if (version === this.loadVersion && request === this.backgroundRequest) this.error = `Background: ${error instanceof Error ? error.message : String(error)}`;
+    } finally { this.cdr.markForCheck(); }
+  }
   showBattleBackdrop = true;
   get battleStagePreview() { return this.record?.battleStageId !== undefined && ['TMD', 'Animation'].includes(this.format); }
   @Input() bytes: Uint8Array = new Uint8Array();
@@ -303,6 +340,9 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.playbackFps = this.nativeFps;
   }
   async load() {
+    ++this.backgroundRequest;
+    this.backgroundPicker = false;
+    this.backgroundAsset = null;
     this.battleBackdrop = null;
     this.showBattleBackdrop = true;
     this.effectMode = 'runtime';
@@ -414,6 +454,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
             const backdrop = await this.readFile(this.record.backdrop);
             if (version !== this.loadVersion || this.destroyed) return;
             this.battleBackdrop = decodeBattleBackdrop(backdrop);
+            this.backgroundAsset = this.reference(this.record.backdrop, 'MCQ', backdrop.length);
           } catch {
             if (version === this.loadVersion) this.warnings.push(`Background ${this.record.backdrop} could not be loaded`);
           }

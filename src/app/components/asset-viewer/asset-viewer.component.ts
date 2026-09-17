@@ -1,5 +1,5 @@
 import { CollisionSelection } from './asset-preview-types';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { FORMAT_CATEGORIES, GAME_ASSET_CATEGORIES } from './asset-viewer-categories';
@@ -19,6 +19,7 @@ import { entityLinks, EntityLinkGroup } from './asset-entity-links';
   styleUrls: ['../world-map-editor/world-map-editor.component.css', '../world-map-editor/world-map-viewport.css', './asset-viewer.component.css'],
 })
 export class AssetViewerComponent implements OnInit {
+  @ViewChild(AssetPreviewComponent) preview?: AssetPreviewComponent;
   private readonly changeDetector = inject(ChangeDetectorRef);
   readonly themeColors = WORLD_MAP_THEME_COLORS;
   readonly themes = [
