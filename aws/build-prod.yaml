@@ -17,3 +17,7 @@ phases:
       - cd dist/$APP_NAME
       - find . -type f -exec gzip -9 {} \; -exec mv {}.gz {} \;
       - aws s3 sync . s3://${S3_BUCKET} --delete --content-encoding gzip --exclude "*.map" --cache-control max-age=31536000
+      - |
+        for notice in LICENSE.txt THIRD_PARTY_NOTICES.txt 3rdpartylicenses.txt browser/LICENSE.txt browser/THIRD_PARTY_NOTICES.txt browser/3rdpartylicenses.txt; do
+          aws s3 cp "$notice" "s3://${S3_BUCKET}/$notice" --content-type "text/plain; charset=utf-8" --content-encoding gzip --cache-control no-cache || exit 1
+        done
