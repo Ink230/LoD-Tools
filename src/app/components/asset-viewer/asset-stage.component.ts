@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { BattleBackdrop } from './asset-battle-stage';
 import { BattleBackdropRenderer } from './asset-battle-backdrop';
 import { dollyBattleStage } from './asset-stage-navigation';
+import { applyBackgroundCamera } from './asset-background-camera';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { ModelAsset, ModelAnimation, PixelImage, SceneOverlay } from './asset-preview-types';
 
@@ -20,6 +21,9 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
   @Input() frame = 0;
   @Input() battleStage = false;
   @Input() backdrop: BattleBackdrop | null = null;
+  @Input() backdropColour = '#18221c';
+  @Input() backgroundPosition: [number, number, number] = [0, 0, 0];
+  private previousBackdrop: BattleBackdrop | null = null;
   private backdropRenderer?: BattleBackdropRenderer;
   @Input() followEffectCamera = true;
   @Input() selectedPolygon: number | null = null;
@@ -63,7 +67,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
   private arenaExtent = 100;
 
   zoomBattleStage(event: WheelEvent) {
-    if (!this.battleStage || !this.controls) return;
+    if (!this.battleStage || !this.controls || this.backdrop?.scene) return;
     event.preventDefault();
     const pixels = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? this.surface.nativeElement.clientHeight : 1);
     dollyBattleStage(this.camera.position, this.controls.target, this.arenaExtent, pixels);
@@ -73,6 +77,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
 
   private configureNavigation() {
     if (!this.controls) return;
+    this.controls.enabled = !this.backdrop?.scene;
     this.controls.enableZoom = !this.battleStage;
     this.controls.panSpeed = this.battleStage ? 2 : 1;
   }
@@ -107,6 +112,14 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.mainLight.color.set(this.mainLightColor);
     this.configureNavigation();
     if (!this.renderer) return;
+    const leavingScene = !!this.previousBackdrop?.scene && !this.backdrop?.scene;
+    this.previousBackdrop = this.backdrop;
+    if (leavingScene) {
+      this.root.position.set(0, 0, 0);
+      this.camera.fov = 45;
+      this.camera.up.set(0, 1, 0);
+      this.fit();
+    }
     if (this.previousModel !== this.model || this.previousOverlay !== this.overlay || this.previousPages !== this.texturePages || this.previousBattleStage !== this.battleStage || (!this.model && this.previousAnimation !== this.animation)) this.rebuild();
     else this.pose();
   }
@@ -260,6 +273,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.render();
   }
   private applyEffectCamera(): boolean {
+    if (this.backdrop?.scene) return false;
     const pose = this.followEffectCamera && this.animation?.cameras?.[Math.floor(this.frame)];
     if (!pose || !this.controls) return false;
     this.camera.position.set(...pose.position).multiply(this.root.scale);
@@ -272,6 +286,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
   fit() {
     if (!this.controls) return;
     this.configureNavigation();
+    if (this.backdrop?.scene) { this.render(); return; }
     if (this.applyEffectCamera()) { this.render(); return; }
     this.root.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(this.root);
@@ -304,6 +319,10 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.renderer!.setSize(width, height, false);
       this.renderer!.domElement.style.width = '100%'; this.renderer!.domElement.style.height = '100%';
       this.camera.aspect = width / height; this.camera.updateProjectionMatrix();
+      if (this.backdrop?.scene) {
+        this.root.position.set(this.backgroundPosition[0], -this.backgroundPosition[1], -this.backgroundPosition[2]);
+        applyBackgroundCamera(this.camera, this.backdrop);
+      } else this.root.position.set(0, 0, 0);
       for (let i = 0; i < this.parts.length; i++) {
         if (!this.model?.parts[i]?.billboard && !this.parts[i].userData['screenRotation']) continue;
         this.parts[i].quaternion.copy(this.root.getWorldQuaternion(new THREE.Quaternion()).invert()).multiply(this.camera.getWorldQuaternion(new THREE.Quaternion()));
@@ -313,7 +332,7 @@ export class AssetStageComponent implements AfterViewInit, OnChanges, OnDestroy 
       }
       if (this.backdrop && this.controls) {
         this.backdropRenderer ??= new BattleBackdropRenderer();
-        this.scene.background = this.backdropRenderer.render(this.backdrop, this.camera, this.controls.target);
+        this.scene.background = this.backdropRenderer.render(this.backdrop, this.camera, this.controls.target, this.backdropColour);
       } else this.scene.background = null;
       this.renderer!.render(this.scene, this.camera);
       const flash = this.animation?.flashes?.[Math.floor(this.frame)];

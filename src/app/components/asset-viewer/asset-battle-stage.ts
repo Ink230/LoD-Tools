@@ -1,7 +1,9 @@
 import { decodeMcq } from './asset-image';
-import { PixelImage, Vec3 } from './asset-preview-types';
+import { PixelImage, Vec3, SceneOverlay } from './asset-preview-types';
 
 export interface BattleBackdrop {
+  mode?: 'flat' | 'submap';
+  scene?: { camera: NonNullable<SceneOverlay['camera']>; originX: number; originY: number };
   image: PixelImage;
   offsetX: number;
   offsetY: number;

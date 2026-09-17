@@ -36,6 +36,16 @@ SC's `Unpacker` produces extracted/converted resources and its loading pipeline 
 
 ## Battle stages
 
+### Model backgrounds
+
+The image button beside the editor's colour/checkerboard controls opens a background chooser for model previews. Its category buttons (Backgrounds, Battle stages, Textures) and file-type buttons (MCQ, PNG, TIM, Environment) combine with search. These are temporary preview attachments; source references are unchanged.
+
+- MCQ uses the camera-scrolling backdrop renderer
+- PNG and TIM use an aspect-preserving flat image; TIM exposes palette selection
+- Environment loads its linked TIMs and assembles the submap image layers, using the scene camera and projection to align the model view. Model position starts at the camera target and can be adjusted using X/Y/Z controls. Scripted actor placement and foreground occlusion are not simulated
+
+Clearing a background restores the colour/checkerboard and normal orbit camera. Loading is limited to the selected resource and its linked textures, with the existing 32-texture/32-MiB composition limits.
+
 **By Asset → Battle stages** groups the 96 retail stage package IDs (`SECT/DRGN0.BIN/2497` through `2592`) separately from generic game resources. Empty resources are omitted from the catalog; the current extraction contains 89 non-empty arena models.
 
 Opening a stage TMD or its animation loads the package's arena (`0/0`), animation (`0/1`), TIM (`2`), and MCQ backdrop (`1`) on demand. Source references appear in the inspector, including on the individual TIM and MCQ entries. Selecting those images still opens their standalone image previews. The **Background** toggle changes only the current preview.

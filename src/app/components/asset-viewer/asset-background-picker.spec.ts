@@ -7,17 +7,37 @@ import { AssetCompanionPickerComponent } from './asset-companion-picker.componen
 const backdrop: AssetRecord = { path: 'SECT/DRGN0.BIN/2497/1', name: '1', format: 'MCQ', category: 'images', gameCategory: 'battle-stages', gameAsset: 'Battle stage 0', size: 1, battleStageId: 0 };
 
 describe('model background picker', () => {
+  it('intersects category and file-type buttons with search and resets pagination', () => {
+    const picker = new AssetCompanionPickerComponent();
+    picker.kind = 'background';
+    picker.includeGameResources = true;
+    picker.assets = [backdrop, { ...backdrop, path: 'stage.tim', format: 'TIM' }, { ...backdrop, path: 'portrait.png', format: 'PNG', battleStageId: undefined }, { ...backdrop, path: 'scene', format: 'Environment', battleStageId: undefined }];
+    picker.backgroundGroup = 'battle-stages';
+    picker.backgroundFormat = 'TIM';
+    expect(picker.filtered.map(asset => asset.path)).toEqual(['stage.tim']);
+    picker.page = 3;
+    picker.backgroundGroup = 'backgrounds';
+    expect(picker.filtered).toEqual([]);
+    expect(picker.page).toBe(0);
+    picker.backgroundFormat = '';
+    picker.search = 'portrait';
+    expect(picker.filtered.map(asset => asset.path)).toEqual(['portrait.png']);
+    picker.search = '';
+    picker.backgroundGroup = 'textures';
+    expect(picker.filtered.map(asset => asset.path)).toEqual(['stage.tim']);
+  });
+
   it('keeps a stable list of compatible backgrounds and selects one at a time', () => {
     const fixture = TestBed.createComponent(AssetPreviewComponent);
     const preview = fixture.componentInstance;
-    preview.assets = [backdrop, { ...backdrop, path: 'art.mcq', battleStageId: undefined }, { ...backdrop, format: 'TIM' }];
-    expect(preview.backgroundAssets).toEqual([backdrop]);
+    preview.assets = [backdrop, { ...backdrop, path: 'art.mcq', battleStageId: undefined }, { ...backdrop, path: 'texture.tim', format: 'TIM' }, { ...backdrop, path: 'art.png', format: 'PNG' }, { ...backdrop, path: 'scene', format: 'Environment' }, { ...backdrop, path: 'model', format: 'TMD' }];
+    expect(preview.backgroundAssets).toEqual(preview.assets.slice(0, 5));
     expect(preview.backgroundAssets).toBe(preview.backgroundAssets);
     const picker = new AssetCompanionPickerComponent();
     picker.kind = 'background';
     picker.includeGameResources = true;
     picker.assets = preview.backgroundAssets;
-    expect(picker.filtered).toEqual([backdrop]);
+    expect(picker.filtered).toEqual(preview.assets.slice(0, 5));
     picker.toggle(backdrop);
     const other = { ...backdrop, path: 'SECT/DRGN0.BIN/2498/1' };
     picker.toggle(other);

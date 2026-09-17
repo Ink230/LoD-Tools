@@ -41,7 +41,16 @@
 </div>
 }
 @if (picker) { <app-asset-companion-picker [kind]="picker" [assets]="assets" [thumbnails]="thumbnails" [error]="error" [includeGameResources]="includeGameResources" [includeSubmapResources]="includeSubmapResources" [includeFieldEffects]="includeFieldEffects" (picked)="attach($event)" (closed)="closePicker()" /> }
-@if (backgroundPicker) { <app-asset-companion-picker kind="background" [assets]="backgroundAssets" [thumbnails]="thumbnails" [error]="error" [includeGameResources]="true" (picked)="attachBackground($event[0])" (closed)="closeBackgroundPicker()" /> }
+@if (backgroundAsset && (backgroundPaletteCount > 1 || battleBackdrop?.scene)) {
+  <div class="preview-toolbar">
+    @if (backgroundPaletteCount > 1) { <label>Background palette <input type="number" min="0" [max]="backgroundPaletteCount - 1" [(ngModel)]="backgroundPalette" (change)="updateBackgroundPalette()" /></label> }
+    @if (battleBackdrop?.scene) {
+      <span>Model position</span>
+      @for (axis of ['X', 'Y', 'Z']; track axis; let i = $index) { <label>{{ axis }} <input type="number" [ngModel]="backgroundPosition[i]" (ngModelChange)="setBackgroundPosition(i, $event)" /></label> }
+    }
+  </div>
+}
+@if (backgroundPicker) { <app-asset-companion-picker kind="background" [assets]="backgroundAssets" [thumbnails]="thumbnails" [error]="error" [includeGameResources]="true" [includeSubmapResources]="true" [includeFieldEffects]="true" (picked)="attachBackground($event[0])" (closed)="closeBackgroundPicker()" /> }
 @if (loading) { <p role="status">Loading preview…</p> }
 
 
@@ -103,7 +112,7 @@
   @if (zoomableImage && (image || mediaUrl)) { <button class="reset-image-zoom" (click)="resetImageZoom()" title="Reset zoom and center image">Reset zoom</button> }
   @if (sceneView === 'geometry' && sceneResource && overlay && (overlay.polygons.length || overlay.camera)) { <button class="reset-image-zoom" (click)="stage?.fit()" title="Restore the default scene orientation and framing">Reset orientation</button> }
   @if ((format === 'Opus' || format === 'SPU') && mediaUrl) { <audio controls [src]="mediaUrl" preload="metadata"></audio> }
-  @if (model || animation || ((!sceneResource || sceneView === 'geometry') && overlay && (overlay.polygons.length || overlay.camera))) { <app-asset-stage [battleStage]="battleStagePreview" [backdrop]="showBattleBackdrop ? battleBackdrop : null" [brightness]="brightness" [ambientStrength]="ambientStrength" [ambientColor]="ambientColor" [mainLightColor]="mainLightColor" [selectedPolygon]="selectedPolygon" (polygonSelected)="selectPolygon($event)" [model]="model" [animation]="animation" [overlay]="overlay" [frame]="frame" [wireframe]="wireframe" [texturePages]="texturePages" [followEffectCamera]="followEffectCamera" /> }
+  @if (model || animation || ((!sceneResource || sceneView === 'geometry') && overlay && (overlay.polygons.length || overlay.camera))) { <app-asset-stage [backdropColour]="backgroundColor" [backgroundPosition]="backgroundPosition" [battleStage]="battleStagePreview" [backdrop]="showBattleBackdrop ? battleBackdrop : null" [brightness]="brightness" [ambientStrength]="ambientStrength" [ambientColor]="ambientColor" [mainLightColor]="mainLightColor" [selectedPolygon]="selectedPolygon" (polygonSelected)="selectPolygon($event)" [model]="model" [animation]="animation" [overlay]="overlay" [frame]="frame" [wireframe]="wireframe" [texturePages]="texturePages" [followEffectCamera]="followEffectCamera" /> }
   
   @if (clut && !textures.length) { <p>Choose the companion TIM to play its palette animation.</p> }
 </div>

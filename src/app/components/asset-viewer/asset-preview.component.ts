@@ -1,5 +1,6 @@
 import { EffectPreviewRuntime } from './asset-effect-runtime';
 import { BattleBackdrop, decodeBattleBackdrop } from './asset-battle-stage';
+import { MODEL_BACKGROUND_FORMATS, flatBackdrop, loadModelBackground } from './asset-model-background';
 import { effectSetupContext, EffectBattleSide } from './asset-effect-context';
 import { buildEffectScene } from './asset-effect-scene';
 import { SubmapComposition, decodeSubmapComposition, renderSubmapComposition, projectSubmapPoint } from './asset-submap';
@@ -26,13 +27,26 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   battleBackdrop: BattleBackdrop | null = null;
   backgroundPicker = false;
   backgroundAsset: AssetRecord | null = null;
+  backgroundPalette = 0;
+  backgroundPaletteCount = 0;
+  private backgroundTimBytes: Uint8Array | null = null;
+  backgroundWarnings: string[] = [];
+  backgroundPosition: [number, number, number] = [0, 0, 0];
+  setBackgroundPosition(index: number, value: number) {
+    this.backgroundPosition = this.backgroundPosition.map((coordinate, i) => i === index ? Number(value) || 0 : coordinate) as [number, number, number];
+  }
+  updateBackgroundPalette() {
+    if (!this.backgroundTimBytes) return;
+    this.backgroundPalette = Math.max(0, Math.min(this.backgroundPaletteCount - 1, Math.trunc(Number(this.backgroundPalette) || 0)));
+    this.battleBackdrop = flatBackdrop(decodeTim(this.backgroundTimBytes, Number(this.backgroundPalette)));
+  }
   private backgroundRequest = 0;
   private backgroundCatalog?: AssetRecord[];
   private compatibleBackgrounds: AssetRecord[] = [];
   get backgroundAssets() {
     if (this.backgroundCatalog !== this.assets) {
       this.backgroundCatalog = this.assets;
-      this.compatibleBackgrounds = this.assets.filter(asset => asset.format === 'MCQ' && asset.battleStageId !== undefined);
+      this.compatibleBackgrounds = this.assets.filter(asset => MODEL_BACKGROUND_FORMATS.includes(asset.format));
     }
     return this.compatibleBackgrounds;
   }
@@ -42,6 +56,10 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     ++this.backgroundRequest;
     this.battleBackdrop = null;
     this.backgroundAsset = null;
+    this.backgroundTimBytes = null;
+    this.backgroundPaletteCount = 0;
+    this.backgroundWarnings = [];
+    this.backgroundPosition = [0, 0, 0];
     this.cdr.markForCheck();
   }
   async attachBackground(asset: AssetRecord) {
@@ -49,9 +67,18 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     const version = this.loadVersion;
     const request = ++this.backgroundRequest;
     try {
-      const bytes = await this.readFile(asset.path);
+      const result = await loadModelBackground(asset, async path => {
+        const bytes = await this.readFile!(path);
+        if (version !== this.loadVersion || request !== this.backgroundRequest || this.destroyed) throw new Error('Background request cancelled');
+        return bytes;
+      });
       if (version !== this.loadVersion || request !== this.backgroundRequest || this.destroyed) return;
-      this.battleBackdrop = decodeBattleBackdrop(bytes);
+      this.battleBackdrop = result.backdrop;
+      this.backgroundPalette = 0;
+      this.backgroundPaletteCount = result.paletteCount;
+      this.backgroundTimBytes = result.timBytes;
+      this.backgroundWarnings = result.warnings;
+      this.backgroundPosition = result.backdrop.scene ? [...result.backdrop.scene.camera.target] : [0, 0, 0];
       this.backgroundAsset = asset;
       this.showBattleBackdrop = true;
       this.backgroundPicker = false;
@@ -74,6 +101,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   get previewNotes(): string[] {
     return [...new Set([
       ...this.warnings,
+      ...this.backgroundWarnings,
       this.error,
       this.textureMappingWarning,
       ...(this.sceneResource ? this.submap?.warnings || [] : []),
@@ -340,6 +368,10 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.playbackFps = this.nativeFps;
   }
   async load() {
+    this.backgroundTimBytes = null;
+    this.backgroundPaletteCount = 0;
+    this.backgroundWarnings = [];
+    this.backgroundPosition = [0, 0, 0];
     ++this.backgroundRequest;
     this.backgroundPicker = false;
     this.backgroundAsset = null;
