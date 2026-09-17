@@ -137,6 +137,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
   @ViewChild('canvas') canvas?: ElementRef<HTMLCanvasElement>;
   @ViewChild(AssetStageComponent) stage?: AssetStageComponent;
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly host = inject(ElementRef<HTMLElement>);
   private readonly zone = inject(NgZone);
   readonly formats = PREVIEW_FORMATS;
   format: AssetFormat = 'Unknown';
@@ -660,6 +661,11 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.lastTick = performance.now();
     const tick = (now: number) => {
       if (!this.playing || this.destroyed) return;
+      if (!this.host.nativeElement.isConnected) {
+        this.lastTick = now;
+        this.raf = requestAnimationFrame(tick);
+        return;
+      }
       const duration = this.frameDurationMs;
       if (now - this.lastTick >= duration) {
         this.lastTick = now;

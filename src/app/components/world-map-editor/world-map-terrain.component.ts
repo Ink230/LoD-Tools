@@ -41,6 +41,7 @@ export class WorldMapTerrainComponent implements OnInit {
   private readonly host = inject(ElementRef<HTMLElement>);
   @HostListener('document:pointerdown', ['$event'])
   closeOutside(event: PointerEvent) {
+    if (!this.host.nativeElement.isConnected) return;
     if (!this.host.nativeElement.contains(event.target as Node)) this.close();
   }
   @HostListener('keydown.escape')

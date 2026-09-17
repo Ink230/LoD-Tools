@@ -19,6 +19,7 @@
       <button (click)="cycleTheme()" [style.color]="theme.color" [title]="'Theme: ' + theme.name" [attr.aria-label]="'Theme: ' + theme.name + '. Switch to ' + themes[(themeIndex + 1) % themes.length].name" class="icon-button theme-button">T</button>
     </div>
   </header>
+  <p class="editor-width-warning" role="status">This editor is made to work with wider screens (1900px or higher)</p>
   @if (controlsOpen) {
     <section id="asset-controls" class="help-panel" aria-label="Asset Viewer controls">
       <div class="panel-title">Controls <button (click)="dismissControls()" aria-label="Close controls">×</button></div>

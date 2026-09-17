@@ -1,30 +1,7 @@
 <div class="container">
-  <div class="header">
-    <div class="left-section">
-      <a fastRouterLink="/">
-        <div class="logo">
-          <img src="assets/dragoonmods_logo_light_green_web.svg" />
-        </div>
-      </a>
-      <div class="nav-links-container">
-        <a fastRouterLink="/mods/irongoon">
-          <div class="nav-link">Irongoon</div>
-        </a>
-        <a fastRouterLink="/data/summary">
-          <div class="nav-link">Game Data</div>
-        </a>
-        <a fastRouterLink="/world-map-editor">
-          <div class="nav-link">World Map Editor</div>
-        </a>
-        <a fastRouterLink="/asset-viewer">
-          <div class="nav-link">Asset Viewer</div>
-        </a>
-      </div>
-    </div>
-    <div class="right-section"></div>
-  </div>
+  <header class="header"><app-editor-navigation [siteNavigation]="true" /></header>
   <div class="content">
-    <router-outlet></router-outlet>
+    <router-outlet (attach)="resumeEditor($event)"></router-outlet>
   </div>
-  <div class="footer">Find more on GitHub <br /><a href="https://github.com/ink230" target="_blank">Ink</a></div>
+<div class="footer"><a href="https://github.com/ink230" target="_blank">Ink</a></div>
 </div>

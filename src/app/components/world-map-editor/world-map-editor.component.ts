@@ -79,6 +79,13 @@ export class WorldMapEditorComponent implements OnInit {
   }
   themeIndex = 0;
   get theme() { return this.themes[this.themeIndex]; }
+  resumeSession() {
+    try {
+      const stored = localStorage.getItem('lodtools.editor.theme');
+      if (stored) this.themeIndex = Math.max(0, this.themes.findIndex(theme => theme.name === stored));
+    } catch { /* Keep the current theme when storage is unavailable. */ }
+    this.changeDetector.markForCheck();
+  }
   cycleTheme() {
     this.themeIndex = (this.themeIndex + 1) % this.themes.length;
     try { localStorage.setItem('lodtools.editor.theme', this.theme.name); } catch { /* Theme still works without browser storage. */ }
@@ -362,6 +369,7 @@ export class WorldMapEditorComponent implements OnInit {
   }
   @HostListener('document:pointerdown', ['$event'])
   finishDrawingOutside(event: PointerEvent) {
+    if (!this.host.nativeElement.isConnected) return;
     if ((event.target as Element)?.closest?.('[data-delete-entity]')) return;
     if (this.mode === 'drawGeometry' && !(event.target as Element)?.closest?.('.canvas-wrap')) this.finishGeometryDrawing();
   }
@@ -1156,6 +1164,7 @@ export class WorldMapEditorComponent implements OnInit {
   }
   @HostListener('document:keydown', ['$event'])
   keyboard(event: KeyboardEvent) {
+    if (!this.host.nativeElement.isConnected) return;
     if (this.categoryShortcut(event)) return;
     if (this.controlsOpen || this.commandOpen) return;
     const target = event.target as HTMLElement;

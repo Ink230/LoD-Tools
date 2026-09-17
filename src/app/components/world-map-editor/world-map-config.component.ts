@@ -24,8 +24,9 @@ export class WorldMapConfigComponent {
   }
   @HostListener('document:pointerdown', ['$event'])
   outside(event: PointerEvent) {
+    if (!this.host.nativeElement.isConnected) return;
     if (!this.host.nativeElement.contains(event.target as Node)) this.open = false;
   }
   @HostListener('document:keydown.escape')
-  close() { this.open = false; }
+  close() { if (this.host.nativeElement.isConnected) this.open = false; }
 }

@@ -1,6 +1,6 @@
 import { EditorNavigationComponent } from '../editor-navigation/editor-navigation.component';
 import { CollisionSelection } from './asset-preview-types';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { FORMAT_CATEGORIES, GAME_ASSET_CATEGORIES } from './asset-viewer-categories';
@@ -233,6 +233,13 @@ export class AssetViewerComponent implements OnInit {
     } catch { /* Controls still work without browser storage. */ }
   }
 
+  resumeSession() {
+    try {
+      const stored = localStorage.getItem('lodtools.editor.theme');
+      if (stored) this.themeIndex = Math.max(0, this.themes.findIndex(theme => theme.name === stored));
+    } catch { /* Keep the current theme when storage is unavailable. */ }
+    this.changeDetector.markForCheck();
+  }
   cycleTheme() {
     this.themeIndex = (this.themeIndex + 1) % this.themes.length;
     try { localStorage.setItem('lodtools.editor.theme', this.theme.name); } catch { /* Theme still works without browser storage. */ }
@@ -240,8 +247,9 @@ export class AssetViewerComponent implements OnInit {
   }
 
   @HostListener('document:keydown.escape')
-  dismissControls() { this.controlsOpen = false; }
+  dismissControls() { if (this.host.nativeElement.isConnected) this.controlsOpen = false; }
 
+  private readonly host = inject(ElementRef<HTMLElement>);
   folderAssetsLoaded = false;
 
   private async detectFolderAsset(source: AssetSource): Promise<boolean> {

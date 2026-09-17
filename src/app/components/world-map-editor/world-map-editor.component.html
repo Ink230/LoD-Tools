@@ -26,6 +26,7 @@
       <input #files type="file" hidden multiple accept=".wmap,.zip,.tim,.tmd,.bin" (change)="fileInput($event)" />
     </div>
   </header>
+  <p class="editor-width-warning" role="status">This editor is made to work with wider screens (1900px or higher)</p>
   @if (commandOpen) { <app-world-map-command [editor]="this" (dismiss)="commandOpen = false" /> }
   @if (controlsOpen) { <app-world-map-controls [bindings]="keybindings" (dismiss)="controlsOpen = false" /> }
   @if (error) {
