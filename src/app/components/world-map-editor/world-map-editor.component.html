@@ -1,13 +1,11 @@
 <main class="editor" [class.fill-viewport]="fillViewport" (dragover)="$event.preventDefault()" (drop)="drop($event)">
   <header class="editor-header" [class.compact-header]="headerCollapsed">
     <div [hidden]="headerCollapsed">
-      <p class="eyebrow engine-credit"><a href="https://github.com/Legend-of-Dragoon-Modding/Severed-Chains" target="_blank" rel="noopener noreferrer">SEVERED CHAINS</a> created by <a href="https://ko-fi.com/monoxide" target="_blank" rel="noopener noreferrer">LordMonoxide</a></p>
       <h1>World Map Editor</h1>
       <p class="subtitle">by: Ink</p>
     </div>
-    @if (headerCollapsed) { <span class="compact-credit"><span>World Map Editor by Ink</span><span class="engine-credit"><a href="https://github.com/Legend-of-Dragoon-Modding/Severed-Chains" target="_blank" rel="noopener noreferrer">SEVERED CHAINS</a> created by <a href="https://ko-fi.com/monoxide" target="_blank" rel="noopener noreferrer">LordMonoxide</a></span></span> }
+    @if (headerCollapsed) { <span class="compact-credit"><span>World Map Editor by Ink</span></span> }
     <div class="actions">
-      @if (fillViewport && !headerCollapsed) { <app-editor-navigation /> }
       <button (click)="loadVanilla()" [disabled]="loading" title="Load vanilla" aria-label="Load vanilla">{{ headerCollapsed ? 'L' : 'Load vanilla' }}</button>
       <button (click)="saveBrowserPreset()" title="Save preset in this browser" aria-label="Save preset in this browser" style="width: 34px; height: 34px; padding: 7px; display: inline-grid; place-items: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg></button>
       <button (click)="files.click()" [disabled]="loading" title="Import" aria-label="Import" style="width: 34px; height: 34px; padding: 7px; display: inline-grid; place-items: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M14 2H5v20h14V7l-5-5v5h5M12 18V10m-3 3 3-3 3 3"/></svg></button>

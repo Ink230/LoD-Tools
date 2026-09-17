@@ -10,13 +10,22 @@
 .header {
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  height: 44px;
   background-color: var(--secondary-color);
   padding: 12px 16px;
   box-sizing: border-box;
-  text-align: center;
+  text-align: left;
   width: 100%;
 }
+.site-credit { margin-left: auto; white-space: nowrap; color: #a6cc96; font: 12px system-ui; }
+.site-credit a { color: inherit; text-underline-offset: 3px; }
+:host:not(:has(app-asset-viewer, app-world-map-editor)) .site-credit { display: none; }
+:host:has(.editor-header.compact-header) .header { display: none; }
+:host:has(.viewport-host) .header { position: fixed; inset: 0 0 auto; z-index: 10001; }
+:host:has(.viewport-host .editor-header:not(.compact-header)) .content { --editor-navbar-height: 44px; }
 
 .left-section {
   display: flex;

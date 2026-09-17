@@ -1,5 +1,8 @@
 <div class="container">
-  <header class="header"><app-editor-navigation [siteNavigation]="true" /></header>
+  <header class="header">
+    <app-editor-navigation />
+    <span class="site-credit"><a href="https://github.com/Legend-of-Dragoon-Modding/Severed-Chains" target="_blank" rel="noopener noreferrer">SEVERED CHAINS</a> created by <a href="https://ko-fi.com/monoxide" target="_blank" rel="noopener noreferrer">LordMonoxide</a><app-sc-attribution /></span>
+  </header>
   <div class="content">
     <router-outlet (attach)="resumeEditor($event)"></router-outlet>
   </div>

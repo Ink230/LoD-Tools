@@ -1,11 +1,11 @@
-:host(.viewport-host) { position: fixed; inset: 0; z-index: 10000; overflow: auto; background: var(--wmap-color-67); overscroll-behavior: contain; }
+:host(.viewport-host) { position: fixed; inset: var(--editor-navbar-height, 0px) 0 0; z-index: 10000; overflow: auto; background: var(--wmap-color-67); overscroll-behavior: contain; }
 .editor.fill-viewport {
   position: relative;
 
 
   max-width: none;
   width: 100%;
-  height: 100dvh;
+  height: calc(100dvh - var(--editor-navbar-height, 0px));
   box-sizing: border-box;
   display: flex;
   flex-direction: column;

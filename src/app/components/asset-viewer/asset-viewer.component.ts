@@ -1,4 +1,3 @@
-import { EditorNavigationComponent } from '../editor-navigation/editor-navigation.component';
 import { CollisionSelection } from './asset-preview-types';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +12,7 @@ import { entityLinks, EntityLinkGroup } from './asset-entity-links';
 
 @Component({
   selector: 'app-asset-viewer',
-  imports: [EditorNavigationComponent, FormsModule, DatePipe, AssetPreviewComponent],
+  imports: [FormsModule, DatePipe, AssetPreviewComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '[class.viewport-host]': 'fillViewport', '[style.--wmap-hue-shift]': 'theme.shift', '[style]': 'themeColors' },
   templateUrl: './asset-viewer.component.html',
