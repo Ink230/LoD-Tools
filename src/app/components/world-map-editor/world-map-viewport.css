@@ -49,3 +49,5 @@
 .compact-credit > .engine-credit { margin-left:auto; }
 .engine-credit a { color:inherit; text-decoration:underline; text-underline-offset:3px; }
 .compact-header > .actions > button { width: 34px; height: 34px; padding: 7px; display: inline-grid; place-items: center; }
+
+.editor-header > .actions { position: relative; }

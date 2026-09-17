@@ -1,3 +1,4 @@
+import { EditorNavigationComponent } from '../editor-navigation/editor-navigation.component';
 import { SEARCH_PREFIXES, WorldMapCommandComponent } from './world-map-command.component';
 import { WorldMapControlsComponent } from './world-map-controls.component';
 import { KEY_ACTIONS, KeyAction, WorldMapKeybindings } from './world-map-keybindings';
@@ -49,7 +50,7 @@ interface EditorSnapshot {
   // XML DOM nodes mutate in place; refresh this isolated editor subtree when its owner changes.
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default,
-  imports: [WorldMapCommandComponent, WorldMapControlsComponent, WorldMapConfigComponent, WorldMapTerrainComponent, FormsModule, WorldMapInspectorComponent, WorldMapCanvasComponent, WorldMapDocumentPanelsComponent],
+  imports: [EditorNavigationComponent, WorldMapCommandComponent, WorldMapControlsComponent, WorldMapConfigComponent, WorldMapTerrainComponent, FormsModule, WorldMapInspectorComponent, WorldMapCanvasComponent, WorldMapDocumentPanelsComponent],
   templateUrl: './world-map-editor.component.html',
   styleUrls: ['./world-map-editor.component.css', './world-map-viewport.css'],
 })
