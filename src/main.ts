@@ -48,6 +48,11 @@ const routes: Routes = [
         path: 'character-comparison',
         loadComponent: () => import('./app/components/game-data/character-comparison/character-comparison.component').then((m) => m.CharacterComparisonComponent),
       },
+      ...['dragoons', 'additions', 'spells', 'items', 'submaps', 'stages', 'encounters', 'enemies'].map(section => ({
+        path: section,
+        data: { section },
+        loadComponent: () => import('./app/components/game-data/catalog/game-data-catalog.component').then(m => m.GameDataCatalogComponent),
+      })),
     ],
   },
 ];

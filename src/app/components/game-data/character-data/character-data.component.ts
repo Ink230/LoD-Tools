@@ -1,10 +1,11 @@
 import { ColDef } from 'ag-grid-community';
 import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { AgLineSeriesOptions } from 'ag-charts-community';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, skip, startWith } from 'rxjs';
-import { Addition, Body, Character, FlattenedAddition, FlattenedAdditionHit } from 'src/app/models/game-data.model';
+import { Addition, Body, Character, Element, FlattenedAddition, FlattenedAdditionHit } from 'src/app/models/game-data.model';
 import { ElementPipe } from 'src/app/pipes/element.pipe';
 import { SpeciesPipe } from 'src/app/pipes/species.pipe';
 import { GameDataService } from 'src/app/services/game-data.service';
@@ -17,7 +18,7 @@ import { GridDisplayComponent } from '../../grid-display/grid-display.component'
   templateUrl: './character-data.component.html',
   styleUrl: './character-data.component.css',
 })
-export class CharacterDataComponent {
+export class CharacterDataComponent implements OnInit {
   gameDataService = inject(GameDataService);
   router = inject(Router);
   route = inject(ActivatedRoute);
@@ -29,7 +30,7 @@ export class CharacterDataComponent {
   includeFivesOnly = new BehaviorSubject<boolean>(false);
   filteredCharacterBodyStats = new BehaviorSubject<Body[]>([]);
   filteredCharacterBodyStatsChartOptionsData = new BehaviorSubject<Body[]>([]);
-  filteredCharacterBodyStatsChartOptionsSeries = new BehaviorSubject<any>([]);
+  filteredCharacterBodyStatsChartOptionsSeries = new BehaviorSubject<AgLineSeriesOptions[]>([]);
   includeAttack = new BehaviorSubject<boolean>(true);
   includeDefense = new BehaviorSubject<boolean>(true);
   includeMagicAttack = new BehaviorSubject<boolean>(true);
@@ -73,12 +74,8 @@ export class CharacterDataComponent {
   ];
 
   characterDragoonStatsColumnDefinitions: ColDef[] = [
-    {
-      field: 'level',
-      valueGetter: (params) => {
-        return params.node?.rowIndex !== undefined ? params.node.rowIndex + 1 : null;
-      },
-    },
+    { field: 'level', headerName: 'D-Level' },
+    { field: 'mp', headerName: 'MP' },
     { field: 'attack' },
     { field: 'defense' },
     { field: 'magicAttack' },
@@ -88,35 +85,24 @@ export class CharacterDataComponent {
   characterDragoonSpellsColumnDefinitions: ColDef[] = [
     { field: 'name', headerName: 'Name' },
     { field: 'description', headerName: 'Description' },
-    { field: 'element', headerName: 'Element' },
-    { field: 'damage', headerName: 'Damage' },
+    { field: 'unlockLevel', headerName: 'D-Level', valueFormatter: p => p.value == null ? 'Spirit' : String(p.value) },
+    { field: 'element', headerName: 'Element', valueFormatter: p => Element[p.value]?.toLowerCase() || '' },
+    { field: 'damage', headerName: 'Power %', valueFormatter: p => p.value == null ? '—' : String(p.value) },
     { field: 'healPercent', headerName: 'Heal %' },
     { field: 'mpCost', headerName: 'MP Cost' },
     { field: 'accuracy', headerName: 'Accuracy' },
     { field: 'target', headerName: 'Target' },
-    { field: 'specialTarget', headerName: 'Special Target' },
-    { field: 'specialEffect', headerName: 'Special Effect' },
-    { field: 'statusChance', headerName: 'Status Chance' },
-    { field: 'statusType', headerName: 'Status Type' },
-    { field: 'buffType', headerName: 'Buff Type' },
   ];
 
   constructor() {
     this.characterSelected.pipe(skip(1)).subscribe((value: number) => {
       this.character = this.gameDataService.getCharacterById(value);
-      this.filteredCharacterBodyStats.next(this.character.bodyStats);
-      this.filteredCharacterBodyStatsChartOptionsData.next(this.character.bodyStats);
-      this.filteredCharacterBodyStatsChartOptionsSeries.next([
-        { type: 'line', xKey: 'level', yKey: 'attack' },
-        { type: 'line', xKey: 'level', yKey: 'defense' },
-        { type: 'line', xKey: 'level', yKey: 'magicAttack' },
-        { type: 'line', xKey: 'level', yKey: 'magicDefense' },
-      ]);
       this.filteredCharacterAdditionBasicStats.next(this.flattenAdditionAndAdditionLevels(this.character.additions));
       this.filteredCharacterAdditionHitStats.next(this.flattenAdditionHits(this.character.additions));
+      this.selectedAdditions.setValue([]);
     });
 
-    combineLatest([this.includeTensOnly, this.includeFivesOnly, this.includeAttack, this.includeDefense, this.includeMagicAttack, this.includeMagicDefense, this.includeHP]).subscribe(
+    combineLatest([this.includeTensOnly, this.includeFivesOnly, this.includeAttack, this.includeDefense, this.includeMagicAttack, this.includeMagicDefense, this.includeHP, this.characterSelected]).subscribe(
       ([isTensOnly, isFivesOnly, isAttack, isDefense, isMagicAttack, isMagicDefense, isHP]) => {
         if (!this.character) return;
 
@@ -131,7 +117,7 @@ export class CharacterDataComponent {
         this.filteredCharacterBodyStats.next(filteredData);
         this.filteredCharacterBodyStatsChartOptionsData.next(filteredData);
 
-        const series: any[] = [];
+        const series: AgLineSeriesOptions[] = [];
 
         if (isAttack) {
           series.push({ type: 'line', xKey: 'level', yKey: 'attack' });
@@ -163,7 +149,7 @@ export class CharacterDataComponent {
       this.filteredCharacterAdditionHitStats.next(this.flattenAdditionHits(this.character?.additions));
 
       let filteredAdditions: FlattenedAddition[] = this.flattenAdditionAndAdditionLevels(this.character?.additions);
-      let filteredAdditionHits: FlattenedAdditionHit[] = this.flattenAdditionHits(this.character?.additions);
+      const filteredAdditionHits: FlattenedAdditionHit[] = this.flattenAdditionHits(this.character?.additions);
 
       if (this.lastClickedMinOrMax === 'min') {
         this.includeMaxAdditions.setValue(false, { emitEvent: false });
@@ -209,9 +195,10 @@ export class CharacterDataComponent {
     });
   }
 
-  onFilterCharacterLevelChange(event: any): void {
-    const isChecked = event.target.checked;
-    const labelText = event.target.nextElementSibling.textContent;
+  onFilterCharacterLevelChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const isChecked = input.checked;
+    const labelText = input.nextElementSibling?.textContent || '';
 
     const checkboxMapping: { [key: string]: BehaviorSubject<boolean> } = {
       'Include 10s only': this.includeTensOnly,

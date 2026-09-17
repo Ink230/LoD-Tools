@@ -144,15 +144,18 @@
     <div class="flex-row small-text"></div>
     <div>
       @for (dragoon of character?.dragoons; track dragoon) {
+        <h3>{{ dragoon.name }}</h3>
+        @if (dragoon.note) { <p>{{ dragoon.note }}</p> }
         <app-grid-display [rowData]="dragoon.dragoonStats" [colDefs]="characterDragoonStatsColumnDefinitions"></app-grid-display>
       }
     </div>
   </div>
   <div class="body-stats">
-    <div class="flex-row">Dragoon Stats</div>
+    <div class="flex-row">Dragoon Spells</div>
     <div class="flex-row small-text"></div>
     <div>
       @for (dragoon of character?.dragoons; track dragoon) {
+        <h3>{{ dragoon.name }}</h3>
         <app-grid-display [rowData]="dragoon.spells" [colDefs]="characterDragoonSpellsColumnDefinitions"></app-grid-display>
       }
     </div>

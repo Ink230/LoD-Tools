@@ -1,0 +1,15 @@
+:host { display: block; width: min(1600px, calc(100vw - 48px)); margin: 16px auto; color: #d6e5ce; }
+nav, .filters { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+a { color: #b9dc9d; }
+nav a, button { padding: 8px 12px; border: 1px solid #485b40; border-radius: 4px; text-decoration: none; }
+nav .active { background: #31482b; color: #e8f5df; }
+h1 { margin: 18px 0 8px; font-size: 26px; }
+.note, .source { color: #a8b4a2; font-size: 13px; line-height: 1.6; }
+input, select, button { background: #172016; color: #d6e5ce; border: 1px solid #485b40; border-radius: 4px; padding: 8px 12px; font: inherit; }
+input { width: min(400px, 100%); }
+button { cursor: pointer; }
+.details { padding: 18px; margin-top: 18px; background: #172016; border: 1px solid #485b40; border-radius: 5px; }
+.details h2 { margin-top: 0; }
+dl { display: grid; grid-template-columns: minmax(120px, 200px) minmax(0, 1fr); gap: 8px 20px; }
+dt { color: #a8b4a2; }
+dd { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; }

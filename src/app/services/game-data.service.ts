@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { GameDataComponent } from '../components/game-data/game-data.component';
 import { Character, Element, Species } from '../models/game-data.model';
 import { IrongoonOption } from '../models/irongoon.model';
+import { CHARACTER_SPELLS } from './generated-character-spells';
 
 @Injectable({
   providedIn: 'root',
@@ -12818,6 +12819,22 @@ export class GameDataService {
       throw new Error('GameDataService is already loaded. Import it in the GameDataComponent only');
     }
 
+    for (const character of this.characterData) {
+      for (const dragoon of character.dragoons) {
+        const elementName = Element[dragoon.element].toLowerCase().replaceAll('_', ' ');
+        dragoon.name = `${elementName.charAt(0).toUpperCase()}${elementName.slice(1)} Dragoon`;
+        dragoon.spells = CHARACTER_SPELLS[character.firstName as keyof typeof CHARACTER_SPELLS].map(spell => ({ ...spell, element: Element[spell.element.toUpperCase().replaceAll(' ', '_') as keyof typeof Element] }));
+        dragoon.dragoonStats = dragoon.dragoonStats.map((stats, index) => ({ ...stats, level: index + 1, mp: (index + 1) * 20 }));
+      }
+      if (character.firstName === 'Dart') {
+        character.dragoons.push({
+          name: 'Divine Dragoon', element: Element.DIVINE,
+          note: 'Both spells unlock with the Divine Dragoon Spirit. These are Dart’s base Dragoon-level stat modifiers; battle effects are applied separately.',
+          spells: CHARACTER_SPELLS['Divine'].map(spell => ({ ...spell, element: Element.DIVINE })),
+          dragoonStats: character.dragoons[0].dragoonStats.map(stats => ({ ...stats })),
+        });
+      }
+    }
     this.initCharacterOptions();
   }
 

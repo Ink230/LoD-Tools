@@ -116,9 +116,7 @@ export class CharacterComparisonComponent implements OnInit {
     const characterGroup = this.characterSelections.get(characterId.toString()) as FormGroup;
     const hasSelectedAttribute = this.characterAttributes.some((attribute) => characterGroup.get(attribute).value);
 
-    if (hasSelectedAttribute) {
-      characterGroup.get('mainControl').setValue(true);
-    }
+    characterGroup.get('mainControl').setValue(hasSelectedAttribute);
   }
 }
 

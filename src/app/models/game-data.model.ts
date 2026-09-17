@@ -92,6 +92,8 @@ export interface Body {
 }
 
 export interface Dragoon {
+  name?: string;
+  note?: string;
   element: Element;
   spells: DragoonSpell[];
   dragoonStats: DragoonStat[];
@@ -119,9 +121,17 @@ export interface DragoonSpell {
   description: string;
   element: Element;
   damage: number;
+  mpCost?: number;
+  accuracy?: number;
+  target?: string;
+  unlockLevel?: number;
+  healPercent?: number;
+  registryId?: string;
 }
 
 export interface DragoonStat {
+  level?: number;
+  mp?: number;
   attack: number;
   defense: number;
   magicAttack: number;
