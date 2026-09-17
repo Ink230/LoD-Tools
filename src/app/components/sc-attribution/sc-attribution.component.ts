@@ -8,7 +8,7 @@ let nextAttributionId = 0;
     <button type="button" aria-label="Severed Chains reverse-engineering credit" [attr.aria-describedby]="tooltipId">?</button>
     <div class="attribution" [id]="tooltipId" role="tooltip">
       <strong>Reverse-engineering credit belongs to Severed Chains, LordMonoxide, and contributors.</strong>
-      <p>Our tools build on SC’s work understanding the game’s files and behavior. Selected decoding and preview behavior is reproduced in TypeScript from SC’s original implementation.</p>
+      <p>Our tools build on SC’s work in understanding the game’s files and behaviors. Selected decoding and preview behavior is reproduced in TypeScript from SC’s original implementation.</p>
       <table>
         <thead><tr><th>Layer</th><th>What we use or reproduce</th></tr></thead>
         <tbody>
