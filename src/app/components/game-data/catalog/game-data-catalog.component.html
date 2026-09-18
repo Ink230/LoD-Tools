@@ -19,8 +19,6 @@
       <h2>{{ selected['name'] }}</h2>
       <dl>@for (entry of details; track entry[0]) { <dt>{{ label(entry[0]) }}</dt><dd>{{ display(entry[1]) }}</dd> }</dl>
       @if (section === 'additions') { <h3>Hit timing and base values</h3><p class="note">Timing values are frames. Damage and SP are per-hit base values before addition-level multipliers.</p><app-grid-display [rowData]="selectedHits" [colDefs]="hitColumns" /> }
-      <a [href]="sourceUrl" target="_blank" rel="noopener noreferrer">View SC source</a>
     </section>
-  } @else { <p class="note">Select a row to see all its properties and source reference</p> }
-  <p class="source">Data reference: <a [href]="'https://github.com/Legend-of-Dragoon-Modding/Severed-Chains/tree/' + sourceCommit" target="_blank" rel="noopener noreferrer">Severed Chains {{ sourceCommit.slice(0, 8) }}</a></p>
+  } @else { <p class="note">Select a row to see all its properties</p> }
 }

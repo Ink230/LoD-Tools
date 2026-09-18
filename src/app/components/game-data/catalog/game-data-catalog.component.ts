@@ -52,7 +52,6 @@ export class GameDataCatalogComponent {
   selected: Row | null = null;
   loading = false;
   error = '';
-  sourceCommit = '';
   colDefs: ColDef[] = [];
   readonly hitColumns: ColDef[] = ['damage', 'sp', 'blueSquareFrames', 'actionInputFrames', 'postHitPauseFrames', 'pauseFrames', 'moveToMonsterFrames', 'distance'].map(field => ({ field, headerName: this.label(field), minWidth: 120 }));
   readonly gridOptions: GridOptions<Row> = {
@@ -71,7 +70,6 @@ export class GameDataCatalogComponent {
   get categories() { return [...new Set(this.rows.map(row => row[this.categoryField]).filter(Boolean))].map(String).sort(); }
   get details() { return Object.entries(this.selected || {}).filter(([key]) => key !== 'source' && key !== 'hitDetails'); }
   get selectedHits(): Row[] { return this.selected?.['hitDetails'] ? JSON.parse(String(this.selected['hitDetails'])) : []; }
-  get sourceUrl() { return `https://github.com/Legend-of-Dragoon-Modding/Severed-Chains/blob/${this.sourceCommit || 'main'}/src/main/java/${this.selected?.['source'] || 'legend/lodmod/LodSpells.java'}`; }
   display(value: unknown) { return value === null || value === undefined || value === '' ? '—' : String(value); }
 
   filter() {
@@ -89,9 +87,6 @@ export class GameDataCatalogComponent {
     this.loading = true;
     try {
       if (!SECTIONS.includes(section)) throw new Error('Unknown game-data section');
-      const provenance = await fetch('assets/game-data/provenance.json');
-      if (!provenance.ok) throw new Error('Source information could not be loaded');
-      const metadata = await provenance.json();
       let rows: Row[];
       if (section === 'dragoons') {
         rows = this.characters.characterData.flatMap(character => character.dragoons.flatMap(dragoon => dragoon.dragoonStats.map(stats => ({ ...stats, character: character.firstName, name: dragoon.name, element: Element[dragoon.element], spells: dragoon.spells.map(spell => `${spell.name} (${spell.unlockLevel ? 'D-Level ' + spell.unlockLevel : 'Divine spirit'})`).join(', '), source: `legend/lodmod/characters/${character.firstName}Template.java` }))));
@@ -108,7 +103,6 @@ export class GameDataCatalogComponent {
         if (!Array.isArray(rows)) throw new Error('Invalid game data');
       }
       if (request !== this.request) return;
-      this.sourceCommit = metadata.sourceCommit;
       this.rows = rows;
       this.colDefs = COLUMNS[section].map(field => ({ field, headerName: section === 'additions' && field === 'damage' ? 'Damage %' : this.label(field), minWidth: ['name', 'description', 'enemies', 'spells'].includes(field) ? 200 : 95, tooltipField: field, valueFormatter: params => this.display(params.value) }));
       this.filter();

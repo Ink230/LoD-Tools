@@ -88,7 +88,6 @@ h3 {
   color: var(--catalog-accent);
 }
 .note,
-.source,
 [role='status'],
 [role='alert'] {
   color: var(--catalog-muted);
@@ -161,11 +160,6 @@ dd {
   margin: 0;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
-}
-.source {
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid var(--catalog-line);
 }
 @media (max-width: 600px) {
   dl {
