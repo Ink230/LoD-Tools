@@ -1,14 +1,21 @@
 <div class="character-comparison-container">
+  <header class="comparison-header"><h1>Character comparison</h1></header>
   <div class="character-selection-options" [formGroup]="characterSelections">
     @for (character of getCharacterNames(); track character.id) {
-      <div>
-        <div class="character-selection-option" [class.active]="characterSelections.get(character.id.toString()).get('mainControl').value" (click)="toggleCharacterControl($index)">
+      <div class="character-options">
+        <button
+          type="button"
+          class="character-selection-option"
+          [class.active]="characterSelections.get(character.id.toString()).get('mainControl').value"
+          [attr.aria-pressed]="characterSelections.get(character.id.toString()).get('mainControl').value"
+          (click)="toggleCharacterControl($index)"
+        >
           {{ character.firstName }}
-        </div>
+        </button>
         <div class="attributes" [formGroupName]="character.id.toString()">
           @for (attr of characterAttributes; track attr) {
             <label class="label-comparator">
-          <input type="checkbox" [formControlName]="attr" (click)="$event.stopPropagation()" (change)="activateCharacter(character.id)" />
+              <input type="checkbox" [formControlName]="attr" (click)="$event.stopPropagation()" (change)="activateCharacter(character.id)" />
               {{ attributeLabels[attr] }}
             </label>
           }
@@ -17,7 +24,7 @@
     }
   </div>
   <div class="comparison-chart">
-    <div>Selected Comparisons</div>
+    <h2>Selected comparisons</h2>
     <app-graph-display [chartOptionsData]="rowData" [chartOptionsSeries]="seriesData" [large]="true"></app-graph-display>
   </div>
 </div>
