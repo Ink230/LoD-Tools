@@ -1,17 +1,17 @@
 <main class="compendium">
   <section class="roster" aria-labelledby="heroes-title">
-    <div class="section-heading">
+    <div class="section-heading roster-heading">
       <div>
         <h2 id="heroes-title">Characters</h2>
       </div>
-      <span class="section-note">{{ characters.length }} characters · Select to view stats</span>
-    </div>
-    <header class="masthead">
+
       <a fastRouterLink="/data/character-comparison/" class="compare-link"
         ><strong>Compare characters <span aria-hidden="true">↗</span></strong
         ><span>Compare party stats side by side</span></a
       >
-    </header>
+      <span class="section-note">{{ characters.length }} characters · Select to view stats</span>
+    </div>
+
     <div class="character-grid">
       @for (character of characters; track character.id; let index = $index) {
         <a [fastRouterLink]="'/data/character/' + character.firstName.toLowerCase()" class="character-card">
@@ -30,20 +30,11 @@
           <h2 id="combat-title">Combat &amp; equipment</h2>
         </div>
       </div>
-      <p class="section-description">Dragoon forms, additions, spells, and items.</p>
       <div class="category-grid">
-        <a fastRouterLink="/data/dragoons" class="category-card"
-          ><span class="category-index">I</span><strong>Dragoons</strong><span>Dragon power</span><span class="arrow" aria-hidden="true">↗</span></a
-        >
-        <a fastRouterLink="/data/additions" class="category-card"
-          ><span class="category-index">II</span><strong>Additions</strong><span>Every strike counts</span><span class="arrow" aria-hidden="true">↗</span></a
-        >
-        <a fastRouterLink="/data/spells" class="category-card"
-          ><span class="category-index">III</span><strong>Spells</strong><span>Elemental might</span><span class="arrow" aria-hidden="true">↗</span></a
-        >
-        <a fastRouterLink="/data/items" class="category-card"
-          ><span class="category-index">IV</span><strong>Items</strong><span>Prepare your inventory</span><span class="arrow" aria-hidden="true">↗</span></a
-        >
+        <a fastRouterLink="/data/dragoons" class="category-card"><span class="category-index">I</span><strong>Dragoons</strong></a>
+        <a fastRouterLink="/data/additions" class="category-card"><span class="category-index">II</span><strong>Additions</strong></a>
+        <a fastRouterLink="/data/spells" class="category-card"><span class="category-index">III</span><strong>Spells</strong></a>
+        <a fastRouterLink="/data/items" class="category-card"><span class="category-index">IV</span><strong>Items</strong></a>
       </div>
     </section>
     <section class="archive world" aria-labelledby="world-title">
@@ -52,20 +43,11 @@
           <h2 id="world-title">Locations &amp; encounters</h2>
         </div>
       </div>
-      <p class="section-description">Submaps, battle stages, encounters, and enemy records.</p>
       <div class="category-grid">
-        <a fastRouterLink="/data/submaps" class="category-card"
-          ><span class="category-index">I</span><strong>Submaps</strong><span>Places to discover</span><span class="arrow" aria-hidden="true">↗</span></a
-        >
-        <a fastRouterLink="/data/stages" class="category-card"
-          ><span class="category-index">II</span><strong>Stages</strong><span>Fields of battle</span><span class="arrow" aria-hidden="true">↗</span></a
-        >
-        <a fastRouterLink="/data/encounters" class="category-card"
-          ><span class="category-index">III</span><strong>Encounters</strong><span>Know what awaits</span><span class="arrow" aria-hidden="true">↗</span></a
-        >
-        <a fastRouterLink="/data/enemies" class="category-card"
-          ><span class="category-index">IV</span><strong>Enemies</strong><span>Study the opposition</span><span class="arrow" aria-hidden="true">↗</span></a
-        >
+        <a fastRouterLink="/data/submaps" class="category-card"><span class="category-index">I</span><strong>Submaps</strong></a>
+        <a fastRouterLink="/data/stages" class="category-card"><span class="category-index">II</span><strong>Stages</strong></a>
+        <a fastRouterLink="/data/encounters" class="category-card"><span class="category-index">III</span><strong>Encounters</strong></a>
+        <a fastRouterLink="/data/enemies" class="category-card"><span class="category-index">IV</span><strong>Enemies</strong></a>
       </div>
     </section>
   </div>
