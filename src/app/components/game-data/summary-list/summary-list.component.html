@@ -1,19 +1,17 @@
 <main class="compendium">
-  <header class="masthead">
-    <a fastRouterLink="/data/character-comparison/" class="compare-link"
-      ><span class="eyebrow">Party planning</span><strong>Compare characters <span aria-hidden="true">↗</span></strong
-      ><span>Compare party stats side by side</span></a
-    >
-  </header>
-
   <section class="roster" aria-labelledby="heroes-title">
     <div class="section-heading">
       <div>
-        <p class="eyebrow">Character data</p>
         <h2 id="heroes-title">Characters</h2>
       </div>
       <span class="section-note">{{ characters.length }} characters · Select to view stats</span>
     </div>
+    <header class="masthead">
+      <a fastRouterLink="/data/character-comparison/" class="compare-link"
+        ><strong>Compare characters <span aria-hidden="true">↗</span></strong
+        ><span>Compare party stats side by side</span></a
+      >
+    </header>
     <div class="character-grid">
       @for (character of characters; track character.id; let index = $index) {
         <a [fastRouterLink]="'/data/character/' + character.firstName.toLowerCase()" class="character-card">
@@ -29,7 +27,6 @@
     <section class="archive combat" aria-labelledby="combat-title">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">Combat data</p>
           <h2 id="combat-title">Combat &amp; equipment</h2>
         </div>
       </div>
@@ -52,7 +49,6 @@
     <section class="archive world" aria-labelledby="world-title">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">World data</p>
           <h2 id="world-title">Locations &amp; encounters</h2>
         </div>
       </div>
