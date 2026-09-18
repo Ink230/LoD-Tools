@@ -22,6 +22,7 @@
 }
 .roster-heading {
   display: grid;
+  align-items: start;
   grid-template-columns: 1fr auto 1fr;
 }
 .roster-heading .section-note {
