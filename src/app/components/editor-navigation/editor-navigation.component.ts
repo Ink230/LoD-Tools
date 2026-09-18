@@ -6,7 +6,7 @@ import { FastRouterLinkDirective } from 'src/app/directives/fast-router-link.dir
   imports: [FastRouterLinkDirective],
   template: `
     <nav aria-label="Dragoon Mods">
-      <a fastRouterLink="/">Mods</a>
+      <span class="disabled-link" role="link" aria-disabled="true">Mods</span>
       <a fastRouterLink="/mods/irongoon">Irongoon</a>
       <a fastRouterLink="/data/summary">Game Data</a>
       <a fastRouterLink="/world-map-editor">World Map Editor</a>
@@ -17,6 +17,7 @@ import { FastRouterLinkDirective } from 'src/app/directives/fast-router-link.dir
     :host { display: block; }
     nav { display: flex; justify-content: flex-start; gap: 16px; white-space: nowrap; text-align: left; font: 12px system-ui; }
     a { color: #a6cc96; text-decoration: none; }
+    .disabled-link { color: #777; font-weight: 700; cursor: default; }
     a:hover, a:focus-visible { color: #d2efc6; text-decoration: underline; text-underline-offset: 3px; }
   `,
 })

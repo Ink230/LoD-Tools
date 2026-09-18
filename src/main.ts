@@ -16,7 +16,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    loadComponent: () => import('./app/components/mod-collection/mod-collection.component').then((m) => m.ModCollectionComponent),
+    redirectTo: 'mods/irongoon',
     pathMatch: 'full',
   },
   {
