@@ -81,15 +81,6 @@ h2 {
   flex-direction: column;
   justify-content: flex-end;
 }
-.card-number {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  font:
-    10px ui-monospace,
-    monospace;
-  color: var(--muted);
-}
 .character-card img {
   width: 100%;
   aspect-ratio: 16 / 15;
