@@ -11,6 +11,19 @@ const SOURCE = `<worldMapPreset version="1" id="custom:test" name="Test &amp; pa
 </worldMapPreset>`;
 
 describe('world map XML document and asset package', () => {
+  it('preserves string destination names and accepts valid legacy enum names', () => {
+    for (const type of ['string', 'enum']) {
+      const doc = parsePreset(`<worldMapPreset version="1" id="custom:test"><submapDestinations><submapDestination id="custom:spawn" cut="2" scene="0"><data type="${type}" value="CUSTOM_SPAWN"/></submapDestination></submapDestinations></worldMapPreset>`);
+      const imported = parsePreset(serializePreset(doc));
+      expect(diagnostics(imported, [])).toEqual([]);
+      expect(imported.querySelector('data').getAttribute('value')).toBe('CUSTOM_SPAWN');
+      expect(imported.querySelector('data').getAttribute('type')).toBe(type);
+      imported.querySelector('data').setAttribute('value', 'not an identifier');
+      const messages = diagnostics(imported, []).map((issue) => issue.message);
+      expect(messages).toEqual(type === 'enum' ? ['Legacy enum data requires a symbolic identifier'] : []);
+    }
+  });
+
   it('round-trips nested geometry, cameras, assets and escaped metadata', () => {
     const first = parsePreset(SOURCE);
     const serialized = serializePreset(first);

@@ -303,7 +303,7 @@ export class WorldMapFieldsComponent {
     if (attribute === 'music') return ['RETAIL_CHAPTER', 'FIXED_CHAPTER', 'SILENT', 'KEEP'];
     if (['standalone', 'omitBackground', 'omitLocationSounds'].includes(attribute)) return ['false', 'true'];
     if (this.element.closest('submapDestination > data')) {
-      if (attribute === 'type') return ['map', 'list', 'string', 'int', 'long', 'float', 'bool', 'registry', 'enum', 'raw'];
+      if (attribute === 'type') return ['map', 'list', 'string', 'int', 'long', 'float', 'bool', 'registry', 'raw', ...(this.element.getAttribute('type') === 'enum' ? ['enum'] : [])];
       if (attribute === 'value' && this.element.getAttribute('type') === 'bool') return ['true', 'false'];
     }
     if (attribute === 'id' && this.element.tagName === 'capability') return ['COOLON', 'QUEEN_FURY_BOARDING'];

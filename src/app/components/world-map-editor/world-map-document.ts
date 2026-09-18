@@ -285,6 +285,7 @@ export function diagnostics(doc: XMLDocument, assetPaths: string[], nativeRegist
         if (type === 'float' && (!value?.trim() || !Number.isFinite(Math.fround(Number(value))))) add(element, 'Float data must fit a finite 32-bit float');
         if (value === null || element.children.length) add(element, 'Scalar data requires a value and no child entries');
         if (type === 'bool' && !['true', 'false'].includes(value)) add(element, 'Boolean data must be true or false');
+        if (type === 'enum' && !/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(value || '')) add(element, 'Legacy enum data requires a symbolic identifier');
         if (['int', 'long'].includes(type)) {
           if (!/^[-+]?\d+$/.test(value || '')) add(element, 'Integer data requires a whole number');
           else {

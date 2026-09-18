@@ -4,6 +4,17 @@ import { parsePreset, serializePreset } from './world-map-document';
 import { WorldMapFieldsComponent } from './world-map-fields.component';
 
 describe('WorldMapFieldsComponent', () => {
+  it('offers strings for destination names while retaining an imported legacy enum selection', () => {
+    const fixture = TestBed.configureTestingModule({ imports: [WorldMapFieldsComponent] }).createComponent(WorldMapFieldsComponent);
+    const data = parsePreset('<worldMapPreset version="1" id="custom:test"><submapDestinations><submapDestination id="custom:spawn" cut="2" scene="0"><data type="enum" value="CUSTOM_SPAWN"/></submapDestination></submapDestinations></worldMapPreset>').querySelector('data');
+    fixture.componentRef.setInput('element', data);
+    expect(fixture.componentInstance.closedChoices('type')).toContain('enum');
+    expect(fixture.componentInstance.closedChoices('type')).toContain('string');
+    data.setAttribute('type', 'string');
+    expect(fixture.componentInstance.closedChoices('type')).not.toContain('enum');
+    expect(fixture.componentInstance.closedChoices('type')).not.toContain('named');
+  });
+
   it('presents registry-first place fields and collapses retail fallback values', () => {
     const fixture = TestBed.configureTestingModule({ imports: [WorldMapFieldsComponent] }).createComponent(WorldMapFieldsComponent);
     const place = parsePreset(
