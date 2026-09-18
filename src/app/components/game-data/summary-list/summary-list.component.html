@@ -16,7 +16,7 @@
     </div>
     <div class="character-grid">
       @for (character of characters; track character.id; let index = $index) {
-        <a [fastRouterLink]="'/data/character/' + character.firstName.toLowerCase()" class="character-card" [style.--card-index]="index">
+        <a [fastRouterLink]="'/data/character/' + character.firstName.toLowerCase()" class="character-card">
           <span class="card-number" aria-hidden="true">0{{ index + 1 }}</span>
           <img [src]="'assets/character/' + character.firstName.toLowerCase() + '.png'" alt="" />
           <span class="character-name">{{ character.firstName }} <span aria-hidden="true">↗</span></span>
