@@ -5,7 +5,7 @@
 }
 
 .graph-container-large {
-  height: 46em;
+  height: var(--comparison-graph-height, 46em);
 }
 
 .ag-graph-prime {

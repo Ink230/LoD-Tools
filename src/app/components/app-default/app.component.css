@@ -84,3 +84,12 @@
 .footer-github { display: inline-grid; place-items: center; width: 34px; height: 34px; box-sizing: border-box; border: 1px solid #557449; border-radius: 5px; color: #c7dfbd; background: #182619; }
 .footer-github:hover { background: #263b24; }
 .footer-github:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
+@media (min-width: 1200px) and (min-height: 700px) {
+  :host:has(app-character-comparison) .container {
+    height: 100dvh;
+  }
+  :host:has(app-character-comparison) .content {
+    min-height: 0;
+  }
+}

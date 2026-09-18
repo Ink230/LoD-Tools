@@ -7,3 +7,11 @@
   flex-direction: column;
   flex: 1;
 }
+@media (min-width: 1200px) and (min-height: 700px) {
+  :host:has(app-character-comparison) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+}
