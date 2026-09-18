@@ -6,7 +6,6 @@ import { FastRouterLinkDirective } from 'src/app/directives/fast-router-link.dir
   imports: [FastRouterLinkDirective],
   template: `
     <nav aria-label="Dragoon Mods">
-      <a fastRouterLink="/">Home</a>
       <a fastRouterLink="/">Mods</a>
       <a fastRouterLink="/mods/irongoon">Irongoon</a>
       <a fastRouterLink="/data/summary">Game Data</a>
