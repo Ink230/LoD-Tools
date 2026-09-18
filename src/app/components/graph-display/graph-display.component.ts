@@ -31,12 +31,30 @@ export class GraphDisplayComponent implements OnInit {
 
   private updateChartOptions(data: any, series: any): void {
     this.chartOptions.set({
-      theme: 'ag-material-dark',
+      theme: {
+        baseTheme: 'ag-material-dark',
+        params: {
+          backgroundColor: '#111a14',
+          chartBackgroundColor: '#111a14',
+          foregroundColor: '#dce6df',
+          textColor: '#dce6df',
+          subtleTextColor: '#9aaa9f',
+          accentColor: '#b8d99c',
+          borderColor: '#2b3e31',
+          axisLineColor: '#48604c',
+          gridLineColor: '#2b3e31',
+          chromeBackgroundColor: '#19281e',
+          chromeTextColor: '#dce6df',
+          chromeSubtleTextColor: '#9aaa9f',
+          tooltipBackgroundColor: '#19281e',
+          tooltipTextColor: '#dce6df',
+          tooltipSubtleTextColor: '#9aaa9f',
+          tooltipBorder: { color: '#48604c', width: 1 },
+          fontFamily: ['system-ui', 'sans-serif'],
+        },
+      },
       data: data,
       series: series,
-      background: {
-        fill: '#262c2e',
-      },
     });
   }
 }
