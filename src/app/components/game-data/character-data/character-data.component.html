@@ -1,47 +1,44 @@
 <div class="character-data-container">
-  <div class="character-headline">
-    <div class="character-head card-bg character-portrait-container">
-      <img src="{{ 'assets/character/' + character.firstName.toLowerCase() + '.png' }}" class="character-portrait-img" />
+  <header class="character-headline">
+    <div class="character-portrait-container">
+      <img [src]="'assets/character/' + character.firstName.toLowerCase() + '.png'" alt="" class="character-portrait-img" />
     </div>
-    <div class="character-head card-bg">
-      <div>
-        <b>{{ character.firstName }}</b>
-      </div>
-      <div>{{ character.species | species }}</div>
-      <div>{{ character.hometown }}</div>
-      <br />
-      <div>{{ character.acquired !== null ? 'Acquired at Level ' + character.acquired : 'Force Acquired' }}</div>
-      <br />
-      <div>{{ character.element | element }}</div>
-      @for (dSpirit of character.flavour.dragoonSpirit; track character.id) {
+    <div class="character-meta">
+      <h1>{{ character.firstName }}</h1>
+      <dl>
         <div>
-          {{ dSpirit }}
+          <dt>Species</dt>
+          <dd>{{ character.species | species }}</dd>
         </div>
-      }
-      <div>{{ character.additions?.length ? character.additions.length : 0 }} Additions</div>
-      <br />
+        <div>
+          <dt>Hometown</dt>
+          <dd>{{ character.hometown }}</dd>
+        </div>
+        <div>
+          <dt>Acquisition</dt>
+          <dd>{{ character.acquired !== null ? 'Level ' + character.acquired : 'Force Acquired' }}</dd>
+        </div>
+        <div>
+          <dt>Element</dt>
+          <dd>{{ character.element | element }}</dd>
+        </div>
+        <div>
+          <dt>Dragoon spirit</dt>
+          <dd>
+            @for (dSpirit of character.flavour.dragoonSpirit; track $index) {
+              <span class="spirit-name">{{ dSpirit }}</span>
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>Additions</dt>
+          <dd>{{ character.additions?.length ? character.additions.length : 0 }}</dd>
+        </div>
+      </dl>
     </div>
-    <div class="character-head card-bg flex">
-      <div>
-        <ul>
-          <b>Pros</b>
-          @for (pros of character.flavour.commonStrategies.pros; track character.id) {
-            <li>• {{ pros.desc }}</li>
-          }
-        </ul>
-      </div>
-      <div>
-        <ul>
-          <b>Cons</b>
-          @for (cons of character.flavour.commonStrategies.cons; track character.id) {
-            <li>• {{ cons.desc }}</li>
-          }
-        </ul>
-      </div>
-    </div>
-  </div>
+  </header>
   <div class="body-stats">
-    <div class="flex-row">Body Stats</div>
+    <h2>Body Stats</h2>
     <div class="flex-row">
       <div>
         <label class="checkbox-label flex checkbox-flex" (change)="onFilterCharacterLevelChange($event)">
@@ -61,9 +58,7 @@
     </div>
   </div>
   <div class="body-stats">
-    <div class="flex-row">
-      <div>Body Stats Growth</div>
-    </div>
+    <h2>Body Stats Growth</h2>
     <div class="flex-row">
       <div>
         <label class="checkbox-label flex checkbox-flex" (change)="onFilterCharacterLevelChange($event)">
@@ -101,7 +96,7 @@
     </div>
   </div>
   <div class="body-stats">
-    <div class="flex-row">Additions</div>
+    <h2>Additions</h2>
     <div class="flex-row">
       <label class="checkbox-label flex checkbox-flex">
         <input type="checkbox" [formControl]="includeMaxAdditions" (click)="lastClickedMinOrMaxAddition('max')" />
@@ -128,7 +123,7 @@
     </div>
   </div>
   <div class="body-stats">
-    <div class="flex-row">Addition Hits</div>
+    <h2>Addition Hits</h2>
     <div class="flex-row small-text">(Initial Pause | Move to Enemy | Distance) > Hit [Blue Squares > Action Frames > Post Hit Pause] > Start Next Hit</div>
     <div class="flex-row small-text">*Most columns are number of frames</div>
     <div>
@@ -136,19 +131,19 @@
     </div>
   </div>
   <div class="body-stats">
-    <div class="flex-row">Dragoon Stats</div>
-    <div class="flex-row small-text"></div>
+    <h2>Dragoon Stats</h2>
     <div>
       @for (dragoon of character?.dragoons; track dragoon) {
         <h3>{{ dragoon.name }}</h3>
-        @if (dragoon.note) { <p>{{ dragoon.note }}</p> }
+        @if (dragoon.note) {
+          <p>{{ dragoon.note }}</p>
+        }
         <app-grid-display [rowData]="dragoon.dragoonStats" [colDefs]="characterDragoonStatsColumnDefinitions"></app-grid-display>
       }
     </div>
   </div>
   <div class="body-stats">
-    <div class="flex-row">Dragoon Spells</div>
-    <div class="flex-row small-text"></div>
+    <h2>Dragoon Spells</h2>
     <div>
       @for (dragoon of character?.dragoons; track dragoon) {
         <h3>{{ dragoon.name }}</h3>
