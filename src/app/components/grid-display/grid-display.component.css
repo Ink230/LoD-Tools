@@ -6,6 +6,10 @@
 
 .ag-grid-prime {
   height: 34em;
+}
+
+/* AG Grid copies legacy theme classes onto internal roots and popups. */
+:host ::ng-deep .ag-theme-balham-dark {
   --ag-balham-active-color: #b8d99c;
   --ag-foreground-color: #dce6df;
   --ag-secondary-foreground-color: #9aaa9f;
