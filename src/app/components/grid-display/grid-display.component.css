@@ -6,4 +6,37 @@
 
 .ag-grid-prime {
   height: 34em;
+  --ag-balham-active-color: #b8d99c;
+  --ag-foreground-color: #dce6df;
+  --ag-secondary-foreground-color: #9aaa9f;
+  --ag-disabled-foreground-color: #718076;
+  --ag-background-color: #111a14;
+  --ag-header-background-color: #19281e;
+  --ag-header-foreground-color: #dce6df;
+  --ag-odd-row-background-color: #16221a;
+  --ag-row-hover-color: #293d2c;
+  --ag-column-hover-color: #233527;
+  --ag-selected-row-background-color: #30482e;
+  --ag-border-color: #2b3e31;
+  --ag-secondary-border-color: #2b3e31;
+  --ag-row-border-color: #26382b;
+  --ag-header-column-separator-color: #3a5140;
+  --ag-control-panel-background-color: #19281e;
+  --ag-subheader-background-color: #19281e;
+  --ag-subheader-toolbar-background-color: #19281e;
+  --ag-panel-background-color: #19281e;
+  --ag-menu-background-color: #19281e;
+  --ag-tooltip-background-color: #19281e;
+  --ag-input-border-color: #48604c;
+  --ag-input-focus-border-color: #b8d99c;
+  --ag-input-focus-box-shadow: 0 0 0 1px #b8d99c;
+  --ag-input-disabled-background-color: #19231c;
+  --ag-input-disabled-border-color: #2b3e31;
+  --ag-checkbox-unchecked-color: #9aaa9f;
+  --ag-checkbox-checked-color: #b8d99c;
+  --ag-range-selection-border-color: #b8d99c;
+  --ag-range-selection-background-color: #b8d99c26;
+  --ag-range-selection-background-color-2: #b8d99c40;
+  --ag-range-selection-background-color-3: #b8d99c59;
+  --ag-range-selection-background-color-4: #b8d99c73;
 }
