@@ -18,6 +18,11 @@
   height: 34em;
 }
 
+/* The last header's separator otherwise sits against the grid's outer border. */
+:host ::ng-deep .ag-header-cell.ag-column-last::before {
+  display: none;
+}
+
 /* AG Grid copies legacy theme classes onto internal roots and popups. */
 :host ::ng-deep .ag-theme-balham-dark {
   --ag-balham-active-color: #b8d99c;
