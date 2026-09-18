@@ -1,23 +1,84 @@
-<div class="summary-list-container">
-  <a fastRouterLink="/data/character-comparison/" class="summary-card green-shimmer fill-link flex">
-    <div>Character Comparison</div>
-  </a>
-</div>
-<div class="summary-list-container">
-  @for (character of characters; track character.id) {
-    <a fastRouterLink="{{ '/data/character/' + character.firstName.toLowerCase() }}" class="summary-card green-shimmer fill-link flex">
-      <div><img src="{{ 'assets/character/' + character.firstName.toLowerCase() + '.png' }}" /></div>
-      <div class="flex-end">{{ character.firstName }}</div>
-    </a>
-  }
-</div>
-<div class="summary-list-container">
-  <a fastRouterLink="/data/dragoons" class="summary-card green-shimmer fill-link flex">Dragoons</a>
-  <a fastRouterLink="/data/additions" class="summary-card green-shimmer fill-link flex">Additions</a>
-  <a fastRouterLink="/data/spells" class="summary-card green-shimmer fill-link flex">Spells</a>
-  <a fastRouterLink="/data/items" class="summary-card green-shimmer fill-link flex">Items</a>
-  <a fastRouterLink="/data/submaps" class="summary-card green-shimmer fill-link flex">Submaps</a>
-  <a fastRouterLink="/data/stages" class="summary-card green-shimmer fill-link flex">Stages</a>
-  <a fastRouterLink="/data/encounters" class="summary-card green-shimmer fill-link flex">Encounters</a>
-  <a fastRouterLink="/data/enemies" class="summary-card green-shimmer fill-link flex">Enemies</a>
-</div>
+<main class="compendium">
+  <header class="masthead">
+    <div>
+      <p class="eyebrow">The Legend of Dragoon / Field guide</p>
+      <h1>Know your <em>legend.</em></h1>
+      <p class="lead">Meet the heroes. Master the battle. Explore the world.</p>
+    </div>
+    <a fastRouterLink="/data/character-comparison/" class="compare-link"
+      ><span class="eyebrow">Party planning</span><strong>Compare characters <span aria-hidden="true">↗</span></strong
+      ><span>Find the strengths behind your lineup</span></a
+    >
+  </header>
+
+  <section class="roster" aria-labelledby="heroes-title">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">01 / The party</p>
+        <h2 id="heroes-title">Heroes of Endiness</h2>
+      </div>
+      <span class="section-note">{{ characters.length }} heroes · Select a character to explore</span>
+    </div>
+    <div class="character-grid">
+      @for (character of characters; track character.id; let index = $index) {
+        <a [fastRouterLink]="'/data/character/' + character.firstName.toLowerCase()" class="character-card" [style.--card-index]="index">
+          <span class="card-number" aria-hidden="true">0{{ index + 1 }}</span>
+          <img [src]="'assets/character/' + character.firstName.toLowerCase() + '.png'" alt="" />
+          <span class="character-name">{{ character.firstName }} <span aria-hidden="true">↗</span></span>
+        </a>
+      }
+    </div>
+  </section>
+
+  <div class="archive-grid">
+    <section class="archive combat" aria-labelledby="combat-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">02 / Battlecraft</p>
+          <h2 id="combat-title">Power &amp; precision</h2>
+        </div>
+        <span class="section-mark" aria-hidden="true">✦</span>
+      </div>
+      <p class="section-description">The transformations, techniques, and tools that turn a battle.</p>
+      <div class="category-grid">
+        <a fastRouterLink="/data/dragoons" class="category-card"
+          ><span class="category-index">I</span><strong>Dragoons</strong><span>Dragon power</span><span class="arrow" aria-hidden="true">↗</span></a
+        >
+        <a fastRouterLink="/data/additions" class="category-card"
+          ><span class="category-index">II</span><strong>Additions</strong><span>Every strike counts</span><span class="arrow" aria-hidden="true">↗</span></a
+        >
+        <a fastRouterLink="/data/spells" class="category-card"
+          ><span class="category-index">III</span><strong>Spells</strong><span>Elemental might</span><span class="arrow" aria-hidden="true">↗</span></a
+        >
+        <a fastRouterLink="/data/items" class="category-card"
+          ><span class="category-index">IV</span><strong>Items</strong><span>Prepare your inventory</span><span class="arrow" aria-hidden="true">↗</span></a
+        >
+      </div>
+    </section>
+    <section class="archive world" aria-labelledby="world-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">03 / Beyond the party</p>
+          <h2 id="world-title">An untamed world</h2>
+        </div>
+        <span class="section-mark" aria-hidden="true">⌖</span>
+      </div>
+      <p class="section-description">Discover the places and opponents waiting along your journey.</p>
+      <div class="category-grid">
+        <a fastRouterLink="/data/submaps" class="category-card"
+          ><span class="category-index">I</span><strong>Submaps</strong><span>Places to discover</span><span class="arrow" aria-hidden="true">↗</span></a
+        >
+        <a fastRouterLink="/data/stages" class="category-card"
+          ><span class="category-index">II</span><strong>Stages</strong><span>Fields of battle</span><span class="arrow" aria-hidden="true">↗</span></a
+        >
+        <a fastRouterLink="/data/encounters" class="category-card"
+          ><span class="category-index">III</span><strong>Encounters</strong><span>Know what awaits</span><span class="arrow" aria-hidden="true">↗</span></a
+        >
+        <a fastRouterLink="/data/enemies" class="category-card"
+          ><span class="category-index">IV</span><strong>Enemies</strong><span>Study the opposition</span><span class="arrow" aria-hidden="true">↗</span></a
+        >
+      </div>
+    </section>
+  </div>
+  <footer class="archive-footer"><span>DragoonMods / Game Data</span><span>A closer look at the world of Endiness</span></footer>
+</main>
