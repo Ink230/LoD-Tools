@@ -1,23 +1,18 @@
 <main class="compendium">
   <header class="masthead">
-    <div>
-      <p class="eyebrow">The Legend of Dragoon / Field guide</p>
-      <h1>Know your <em>legend.</em></h1>
-      <p class="lead">Meet the heroes. Master the battle. Explore the world.</p>
-    </div>
     <a fastRouterLink="/data/character-comparison/" class="compare-link"
       ><span class="eyebrow">Party planning</span><strong>Compare characters <span aria-hidden="true">↗</span></strong
-      ><span>Find the strengths behind your lineup</span></a
+      ><span>Compare party stats side by side</span></a
     >
   </header>
 
   <section class="roster" aria-labelledby="heroes-title">
     <div class="section-heading">
       <div>
-        <p class="eyebrow">01 / The party</p>
-        <h2 id="heroes-title">Heroes of Endiness</h2>
+        <p class="eyebrow">Character data</p>
+        <h2 id="heroes-title">Characters</h2>
       </div>
-      <span class="section-note">{{ characters.length }} heroes · Select a character to explore</span>
+      <span class="section-note">{{ characters.length }} characters · Select to view stats</span>
     </div>
     <div class="character-grid">
       @for (character of characters; track character.id; let index = $index) {
@@ -34,12 +29,11 @@
     <section class="archive combat" aria-labelledby="combat-title">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">02 / Battlecraft</p>
-          <h2 id="combat-title">Power &amp; precision</h2>
+          <p class="eyebrow">Combat data</p>
+          <h2 id="combat-title">Combat &amp; equipment</h2>
         </div>
-        <span class="section-mark" aria-hidden="true">✦</span>
       </div>
-      <p class="section-description">The transformations, techniques, and tools that turn a battle.</p>
+      <p class="section-description">Dragoon forms, additions, spells, and items.</p>
       <div class="category-grid">
         <a fastRouterLink="/data/dragoons" class="category-card"
           ><span class="category-index">I</span><strong>Dragoons</strong><span>Dragon power</span><span class="arrow" aria-hidden="true">↗</span></a
@@ -58,12 +52,11 @@
     <section class="archive world" aria-labelledby="world-title">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">03 / Beyond the party</p>
-          <h2 id="world-title">An untamed world</h2>
+          <p class="eyebrow">World data</p>
+          <h2 id="world-title">Locations &amp; encounters</h2>
         </div>
-        <span class="section-mark" aria-hidden="true">⌖</span>
       </div>
-      <p class="section-description">Discover the places and opponents waiting along your journey.</p>
+      <p class="section-description">Submaps, battle stages, encounters, and enemy records.</p>
       <div class="category-grid">
         <a fastRouterLink="/data/submaps" class="category-card"
           ><span class="category-index">I</span><strong>Submaps</strong><span>Places to discover</span><span class="arrow" aria-hidden="true">↗</span></a
@@ -80,5 +73,4 @@
       </div>
     </section>
   </div>
-  <footer class="archive-footer"><span>DragoonMods / Game Data</span><span>A closer look at the world of Endiness</span></footer>
 </main>
