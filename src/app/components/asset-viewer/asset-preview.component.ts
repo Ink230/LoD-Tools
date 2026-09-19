@@ -8,7 +8,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import { FormsModule } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
 import { AssetRecord, AssetFormat, PREVIEW_FORMATS, assetCategory, gameIdentity } from './asset-catalog';
-import { decodeTim, decodeMcq, texturePageFromTims, textureCoversPrimitive, submapTextureAtOrigin } from './asset-image';
+import { decodeTim, decodeAssetTim, decodeMcq, texturePageFromTims, textureCoversPrimitive, submapTextureAtOrigin } from './asset-image';
 import { decodeModel } from './asset-model';
 import { decodeAnimation, decodeLmb, decodeAnm, decodeClutAnimationDetails, DecodedClutAnimation, LmbType } from './asset-animation';
 import { copyPaletteRow } from './asset-palette';
@@ -396,7 +396,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     this.textureMappingWarning = '';
     this.playing = false; this.frame = 0; this.loading = true; this.error = ''; this.warnings = [];
     this.image = null; this.model = null; this.animation = null; this.sprite = null; this.clut = null; this.overlay = null;
-    this.texturePages = new Map(); this.textures = []; this.commonEffectTextures = []; this.palette = 0; this.samples = []; this.animationPath = ''; this.showRecords = false;
+    this.texturePages = new Map(); this.textures = []; this.commonEffectTextures = []; this.palette = 0; this.paletteCount = 0; this.samples = []; this.animationPath = ''; this.showRecords = false;
     if (this.mediaUrl) URL.revokeObjectURL(this.mediaUrl);
     this.mediaUrl = '';
     try {
@@ -503,7 +503,7 @@ export class AssetPreviewComponent implements OnChanges, AfterViewInit, OnDestro
     }
   }
   updatePalette() {
-    try { const image = decodeTim(this.bytes, Number(this.palette)); this.paletteCount = image.paletteCount; this.image = image; this.draw(); }
+    try { const image = decodeAssetTim(this.bytes, this.record.path, Number(this.palette)); this.paletteCount = image.paletteCount; this.image = image; this.error = ''; this.draw(); }
     catch (error) { this.error = String(error); }
   }
   updateSample() {

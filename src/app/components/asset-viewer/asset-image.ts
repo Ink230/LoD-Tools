@@ -67,7 +67,6 @@ function parseTim(bytes: Uint8Array): TimData {
   const imageWidthWords = data.u16(imageBlock + 8);
   const imageHeight = data.u16(imageBlock + 10);
   if (imageWidthWords === 0 || imageHeight === 0) throw new Error('TIM image dimensions are empty');
-  if ((bpp === 0 || bpp === 1) && clut === null) throw new Error('Paletted TIM is missing a CLUT');
 
   return { bpp, imageX, imageY, imageWidthWords, imageHeight, image: data.slice(imageBlock + 12, imageLength - 12), clutX, clutY, clutWidth, clutHeight, clut };
 }
@@ -106,8 +105,15 @@ function copy(pixel: Rgba, output: Uint8ClampedArray, offset: number) {
   output[offset + 3] = pixel[3];
 }
 
-export function decodeTim(bytes: Uint8Array, paletteIndex = 0): TextureImage {
+export function decodeTim(bytes: Uint8Array, paletteIndex = 0, embeddedPaletteRow?: number): TextureImage {
   const tim = parseTim(bytes);
+  if (tim.clut === null && embeddedPaletteRow !== undefined) {
+    if (tim.bpp !== 0 || tim.imageWidthWords !== 16 || embeddedPaletteRow !== 112 || tim.imageHeight !== 128 || tim.image.length !== 4096) throw new Error('Invalid submap overlay texture layout');
+    tim.clut = tim.image.subarray(embeddedPaletteRow * tim.imageWidthWords * 2);
+    tim.clutWidth = tim.imageWidthWords;
+    tim.clutHeight = tim.imageHeight - embeddedPaletteRow;
+  }
+  if ((tim.bpp === 0 || tim.bpp === 1) && tim.clut === null) throw new Error('Paletted TIM is missing a CLUT');
   const width = outputWidth(tim);
   checkedPixels(width, tim.imageHeight);
   const coloursPerPalette = tim.bpp === 0 ? 16 : tim.bpp === 1 ? 256 : 0;
@@ -132,6 +138,17 @@ export function decodeTim(bytes: Uint8Array, paletteIndex = 0): TextureImage {
     copy(pixel, pixels, (y * width + x) * 4);
   }
   return { format: 'TIM', width, height: tim.imageHeight, pixels, bpp: [4, 8, 16, 24][tim.bpp], imageX: tim.imageX, imageY: tim.imageY, paletteCount, paletteIndex };
+}
+
+/** RetailSubmap.prepareMap uploads these overlay TIMs as raw VRAM words.
+ * UvAdjustmentMetrics14 places their embedded palettes 112 rows below the image.
+ * The paired directories come from RetailSubmap.smapFileIndices_800f982c.
+ */
+export function decodeAssetTim(bytes: Uint8Array, path: string, paletteIndex = 0): TextureImage {
+  const match = /^SECT\/DRGN0\.BIN\/(\d+)\/0$/.exec(path);
+  const directory = match ? Number(match[1]) : 0;
+  const overlay = directory >= 6675 && directory <= 7609 && directory % 2 === 1;
+  return decodeTim(bytes, paletteIndex, overlay ? 112 : undefined);
 }
 
 /** Samples a PSX texture page from one TIM uploaded at its own header coordinates. */

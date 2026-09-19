@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decodeMcq, decodeTim, sampleTim, texturePage, texturePageFromTims, textureCoversPrimitive, submapTextureAtOrigin } from './asset-image';
+import { decodeMcq, decodeTim, decodeAssetTim, sampleTim, texturePage, texturePageFromTims, textureCoversPrimitive, submapTextureAtOrigin } from './asset-image';
 
 function u16(bytes: Uint8Array, offset: number, value: number) { new DataView(bytes.buffer).setUint16(offset, value, true); }
 function u32(bytes: Uint8Array, offset: number, value: number) { new DataView(bytes.buffer).setUint32(offset, value, true); }
@@ -25,6 +25,33 @@ function tim(bpp: 0 | 1 | 2 | 3, words: number, image: number[], clut?: number[]
 }
 
 describe('asset image decoders', () => {
+  it('uses embedded overlay palettes without inventing palettes for other TIMs', () => {
+    const bytes = tim(0, 16, Array(4096).fill(0));
+    u16(bytes, 18, 128);
+    bytes[20] = 0x11;
+    u16(bytes, 20 + 112 * 32 + 2, 0x001f);
+    u16(bytes, 20 + 113 * 32 + 2, 0x03e0);
+    const original = bytes.slice();
+    const image = decodeAssetTim(bytes, 'SECT/DRGN0.BIN/7017/0');
+    expect(image).toMatchObject({ width: 64, height: 128, paletteCount: 16 });
+    expect([...image.pixels.slice(0, 4)]).toEqual([248, 0, 0, 255]);
+    expect([...decodeAssetTim(bytes, 'SECT/DRGN0.BIN/7017/0', 1).pixels.slice(0, 4)]).toEqual([0, 248, 0, 255]);
+    expect(bytes).toEqual(original);
+    expect(() => decodeAssetTim(bytes, 'unrelated.tim')).toThrow('missing a CLUT');
+    expect(() => decodeAssetTim(bytes, 'SECT/DRGN0.BIN/7017/0', 16)).toThrow('out of range');
+    expect(() => decodeAssetTim(tim(0, 1, [0, 0]), 'SECT/DRGN0.BIN/7017/0')).toThrow('Invalid submap overlay');
+  });
+
+  it('uploads palette-less pixels when another VRAM resource provides the palette', () => {
+    const pixels = tim(0, 1, [0x11, 0x11]);
+    u16(pixels, 12, 64);
+    const palette = tim(2, 16, Array(32).fill(0));
+    u16(palette, 22, 0x001f);
+    const page = texturePageFromTims([pixels, palette], 0, 1);
+    expect([...page.pixels.slice(0, 4)]).toEqual([248, 0, 0, 255]);
+    expect(page.coverage[0]).toBe(1);
+  });
+
   it('relocates a submap texture without modifying the source bytes', () => {
     const bytes = tim(0, 1, [0x11, 0x11], Array.from({ length: 16 }, (_, i) => i === 1 ? 0x001f : 0));
     u16(bytes, 12, 576); u16(bytes, 14, 368);
