@@ -4,7 +4,7 @@ export interface ModAuthor {
 }
 
 export type ScCompatibility = 'Latest SC' | 'RB3' | 'Special build' | 'Check compatibility';
-export type ModTag = 'Full Campaign' | 'Randomizer' | 'QoL Minor' | 'Extension' | 'QoL Major';
+export type ModTag = 'Full Campaign' | 'Randomizer' | 'QoL Minor' | 'Extension' | 'QoL Major' | 'Graphics';
 
 export interface ModRelease {
   readonly version?: string;
@@ -76,17 +76,17 @@ export const MOD_CATALOG: readonly ModListing[] = [
     tags: ['QoL Minor'], infoUrl: 'https://github.com/avionanx/Stardust-Indicators',
   },
   {
-    id: 'upscale', name: 'Image Upscaling', authors: [ZYCHRONIX], section: 'developer',
-    description: 'An anticipated visual upgrade for The Legend of Dragoon. The project is still in development and has not been released.',
-    inDevelopment: true, releases: [], tags: [],
-    infoUrl: 'https://legendofdragoon.org/projects/image-upscaling/',
-  },
-  {
     id: 'additional-additions', name: 'Additional Additions', authors: [ICARUS, LORDMONOXIDE], section: 'developer',
     description: 'Play with custom additions, then create and share your own using the companion Additional Additions Editor.',
     releases: [{ version: '0.2.5', compatibility: 'RB3', url: 'https://github.com/Legend-of-Dragoon-Modding/Additional-Additions/releases/tag/0.2.5' }],
     tags: ['Extension'], infoUrl: 'https://github.com/Legend-of-Dragoon-Modding/Additional-Additions',
     links: [{ label: 'Editor', url: 'https://github.com/Legend-of-Dragoon-Modding/Additional-Additions-Editor' }],
+  },
+  {
+    id: 'upscale', name: 'Upscale Mod', authors: [ZYCHRONIX], section: 'developer',
+    description: 'An anticipated visual upgrade for The Legend of Dragoon. The project is still in development and has not been released.',
+    inDevelopment: true, releases: [], tags: ['Graphics'],
+    infoUrl: 'https://legendofdragoon.org/projects/image-upscaling/',
   },
   {
     id: 'archipelago', name: 'Archipelago', authors: [{ name: 'pkolb-dev', url: 'https://github.com/pkolb-dev' }], section: 'top-rated',

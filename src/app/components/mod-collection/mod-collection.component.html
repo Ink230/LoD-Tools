@@ -8,19 +8,12 @@
     <label class="search">
       <input #searchInput type="search" aria-label="Search mods" placeholder="Search mods..." [value]="query()" (input)="query.set(searchInput.value)">
     </label>
-    <label class="select"><span>Version:</span>
-      <select aria-label="Severed Chains version" [ngModel]="version()" (ngModelChange)="version.set($event)">
-        <option value="">All versions</option>
-        @for (version of versions; track version) { <option [value]="version">{{ version }}</option> }
-      </select>
-    </label>
-    <label class="select"><span>Sort:</span>
-      <select aria-label="Sort mods" [ngModel]="sort()" (ngModelChange)="setSort($event)">
-        <option value="featured">Featured</option>
-        <option value="name">Name A–Z</option>
-        <option value="author">Author A–Z</option>
-      </select>
-    </label>
+    <div class="select"><span>Version:</span>
+      <app-styled-select id="mods-version" label="Severed Chains version" [options]="versionOptions" [value]="version()" (valueChange)="version.set($event)" />
+    </div>
+    <div class="select"><span>Sort:</span>
+      <app-styled-select id="mods-sort" label="Sort mods" [options]="sortOptions" [value]="sort()" (valueChange)="setSort($event)" />
+    </div>
   </div>
   <div class="results" aria-live="polite">{{ filtered().length }} {{ filtered().length === 1 ? 'result' : 'results' }} found
     @if (query() || version()) { <button type="button" (click)="clearFilters()">Clear filters</button> }

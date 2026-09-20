@@ -1,0 +1,7 @@
+:host { display: inline-block; width: 12rem; font: 12px/1.5 system-ui, sans-serif; }
+.dropdown-container { width: 100%; text-indent: 0; }
+.selection { box-sizing: border-box; padding: 8px 44px 8px 16px; border: 1px solid var(--wmap-color-3); color: var(--wmap-color-2); font: inherit; text-align: left; cursor: pointer; }
+.selection::after { right: 16px; }
+.selection:focus-visible { outline: 2px solid var(--wmap-color-12); outline-offset: 2px; }
+.menu-option { border: 0; font: inherit; text-align: left; color: var(--wmap-color-2); background: transparent; }
+.menu-option.highlight-option, .menu-option:hover { color: var(--tertiary-font-color); background: var(--tertiary-accent-color); }

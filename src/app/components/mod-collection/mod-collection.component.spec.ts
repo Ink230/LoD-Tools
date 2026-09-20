@@ -10,28 +10,30 @@ describe('mod collection controls', () => {
     fixture.autoDetectChanges();
     await fixture.whenStable();
     const page = fixture.nativeElement as HTMLElement;
-    const select = page.querySelector<HTMLSelectElement>('select[aria-label="Severed Chains version"]');
-    expect(select.value).toBe('');
+    const select = page.querySelector<HTMLButtonElement>('[role="combobox"][aria-label="Severed Chains version"]');
+    const chooseVersion = async (label: string) => {
+      select.click();
+      await fixture.whenStable();
+      [...page.querySelectorAll<HTMLButtonElement>('[role="option"]')].find(option => option.textContent.trim() === label).click();
+      await fixture.whenStable();
+    };
+    expect(select.textContent.trim()).toBe('All versions');
     expect(page.querySelectorAll('app-mod-card')).toHaveLength(12);
     expect([...page.querySelectorAll('section:first-of-type app-mod-card h3')].map(heading => heading.textContent)).toEqual([
-      'Dragoon Modifier', 'Irongoon', 'The Legend of Tides', 'Stardust Indicators', 'Image Upscaling', 'Additional Additions',
+      'Dragoon Modifier', 'Irongoon', 'The Legend of Tides', 'Stardust Indicators', 'Additional Additions', 'Upscale Mod',
     ]);
     expect(page.querySelector('.section-heading .count')).toBeNull();
 
-    select.value = 'Special build';
-    select.dispatchEvent(new Event('change'));
-    await fixture.whenStable();
+    await chooseVersion('Special build');
     expect(page.querySelectorAll('app-mod-card')).toHaveLength(1);
     expect(page.querySelector('h3')?.textContent).toBe('Irongoon');
 
-    page.querySelector('button')?.click();
+    page.querySelector<HTMLButtonElement>('.results button')?.click();
     await fixture.whenStable();
-    expect(select.value).toBe('');
+    expect(select.textContent.trim()).toBe('All versions');
     expect(page.querySelectorAll('app-mod-card')).toHaveLength(12);
 
-    select.value = 'RB3';
-    select.dispatchEvent(new Event('change'));
-    await fixture.whenStable();
+    await chooseVersion('RB3');
     expect(page.querySelectorAll('app-mod-card')).toHaveLength(6);
   });
 
@@ -55,6 +57,32 @@ describe('mod collection controls', () => {
     expect(upscale.querySelector('a.release')).toBeNull();
     expect(upscale.querySelector('a[href="https://legendofdragoon.org/projects/image-upscaling/"]')).not.toBeNull();
     expect(upscale.textContent).toContain('In development');
+    expect(upscale.querySelector('.tags li').textContent).toBe('Graphics');
+  });
+
+  it('supports keyboard selection, Escape, and outside clicks in the styled filters', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(ModCollectionComponent);
+    fixture.autoDetectChanges();
+    await fixture.whenStable();
+    const page = fixture.nativeElement as HTMLElement;
+    const sort = page.querySelector<HTMLButtonElement>('[aria-label="Sort mods"]');
+    sort.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    await fixture.whenStable();
+    expect(sort.getAttribute('aria-expanded')).toBe('true');
+    sort.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await fixture.whenStable();
+    expect(fixture.componentInstance.sort()).toBe('name');
+    sort.click();
+    await fixture.whenStable();
+    sort.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await fixture.whenStable();
+    expect(sort.getAttribute('aria-expanded')).toBe('false');
+    sort.click();
+    await fixture.whenStable();
+    document.body.click();
+    await fixture.whenStable();
+    expect(sort.getAttribute('aria-expanded')).toBe('false');
   });
 
   it('searches tools as well as mods and preserves the combined entry and guide links', async () => {
