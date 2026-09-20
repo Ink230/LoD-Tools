@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ModListing } from './mod-catalog';
 
@@ -11,4 +11,5 @@ import { ModListing } from './mod-catalog';
 export class ModCardComponent {
   readonly mod = input.required<ModListing>();
   readonly compact = input(false);
+  readonly compatibility = computed(() => this.mod().section === 'tools' ? 'Asset tool' : this.mod().releases[0]?.compatibility ?? 'Check compatibility');
 }

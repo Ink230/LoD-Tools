@@ -14,28 +14,37 @@
   <div class="body">
     <div class="identity">
       <h3 [id]="'mod-' + mod().id">{{ mod().name }}</h3>
+      <span class="compatibility" [class.unconfirmed]="compatibility() === 'Check compatibility'">{{ compatibility() }}</span>
       @if (mod().rating !== undefined) {
         <span class="rating" [attr.aria-label]="'Rated ' + mod().rating + ' out of 5'">★ {{ mod().rating }}</span>
       }
-      <p class="author">by {{ mod().author }}</p>
+      <p class="author">by
+        @for (author of mod().authors; track author.url; let last = $last) {
+          <a [href]="author.url" target="_blank" rel="noopener noreferrer">{{ author.name }}</a>{{ last ? '' : ' & ' }}
+        }
+      </p>
     </div>
     <p class="description">{{ mod().description }}</p>
-    <div class="metadata">
-      @if (mod().section === 'tools') {
-        <span class="compatibility">Asset tool</span>
-      } @else {
-        <span class="compatibility" [class.unconfirmed]="!mod().scVersions.length">{{ mod().scVersions.length ? 'SC ' + mod().scVersions.join(', ') : 'Check SC compatibility' }}</span>
-      }
-      @if (mod().version) { <span class="version">v{{ mod().version }}</span> }
-    </div>
+    @if (mod().inDevelopment) { <p class="release-note">In development · Not released</p> }
+    @if (mod().releaseNote) { <p class="release-note">{{ mod().releaseNote }}</p> }
     <div class="actions">
-      <a [href]="mod().githubUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="mod().name + ' on GitHub (opens in a new tab)'">GitHub <span aria-hidden="true">↗</span></a>
+      @for (release of mod().releases; track release.url) {
+        <a class="release" [href]="release.url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="mod().name + ' ' + (release.compatibility || 'download') + ' ' + (release.version || '')">
+          {{ release.compatibility || 'Download' }}@if (release.version) { · v{{ release.version }} } <span aria-hidden="true">↗</span>
+        </a>
+      }
+      <a [href]="mod().infoUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'More information about ' + mod().name">More info <span aria-hidden="true">↗</span></a>
       @if (mod().configureUrl; as configureUrl) {
-        <a class="configure" [routerLink]="configureUrl">Configure <span aria-hidden="true">→</span></a>
+        <a class="configure" [routerLink]="configureUrl">{{ mod().configureLabel || 'Configure' }} <span aria-hidden="true">→</span></a>
       }
       @for (link of mod().links; track link.url) {
         <a class="configure" [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.label }} <span aria-hidden="true">↗</span></a>
       }
     </div>
+    @if (mod().tags.length) {
+      <ul class="tags" aria-label="Mod tags">
+        @for (tag of mod().tags; track tag) { <li>{{ tag }}</li> }
+      </ul>
+    }
   </div>
 </article>

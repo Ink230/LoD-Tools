@@ -1,7 +1,7 @@
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { WORLD_MAP_THEME_COLORS } from '../world-map-editor/world-map-theme';
-import { MOD_CATALOG } from './mod-catalog';
+import { MOD_CATALOG, ScCompatibility } from './mod-catalog';
 import { ModCardComponent } from './mod-card.component';
 import { filterMods, modSection, ModSort } from './mod-collection-state';
 
@@ -17,7 +17,7 @@ export class ModCollectionComponent {
   readonly query = signal('');
   readonly version = signal('');
   readonly sort = signal<ModSort>('featured');
-  readonly versions = [...new Set(MOD_CATALOG.flatMap(mod => [...mod.scVersions]))];
+  readonly versions: readonly ScCompatibility[] = ['Latest SC', 'RB3', 'Special build', 'Check compatibility'];
   readonly filtered = computed(() => filterMods(MOD_CATALOG, this.query(), this.version(), this.sort()));
   readonly sections = computed(() => [
     { id: 'developer', title: 'SC Dev Made Mods', description: 'Official / first-party mods maintained by the SC developers.' },

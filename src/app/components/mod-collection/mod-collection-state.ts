@@ -10,12 +10,14 @@ export function modSection(mod: ModListing): ModSection {
 export function filterMods(mods: readonly ModListing[], query: string, version: string, sort: ModSort): ModListing[] {
   const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
   return mods.filter(mod => {
-    const text = `${mod.name} ${mod.author} ${mod.description}`.toLocaleLowerCase();
-    return terms.every(term => text.includes(term)) && (!version || mod.scVersions.includes(version));
+    const text = `${mod.name} ${mod.authors.map(author => author.name).join(' ')} ${mod.description} ${mod.tags.join(' ')}`.toLocaleLowerCase();
+    const matchesVersion = !version || mod.releases.some(release => release.compatibility === version)
+      || (version === 'Check compatibility' && mod.section !== 'tools' && !mod.releases.length);
+    return terms.every(term => text.includes(term)) && matchesVersion;
   }).sort((a, b) => {
     if (sort === 'featured') return 0;
     if (sort === 'rating') return (b.rating ?? -1) - (a.rating ?? -1) || a.name.localeCompare(b.name);
-    if (sort === 'author') return a.author.localeCompare(b.author) || a.name.localeCompare(b.name);
+    if (sort === 'author') return a.authors.map(author => author.name).join(', ').localeCompare(b.authors.map(author => author.name).join(', ')) || a.name.localeCompare(b.name);
     return a.name.localeCompare(b.name);
   });
 }

@@ -30,7 +30,6 @@
     <section [attr.aria-labelledby]="section.id + '-title'">
       <div class="section-heading">
         <h2 [id]="section.id + '-title'">{{ section.title }}</h2>
-        <span class="count">{{ section.mods.length }}</span>
       </div>
       <p class="section-description">{{ section.description }}</p>
       <div [class]="section.id === 'other' ? 'mod-list' : 'mod-grid'">
