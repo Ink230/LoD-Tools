@@ -1,0 +1,13 @@
+/* Share content rows across each group of rich cards, including empty note rows. */
+:host(.rich) {
+  display: grid; grid-row: span 8; grid-template-rows: subgrid;
+  article, .body, .actions { display: grid; grid-template-rows: subgrid; }
+  article { grid-row: span 8; row-gap: 0; height: auto; }
+  .body { grid-row: 2 / span 7; }
+  .identity, .release-heading { grid-row: 1; }
+  .description, .release-links { grid-row: 2; }
+  .actions { grid-row: 3 / span 4; margin-top: 0; }
+  .release-note { grid-row: 3; }
+  .info-links { grid-row: 4; }
+  .tags { grid-row: 7; }
+}

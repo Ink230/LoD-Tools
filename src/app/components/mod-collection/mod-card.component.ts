@@ -4,9 +4,10 @@ import { ModListing } from './mod-catalog';
 
 @Component({
   selector: 'app-mod-card',
+  host: { '[class.rich]': '!compact()' },
   imports: [RouterLink],
   templateUrl: './mod-card.component.html',
-  styleUrl: './mod-card.component.css',
+  styleUrls: ['./mod-card.component.css', './mod-card-grid.css'],
 })
 export class ModCardComponent {
   readonly mod = input.required<ModListing>();
