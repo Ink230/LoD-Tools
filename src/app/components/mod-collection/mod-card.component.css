@@ -27,11 +27,13 @@ a:focus-visible { outline: 2px solid var(--wmap-color-12); outline-offset: 2px; 
 .compact h3 { font-size: 17px; }
 .compact .identity { row-gap: 3.2px; }
 .compact .description { grid-column: 1; grid-row: 2; font-size: 12px; }
-.compact .actions { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; display: grid; grid-template-columns: auto repeat(2, 160px); gap: 6px; }
+.compact .actions { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; display: grid; grid-template-columns: repeat(2, 160px); justify-content: end; gap: 6px; }
+.compact .actions a { width: 100%; height: 34px; display: flex; align-items: center; justify-content: center; gap: 3px; }
 .compact .release-links { display: contents; }
-.compact .release-links .compatibility { grid-column: 1; grid-row: 1; align-self: center; margin-right: 10px; }
+.compact .release-links .compatibility { grid-column: 1; grid-row: 1; align-self: center; justify-self: end; margin-right: 10px; }
 .compact .release-links .release { grid-column: 2; grid-row: 1; }
-.compact .info-links { grid-column: 2 / -1; grid-row: 2; grid-template-columns: repeat(2, 160px); }
+.compact .info-links { grid-column: 1 / -1; grid-row: 2; grid-template-columns: repeat(2, 160px); }
+.compact .info-links a:only-child { grid-column: 2; }
 .compact .tags, .compact .release-note { grid-column: 1 / -1; }
 @media (max-width: 900px) { .compact .body { display: flex; align-items: stretch; } }
 @media (max-width: 600px) {
