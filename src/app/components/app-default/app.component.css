@@ -79,6 +79,7 @@
   text-align: center;
   width: 100%;
 }
+.footer-community { grid-column: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; padding-right: 16px; text-align: left; font: 12px system-ui; }
 .footer-author { grid-column: 2; }
 .footer-links { grid-column: 3; justify-self: end; display: flex; gap: 6px; }
 .footer-github { display: inline-grid; place-items: center; width: 34px; height: 34px; box-sizing: border-box; border: 1px solid #557449; border-radius: 5px; color: #c7dfbd; background: #182619; }
