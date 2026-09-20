@@ -11,5 +11,6 @@ import { ModListing } from './mod-catalog';
 export class ModCardComponent {
   readonly mod = input.required<ModListing>();
   readonly compact = input(false);
+  readonly visibleReleases = computed(() => this.mod().section === 'developer' ? this.mod().releases.slice(0, 2) : this.mod().releases);
   readonly compatibility = computed(() => this.mod().section === 'tools' ? 'Asset tool' : this.mod().releases[0]?.compatibility ?? 'Check compatibility');
 }

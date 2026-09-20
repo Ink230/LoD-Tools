@@ -1,4 +1,4 @@
-<article [class.compact]="compact()" [attr.aria-labelledby]="'mod-' + mod().id">
+<article [class.compact]="compact()" [class.developer]="mod().section === 'developer'" [attr.aria-labelledby]="'mod-' + mod().id">
   @if (!compact()) {
     <div class="artwork">
       @if (mod().image; as image) {
@@ -28,18 +28,24 @@
     @if (mod().inDevelopment) { <p class="release-note">In development · Not released</p> }
     @if (mod().releaseNote) { <p class="release-note">{{ mod().releaseNote }}</p> }
     <div class="actions">
-      @for (release of mod().releases; track release.url) {
-        <a class="release" [href]="release.url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="mod().name + ' ' + (release.compatibility || 'download') + ' ' + (release.version || '')">
-          {{ release.compatibility || 'Download' }}@if (release.version) { · v{{ release.version }} } <span aria-hidden="true">↗</span>
-        </a>
+      @if (visibleReleases().length) {
+        <div class="release-links">
+          @for (release of visibleReleases(); track release.url) {
+            <a class="release" [href]="release.url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="mod().name + ' ' + (release.compatibility || 'download') + ' ' + (release.version || '')">
+              {{ release.compatibility || 'Download' }}@if (release.version) { · v{{ release.version }} } <span aria-hidden="true">↗</span>
+            </a>
+          }
+        </div>
       }
-      <a [href]="mod().infoUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'More information about ' + mod().name">More info <span aria-hidden="true">↗</span></a>
-      @if (mod().configureUrl; as configureUrl) {
-        <a class="configure" [routerLink]="configureUrl">{{ mod().configureLabel || 'Configure' }} <span aria-hidden="true">→</span></a>
-      }
-      @for (link of mod().links; track link.url) {
-        <a class="configure" [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.label }} <span aria-hidden="true">↗</span></a>
-      }
+      <div class="info-links">
+        <a [href]="mod().infoUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'More information about ' + mod().name">More info <span aria-hidden="true">↗</span></a>
+        @if (mod().configureUrl; as configureUrl) {
+          <a class="configure" [routerLink]="configureUrl">{{ mod().configureLabel || 'Configure' }} <span aria-hidden="true">→</span></a>
+        }
+        @for (link of mod().links; track link.url) {
+          <a class="configure" [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.label }} <span aria-hidden="true">↗</span></a>
+        }
+      </div>
     </div>
     @if (mod().tags.length) {
       <ul class="tags" aria-label="Mod tags">

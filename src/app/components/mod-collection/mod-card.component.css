@@ -16,6 +16,10 @@ p { margin: 0; }
 .unconfirmed { color: var(--wmap-color-1); border-color: var(--line); }
 .rating { color: var(--wmap-color-12); font-size: 12px; }
 .actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+.release-links, .info-links { display: contents; }
+.developer .actions { flex-direction: column; }
+.developer .release-links, .developer .info-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.developer .actions a { box-sizing: border-box; text-align: center; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 12px 0 0; border-top: 1px solid var(--line); list-style: none; }
 .tags li { padding: 3px 6px; border: 1px solid var(--line); border-radius: 4px; color: var(--wmap-color-1); font: 10px ui-monospace, monospace; }
 a { padding: 7px 10px; border: 1px solid var(--wmap-color-3); border-radius: 4px; background: var(--wmap-color-4); color: var(--wmap-color-2); font: 12px system-ui, sans-serif; }
