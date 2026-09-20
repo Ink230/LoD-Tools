@@ -42,7 +42,7 @@ const DOOM: ModAuthor = { name: 'DooMMetaL', url: 'https://github.com/dragoonsou
 export const MOD_CATALOG: readonly ModListing[] = [
   {
     id: 'dragoon-modifier', name: 'Dragoon Modifier', authors: [ZYCHRONIX], section: 'developer',
-    description: 'Configures stats, rewards, shop prices, and additions through editable spreadsheets. Includes difficulty presets.',
+    description: 'Configures stats, rewards, shop prices, and additions. Includes difficulty presets.',
     releases: [{ version: '2.1.0', compatibility: 'RB3', url: 'https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/tag/v2.1.0' }],
     tags: ['Full Campaign'],
     infoUrl: 'https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier',
