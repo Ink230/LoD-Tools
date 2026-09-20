@@ -64,7 +64,7 @@ export const MOD_CATALOG: readonly ModListing[] = [
     configureLabel: 'Configure v0.5.1',
   },
   {
-    id: 'legend-of-tides', name: 'The Legend of Tides', authors: [ICARUS], section: 'developer',
+    id: 'legend-of-tides', name: 'The Legend of Tides', authors: [ICARUS, LORDMONOXIDE], section: 'developer',
     description: 'Adds a fishing campaign to The Legend of Dragoon.',
     releases: [{ version: '1.3.9', compatibility: 'RB3', url: 'https://github.com/avionanx/tlot/releases/tag/1.3.9' }],
     tags: ['Full Campaign'], infoUrl: 'https://github.com/avionanx/tlot',
@@ -76,7 +76,7 @@ export const MOD_CATALOG: readonly ModListing[] = [
     tags: ['QoL Minor'], infoUrl: 'https://github.com/avionanx/Stardust-Indicators',
   },
   {
-    id: 'additional-additions', name: 'Additional Additions', authors: [ICARUS, LORDMONOXIDE], section: 'developer',
+    id: 'additional-additions', name: 'Additional Additions', authors: [LORDMONOXIDE], section: 'developer',
     description: 'Adds support for custom additions. The companion Additional Additions Editor creates and edits them.',
     releases: [{ version: '0.2.5', compatibility: 'RB3', url: 'https://github.com/Legend-of-Dragoon-Modding/Additional-Additions/releases/tag/0.2.5' }],
     tags: ['Extension'], infoUrl: 'https://github.com/Legend-of-Dragoon-Modding/Additional-Additions',
