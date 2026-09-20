@@ -16,12 +16,17 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'mods/irongoon',
+    loadComponent: () => import('./app/components/mod-collection/mod-collection.component').then((m) => m.ModCollectionComponent),
     pathMatch: 'full',
   },
   {
     path: 'mods',
     children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./app/components/mod-collection/mod-collection.component').then((m) => m.ModCollectionComponent),
+      },
       {
         path: 'irongoon',
         loadComponent: () => import('./app/components/irongoon/irongoon.component').then((m) => m.IrongoonComponent),
