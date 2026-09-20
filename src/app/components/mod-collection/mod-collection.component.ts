@@ -23,7 +23,7 @@ export class ModCollectionComponent {
   readonly filtered = computed(() => filterMods(MOD_CATALOG, this.query(), this.version(), this.sort()));
   readonly sections = computed(() => [
     { id: 'developer', title: 'SC Dev Made Mods', description: 'Mods maintained by SC developers.' },
-    { id: 'top-rated', title: 'Top Rated Community Mods', description: 'Community picks worth exploring. Curated recommendations; community ratings are not available yet.' },
+    { id: 'top-rated', title: 'Top Rated Community Mods', description: 'Manually selected community mods. Community ratings are not available yet.' },
     { id: 'other', title: 'Other Mods', description: 'More community-created mods.' },
   ].map(section => ({
     ...section,
