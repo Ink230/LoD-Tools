@@ -14,7 +14,9 @@
   <div class="body">
     <div class="identity">
       <h3 [id]="'mod-' + mod().id">{{ mod().name }}</h3>
-      <span class="compatibility" [class.unconfirmed]="compatibility() === 'Check compatibility'">{{ compatibility() }}</span>
+      @if (!compact()) {
+        <span class="compatibility" [class.unconfirmed]="compatibility() === 'Check compatibility'">{{ compatibility() }}</span>
+      }
       @if (mod().rating !== undefined) {
         <span class="rating" [attr.aria-label]="'Rated ' + mod().rating + ' out of 5'">★ {{ mod().rating }}</span>
       }
@@ -28,8 +30,11 @@
     @if (mod().inDevelopment) { <p class="release-note">In development · Not released</p> }
     @if (mod().releaseNote) { <p class="release-note">{{ mod().releaseNote }}</p> }
     <div class="actions">
-      @if (visibleReleases().length) {
+      @if (visibleReleases().length || compact()) {
         <div class="release-links">
+          @if (compact()) {
+            <span class="compatibility" [class.unconfirmed]="compatibility() === 'Check compatibility'">{{ compatibility() }}</span>
+          }
           @for (release of visibleReleases(); track release.url) {
             <a class="release" [href]="release.url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="mod().name + ' ' + (release.compatibility || 'download') + ' ' + (release.version || '')">
               {{ release.compatibility || 'Download' }}@if (release.version) { · v{{ release.version }} } <span aria-hidden="true">↗</span>
