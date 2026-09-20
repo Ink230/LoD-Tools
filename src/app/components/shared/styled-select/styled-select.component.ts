@@ -5,7 +5,7 @@ export interface SelectOption { readonly value: string; readonly label: string; 
 @Component({
   selector: 'app-styled-select',
   templateUrl: './styled-select.component.html',
-  styleUrls: ['../../irongoon/irongoon-forms/irongoon-dropdown/irongoon-dropdown.component.css', './styled-select.component.css'],
+  styleUrl: './styled-select.component.css',
 })
 export class StyledSelectComponent {
   readonly id = input.required<string>();

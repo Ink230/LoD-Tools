@@ -1,7 +1,13 @@
 :host { display: inline-block; width: 12rem; font: 12px/1.5 system-ui, sans-serif; }
-.dropdown-container { width: 100%; text-indent: 0; }
-.selection { box-sizing: border-box; padding: 8px 44px 8px 16px; border: 1px solid var(--wmap-color-3); color: var(--wmap-color-2); font: inherit; text-align: left; cursor: pointer; }
-.selection::after { right: 16px; }
-.selection:focus-visible { outline: 2px solid var(--wmap-color-12); outline-offset: 2px; }
-.menu-option { border: 0; font: inherit; text-align: left; color: var(--wmap-color-2); background: transparent; }
-.menu-option.highlight-option, .menu-option:hover { color: var(--tertiary-font-color); background: var(--tertiary-accent-color); }
+.dropdown-container { position: relative; width: 100%; }
+.selection, .menu-option { all: revert; box-sizing: border-box; width: 100%; color: var(--wmap-color-2); font: inherit; text-align: left; cursor: pointer; }
+.selection { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 10px; border: 1px solid var(--wmap-color-3); border-radius: 4px; background: var(--wmap-color-4); }
+.selection::after { content: ''; width: 5px; height: 5px; flex-shrink: 0; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: translateY(-2px) rotate(45deg); }
+.selection:hover { background: var(--wmap-color-5); }
+.selection-clicked { border-color: var(--wmap-color-8); }
+.selection:focus-visible { outline: 2px solid var(--wmap-color-12); outline-offset: -2px; }
+.menu-container { position: absolute; top: calc(100% + 4px); left: 0; width: 100%; z-index: 100; }
+.menu { padding: 4px; border: 1px solid var(--wmap-color-3); border-radius: 4px; background: var(--wmap-color-4); box-shadow: 0 4px 12px #0004; }
+.menu-option { display: block; padding: 6px 8px; border: 0; border-radius: 2px; background: transparent; }
+.menu-option[aria-selected='true'] { color: var(--wmap-color-6); background: var(--wmap-color-7); }
+.menu-option.highlight-option, .menu-option:hover { background: var(--wmap-color-5); }

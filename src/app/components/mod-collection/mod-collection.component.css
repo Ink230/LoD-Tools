@@ -1,5 +1,5 @@
-:host { display: block; width: min(1600px, calc(100% - 48px)); margin: 16px auto; font: 14px/1.45 system-ui, sans-serif; color: var(--wmap-color-36); --line: var(--wmap-color-0); }
-header { margin-bottom: 22px; }
+:host { display: block; width: min(1600px, calc(100% - 48px)); margin: 8px auto 16px; font: 14px/1.45 system-ui, sans-serif; color: var(--wmap-color-36); --line: var(--wmap-color-0); }
+header { margin-bottom: 6.6px; }
 h1, h2, h3, p { margin: 0; }
 h1 { font-size: 27px; font-weight: 650; letter-spacing: -.8px; }
 h2, h3 { padding: 0; font-size: 17px; font-weight: 600; }
