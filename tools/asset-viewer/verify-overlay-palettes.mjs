@@ -19,6 +19,7 @@ for (const index of indices) {
   const first = decodeAssetTim(bytes, path);
   for (let palette = 0; palette < first.paletteCount; palette++) {
     const image = decodeAssetTim(bytes, path, palette);
+    if (image.width !== 64 || image.height !== 112 || image.paletteCount !== 16) throw new Error(`Palette rows included in preview: ${path}`);
     if (image.pixels.length !== image.width * image.height * 4) throw new Error(`Invalid image: ${path}`);
     // Compare first pixel against the actual embedded BGR555 palette word.
     const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);

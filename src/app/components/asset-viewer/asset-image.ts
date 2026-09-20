@@ -112,6 +112,8 @@ export function decodeTim(bytes: Uint8Array, paletteIndex = 0, embeddedPaletteRo
     tim.clut = tim.image.subarray(embeddedPaletteRow * tim.imageWidthWords * 2);
     tim.clutWidth = tim.imageWidthWords;
     tim.clutHeight = tim.imageHeight - embeddedPaletteRow;
+    // Palette words occupy the remaining rows; they are not image pixels.
+    tim.imageHeight = embeddedPaletteRow;
   }
   if ((tim.bpp === 0 || tim.bpp === 1) && tim.clut === null) throw new Error('Paletted TIM is missing a CLUT');
   const width = outputWidth(tim);
