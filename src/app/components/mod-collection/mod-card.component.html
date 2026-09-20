@@ -1,0 +1,41 @@
+<article [class.compact]="compact()" [attr.aria-labelledby]="'mod-' + mod().id">
+  @if (!compact()) {
+    <div class="artwork">
+      @if (mod().image; as image) {
+        <img [src]="image.src" [alt]="image.alt" loading="lazy" width="640" height="360">
+      } @else {
+        <div class="placeholder">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/></svg>
+          <span>Preview not available</span>
+        </div>
+      }
+    </div>
+  }
+  <div class="body">
+    <div class="identity">
+      <h3 [id]="'mod-' + mod().id">{{ mod().name }}</h3>
+      @if (mod().rating !== undefined) {
+        <span class="rating" [attr.aria-label]="'Rated ' + mod().rating + ' out of 5'">★ {{ mod().rating }}</span>
+      }
+      <p class="author">by {{ mod().author }}</p>
+    </div>
+    <p class="description">{{ mod().description }}</p>
+    <div class="metadata">
+      @if (mod().section === 'tools') {
+        <span class="compatibility">Asset tool</span>
+      } @else {
+        <span class="compatibility" [class.unconfirmed]="!mod().scVersions.length">{{ mod().scVersions.length ? 'SC ' + mod().scVersions.join(', ') : 'Check SC compatibility' }}</span>
+      }
+      @if (mod().version) { <span class="version">v{{ mod().version }}</span> }
+    </div>
+    <div class="actions">
+      <a [href]="mod().githubUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="mod().name + ' on GitHub (opens in a new tab)'">GitHub <span aria-hidden="true">↗</span></a>
+      @if (mod().configureUrl; as configureUrl) {
+        <a class="configure" [routerLink]="configureUrl">Configure <span aria-hidden="true">→</span></a>
+      }
+      @for (link of mod().links; track link.url) {
+        <a class="configure" [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.label }} <span aria-hidden="true">↗</span></a>
+      }
+    </div>
+  </div>
+</article>
