@@ -13,9 +13,12 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 dialog { box-sizing: border-box; width: min(640px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); padding: 22px; border: 1px solid #365b42; border-radius: 6px; background: #142019; color: #cbd9cf; font: 13px/1.6 system-ui, sans-serif; }
 dialog::backdrop { background: #000b; }
 .help-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
-dialog ol { padding-left: 22px; }
+.help-section { margin-top: 18px; }
+.help-section h3 { font-size: 14px; }
+dialog ol { margin: 10px 0 0; padding-left: 22px; list-style: decimal; }
+dialog li { display: list-item; }
 dialog li + li { margin-top: 10px; }
-dialog p { margin-top: 12px; }
+dialog p { margin: 10px 0 0 22px; }
 dialog code { overflow-wrap: anywhere; color: #b8e6c5; }
 .extraction-demo { height: 180px; margin-top: 18px; border: 1px solid #365b42; border-radius: 4px; background: #101912; }
 @media (max-width: 600px) { .download-controls { width: 100%; justify-content: flex-end; } .selection-count { margin-right: auto; } }
