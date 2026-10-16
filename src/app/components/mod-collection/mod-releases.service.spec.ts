@@ -81,7 +81,6 @@ describe('live mod releases', () => {
     const refresh = service.refresh(fetchRelease);
     expect(service.loading()).toBe(true);
     expect(service.catalog()).toBe(MOD_CATALOG);
-    expect(service.status()).toContain('Checking');
     for (const [url, resolve] of requests) {
       resolve(url.includes('/Ink230/irongoon/') ? new Response(JSON.stringify(newRelease)) : new Response('', { status: 404 }));
     }
@@ -93,7 +92,6 @@ describe('live mod releases', () => {
     expect(updated.releaseNote).not.toContain('v0.4.18');
     expect(updated.releaseNote).toContain('v0.5.1 requires');
     expect(irongoon.releases[0].version).toBe('0.4.18');
-    expect(service.status()).toBe('');
     const callCount = fetchRelease.mock.calls.length;
     await service.refresh(fetchRelease);
     expect(fetchRelease).toHaveBeenCalledTimes(callCount);
@@ -111,7 +109,6 @@ describe('live mod releases', () => {
     expect(service.catalog().find(mod => mod.id === 'irongoon')).toBe(irongoon);
     expect(service.catalog().find(mod => mod.id === 'legend-of-tides')).toBe(MOD_CATALOG.find(mod => mod.id === 'legend-of-tides'));
     expect(service.catalog().find(mod => mod.id === 'icon-turn-order').releases[0].version).toBe('1.4');
-    expect(service.status()).toContain('Saved versions');
   });
 
   it('preserves curated labels for already listed custom tags and beta tools', () => {

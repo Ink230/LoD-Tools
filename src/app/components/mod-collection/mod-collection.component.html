@@ -28,7 +28,6 @@
     </div>
   </div>
   <p class="download-status" role="status">{{ downloadStatus() }}</p>
-  @if (!loadingFresh()) { <p class="release-status" role="status">{{ releaseStatus() }}</p> }
   @if (downloadError()) { <p class="download-error" role="alert">{{ downloadError() }}</p> }
   <dialog #downloadHelp aria-labelledby="download-help-title">
     <div class="help-heading"><h2 id="download-help-title">Download and install mods</h2><button class="square" type="button" aria-label="Close download help" title="Close" (click)="downloadHelp.close()">×</button></div>

@@ -10,7 +10,7 @@ describe('mod collection controls', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [{
       provide: ModReleasesService,
-      useFactory: () => ({ catalog: signal(MOD_CATALOG), status: signal(''), loading: signal(false), refresh: () => Promise.resolve() }),
+      useFactory: () => ({ catalog: signal(MOD_CATALOG), loading: signal(false), refresh: () => Promise.resolve() }),
     }] });
   });
 

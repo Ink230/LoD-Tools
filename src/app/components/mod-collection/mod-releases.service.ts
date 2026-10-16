@@ -76,7 +76,6 @@ export function applyLatestRelease(mod: ModListing, value: unknown): ModListing 
 @Injectable({ providedIn: 'root' })
 export class ModReleasesService {
   readonly catalog = signal<readonly ModListing[]>(MOD_CATALOG);
-  readonly status = signal('');
   readonly loading = signal(false);
   private refreshTask?: Promise<void>;
   private readonly cachedReleases: Record<string, CachedModRelease> = {};
@@ -125,9 +124,8 @@ export class ModReleasesService {
 
   private async checkReleases(fetchRelease: typeof fetch): Promise<void> {
     this.loading.set(true);
-    this.status.set('Checking latest published releases…');
     try {
-      const checks = await Promise.allSettled(MOD_CATALOG.filter(mod => modRepository(mod)).map(async mod => {
+      await Promise.allSettled(MOD_CATALOG.filter(mod => modRepository(mod)).map(async mod => {
         const response = await fetchRelease(`https://api.github.com/repos/${modRepository(mod)}/releases/latest`, {
           headers: { Accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(10_000),
         });
@@ -138,8 +136,6 @@ export class ModReleasesService {
         this.catalog.update(catalog => catalog.map(entry => entry.id === mod.id ? updated : entry));
         this.saveRelease(mod, release);
       }));
-      const failures = checks.filter(check => check.status === 'rejected').length;
-      this.status.set(failures ? 'Some release checks are unavailable. Saved versions are shown for those mods.' : '');
     } finally {
       this.loading.set(false);
     }

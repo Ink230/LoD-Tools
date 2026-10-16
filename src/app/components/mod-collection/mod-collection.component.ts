@@ -24,7 +24,6 @@ export class ModCollectionComponent {
   readonly sort = signal<ModSort>('featured');
   readonly selected = signal<ReadonlySet<string>>(new Set());
   readonly catalog = this.releases.catalog;
-  readonly releaseStatus = this.releases.status;
   readonly loadingFresh = this.releases.loading;
   readonly selectedMods = computed(() => this.catalog().filter(mod => this.selected().has(mod.id) && modDownload(mod)));
   readonly downloading = signal(false);
@@ -63,7 +62,6 @@ export class ModCollectionComponent {
       const selected = new Set([...this.selected()].filter(id => eligible.has(id)));
       if (selected.size !== this.selected().size) {
         this.selected.set(selected);
-        this.downloadStatus.set('Some selections were cleared because a newer release is not available in the combined ZIP yet. Use its release link to download it separately.');
       }
     });
     void this.releases.refresh();
