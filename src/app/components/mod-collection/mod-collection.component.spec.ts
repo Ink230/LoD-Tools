@@ -82,13 +82,17 @@ describe('mod collection controls', () => {
     for (const [id, infoUrl, releaseUrl] of [
       ['icon-turn-order', 'https://github.com/Zychronix/icon-turn-order', 'https://github.com/Zychronix/icon-turn-order/releases/tag/1.3'],
       ['battle-rewards', 'https://github.com/DennytXVII/BattleRewardsMod', 'https://github.com/DennytXVII/BattleRewardsMod/releases'],
-      ['no-stats', 'https://github.com/Popoto-anonymous/No-Stats', 'https://github.com/Popoto-anonymous/No-Stats/releases'],
+      ['no-stats', 'https://github.com/Popoto-anonymous/No-Stats', 'https://github.com/Popoto-anonymous/No-Stats/releases/tag/Y2'],
     ]) {
       const card = page.querySelector('#mod-' + id).closest('article');
       expect(card.querySelector('.info-links a')?.getAttribute('href')).toBe(infoUrl);
       expect(card.querySelector('a.release')?.getAttribute('href')).toBe(releaseUrl);
     }
     expect(page.querySelector('#mod-no-stats').closest('article').textContent).toContain('Check compatibility');
+    expect(page.querySelector('#mod-no-stats').closest('article').querySelector('a.release')?.textContent).toContain('v1.1');
+    const dragoonModifier = page.querySelector('#mod-dragoon-modifier').closest('article');
+    expect(dragoonModifier.querySelector('a.release')?.getAttribute('href')).toBe('https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/tag/v2.2.0');
+    expect(dragoonModifier.querySelector('a.release')?.textContent).toContain('RB3 · v2.2.0');
   });
 
   it('supports keyboard selection, Escape, and outside clicks in the styled filters', async () => {

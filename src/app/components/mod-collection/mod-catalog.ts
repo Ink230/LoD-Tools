@@ -43,7 +43,7 @@ export const MOD_CATALOG: readonly ModListing[] = [
   {
     id: 'dragoon-modifier', name: 'Dragoon Modifier', authors: [ZYCHRONIX], section: 'developer',
     description: 'Configures stats, rewards, shop prices, and additions. Includes difficulty presets.',
-    releases: [{ version: '2.1.0', compatibility: 'RB3', url: 'https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/tag/v2.1.0' }],
+    releases: [{ version: '2.2.0', compatibility: 'RB3', url: 'https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/tag/v2.2.0' }],
     tags: ['Full Campaign'],
     infoUrl: 'https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier',
   },
@@ -118,7 +118,7 @@ export const MOD_CATALOG: readonly ModListing[] = [
   {
     id: 'no-stats', name: 'No Stats', authors: [{ name: 'Popoto-anonymous', url: 'https://github.com/Popoto-anonymous' }], section: 'top-rated',
     description: 'Adds equipment without stat bonuses for a more challenging playthrough.',
-    releases: [{ url: 'https://github.com/Popoto-anonymous/No-Stats/releases' }],
+    releases: [{ version: '1.1', url: 'https://github.com/Popoto-anonymous/No-Stats/releases/tag/Y2' }],
     tags: ['Extension'], infoUrl: 'https://github.com/Popoto-anonymous/No-Stats',
   },
 
