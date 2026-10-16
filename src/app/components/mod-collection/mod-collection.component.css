@@ -16,7 +16,7 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 .results { display: flex; align-items: center; gap: 8px; min-height: 42px; color: var(--wmap-color-39); font: 11px ui-monospace, monospace; }
 section { margin-top: 24px; }
 section + section { margin-top: 32px; }
-.section-heading { display: flex; align-items: center; gap: 8px; }
+.section-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
 .section-description { margin: 6px 0 16px; }
 .mod-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .mod-list { display: grid; gap: 8px; }

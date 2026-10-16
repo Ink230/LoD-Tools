@@ -84,7 +84,6 @@
       <div class="section-heading">
         <h2 [id]="section.id + '-title'">{{ section.title }}</h2>
       </div>
-      <p class="section-description">{{ section.description }}</p>
       <div [class]="section.id === 'other' ? 'mod-list' : 'mod-grid'">
         @for (mod of section.mods; track mod.id) {
           <app-mod-card [mod]="mod" [compact]="section.id === 'other'" [selected]="selected().has(mod.id)" [selectable]="!!modDownload(mod)" [downloadPending]="!modDownload(mod) && !!mod.releases[0]?.url" [selectionDisabled]="downloading() || loadingFresh()" [selectionTitle]="selectionTitle(mod)" (selectionChange)="selectMod(mod, $event)" />
