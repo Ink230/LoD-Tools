@@ -98,7 +98,8 @@ describe('mod collection controls', () => {
     await fixture.whenStable();
     const page = fixture.nativeElement as HTMLElement;
     const checkbox = page.querySelector<HTMLInputElement>('[aria-label="Select Irongoon"]');
-    expect(page.querySelectorAll('input[type="checkbox"]')).toHaveLength(16);
+    expect(page.querySelectorAll('input[type="checkbox"]')).toHaveLength(11);
+    expect(page.querySelectorAll('.tool-gallery input[type="checkbox"]')).toHaveLength(0);
     expect(page.querySelector<HTMLInputElement>('[aria-label="Select Lloyd Mod"]').disabled).toBe(true);
     expect(page.querySelector<HTMLInputElement>('[aria-label="Select Upscale Mod"]').disabled).toBe(true);
     checkbox.click();

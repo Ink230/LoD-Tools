@@ -7,5 +7,5 @@ article { position: relative; }
 .mod-selection input:focus-visible { outline: 2px solid #6bbd83; outline-offset: 3px; }
 .mod-selection:has(input:disabled) { opacity: .45; cursor: not-allowed; }
 .mod-selection input:disabled { cursor: not-allowed; }
-.compact .identity { padding-right: 30px; }
+.compact:has(.mod-selection) .identity { padding-right: 30px; }
 @media (forced-colors: active) { .mod-selection input { appearance: auto; } .mod-selection input::after { display: none; } }
