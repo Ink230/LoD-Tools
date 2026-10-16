@@ -18,9 +18,12 @@ describe('mod collection controls', () => {
       await fixture.whenStable();
     };
     expect(select.textContent.trim()).toBe('All versions');
-    expect(page.querySelectorAll('app-mod-card')).toHaveLength(12);
+    expect(page.querySelectorAll('app-mod-card')).toHaveLength(16);
     expect([...page.querySelectorAll('section:first-of-type app-mod-card h3')].map(heading => heading.textContent)).toEqual([
-      'Dragoon Modifier', 'Irongoon', 'The Legend of Tides', 'Stardust Indicators', 'Additional Additions', 'Upscale Mod',
+      'Dragoon Modifier', 'Irongoon', 'The Legend of Tides', 'Lloyd Mod', 'Additional Additions', 'Stardust Indicators',
+    ]);
+    expect([...page.querySelectorAll('section[aria-labelledby="top-rated-title"] .mod-grid app-mod-card h3')].map(heading => heading.textContent)).toEqual([
+      'Archipelago', 'Upscale Mod', 'Icon Turn Order', 'Battle Rewards', 'No Stats',
     ]);
     expect(page.querySelector('.section-heading .count')).toBeNull();
 
@@ -31,10 +34,10 @@ describe('mod collection controls', () => {
     page.querySelector<HTMLButtonElement>('.results button')?.click();
     await fixture.whenStable();
     expect(select.textContent.trim()).toBe('All versions');
-    expect(page.querySelectorAll('app-mod-card')).toHaveLength(12);
+    expect(page.querySelectorAll('app-mod-card')).toHaveLength(16);
 
     await chooseVersion('RB3');
-    expect(page.querySelectorAll('app-mod-card')).toHaveLength(6);
+    expect(page.querySelectorAll('app-mod-card')).toHaveLength(8);
   });
 
   it('presents distinct Irongoon releases, linked authors, tags, and the unreleased upscale project', async () => {
@@ -58,6 +61,29 @@ describe('mod collection controls', () => {
     expect(upscale.querySelector('a[href="https://legendofdragoon.org/projects/image-upscaling/"]')).not.toBeNull();
     expect(upscale.textContent).toContain('In development');
     expect(upscale.querySelector('.tags li').textContent).toBe('Graphics');
+  });
+
+  it('shows Lloyd without unknown links or credits and links the new community mods', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(ModCollectionComponent);
+    fixture.autoDetectChanges();
+    await fixture.whenStable();
+    const page = fixture.nativeElement as HTMLElement;
+    const lloyd = page.querySelector('#mod-lloyd').closest('article');
+
+    expect(lloyd.textContent).toContain('Information to be added later.');
+    expect(lloyd.querySelector('a')).toBeNull();
+    expect(lloyd.querySelector('.author')).toBeNull();
+    for (const [id, infoUrl, releaseUrl] of [
+      ['icon-turn-order', 'https://github.com/Zychronix/icon-turn-order', 'https://github.com/Zychronix/icon-turn-order/releases/tag/1.3'],
+      ['battle-rewards', 'https://github.com/DennytXVII/BattleRewardsMod', 'https://github.com/DennytXVII/BattleRewardsMod/releases'],
+      ['no-stats', 'https://github.com/Popoto-anonymous/No-Stats', 'https://github.com/Popoto-anonymous/No-Stats/releases'],
+    ]) {
+      const card = page.querySelector('#mod-' + id).closest('article');
+      expect(card.querySelector('.info-links a')?.getAttribute('href')).toBe(infoUrl);
+      expect(card.querySelector('a.release')?.getAttribute('href')).toBe(releaseUrl);
+    }
+    expect(page.querySelector('#mod-no-stats').closest('article').textContent).toContain('Check compatibility');
   });
 
   it('supports keyboard selection, Escape, and outside clicks in the styled filters', async () => {

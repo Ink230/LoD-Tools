@@ -20,11 +20,13 @@
       @if (mod().rating !== undefined) {
         <span class="rating" [attr.aria-label]="'Rated ' + mod().rating + ' out of 5'">★ {{ mod().rating }}</span>
       }
-      <p class="author">by
-        @for (author of mod().authors; track author.url; let last = $last) {
-          <a [href]="author.url" target="_blank" rel="noopener noreferrer">{{ author.name }}</a>{{ last ? '' : ' & ' }}
-        }
-      </p>
+      @if (mod().authors.length) {
+        <p class="author">by
+          @for (author of mod().authors; track author.url; let last = $last) {
+            <a [href]="author.url" target="_blank" rel="noopener noreferrer">{{ author.name }}</a>{{ last ? '' : ' & ' }}
+          }
+        </p>
+      }
     </div>
     <p class="description">{{ mod().description }}</p>
     <div class="actions">
@@ -46,7 +48,9 @@
       @if (mod().inDevelopment) { <p class="release-note">In development · Not released</p> }
       @if (mod().releaseNote) { <p class="release-note">{{ mod().releaseNote }}</p> }
       <div class="info-links">
-        <a [href]="mod().infoUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'More information about ' + mod().name">More info <span aria-hidden="true">↗</span></a>
+        @if (mod().infoUrl; as infoUrl) {
+          <a [href]="infoUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'More information about ' + mod().name">More info <span aria-hidden="true">↗</span></a>
+        }
         @if (mod().configureUrl; as configureUrl) {
           <a class="configure" [routerLink]="configureUrl">{{ mod().configureLabel || 'Configure' }} <span aria-hidden="true">→</span></a>
         }

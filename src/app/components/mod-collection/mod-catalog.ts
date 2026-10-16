@@ -24,7 +24,7 @@ export interface ModListing {
   readonly inDevelopment?: boolean;
   readonly rating?: number;
   readonly image?: { readonly src: string; readonly alt: string };
-  readonly infoUrl: string;
+  readonly infoUrl?: string;
   readonly configureUrl?: string;
   readonly configureLabel?: string;
   readonly links?: readonly { readonly label: string; readonly url: string }[];
@@ -70,10 +70,9 @@ export const MOD_CATALOG: readonly ModListing[] = [
     tags: ['Full Campaign'], infoUrl: 'https://github.com/avionanx/tlot',
   },
   {
-    id: 'stardust-indicators', name: 'Stardust Indicators', authors: [ICARUS], section: 'developer',
-    description: 'Adds a sparkle effect to Stardust locations.',
-    releases: [{ version: '1.5', compatibility: 'RB3', url: 'https://github.com/avionanx/Stardust-Indicators/releases/tag/v1.5' }],
-    tags: ['QoL Minor'], infoUrl: 'https://github.com/avionanx/Stardust-Indicators',
+    id: 'lloyd', name: 'Lloyd Mod', authors: [], section: 'developer',
+    description: 'Information to be added later.',
+    releases: [], tags: [],
   },
   {
     id: 'additional-additions', name: 'Additional Additions', authors: [LORDMONOXIDE], section: 'developer',
@@ -83,10 +82,10 @@ export const MOD_CATALOG: readonly ModListing[] = [
     links: [{ label: 'Editor', url: 'https://github.com/Legend-of-Dragoon-Modding/Additional-Additions-Editor' }],
   },
   {
-    id: 'upscale', name: 'Upscale Mod', authors: [ZYCHRONIX], section: 'developer',
-    description: 'An image-upscaling project for The Legend of Dragoon. In development, with no release available.',
-    inDevelopment: true, releases: [], tags: ['Graphics'],
-    infoUrl: 'https://legendofdragoon.org/projects/image-upscaling/',
+    id: 'stardust-indicators', name: 'Stardust Indicators', authors: [ICARUS], section: 'developer',
+    description: 'Adds a sparkle effect to Stardust locations.',
+    releases: [{ version: '1.5', compatibility: 'RB3', url: 'https://github.com/avionanx/Stardust-Indicators/releases/tag/v1.5' }],
+    tags: ['QoL Minor'], infoUrl: 'https://github.com/avionanx/Stardust-Indicators',
   },
   {
     id: 'archipelago', name: 'Archipelago', authors: [{ name: 'pkolb-dev', url: 'https://github.com/pkolb-dev' }], section: 'top-rated',
@@ -95,6 +94,34 @@ export const MOD_CATALOG: readonly ModListing[] = [
     tags: ['Randomizer'], infoUrl: 'https://github.com/pkolb-dev/Archipelago',
     links: [{ label: 'Setup guide', url: 'https://github.com/pkolb-dev/Archipelago/blob/main/worlds/legend_of_dragoon/docs/en_setup.md' }],
   },
+  {
+    id: 'upscale', name: 'Upscale Mod', authors: [ZYCHRONIX], section: 'top-rated',
+    description: 'An image-upscaling project for The Legend of Dragoon. In development, with no release available.',
+    inDevelopment: true, releases: [], tags: ['Graphics'],
+    infoUrl: 'https://legendofdragoon.org/projects/image-upscaling/',
+  },
+
+  {
+    id: 'icon-turn-order', name: 'Icon Turn Order', authors: [ZYCHRONIX], section: 'top-rated',
+    description: 'Displays battle turn order using character and monster icons. A standalone version of the display from Dragoon Modifier.',
+    releases: [{ version: '1.3', compatibility: 'RB3', url: 'https://github.com/Zychronix/icon-turn-order/releases/tag/1.3' }],
+    tags: ['QoL Minor'], infoUrl: 'https://github.com/Zychronix/icon-turn-order',
+  },
+
+  {
+    id: 'battle-rewards', name: 'Battle Rewards', authors: [{ name: 'DennytXVII', url: 'https://github.com/DennytXVII' }], section: 'top-rated',
+    description: 'Configures multipliers for gold and experience earned from battles.',
+    releases: [{ version: '1.5.0', compatibility: 'RB3', url: 'https://github.com/DennytXVII/BattleRewardsMod/releases' }],
+    tags: ['QoL Minor'], infoUrl: 'https://github.com/DennytXVII/BattleRewardsMod',
+  },
+
+  {
+    id: 'no-stats', name: 'No Stats', authors: [{ name: 'Popoto-anonymous', url: 'https://github.com/Popoto-anonymous' }], section: 'top-rated',
+    description: 'Adds equipment without stat bonuses for a more challenging playthrough.',
+    releases: [{ url: 'https://github.com/Popoto-anonymous/No-Stats/releases' }],
+    tags: ['Extension'], infoUrl: 'https://github.com/Popoto-anonymous/No-Stats',
+  },
+
   {
     id: 'assets-manager', name: 'TLoD Assets Manager', authors: [DOOM], section: 'tools',
     description: 'Browses and converts game models, animations, and textures, with glTF 2.0 export.',
