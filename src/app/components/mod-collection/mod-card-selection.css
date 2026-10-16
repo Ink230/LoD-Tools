@@ -2,6 +2,7 @@ article { position: relative; }
 .mod-selection { position: absolute; top: 10px; right: 10px; z-index: 1; display: flex; padding: 5px; border: 1px solid var(--line); border-radius: 4px; background: var(--wmap-color-41); cursor: pointer; }
 .mod-selection input { all: revert; appearance: none; display: grid; place-content: center; box-sizing: border-box; width: 17px; height: 17px; margin: 0; border: 1px solid #497a58; border-radius: 3px; background: #14251a; cursor: pointer; }
 .mod-selection input:checked { background: #6bbd83; }
+.mod-selection input:checked::before { content: none; }
 .mod-selection input:checked::after { content: ''; width: 8px; height: 4px; margin-top: -2px; border-left: 2px solid #102819; border-bottom: 2px solid #102819; transform: rotate(-45deg); }
 .mod-selection input:focus-visible { outline: 2px solid #6bbd83; outline-offset: 3px; }
 .mod-selection:has(input:disabled) { opacity: .45; cursor: not-allowed; }
