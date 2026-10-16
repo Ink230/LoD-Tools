@@ -15,6 +15,7 @@ export class ModCardComponent {
   readonly selected = input(false);
   readonly selectable = input(false);
   readonly selectionDisabled = input(false);
+  readonly downloadPending = input(false);
   readonly selectionTitle = input('No combined download available');
   readonly selectionChange = output<boolean>();
   readonly visibleReleases = computed(() => this.mod().releases.slice(0, this.mod().section === 'developer' ? 2 : 1));

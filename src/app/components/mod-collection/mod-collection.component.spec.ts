@@ -1,9 +1,46 @@
 import { TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ModCollectionComponent } from './mod-collection.component';
+import { MOD_CATALOG } from './mod-catalog';
+import { ModReleasesService, applyLatestRelease } from './mod-releases.service';
 
 describe('mod collection controls', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [{
+      provide: ModReleasesService,
+      useFactory: () => ({ catalog: signal(MOD_CATALOG), status: signal(''), refresh: () => Promise.resolve() }),
+    }] });
+  });
+
+  it('refreshes version labels and links and clears selections for uncached releases', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(ModCollectionComponent);
+    fixture.autoDetectChanges();
+    await fixture.whenStable();
+    const page = fixture.nativeElement as HTMLElement;
+    const select = page.querySelector<HTMLInputElement>('[aria-label="Select Irongoon"]');
+    select.click();
+    await fixture.whenStable();
+    const service = TestBed.inject(ModReleasesService);
+    const updated = applyLatestRelease(MOD_CATALOG.find(mod => mod.id === 'irongoon'), {
+      tag_name: 'v0.4.19', html_url: 'https://github.com/Ink230/irongoon/releases/tag/v0.4.19',
+      name: 'v0.4.19 for RB3', body: '', draft: false, prerelease: false,
+    });
+    service.catalog.update(catalog => catalog.map(mod => mod.id === updated.id ? updated : mod));
+    await fixture.whenStable();
+    const card = page.querySelector('#mod-irongoon').closest('article');
+    expect(card.querySelector('a.release')?.getAttribute('href')).toBe(updated.releases[0].url);
+    expect(card.querySelector('a.release')?.textContent).toContain('v0.4.19');
+    expect(card.querySelector<HTMLInputElement>('input[type="checkbox"]').disabled).toBe(true);
+    expect(card.querySelector<HTMLInputElement>('input[type="checkbox"]').checked).toBe(false);
+    expect(card.textContent).toContain('not available in the combined ZIP yet');
+    expect(card.textContent).not.toContain('v0.4.18 supports SC RB3');
+    expect(fixture.componentInstance.selected().size).toBe(0);
+    expect(page.querySelector<HTMLButtonElement>('[aria-label="Download Mods"]').disabled).toBe(true);
+  });
+
   it('navigates the five extraction screenshots in order without wrapping', async () => {
     TestBed.configureTestingModule({ providers: [provideRouter([])] });
     const fixture = TestBed.createComponent(ModCollectionComponent);

@@ -15,7 +15,9 @@ export const MOD_DOWNLOADS: readonly ModDownload[] = downloads;
 const MAX_UNPACKED_BYTES = 512 * 1024 * 1024;
 
 export function modDownload(mod: ModListing, available: readonly ModDownload[] = MOD_DOWNLOADS): ModDownload | undefined {
-  return available.find(download => download.id === mod.id);
+  const primaryUrl = mod.releases[0]?.url;
+  return available.find(download => download.id === mod.id && !!primaryUrl
+    && (download.releaseUrl === primaryUrl || download.releaseUrl.startsWith(primaryUrl + '/tag/')));
 }
 
 function safePath(path: string): string {

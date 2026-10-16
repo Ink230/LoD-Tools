@@ -1,10 +1,11 @@
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { StyledSelectComponent } from '../shared/styled-select/styled-select.component';
 import { WORLD_MAP_THEME_COLORS } from '../world-map-editor/world-map-theme';
 import { MOD_CATALOG, ModListing, ScCompatibility } from './mod-catalog';
 import { createModBundle, modDownload } from './mod-download';
 import { ModCardComponent } from './mod-card.component';
 import { filterMods, modSection, ModSort } from './mod-collection-state';
+import { ModReleasesService } from './mod-releases.service';
 
 @Component({
   selector: 'app-mod-collection',
@@ -15,13 +16,16 @@ import { filterMods, modSection, ModSort } from './mod-collection-state';
 })
 export class ModCollectionComponent {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly releases = inject(ModReleasesService);
   private downloadController?: AbortController;
   readonly themeColors = WORLD_MAP_THEME_COLORS;
   readonly query = signal('');
   readonly version = signal('');
   readonly sort = signal<ModSort>('featured');
   readonly selected = signal<ReadonlySet<string>>(new Set());
-  readonly selectedMods = computed(() => MOD_CATALOG.filter(mod => this.selected().has(mod.id)));
+  readonly catalog = this.releases.catalog;
+  readonly releaseStatus = this.releases.status;
+  readonly selectedMods = computed(() => this.catalog().filter(mod => this.selected().has(mod.id) && modDownload(mod)));
   readonly downloading = signal(false);
   readonly downloadStatus = signal('');
   readonly downloadError = signal('');
@@ -38,7 +42,7 @@ export class ModCollectionComponent {
   readonly versions: readonly ScCompatibility[] = ['Latest SC', 'RB3', 'Special build', 'Check compatibility'];
   readonly versionOptions = [{ value: '', label: 'All versions' }, ...this.versions.map(value => ({ value, label: value }))];
   readonly sortOptions = [{ value: 'featured', label: 'Featured' }, { value: 'name', label: 'Name A–Z' }, { value: 'author', label: 'Author A–Z' }];
-  readonly filtered = computed(() => filterMods(MOD_CATALOG, this.query(), this.version(), this.sort()));
+  readonly filtered = computed(() => filterMods(this.catalog(), this.query(), this.version(), this.sort()));
   readonly sections = computed(() => [
     { id: 'developer', title: 'SC Dev Made Mods', description: 'Mods maintained by SC developers.' },
     { id: 'top-rated', title: 'Top Rated Community Mods', description: 'Manually selected community mods. Community ratings are not available yet.' },
@@ -46,12 +50,22 @@ export class ModCollectionComponent {
   ].map(section => ({
     ...section,
     mods: this.filtered().filter(mod => modSection(mod) === section.id),
-    populated: MOD_CATALOG.some(mod => modSection(mod) === section.id),
+    populated: this.catalog().some(mod => modSection(mod) === section.id),
   })));
   readonly tools = computed(() => this.filtered().filter(mod => mod.section === 'tools'));
 
   constructor() {
     this.destroyRef.onDestroy(() => this.downloadController?.abort());
+    effect(() => {
+      if (this.downloading()) return;
+      const eligible = new Set(this.catalog().filter(mod => modDownload(mod)).map(mod => mod.id));
+      const selected = new Set([...this.selected()].filter(id => eligible.has(id)));
+      if (selected.size !== this.selected().size) {
+        this.selected.set(selected);
+        this.downloadStatus.set('Some selections were cleared because a newer release is not available in the combined ZIP yet. Use its release link to download it separately.');
+      }
+    });
+    void this.releases.refresh();
   }
 
   showExtractionImage(direction: number): void {
@@ -60,6 +74,7 @@ export class ModCollectionComponent {
 
   selectionTitle(mod: ModListing): string {
     if (modDownload(mod)) return `Include ${mod.name} v${mod.releases[0].version || 'unknown'} in the ZIP`;
+    if (MOD_CATALOG.find(entry => entry.id === mod.id)?.releases[0]?.url && mod.section !== 'tools') return 'This release is not in the combined ZIP yet. Download it using its release link.';
     return mod.section === 'tools' ? 'Install standalone tools separately' : 'No downloadable release available yet';
   }
 

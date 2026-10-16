@@ -53,7 +53,9 @@
         </div>
       }
       @if (mod().inDevelopment) { <p class="release-note">In development · Not released</p> }
-      @if (mod().releaseNote) { <p class="release-note">{{ mod().releaseNote }}</p> }
+      @if (mod().releaseNote || downloadPending()) {
+        <p class="release-note">{{ mod().releaseNote ? mod().releaseNote + ' ' : '' }}@if (downloadPending()) { <span>This release is not available in the combined ZIP yet. Use its release link to download it separately.</span> }</p>
+      }
       <div class="info-links">
         @if (mod().infoUrl; as infoUrl) {
           <a [href]="infoUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'More information about ' + mod().name">More info <span aria-hidden="true">↗</span></a>

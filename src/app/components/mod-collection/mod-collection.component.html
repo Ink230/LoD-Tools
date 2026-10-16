@@ -23,6 +23,7 @@
     </div>
   </div>
   <p class="download-status" role="status">{{ downloadStatus() }}</p>
+  <p class="release-status" role="status">{{ releaseStatus() }}</p>
   @if (downloadError()) { <p class="download-error" role="alert">{{ downloadError() }}</p> }
   <dialog #downloadHelp aria-labelledby="download-help-title">
     <div class="help-heading"><h2 id="download-help-title">Download and install mods</h2><button class="square" type="button" aria-label="Close download help" title="Close" (click)="downloadHelp.close()">×</button></div>
@@ -48,7 +49,7 @@
     </div>
     <div class="help-section">
       <h3>More Info</h3>
-      <p>Downloads use each mod’s primary release shown on its card. Irongoon uses its RB3 release; its special SC build must be installed separately. Greyed-out checkboxes have no combined download. Standalone tools are installed separately.</p>
+      <p>Combined ZIP downloads use the primary release shown on each card only when that exact release is available on the site. Newer releases can be downloaded separately from their release link. Greyed-out checkboxes have no matching combined download. Special SC builds and standalone tools must be installed separately.</p>
       <p>This combines files; it does not check whether selected mods work together. If files conflict or a download fails, no partial ZIP is saved. Your selections remain so you can retry.</p>
     </div>
     <div class="extraction-demo" role="group" aria-roledescription="carousel" aria-label="Extraction screenshots">
@@ -81,7 +82,7 @@
       <p class="section-description">{{ section.description }}</p>
       <div [class]="section.id === 'other' ? 'mod-list' : 'mod-grid'">
         @for (mod of section.mods; track mod.id) {
-          <app-mod-card [mod]="mod" [compact]="section.id === 'other'" [selected]="selected().has(mod.id)" [selectable]="!!modDownload(mod)" [selectionDisabled]="downloading()" [selectionTitle]="selectionTitle(mod)" (selectionChange)="selectMod(mod, $event)" />
+          <app-mod-card [mod]="mod" [compact]="section.id === 'other'" [selected]="selected().has(mod.id)" [selectable]="!!modDownload(mod)" [downloadPending]="!modDownload(mod) && !!mod.releases[0]?.url" [selectionDisabled]="downloading()" [selectionTitle]="selectionTitle(mod)" (selectionChange)="selectMod(mod, $event)" />
         } @empty {
           <p class="empty">{{ section.populated ? 'No mods match these filters. Try another search or version.' : section.id === 'top-rated' ? 'Community ratings are not available yet.' : 'No community mods are listed yet.' }}</p>
         }

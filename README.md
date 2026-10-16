@@ -7,6 +7,14 @@ Production hosting serves these files with the app so browser downloads work
 without relying on GitHub release-asset CORS support. ZIP assembly runs on the
 client using `fflate`; no upload or ZIP-building backend is used.
 
+The page renders the saved catalog immediately, then checks GitHub's marked
+latest releases once per app session. Failed checks retain the saved entries.
+Release labels and links update live; a new release remains unavailable for the
+combined ZIP until its exact package is cached in a new site build. Selections
+for those uncached releases are cleared, so older packages are never offered
+under a newer release label. New versions do not inherit SC compatibility
+unless the release explicitly declares it.
+
 When updating an installable release, update its catalog entry and download
 manifest together. Pin the release URL, exact asset name/URL, and SHA-256 of the
 downloaded asset. Review archive paths: `stripPrefix` removes an outer `mods/`

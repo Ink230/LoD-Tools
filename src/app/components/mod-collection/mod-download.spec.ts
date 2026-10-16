@@ -11,7 +11,7 @@ function createModBundle(mods: readonly ModListing[], progress: (message: string
 
 async function fixtureAsset(id: string, filename: string, bytes: Uint8Array<ArrayBuffer>, stripPrefix = ''): Promise<void> {
   const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
-  fixtures.push({ id, filename, stripPrefix, url: '', releaseUrl: '', sha256: [...hash].map(value => value.toString(16).padStart(2, '0')).join('') });
+  fixtures.push({ id, filename, stripPrefix, url: '', releaseUrl: MOD_CATALOG.find(mod => mod.id === id).releases[0].url, sha256: [...hash].map(value => value.toString(16).padStart(2, '0')).join('') });
 }
 
 beforeEach(() => { fixtures.splice(0); });
@@ -57,6 +57,15 @@ describe('combined mod downloads', () => {
     controller.abort();
     const fetchAsset = vi.fn<typeof fetch>();
     await expect(createModBundle([MOD_CATALOG[0]], () => undefined, controller.signal, fetchAsset)).rejects.toThrow();
+    expect(fetchAsset).not.toHaveBeenCalled();
+  });
+
+  it('does not use a cached older package for a newly displayed release', async () => {
+    await fixtureAsset('no-stats', 'nostats.jar', strToU8('old jar'));
+    const current = MOD_CATALOG.find(mod => mod.id === 'no-stats');
+    const updated = { ...current, releases: [{ version: '1.2', url: 'https://github.com/Popoto-anonymous/No-Stats/releases/tag/Y3' }] };
+    const fetchAsset = vi.fn<typeof fetch>();
+    await expect(createModBundle([updated], () => undefined, undefined, fetchAsset)).rejects.toThrow('no combined download');
     expect(fetchAsset).not.toHaveBeenCalled();
   });
 });
