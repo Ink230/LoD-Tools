@@ -10,8 +10,34 @@ describe('mod collection controls', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [{
       provide: ModReleasesService,
-      useFactory: () => ({ catalog: signal(MOD_CATALOG), status: signal(''), refresh: () => Promise.resolve() }),
+      useFactory: () => ({ catalog: signal(MOD_CATALOG), status: signal(''), loading: signal(false), refresh: () => Promise.resolve() }),
     }] });
+  });
+
+  it('shows the header loading indicator and blocks selections and downloads until refresh finishes', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(ModCollectionComponent);
+    fixture.autoDetectChanges();
+    await fixture.whenStable();
+    const page = fixture.nativeElement as HTMLElement;
+    page.querySelector<HTMLInputElement>('[aria-label="Select Irongoon"]').click();
+    await fixture.whenStable();
+    const service = TestBed.inject(ModReleasesService);
+    service.loading.set(true);
+    await fixture.whenStable();
+    expect(page.querySelector('.collection-heading .fresh-versions')?.textContent).toBe('Loading fresh versions');
+    expect(page.querySelector('.collection-heading .spinner')).not.toBeNull();
+    expect([...page.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')].every(input => input.disabled)).toBe(true);
+    expect(page.querySelector<HTMLButtonElement>('[aria-label="Download Mods"]').disabled).toBe(true);
+    fixture.componentInstance.selectMod(MOD_CATALOG.find(mod => mod.id === 'no-stats'), true);
+    expect(fixture.componentInstance.selected().has('no-stats')).toBe(false);
+    await fixture.componentInstance.downloadMods();
+    expect(fixture.componentInstance.downloading()).toBe(false);
+    service.loading.set(false);
+    await fixture.whenStable();
+    expect(page.querySelector('.fresh-versions')).toBeNull();
+    expect(page.querySelector<HTMLInputElement>('[aria-label="Select Irongoon"]').disabled).toBe(false);
+    expect(page.querySelector<HTMLButtonElement>('[aria-label="Download Mods"]').disabled).toBe(false);
   });
 
   it('refreshes version labels and links and clears selections for uncached releases', async () => {

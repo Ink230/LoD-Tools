@@ -25,6 +25,7 @@ export class ModCollectionComponent {
   readonly selected = signal<ReadonlySet<string>>(new Set());
   readonly catalog = this.releases.catalog;
   readonly releaseStatus = this.releases.status;
+  readonly loadingFresh = this.releases.loading;
   readonly selectedMods = computed(() => this.catalog().filter(mod => this.selected().has(mod.id) && modDownload(mod)));
   readonly downloading = signal(false);
   readonly downloadStatus = signal('');
@@ -57,7 +58,7 @@ export class ModCollectionComponent {
   constructor() {
     this.destroyRef.onDestroy(() => this.downloadController?.abort());
     effect(() => {
-      if (this.downloading()) return;
+      if (this.downloading() || this.loadingFresh()) return;
       const eligible = new Set(this.catalog().filter(mod => modDownload(mod)).map(mod => mod.id));
       const selected = new Set([...this.selected()].filter(id => eligible.has(id)));
       if (selected.size !== this.selected().size) {
@@ -79,7 +80,7 @@ export class ModCollectionComponent {
   }
 
   selectMod(mod: ModListing, checked: boolean): void {
-    if (this.downloading() || !modDownload(mod)) return;
+    if (this.downloading() || this.loadingFresh() || !modDownload(mod)) return;
     const selected = new Set(this.selected());
     if (checked) selected.add(mod.id);
     else selected.delete(mod.id);
@@ -96,7 +97,7 @@ export class ModCollectionComponent {
   }
 
   async downloadMods(): Promise<void> {
-    if (this.downloading() || !this.selectedMods().length) return;
+    if (this.downloading() || this.loadingFresh() || !this.selectedMods().length) return;
     this.downloading.set(true);
     this.downloadError.set('');
     this.downloadController = new AbortController();

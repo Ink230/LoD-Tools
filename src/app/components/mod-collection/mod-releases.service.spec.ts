@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MOD_CATALOG } from './mod-catalog';
-import { applyLatestRelease, modRepository, ModReleasesService } from './mod-releases.service';
+import { applyLatestRelease, MOD_RELEASE_CACHE_KEY, modRepository, ModReleasesService } from './mod-releases.service';
 
 const irongoon = MOD_CATALOG.find(mod => mod.id === 'irongoon');
 const newRelease = {
@@ -9,6 +9,65 @@ const newRelease = {
 };
 
 describe('live mod releases', () => {
+  beforeEach(() => {
+    const entries = new Map<string, string>();
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => entries.get(key) ?? null,
+      setItem: (key: string, value: string) => { entries.set(key, value); },
+      removeItem: (key: string) => { entries.delete(key); },
+    });
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it('restores saved release data before fetching and retains it when fresh checks fail', async () => {
+    localStorage.setItem(MOD_RELEASE_CACHE_KEY, JSON.stringify({
+      irongoon: { baseUrl: irongoon.releases[0].url, baseVersion: irongoon.releases[0].version, release: newRelease },
+    }));
+    const service = new ModReleasesService();
+    expect(service.catalog().find(mod => mod.id === 'irongoon').releases[0].version).toBe('0.4.19');
+    expect(service.catalog().find(mod => mod.id === 'irongoon').tags).toEqual(irongoon.tags);
+    await service.refresh(vi.fn<typeof fetch>().mockRejectedValue(new Error('Offline')));
+    expect(service.catalog().find(mod => mod.id === 'irongoon').releases[0].version).toBe('0.4.19');
+    expect(service.loading()).toBe(false);
+  });
+
+  it('saves fresh responses and restores them in a new page session', async () => {
+    const service = new ModReleasesService();
+    await service.refresh(vi.fn<typeof fetch>().mockImplementation(async url => String(url).includes('/Ink230/irongoon/')
+      ? new Response(JSON.stringify(newRelease)) : new Response('', { status: 404 })));
+    const saved = JSON.parse(localStorage.getItem(MOD_RELEASE_CACHE_KEY));
+    expect(saved.irongoon.release.tag_name).toBe('v0.4.19');
+    expect(saved.irongoon.baseVersion).toBe('0.4.18');
+    const reloaded = new ModReleasesService();
+    expect(reloaded.catalog().find(mod => mod.id === 'irongoon').releases[0].url).toBe(newRelease.html_url);
+  });
+
+  it('ignores broken cache data, mismatched repositories, and outdated baked baselines', () => {
+    localStorage.setItem(MOD_RELEASE_CACHE_KEY, '{');
+    expect(new ModReleasesService().catalog()).toBe(MOD_CATALOG);
+    for (const entry of [
+      { baseUrl: irongoon.releases[0].url, baseVersion: '0.4.10', release: newRelease },
+      { baseUrl: irongoon.releases[0].url, baseVersion: irongoon.releases[0].version, release: { ...newRelease, html_url: 'https://example.com/wrong' } },
+    ]) {
+      localStorage.setItem(MOD_RELEASE_CACHE_KEY, JSON.stringify({ irongoon: entry }));
+      expect(new ModReleasesService().catalog()).toBe(MOD_CATALOG);
+    }
+  });
+
+  it('continues refreshing when localStorage is unavailable', async () => {
+    vi.spyOn(localStorage, 'getItem').mockImplementation(() => { throw new Error('Storage disabled'); });
+    vi.spyOn(localStorage, 'setItem').mockImplementation(() => { throw new Error('Storage full'); });
+    const service = new ModReleasesService();
+    expect(service.catalog()).toBe(MOD_CATALOG);
+    await service.refresh(vi.fn<typeof fetch>().mockImplementation(async url => String(url).includes('/Ink230/irongoon/')
+      ? new Response(JSON.stringify(newRelease)) : new Response('', { status: 404 })));
+    expect(service.catalog().find(mod => mod.id === 'irongoon').releases[0].version).toBe('0.4.19');
+    expect(service.loading()).toBe(false);
+  });
+
   it('uses the release repository rather than a related project repository', () => {
     expect(modRepository(MOD_CATALOG.find(mod => mod.id === 'archipelago'))).toBe('pkolb-dev/Archipelagoon');
     expect(modRepository(MOD_CATALOG.find(mod => mod.id === 'lloyd'))).toBeUndefined();
@@ -20,12 +79,14 @@ describe('live mod releases', () => {
     const fetchRelease = vi.fn<typeof fetch>().mockImplementation(url => new Promise(resolve => { requests.set(String(url), resolve); }));
     const service = new ModReleasesService();
     const refresh = service.refresh(fetchRelease);
+    expect(service.loading()).toBe(true);
     expect(service.catalog()).toBe(MOD_CATALOG);
     expect(service.status()).toContain('Checking');
     for (const [url, resolve] of requests) {
       resolve(url.includes('/Ink230/irongoon/') ? new Response(JSON.stringify(newRelease)) : new Response('', { status: 404 }));
     }
     await refresh;
+    expect(service.loading()).toBe(false);
     const updated = service.catalog().find(mod => mod.id === 'irongoon');
     expect(updated.releases[0]).toEqual({ version: '0.4.19', compatibility: 'RB3', url: newRelease.html_url });
     expect(updated.releases[1]).toEqual(irongoon.releases[1]);

@@ -1,10 +1,15 @@
 <main aria-labelledby="collection-title">
   <header>
-    <h1 id="collection-title">MODS</h1>
+    <div class="collection-heading">
+      <h1 id="collection-title">MODS</h1>
+      @if (loadingFresh()) {
+        <span class="fresh-versions" role="status"><span class="spinner" aria-hidden="true"></span>Loading fresh versions</span>
+      }
+    </div>
     <div class="download-controls" role="group" aria-label="Download selected mods">
       <span class="selection-count">{{ selected().size }} selected</span>
       <button class="square" type="button" title="Clear all selections" aria-label="Clear all selections" [disabled]="!selected().size || downloading()" (click)="clearSelections()">×</button>
-      <button class="download-mods" type="button" title="Zip all mods selected and download them" [attr.aria-label]="downloading() ? 'Preparing selected mods' : 'Download Mods'" [attr.aria-busy]="downloading()" [disabled]="!selected().size || downloading()" (click)="downloadMods()">
+      <button class="download-mods" type="button" title="Zip all mods selected and download them" [attr.aria-label]="downloading() ? 'Preparing selected mods' : 'Download Mods'" [attr.aria-busy]="downloading()" [disabled]="!selected().size || downloading() || loadingFresh()" (click)="downloadMods()">
         @if (downloading()) { <span class="spinner" aria-hidden="true"></span> } @else { Download Mods }
       </button>
       <button type="button" title="How mod downloads work" aria-label="How mod downloads work" (click)="downloadHelp.showModal()">Guide</button>
@@ -23,7 +28,7 @@
     </div>
   </div>
   <p class="download-status" role="status">{{ downloadStatus() }}</p>
-  <p class="release-status" role="status">{{ releaseStatus() }}</p>
+  @if (!loadingFresh()) { <p class="release-status" role="status">{{ releaseStatus() }}</p> }
   @if (downloadError()) { <p class="download-error" role="alert">{{ downloadError() }}</p> }
   <dialog #downloadHelp aria-labelledby="download-help-title">
     <div class="help-heading"><h2 id="download-help-title">Download and install mods</h2><button class="square" type="button" aria-label="Close download help" title="Close" (click)="downloadHelp.close()">×</button></div>
@@ -82,7 +87,7 @@
       <p class="section-description">{{ section.description }}</p>
       <div [class]="section.id === 'other' ? 'mod-list' : 'mod-grid'">
         @for (mod of section.mods; track mod.id) {
-          <app-mod-card [mod]="mod" [compact]="section.id === 'other'" [selected]="selected().has(mod.id)" [selectable]="!!modDownload(mod)" [downloadPending]="!modDownload(mod) && !!mod.releases[0]?.url" [selectionDisabled]="downloading()" [selectionTitle]="selectionTitle(mod)" (selectionChange)="selectMod(mod, $event)" />
+          <app-mod-card [mod]="mod" [compact]="section.id === 'other'" [selected]="selected().has(mod.id)" [selectable]="!!modDownload(mod)" [downloadPending]="!modDownload(mod) && !!mod.releases[0]?.url" [selectionDisabled]="downloading() || loadingFresh()" [selectionTitle]="selectionTitle(mod)" (selectionChange)="selectMod(mod, $event)" />
         } @empty {
           <p class="empty">{{ section.populated ? 'No mods match these filters. Try another search or version.' : section.id === 'top-rated' ? 'Community ratings are not available yet.' : 'No community mods are listed yet.' }}</p>
         }

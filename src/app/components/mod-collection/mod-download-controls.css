@@ -1,4 +1,6 @@
 header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.collection-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; }
+.fresh-versions { display: inline-flex; align-items: center; gap: 6px; color: var(--wmap-color-1); font: 12px/1.5 system-ui, sans-serif; }
 .download-controls { display: flex; align-items: center; gap: 6px; margin-left: auto; }
 .selection-count { color: var(--wmap-color-1); font: 11px ui-monospace, monospace; white-space: nowrap; }
 .square { width: 34px; height: 34px; padding: 0; display: inline-grid; place-items: center; font-size: 18px; }

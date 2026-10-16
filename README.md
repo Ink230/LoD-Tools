@@ -7,8 +7,12 @@ Production hosting serves these files with the app so browser downloads work
 without relying on GitHub release-asset CORS support. ZIP assembly runs on the
 client using `fflate`; no upload or ZIP-building backend is used.
 
-The page renders the saved catalog immediately, then checks GitHub's marked
-latest releases once per app session. Failed checks retain the saved entries.
+The page starts from the baked catalog, overlays validated release responses
+from `localStorage`, then checks GitHub's marked latest releases once per app
+session. Each valid response updates the page and the persistent cache. A changed
+baked release baseline invalidates that mod's older cache entry. Invalid or blocked
+storage falls back to the baked data; failed checks retain valid saved entries.
+Selections and combined downloads are disabled while fresh releases are loading.
 Release labels and links update live; a new release remains unavailable for the
 combined ZIP until its exact package is cached in a new site build. Selections
 for those uncached releases are cleared, so older packages are never offered

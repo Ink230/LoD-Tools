@@ -9,6 +9,14 @@ interface GitHubRelease {
   readonly assets?: readonly { readonly name: string }[];
 }
 
+export const MOD_RELEASE_CACHE_KEY = 'dragoonmods.latest-releases.v1';
+
+interface CachedModRelease {
+  readonly baseUrl?: string;
+  readonly baseVersion?: string;
+  readonly release: unknown;
+}
+
 export function modRepository(mod: ModListing): string | undefined {
   const url = mod.releases.find(release => release.url?.startsWith('https://github.com/'))?.url || mod.infoUrl;
   return url?.match(/^https:\/\/github\.com\/([\w.-]+\/[\w.-]+)(?:\/|$)/)?.[1];
@@ -69,7 +77,46 @@ export function applyLatestRelease(mod: ModListing, value: unknown): ModListing 
 export class ModReleasesService {
   readonly catalog = signal<readonly ModListing[]>(MOD_CATALOG);
   readonly status = signal('');
+  readonly loading = signal(false);
   private refreshTask?: Promise<void>;
+  private readonly cachedReleases: Record<string, CachedModRelease> = {};
+
+  constructor() {
+    this.restoreCache();
+  }
+
+  private restoreCache(): void {
+    let saved: Record<string, CachedModRelease>;
+    try {
+      const parsed: unknown = JSON.parse(localStorage.getItem(MOD_RELEASE_CACHE_KEY) || 'null');
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return;
+      saved = parsed as Record<string, CachedModRelease>;
+    } catch {
+      return;
+    }
+    const catalog = MOD_CATALOG.map(mod => {
+      const entry = saved[mod.id];
+      // A new baked-in release invalidates an older cache baseline for this mod.
+      if (!entry || entry.baseUrl !== mod.releases[0]?.url || entry.baseVersion !== mod.releases[0]?.version) return mod;
+      try {
+        const updated = applyLatestRelease(mod, entry.release);
+        this.cachedReleases[mod.id] = entry;
+        return updated;
+      } catch {
+        return mod;
+      }
+    });
+    if (catalog.some((mod, index) => mod !== MOD_CATALOG[index])) this.catalog.set(catalog);
+  }
+
+  private saveRelease(mod: ModListing, release: unknown): void {
+    this.cachedReleases[mod.id] = { baseUrl: mod.releases[0]?.url, baseVersion: mod.releases[0]?.version, release };
+    try {
+      localStorage.setItem(MOD_RELEASE_CACHE_KEY, JSON.stringify(this.cachedReleases));
+    } catch {
+      // Storage may be disabled or full; the current page still uses fresh data.
+    }
+  }
 
   refresh(fetchRelease: typeof fetch = fetch): Promise<void> {
     // Reusing the root service across route changes avoids repeated GitHub calls.
@@ -77,17 +124,24 @@ export class ModReleasesService {
   }
 
   private async checkReleases(fetchRelease: typeof fetch): Promise<void> {
+    this.loading.set(true);
     this.status.set('Checking latest published releases…');
-    const checks = await Promise.allSettled(MOD_CATALOG.filter(mod => modRepository(mod)).map(async mod => {
-      const response = await fetchRelease(`https://api.github.com/repos/${modRepository(mod)}/releases/latest`, {
-        headers: { Accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(10_000),
-      });
-      if (response.status === 404) return;
-      if (!response.ok) throw new Error(`Release check failed (${response.status})`);
-      const updated = applyLatestRelease(mod, await response.json());
-      this.catalog.update(catalog => catalog.map(entry => entry.id === mod.id ? updated : entry));
-    }));
-    const failures = checks.filter(check => check.status === 'rejected').length;
-    this.status.set(failures ? 'Some release checks are unavailable. Saved versions are shown for those mods.' : 'Latest published releases checked.');
+    try {
+      const checks = await Promise.allSettled(MOD_CATALOG.filter(mod => modRepository(mod)).map(async mod => {
+        const response = await fetchRelease(`https://api.github.com/repos/${modRepository(mod)}/releases/latest`, {
+          headers: { Accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(10_000),
+        });
+        if (response.status === 404) return;
+        if (!response.ok) throw new Error(`Release check failed (${response.status})`);
+        const release: unknown = await response.json();
+        const updated = applyLatestRelease(mod, release);
+        this.catalog.update(catalog => catalog.map(entry => entry.id === mod.id ? updated : entry));
+        this.saveRelease(mod, release);
+      }));
+      const failures = checks.filter(check => check.status === 'rejected').length;
+      this.status.set(failures ? 'Some release checks are unavailable. Saved versions are shown for those mods.' : 'Latest published releases checked.');
+    } finally {
+      this.loading.set(false);
+    }
   }
 }
