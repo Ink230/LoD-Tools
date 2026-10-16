@@ -39,9 +39,13 @@
             <span class="compatibility" [class.unconfirmed]="compatibility() === 'Check compatibility'">{{ compatibility() }}</span>
           }
           @for (release of visibleReleases(); track release.url) {
-            <a class="release" [href]="release.url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="mod().name + ' ' + (release.compatibility || 'download') + ' ' + (release.version || '')">
-              {{ release.compatibility || 'Download' }}@if (release.version) { · v{{ release.version }} } <span aria-hidden="true">↗</span>
-            </a>
+            @if (release.url; as releaseUrl) {
+              <a class="release" [href]="releaseUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="mod().name + ' ' + (release.compatibility || 'download') + ' ' + (release.version || '')">
+                {{ release.compatibility || 'Download' }}@if (release.version) { · v{{ release.version }} } <span aria-hidden="true">↗</span>
+              </a>
+            } @else {
+              <span class="release unavailable" role="link" aria-disabled="true">{{ release.compatibility || 'Download' }} • unknown</span>
+            }
           }
         </div>
       }
@@ -50,6 +54,8 @@
       <div class="info-links">
         @if (mod().infoUrl; as infoUrl) {
           <a [href]="infoUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'More information about ' + mod().name">More info <span aria-hidden="true">↗</span></a>
+        } @else {
+          <span class="unavailable" role="link" aria-disabled="true">More info <span aria-hidden="true">↗</span></span>
         }
         @if (mod().configureUrl; as configureUrl) {
           <a class="configure" [routerLink]="configureUrl">{{ mod().configureLabel || 'Configure' }} <span aria-hidden="true">→</span></a>

@@ -9,7 +9,7 @@ export type ModTag = 'Full Campaign' | 'Randomizer' | 'QoL Minor' | 'Extension' 
 export interface ModRelease {
   readonly version?: string;
   readonly compatibility?: ScCompatibility;
-  readonly url: string;
+  readonly url?: string;
 }
 
 export interface ModListing {
@@ -70,9 +70,9 @@ export const MOD_CATALOG: readonly ModListing[] = [
     tags: ['Full Campaign'], infoUrl: 'https://github.com/avionanx/tlot',
   },
   {
-    id: 'lloyd', name: 'Lloyd Mod', authors: [], section: 'developer',
-    description: 'Information to be added later.',
-    releases: [], tags: [],
+    id: 'lloyd', name: 'Lloyd Mod', authors: [ZYCHRONIX], section: 'developer',
+    description: 'Lloyd joins your party as a playable character with full additions and dspells.',
+    releases: [{ compatibility: 'RB3' }], tags: [],
   },
   {
     id: 'additional-additions', name: 'Additional Additions', authors: [LORDMONOXIDE], section: 'developer',

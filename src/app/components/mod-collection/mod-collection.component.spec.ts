@@ -37,7 +37,8 @@ describe('mod collection controls', () => {
     expect(page.querySelectorAll('app-mod-card')).toHaveLength(16);
 
     await chooseVersion('RB3');
-    expect(page.querySelectorAll('app-mod-card')).toHaveLength(8);
+    expect(page.querySelectorAll('app-mod-card')).toHaveLength(9);
+    expect(page.querySelector('#mod-lloyd')).not.toBeNull();
   });
 
   it('presents distinct Irongoon releases, linked authors, tags, and the unreleased upscale project', async () => {
@@ -63,7 +64,7 @@ describe('mod collection controls', () => {
     expect(upscale.querySelector('.tags li').textContent).toBe('Graphics');
   });
 
-  it('shows Lloyd without unknown links or credits and links the new community mods', async () => {
+  it('shows Lloyd credits and disabled pending links and links the new community mods', async () => {
     TestBed.configureTestingModule({ providers: [provideRouter([])] });
     const fixture = TestBed.createComponent(ModCollectionComponent);
     fixture.autoDetectChanges();
@@ -71,9 +72,13 @@ describe('mod collection controls', () => {
     const page = fixture.nativeElement as HTMLElement;
     const lloyd = page.querySelector('#mod-lloyd').closest('article');
 
-    expect(lloyd.textContent).toContain('Information to be added later.');
-    expect(lloyd.querySelector('a')).toBeNull();
-    expect(lloyd.querySelector('.author')).toBeNull();
+    expect(lloyd.textContent).toContain('Lloyd joins your party as a playable character with full additions and dspells.');
+    expect(lloyd.querySelector('.author a')?.getAttribute('href')).toBe('https://github.com/Zychronix');
+    expect(lloyd.querySelector('.author a')?.textContent).toBe('Zychronix');
+    expect(lloyd.querySelector('.identity .compatibility')?.textContent).toBe('RB3');
+    expect(lloyd.querySelector('.release[aria-disabled="true"]')?.textContent).toBe('RB3 • unknown');
+    expect(lloyd.querySelector('.info-links [aria-disabled="true"]')?.textContent).toContain('More info');
+    expect(lloyd.querySelector('.actions a')).toBeNull();
     for (const [id, infoUrl, releaseUrl] of [
       ['icon-turn-order', 'https://github.com/Zychronix/icon-turn-order', 'https://github.com/Zychronix/icon-turn-order/releases/tag/1.3'],
       ['battle-rewards', 'https://github.com/DennytXVII/BattleRewardsMod', 'https://github.com/DennytXVII/BattleRewardsMod/releases'],
