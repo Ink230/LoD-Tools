@@ -7,7 +7,7 @@
       <button class="download-mods" type="button" title="Zip all mods selected and download them" [attr.aria-label]="downloading() ? 'Preparing selected mods' : 'Download Mods'" [attr.aria-busy]="downloading()" [disabled]="!selected().size || downloading()" (click)="downloadMods()">
         @if (downloading()) { <span class="spinner" aria-hidden="true"></span> } @else { Download Mods }
       </button>
-      <button class="square" type="button" title="How mod downloads work" aria-label="How mod downloads work" (click)="downloadHelp.showModal()">?</button>
+      <button type="button" title="How mod downloads work" aria-label="How mod downloads work" (click)="downloadHelp.showModal()">Guide</button>
     </div>
   </header>
 
