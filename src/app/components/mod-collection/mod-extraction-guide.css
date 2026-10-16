@@ -1,5 +1,5 @@
 .extraction-demo { margin-top: 18px; }
-.extraction-images { position: relative; padding: 4px; border: 1px solid #365b42; border-radius: 4px; background: #101912; }
+.extraction-images { position: relative; padding: 4px; border: 1px solid #365b42; border-radius: 4px; background: #101912; -webkit-user-select: none; user-select: none; }
 .extraction-image { display: block; min-width: 0; }
 .extraction-image img { display: block; width: 100%; height: auto; aspect-ratio: 1250 / 720; object-fit: contain; }
 .guide-arrow { position: absolute; top: 50%; left: 12px; z-index: 1; transform: translateY(-50%); display: grid; place-items: center; width: 56px; height: 100px; padding: 4px; border: 2px solid #497a58; background: #193a26; color: #b8e6c5; }

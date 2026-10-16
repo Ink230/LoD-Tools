@@ -61,8 +61,8 @@
         <button class="guide-arrow" type="button" title="Previous image" aria-label="Previous extraction image" [disabled]="extractionImageIndex() === 0" (click)="showExtractionImage(-1)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
         </button>
-        <a class="extraction-image" [href]="extractionImage().src" target="_blank" rel="noopener noreferrer" title="Open full-size screenshot">
-          <img [src]="extractionImage().src" [alt]="extractionImage().alt" width="1250" height="720" loading="lazy">
+        <a class="extraction-image" [href]="extractionImage().src" target="_blank" rel="noopener noreferrer" title="Open full-size screenshot" draggable="false">
+          <img [src]="extractionImage().src" [alt]="extractionImage().alt" width="1250" height="720" loading="lazy" draggable="false">
         </a>
         <button class="guide-arrow" type="button" title="Next image" aria-label="Next extraction image" [disabled]="extractionImageIndex() === extractionImages.length - 1" (click)="showExtractionImage(1)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
