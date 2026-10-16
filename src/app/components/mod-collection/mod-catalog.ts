@@ -54,10 +54,10 @@ export const MOD_CATALOG: readonly ModListing[] = [
     description: 'Randomizes characters, monsters, shops, and battle stages. Includes configurable gameplay rules and quality-of-life options.',
     section: 'developer',
     releases: [
-      { version: '0.4.16', compatibility: 'RB3', url: 'https://github.com/Ink230/irongoon/releases/tag/v0.4.16' },
+      { version: '0.4.18', compatibility: 'RB3', url: 'https://github.com/Ink230/irongoon/releases/tag/v0.4.18' },
       { version: '0.5.1', compatibility: 'Special build', url: 'https://github.com/Ink230/irongoon/releases/tag/irongoon-future' },
     ],
-    releaseNote: 'v0.4.16 supports SC RB3. v0.5.1 requires the SC build included with its release download.',
+    releaseNote: 'v0.4.18 supports SC RB3. v0.5.1 requires the SC build included with its release download.',
     tags: ['Full Campaign', 'Randomizer', 'QoL Minor', 'Extension'],
     infoUrl: 'https://github.com/Ink230/irongoon',
     configureUrl: '/mods/irongoon',

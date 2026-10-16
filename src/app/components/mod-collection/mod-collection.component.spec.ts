@@ -49,7 +49,7 @@ describe('mod collection controls', () => {
     const page = fixture.nativeElement as HTMLElement;
     const irongoon = page.querySelector('#mod-irongoon').closest('article');
     expect([...irongoon.querySelectorAll<HTMLAnchorElement>('a.release')].map(link => link.getAttribute('href'))).toEqual([
-      'https://github.com/Ink230/irongoon/releases/tag/v0.4.16',
+      'https://github.com/Ink230/irongoon/releases/tag/v0.4.18',
       'https://github.com/Ink230/irongoon/releases/tag/irongoon-future',
     ]);
     expect(irongoon.querySelector('.identity .compatibility').textContent).toBe('RB3');
