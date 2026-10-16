@@ -4,7 +4,7 @@ export interface ModAuthor {
 }
 
 export type ScCompatibility = 'Latest SC' | 'RB3' | 'Special build' | 'Check compatibility';
-export type ModTag = 'Full Campaign' | 'Randomizer' | 'QoL Minor' | 'Extension' | 'QoL Major' | 'Graphics';
+export type ModTag = 'Full Campaign' | 'Randomizer' | 'QoL Minor' | 'Extension' | 'QoL Major' | 'Graphics' | 'Character';
 
 export interface ModRelease {
   readonly version?: string;
@@ -72,7 +72,7 @@ export const MOD_CATALOG: readonly ModListing[] = [
   {
     id: 'lloyd', name: 'Lloyd Mod', authors: [ZYCHRONIX], section: 'developer',
     description: 'Lloyd joins your party as a playable character with full additions and dspells.',
-    releases: [{ compatibility: 'RB3' }], tags: [],
+    releases: [{ compatibility: 'RB3' }], tags: ['QoL Major', 'Extension', 'Character'],
   },
   {
     id: 'additional-additions', name: 'Additional Additions', authors: [LORDMONOXIDE], section: 'developer',
