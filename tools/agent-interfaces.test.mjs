@@ -2,6 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { spawn } from 'node:child_process';
+import { createInterface } from 'node:readline';
 import { Client } from '@modelcontextprotocol/client';
 import { StdioClientTransport } from '@modelcontextprotocol/client/stdio';
 
@@ -54,5 +56,33 @@ test('real stdio MCP session discovers, searches, paginates, validates and reads
     assert.deepEqual(JSON.parse(catalog.contents[0].text), await json('public/agent/mods.json'));
   } finally {
     await client.close();
+  }
+});
+
+test('stdio also negotiates a 2025 MCP client and serves its tool calls', async () => {
+  const child = spawn(process.execPath, [fileURLToPath(new URL('tools/mcp-server.mjs', root))], { stdio: ['pipe', 'pipe', 'pipe'] });
+  const lines = createInterface({ input: child.stdout });
+  const pending = new Map();
+  lines.on('line', line => {
+    const message = JSON.parse(line);
+    pending.get(message.id)?.(message);
+  });
+  const send = message => child.stdin.write(JSON.stringify({ jsonrpc: '2.0', ...message }) + '\n');
+  const request = message => new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('Legacy MCP response timed out')), 3000);
+    pending.set(message.id, result => { clearTimeout(timer); pending.delete(message.id); resolve(result); });
+    send(message);
+  });
+  try {
+    const initialized = await request({ id: 1, method: 'initialize', params: { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'legacy-test', version: '1' } } });
+    assert.equal(initialized.result.protocolVersion, '2025-11-25');
+    send({ method: 'notifications/initialized' });
+    const listed = await request({ id: 2, method: 'tools/list', params: {} });
+    assert.equal(listed.result.tools.length, 4);
+    const called = await request({ id: 3, method: 'tools/call', params: { name: 'get_mod', arguments: { id: 'lloyd' } } });
+    assert.equal(called.result.structuredContent.mod.zipEligible, false);
+  } finally {
+    lines.close();
+    child.kill();
   }
 });

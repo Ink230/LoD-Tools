@@ -20,7 +20,7 @@ serveStdio(() => {
     description: 'Search this checkout’s curated mod snapshot. Versions are build-time data, not fresh GitHub checks.',
     inputSchema: z.object({ query, version: z.enum(['RB3', 'Latest SC', 'Special build', 'Check compatibility']).optional(), ...pagination }).strict(), annotations,
   }, async ({ query, version, offset, limit }) => {
-    const rows = catalog.mods.filter(mod => matches([mod.name, mod.authors, mod.description, mod.tags], query)
+    const rows = catalog.mods.filter(mod => matches([mod.name, mod.authors.map(author => author.name), mod.description, mod.tags], query)
       && (!version || mod.releases.some(release => release.compatibility === version)
         || (version === 'Check compatibility' && mod.section !== 'tools' && !mod.releases.length)));
     return result({ freshness: catalog.freshness, total: rows.length, offset, mods: rows.slice(offset, offset + limit) });
