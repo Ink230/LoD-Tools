@@ -1,4 +1,7 @@
 <article [class.compact]="compact()" [class.developer]="mod().section === 'developer'" [attr.aria-labelledby]="'mod-' + mod().id">
+  <label class="mod-selection" [title]="selectionTitle()">
+    <input #selectionCheckbox type="checkbox" [attr.aria-label]="'Select ' + mod().name" [checked]="selected()" [disabled]="!selectable() || selectionDisabled()" (change)="selectionChange.emit(selectionCheckbox.checked)">
+  </label>
   @if (!compact()) {
     <div class="artwork">
       @if (mod().image; as image) {

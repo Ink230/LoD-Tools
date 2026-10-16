@@ -1,9 +1,60 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { ModCollectionComponent } from './mod-collection.component';
 
 describe('mod collection controls', () => {
+  it('keeps selections across filters and clears all selected mods', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(ModCollectionComponent);
+    fixture.autoDetectChanges();
+    await fixture.whenStable();
+    const page = fixture.nativeElement as HTMLElement;
+    const checkbox = page.querySelector<HTMLInputElement>('[aria-label="Select Irongoon"]');
+    expect(page.querySelectorAll('input[type="checkbox"]')).toHaveLength(16);
+    expect(page.querySelector<HTMLInputElement>('[aria-label="Select Lloyd Mod"]').disabled).toBe(true);
+    expect(page.querySelector<HTMLInputElement>('[aria-label="Select Upscale Mod"]').disabled).toBe(true);
+    checkbox.click();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.selected().has('irongoon')).toBe(true);
+    fixture.componentInstance.query.set('No Stats');
+    await fixture.whenStable();
+    expect(page.querySelector('[aria-label="Select Irongoon"]')).toBeNull();
+    expect(page.querySelector('.selection-count')?.textContent).toBe('1 selected');
+    fixture.componentInstance.clearFilters();
+    await fixture.whenStable();
+    expect(page.querySelector<HTMLInputElement>('[aria-label="Select Irongoon"]').checked).toBe(true);
+    page.querySelector<HTMLButtonElement>('[aria-label="Clear all selections"]').click();
+    await fixture.whenStable();
+    expect(page.querySelector<HTMLInputElement>('[aria-label="Select Irongoon"]').checked).toBe(false);
+    expect(page.querySelector<HTMLButtonElement>('[aria-label="Download Mods"]').disabled).toBe(true);
+  });
+
+  it('shows a spinner during download and keeps selections when the download fails', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(ModCollectionComponent);
+    fixture.autoDetectChanges();
+    await fixture.whenStable();
+    const page = fixture.nativeElement as HTMLElement;
+    page.querySelector<HTMLInputElement>('[aria-label="Select Irongoon"]').click();
+    await fixture.whenStable();
+    const fetchAsset = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Network unavailable'));
+    try {
+      const download = fixture.componentInstance.downloadMods();
+      fixture.detectChanges();
+      expect(page.querySelector('.spinner')).not.toBeNull();
+      expect(page.querySelector<HTMLInputElement>('[aria-label="Select Irongoon"]').disabled).toBe(true);
+      await download;
+      await fixture.whenStable();
+      expect(page.querySelector('.spinner')).toBeNull();
+      expect(page.querySelector('[role="alert"]')?.textContent).toContain('Network unavailable');
+      expect(page.querySelector<HTMLInputElement>('[aria-label="Select Irongoon"]').checked).toBe(true);
+      expect(page.querySelector<HTMLButtonElement>('[aria-label="Download Mods"]').disabled).toBe(false);
+    } finally {
+      fetchAsset.mockRestore();
+    }
+  });
+
   it('starts with all entries, filters by version, and restores the displayed selection on reset', async () => {
     TestBed.configureTestingModule({ providers: [provideRouter([])] });
     const fixture = TestBed.createComponent(ModCollectionComponent);

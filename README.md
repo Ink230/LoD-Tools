@@ -1,3 +1,20 @@
+# Combined mod downloads
+
+`npm start` and `npm run build` cache the release assets pinned in
+`src/assets/mod-downloads.json`. The initial run downloads about 133 MiB;
+subsequent runs verify and reuse the ignored `src/assets/mod-downloads/` cache.
+Production hosting serves these files with the app so browser downloads work
+without relying on GitHub release-asset CORS support. ZIP assembly runs on the
+client using `fflate`; no upload or ZIP-building backend is used.
+
+When updating an installable release, update its catalog entry and download
+manifest together. Pin the release URL, exact asset name/URL, and SHA-256 of the
+downloaded asset. Review archive paths: `stripPrefix` removes an outer `mods/`
+folder only when the upstream package contains one. Keep JAR assets intact.
+The cache script fails if a pinned asset changes rather than serving unchecked
+bytes. Download URLs include the checksum so new releases bypass long-lived
+browser/CDN caches. The generated combined ZIP is extracted directly into `SC/mods`.
+
 # Credits
 
 ### [Severed Chains](https://github.com/Legend-of-Dragoon-Modding/Severed-Chains)

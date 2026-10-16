@@ -13,7 +13,31 @@
     <div class="select"><span>Sort:</span>
       <app-styled-select id="mods-sort" label="Sort mods" [options]="sortOptions" [value]="sort()" (valueChange)="setSort($event)" />
     </div>
+    <div class="download-controls" role="group" aria-label="Download selected mods">
+      <span class="selection-count">{{ selected().size }} selected</span>
+      <button class="square" type="button" title="Clear all selections" aria-label="Clear all selections" [disabled]="!selected().size || downloading()" (click)="clearSelections()">×</button>
+      <button class="download-mods" type="button" title="Zip all mods selected and download them" [attr.aria-label]="downloading() ? 'Preparing selected mods' : 'Download Mods'" [attr.aria-busy]="downloading()" [disabled]="!selected().size || downloading()" (click)="downloadMods()">
+        @if (downloading()) { <span class="spinner" aria-hidden="true"></span> } @else { Download Mods }
+      </button>
+      <button class="square" type="button" title="How mod downloads work" aria-label="How mod downloads work" (click)="downloadHelp.showModal()">?</button>
+    </div>
   </div>
+  <p class="download-status" role="status">{{ downloadStatus() }}</p>
+  @if (downloadError()) { <p class="download-error" role="alert">{{ downloadError() }}</p> }
+  <dialog #downloadHelp aria-labelledby="download-help-title">
+    <div class="help-heading"><h2 id="download-help-title">Download and install mods</h2><button class="square" type="button" aria-label="Close download help" title="Close" (click)="downloadHelp.close()">×</button></div>
+    <ol>
+      <li>Tick the green checkbox on each mod you want. Selections remain when you search, change filters, or finish a download. Use × to clear all selections.</li>
+      <li>Click <strong>Download Mods</strong>. Your browser downloads the selected release packages, unpacks their ZIPs, and combines their contents into <strong>dragoonmods-mods.zip</strong>. JAR files stay intact. The spinner stays visible until it is ready.</li>
+      <li>Close Severed Chains. Open its <strong>mods</strong> folder, creating that folder if needed.</li>
+      <li>Move the downloaded ZIP into <strong>SC/mods</strong> and choose <strong>Extract Here</strong>. If your extractor only offers <strong>Extract All…</strong>, set the destination to the existing <strong>SC/mods</strong> folder. Do not create a <strong>dragoonmods-mods</strong> subfolder.</li>
+      <li>Check that the mod JARs and their companion folders are directly inside <strong>SC/mods</strong>. For example: <code>SC/mods/irongoon-v0.4.18.jar</code> and <code>SC/mods/irongoon/config.yaml</code>. You can then remove the downloaded ZIP.</li>
+      <li>Remove older JAR versions of the same mods before starting SC. Back up existing mod configuration before replacing files, and follow each mod’s setup guide.</li>
+    </ol>
+    <p>Downloads use each mod’s primary release shown on its card. Irongoon uses its RB3 release; its special SC build must be installed separately. Greyed-out checkboxes have no combined download. Standalone tools are installed separately.</p>
+    <p>This combines files; it does not check whether selected mods work together. If files conflict or a download fails, no partial ZIP is saved. Your selections remain so you can retry.</p>
+    <div class="extraction-demo" aria-label="Extraction demonstration placeholder"></div>
+  </dialog>
   @if (query() || version()) {
     <div class="results"><button type="button" (click)="clearFilters()">Clear filters</button></div>
   }
@@ -26,7 +50,7 @@
       <p class="section-description">{{ section.description }}</p>
       <div [class]="section.id === 'other' ? 'mod-list' : 'mod-grid'">
         @for (mod of section.mods; track mod.id) {
-          <app-mod-card [mod]="mod" [compact]="section.id === 'other'" />
+          <app-mod-card [mod]="mod" [compact]="section.id === 'other'" [selected]="selected().has(mod.id)" [selectable]="!!modDownload(mod)" [selectionDisabled]="downloading()" [selectionTitle]="selectionTitle(mod)" (selectionChange)="selectMod(mod, $event)" />
         } @empty {
           <p class="empty">{{ section.populated ? 'No mods match these filters. Try another search or version.' : section.id === 'top-rated' ? 'Community ratings are not available yet.' : 'No community mods are listed yet.' }}</p>
         }
@@ -36,7 +60,7 @@
           <h3 id="tools-title">Doom’s gallery of Asset Tooling</h3>
           <p class="section-description">Asset converters and Blender add-ons by DooMMetaL. The converters require game files unpacked by Severed Chains on its first run. Blender support varies by tool.</p>
           <div class="mod-list">
-            @for (mod of tools(); track mod.id) { <app-mod-card [mod]="mod" [compact]="true" /> }
+            @for (mod of tools(); track mod.id) { <app-mod-card [mod]="mod" [compact]="true" [selectionTitle]="selectionTitle(mod)" /> }
             @empty { <p class="empty">No asset tools match these filters.</p> }
           </div>
         </div>

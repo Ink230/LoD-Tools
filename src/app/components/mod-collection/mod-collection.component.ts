@@ -1,7 +1,8 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { StyledSelectComponent } from '../shared/styled-select/styled-select.component';
 import { WORLD_MAP_THEME_COLORS } from '../world-map-editor/world-map-theme';
-import { MOD_CATALOG, ScCompatibility } from './mod-catalog';
+import { MOD_CATALOG, ModListing, ScCompatibility } from './mod-catalog';
+import { createModBundle, modDownload } from './mod-download';
 import { ModCardComponent } from './mod-card.component';
 import { filterMods, modSection, ModSort } from './mod-collection-state';
 
@@ -10,13 +11,21 @@ import { filterMods, modSection, ModSort } from './mod-collection-state';
   host: { '[style]': 'themeColors' },
   imports: [StyledSelectComponent, ModCardComponent],
   templateUrl: './mod-collection.component.html',
-  styleUrl: './mod-collection.component.css',
+  styleUrls: ['./mod-collection.component.css', './mod-download-controls.css'],
 })
 export class ModCollectionComponent {
+  private readonly destroyRef = inject(DestroyRef);
+  private downloadController?: AbortController;
   readonly themeColors = WORLD_MAP_THEME_COLORS;
   readonly query = signal('');
   readonly version = signal('');
   readonly sort = signal<ModSort>('featured');
+  readonly selected = signal<ReadonlySet<string>>(new Set());
+  readonly selectedMods = computed(() => MOD_CATALOG.filter(mod => this.selected().has(mod.id)));
+  readonly downloading = signal(false);
+  readonly downloadStatus = signal('');
+  readonly downloadError = signal('');
+  readonly modDownload = modDownload;
   readonly versions: readonly ScCompatibility[] = ['Latest SC', 'RB3', 'Special build', 'Check compatibility'];
   readonly versionOptions = [{ value: '', label: 'All versions' }, ...this.versions.map(value => ({ value, label: value }))];
   readonly sortOptions = [{ value: 'featured', label: 'Featured' }, { value: 'name', label: 'Name A–Z' }, { value: 'author', label: 'Author A–Z' }];
@@ -31,6 +40,58 @@ export class ModCollectionComponent {
     populated: MOD_CATALOG.some(mod => modSection(mod) === section.id),
   })));
   readonly tools = computed(() => this.filtered().filter(mod => mod.section === 'tools'));
+
+  constructor() {
+    this.destroyRef.onDestroy(() => this.downloadController?.abort());
+  }
+
+  selectionTitle(mod: ModListing): string {
+    if (modDownload(mod)) return `Include ${mod.name} v${mod.releases[0].version || 'unknown'} in the ZIP`;
+    return mod.section === 'tools' ? 'Install standalone tools separately' : 'No downloadable release available yet';
+  }
+
+  selectMod(mod: ModListing, checked: boolean): void {
+    if (this.downloading() || !modDownload(mod)) return;
+    const selected = new Set(this.selected());
+    if (checked) selected.add(mod.id);
+    else selected.delete(mod.id);
+    this.selected.set(selected);
+    this.downloadStatus.set('');
+    this.downloadError.set('');
+  }
+
+  clearSelections(): void {
+    if (this.downloading()) return;
+    this.selected.set(new Set());
+    this.downloadStatus.set('');
+    this.downloadError.set('');
+  }
+
+  async downloadMods(): Promise<void> {
+    if (this.downloading() || !this.selectedMods().length) return;
+    this.downloading.set(true);
+    this.downloadError.set('');
+    this.downloadController = new AbortController();
+    try {
+      const bytes = await createModBundle(this.selectedMods(), message => this.downloadStatus.set(message), this.downloadController.signal);
+      if (this.destroyRef.destroyed) return;
+      const url = URL.createObjectURL(new Blob([bytes], { type: 'application/zip' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'dragoonmods-mods.zip';
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      this.downloadStatus.set('ZIP ready. Extract its contents directly into your SC mods folder.');
+    } catch (error) {
+      if (this.destroyRef.destroyed) return;
+      this.downloadStatus.set('');
+      this.downloadError.set(error instanceof Error ? error.message : 'The ZIP could not be created. Please try again.');
+    } finally {
+      this.downloading.set(false);
+    }
+  }
 
   setSort(value: string): void {
     if (value === 'featured' || value === 'name' || value === 'rating' || value === 'author') this.sort.set(value);

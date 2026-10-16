@@ -1,0 +1,66 @@
+[
+  {
+    "id": "dragoon-modifier",
+    "releaseUrl": "https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/tag/v2.2.0",
+    "url": "https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/download/v2.2.0/SC-DragoonModifier.-.v2.2.0.zip",
+    "filename": "SC-DragoonModifier.-.v2.2.0.zip",
+    "sha256": "174e1dfcd3954eda038815b923b0b0495d5e9eeea71dabdfaf803db7c5067e48",
+    "stripPrefix": "mods/"
+  },
+  {
+    "id": "irongoon",
+    "releaseUrl": "https://github.com/Ink230/irongoon/releases/tag/v0.4.18",
+    "url": "https://github.com/Ink230/irongoon/releases/download/v0.4.18/irongoon-v0.4.18.zip",
+    "filename": "irongoon-v0.4.18.zip",
+    "sha256": "fcea9495d1589db68f1e31cc88b2b77c1ddb6ee9cb0272f51ca98371b25dcacd"
+  },
+  {
+    "id": "legend-of-tides",
+    "releaseUrl": "https://github.com/avionanx/tlot/releases/tag/1.3.9",
+    "url": "https://github.com/avionanx/tlot/releases/download/1.3.9/the-legend-of-tides-1.3.9-beta.zip",
+    "filename": "the-legend-of-tides-1.3.9-beta.zip",
+    "sha256": "b41dd71318dbd9ab8f3aa812ee4bab27f70df67f2f7233456c1278567f5fd979"
+  },
+  {
+    "id": "additional-additions",
+    "releaseUrl": "https://github.com/Legend-of-Dragoon-Modding/Additional-Additions/releases/tag/0.2.5",
+    "url": "https://github.com/Legend-of-Dragoon-Modding/Additional-Additions/releases/download/0.2.5/additional-additions-0.2.5-beta.jar",
+    "filename": "additional-additions-0.2.5-beta.jar",
+    "sha256": "0d402c40b879f7d35682addcb0b6b0026f7177a23137a95a03d30f3fbbd18b2d"
+  },
+  {
+    "id": "stardust-indicators",
+    "releaseUrl": "https://github.com/avionanx/Stardust-Indicators/releases/tag/v1.5",
+    "url": "https://github.com/avionanx/Stardust-Indicators/releases/download/v1.5/stardust-indicators.zip",
+    "filename": "stardust-indicators.zip",
+    "sha256": "065178826014455452287de2fe13042c09a545a3a427ffb937b8d8447f33f98b"
+  },
+  {
+    "id": "archipelago",
+    "releaseUrl": "https://github.com/pkolb-dev/Archipelagoon/releases/tag/v2.0.9",
+    "url": "https://github.com/pkolb-dev/Archipelagoon/releases/download/v2.0.9/archipelagoon.zip",
+    "filename": "archipelagoon.zip",
+    "sha256": "c5247cc052aac56f2d99c733af5f439a4fb57b992c353dcaaab170f5ae5800bd"
+  },
+  {
+    "id": "icon-turn-order",
+    "releaseUrl": "https://github.com/Zychronix/icon-turn-order/releases/tag/1.3",
+    "url": "https://github.com/Zychronix/icon-turn-order/releases/download/1.3/Icon.Turn.Order.-.v1.3.zip",
+    "filename": "Icon.Turn.Order.-.v1.3.zip",
+    "sha256": "f650e6cadbdb78de018b611cfbf92cb09eaed2492ad2e0d90c29161c7cdd4bd9"
+  },
+  {
+    "id": "battle-rewards",
+    "releaseUrl": "https://github.com/DennytXVII/BattleRewardsMod/releases/tag/v1.5.0",
+    "url": "https://github.com/DennytXVII/BattleRewardsMod/releases/download/v1.5.0/battle-rewards-mod-1.5.zip",
+    "filename": "battle-rewards-mod-1.5.zip",
+    "sha256": "8186d993faf03534949ac772f780b8b1befa19fb0828ba59c5f77afc0c3b6e1a"
+  },
+  {
+    "id": "no-stats",
+    "releaseUrl": "https://github.com/Popoto-anonymous/No-Stats/releases/tag/Y2",
+    "url": "https://github.com/Popoto-anonymous/No-Stats/releases/download/Y2/nostats-1.1.jar",
+    "filename": "nostats-1.1.jar",
+    "sha256": "1c08a576e7bac1224c8d4ecade72c0e24ccedae89bd34a3d9b46916329eb6e50"
+  }
+]

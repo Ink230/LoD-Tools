@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { ModListing } from './mod-catalog';
+import { MOD_CATALOG, ModListing } from './mod-catalog';
+import { MOD_DOWNLOADS } from './mod-download';
 import { filterMods, modSection } from './mod-collection-state';
 
 const mods: readonly ModListing[] = [
@@ -9,6 +10,16 @@ const mods: readonly ModListing[] = [
 ];
 
 describe('mod discovery', () => {
+  it('keeps combined downloads pinned to each displayed primary release', () => {
+    expect(new Set(MOD_DOWNLOADS.map(download => download.id)).size).toBe(MOD_DOWNLOADS.length);
+    for (const download of MOD_DOWNLOADS) {
+      const mod = MOD_CATALOG.find(entry => entry.id === download.id);
+      expect(mod).toBeDefined();
+      const releaseUrl = mod.releases[0].url;
+      expect(download.releaseUrl === releaseUrl || download.releaseUrl.startsWith(releaseUrl + '/tag/')).toBe(true);
+      expect(download.url).toBe(download.releaseUrl.replace('/tag/', '/download/') + '/' + download.filename);
+    }
+  });
   it('combines case-insensitive search terms across fields with exact compatibility filtering', () => {
     expect(filterMods(mods, '  INK maps ', 'RB3', 'name').map(mod => mod.id)).toEqual(['b']);
     expect(filterMods(mods, 'Ink', 'Latest SC', 'name')).toEqual([]);

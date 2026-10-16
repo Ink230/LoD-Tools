@@ -9,7 +9,9 @@
     "postbuild": "node tools/publish-legal-notices.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "prebuild": "node tools/cache-mod-downloads.mjs",
+    "prestart": "node tools/cache-mod-downloads.mjs"
   },
   "private": true,
   "dependencies": {
