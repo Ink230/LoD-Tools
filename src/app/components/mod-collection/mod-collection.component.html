@@ -51,7 +51,23 @@
       <p>Downloads use each mod’s primary release shown on its card. Irongoon uses its RB3 release; its special SC build must be installed separately. Greyed-out checkboxes have no combined download. Standalone tools are installed separately.</p>
       <p>This combines files; it does not check whether selected mods work together. If files conflict or a download fails, no partial ZIP is saved. Your selections remain so you can retry.</p>
     </div>
-    <div class="extraction-demo" aria-label="Extraction demonstration placeholder"></div>
+    <div class="extraction-demo" role="group" aria-roledescription="carousel" aria-label="Extraction screenshots">
+      <div class="extraction-images">
+        <button class="guide-arrow" type="button" title="Previous image" aria-label="Previous extraction image" [disabled]="extractionImageIndex() === 0" (click)="showExtractionImage(-1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
+        </button>
+        <a class="extraction-image" [href]="extractionImage().src" target="_blank" rel="noopener noreferrer" title="Open full-size screenshot">
+          <img [src]="extractionImage().src" [alt]="extractionImage().alt" width="1250" height="720" loading="lazy">
+        </a>
+        <button class="guide-arrow" type="button" title="Next image" aria-label="Next extraction image" [disabled]="extractionImageIndex() === extractionImages.length - 1" (click)="showExtractionImage(1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+        </button>
+      </div>
+      <div class="extraction-caption" aria-live="polite">
+        <span>Image {{ extractionImageIndex() + 1 }} of {{ extractionImages.length }}</span>
+        <p>{{ extractionImage().caption }}</p>
+      </div>
+    </div>
   </dialog>
   @if (query() || version()) {
     <div class="results"><button type="button" (click)="clearFilters()">Clear filters</button></div>

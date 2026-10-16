@@ -4,6 +4,30 @@ import { describe, expect, it, vi } from 'vitest';
 import { ModCollectionComponent } from './mod-collection.component';
 
 describe('mod collection controls', () => {
+  it('navigates the five extraction screenshots in order without wrapping', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(ModCollectionComponent);
+    fixture.autoDetectChanges();
+    await fixture.whenStable();
+    const page = fixture.nativeElement as HTMLElement;
+    const previous = page.querySelector<HTMLButtonElement>('[aria-label="Previous extraction image"]');
+    const next = page.querySelector<HTMLButtonElement>('[aria-label="Next extraction image"]');
+    expect(previous.disabled).toBe(true);
+    for (let index = 1; index <= 5; index++) {
+      expect(page.querySelector('.extraction-image img')?.getAttribute('src')).toBe(`/assets/mod-installation/step-0${index}.jpg`);
+      expect(page.querySelector('.extraction-image')?.getAttribute('href')).toBe(`/assets/mod-installation/step-0${index}.jpg`);
+      expect(page.querySelector('.extraction-caption span')?.textContent).toBe(`Image ${index} of 5`);
+      if (index < 5) {
+        next.click();
+        await fixture.whenStable();
+      }
+    }
+    expect(next.disabled).toBe(true);
+    previous.click();
+    await fixture.whenStable();
+    expect(page.querySelector('.extraction-caption span')?.textContent).toBe('Image 4 of 5');
+  });
+
   it('keeps selections across filters and clears all selected mods', async () => {
     TestBed.configureTestingModule({ providers: [provideRouter([])] });
     const fixture = TestBed.createComponent(ModCollectionComponent);
@@ -80,7 +104,7 @@ describe('mod collection controls', () => {
 
     await chooseVersion('Special build');
     expect(page.querySelectorAll('app-mod-card')).toHaveLength(1);
-    expect(page.querySelector('h3')?.textContent).toBe('Irongoon');
+    expect(page.querySelector('app-mod-card h3')?.textContent).toBe('Irongoon');
 
     page.querySelector<HTMLButtonElement>('.results button')?.click();
     await fixture.whenStable();

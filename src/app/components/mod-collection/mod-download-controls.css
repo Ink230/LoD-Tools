@@ -20,6 +20,5 @@ dialog li { display: list-item; }
 dialog li + li { margin-top: 10px; }
 dialog p { margin: 10px 0 0 22px; }
 dialog code { overflow-wrap: anywhere; color: #b8e6c5; }
-.extraction-demo { height: 180px; margin-top: 18px; border: 1px solid #365b42; border-radius: 4px; background: #101912; }
 @media (max-width: 600px) { .download-controls { width: 100%; justify-content: flex-end; } .selection-count { margin-right: auto; } }
 @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2s; } }

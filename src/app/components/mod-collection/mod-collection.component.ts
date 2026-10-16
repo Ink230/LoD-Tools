@@ -11,7 +11,7 @@ import { filterMods, modSection, ModSort } from './mod-collection-state';
   host: { '[style]': 'themeColors' },
   imports: [StyledSelectComponent, ModCardComponent],
   templateUrl: './mod-collection.component.html',
-  styleUrls: ['./mod-collection.component.css', './mod-download-controls.css'],
+  styleUrls: ['./mod-collection.component.css', './mod-download-controls.css', './mod-extraction-guide.css'],
 })
 export class ModCollectionComponent {
   private readonly destroyRef = inject(DestroyRef);
@@ -25,6 +25,15 @@ export class ModCollectionComponent {
   readonly downloading = signal(false);
   readonly downloadStatus = signal('');
   readonly downloadError = signal('');
+  readonly extractionImages = [
+    { src: '/assets/mod-installation/step-01.jpg', alt: 'Move dragoonmods-mods.zip from Downloads into the Severed Chains mods folder', caption: 'Move the downloaded ZIP into SC/mods.' },
+    { src: '/assets/mod-installation/step-02.jpg', alt: 'Right-click dragoonmods-mods.zip inside SC/mods and choose Extract All', caption: 'Right-click the ZIP and choose Extract All…' },
+    { src: '/assets/mod-installation/step-03.jpg', alt: 'Incorrect extraction destination: SC/mods/dragoonmods-mods creates an unwanted extra folder', caption: 'Incorrect: do not extract into an extra dragoonmods-mods folder.' },
+    { src: '/assets/mod-installation/step-04.jpg', alt: 'Correct extraction destination: the existing SC/mods folder, with no extra subfolder', caption: 'Correct: set the destination to SC/mods, then click Extract.' },
+    { src: '/assets/mod-installation/step-05.jpg', alt: 'Finished installation with the mod JARs and companion folders directly inside SC/mods', caption: 'Finished: JARs and companion folders are directly inside SC/mods.' },
+  ] as const;
+  readonly extractionImageIndex = signal(0);
+  readonly extractionImage = computed(() => this.extractionImages[this.extractionImageIndex()]);
   readonly modDownload = modDownload;
   readonly versions: readonly ScCompatibility[] = ['Latest SC', 'RB3', 'Special build', 'Check compatibility'];
   readonly versionOptions = [{ value: '', label: 'All versions' }, ...this.versions.map(value => ({ value, label: value }))];
@@ -43,6 +52,10 @@ export class ModCollectionComponent {
 
   constructor() {
     this.destroyRef.onDestroy(() => this.downloadController?.abort());
+  }
+
+  showExtractionImage(direction: number): void {
+    this.extractionImageIndex.update(index => Math.max(0, Math.min(this.extractionImages.length - 1, index + direction)));
   }
 
   selectionTitle(mod: ModListing): string {
