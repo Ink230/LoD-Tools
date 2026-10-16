@@ -1,6 +1,6 @@
 # Dragoon Mods agent guide
 
-Public information is available without JavaScript, accounts or API keys. Start with [the manifest](/agent/index.json), [mods JSON](/agent/mods.json) or [mods Markdown](/agent/mods.md).
+Public information is available without JavaScript, accounts or API keys. Start with [the manifest](/agent/index.json), [mods JSON](/agent/mods.json) or [mods Markdown](/agent/mods.md). [OpenAPI](/agent/openapi.json) describes the public read-only HTTP resources.
 
 ## Browser navigation
 
@@ -40,4 +40,4 @@ Asset Viewer and World Map Editor require files the user chooses. No agent tool 
 
 The repository includes a read-only local stdio MCP server: node tools/mcp-server.mjs after npm ci. It exposes search_mods, get_mod, query_game_data and list_pages, plus catalog/guide/provenance resources. It reads this checkout's snapshot; it neither controls a browser nor checks fresh GitHub releases. It has no public remote endpoint.
 
-WebMCP is experimental and feature-detected via document.modelContext.registerTool. Supporting browsers get search_mods and list_pages globally; the Mods page also provides get_mod_selection, set_mod_filters and set_mod_selection. Changes use the same validation and visible state as the UI. There is no automatic installation or download tool. Browsers without WebMCP use normal semantic HTML and the static endpoints above. No third-party polyfill or agent credential is loaded.
+WebMCP is experimental and feature-detected via document.modelContext.registerTool. Supporting browsers get search_mods, query_game_data and list_pages globally; the Mods page also provides get_mod_selection, set_mod_filters and set_mod_selection. Game-data queries use the six public tables with bounded pagination. Changes use the same validation and visible state as the UI. There is no automatic installation or download tool. Browsers without WebMCP use normal semantic HTML and the static endpoints above. No third-party polyfill or agent credential is loaded.

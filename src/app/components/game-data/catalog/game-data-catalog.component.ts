@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ColDef, GridOptions } from 'ag-grid-community';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FastRouterLinkDirective } from '../../../directives/fast-router-link.directive';
@@ -42,6 +42,7 @@ export class GameDataCatalogComponent {
   readonly sections = SECTIONS;
   private readonly characters = inject(GameDataService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
   private request = 0;
   section = '';
@@ -61,6 +62,12 @@ export class GameDataCatalogComponent {
   };
 
   constructor() {
+    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe(params => {
+      this.search = (params.get('q') || '').slice(0, 200);
+      this.category = (params.get('category') || '').slice(0, 200);
+      this.filter(false);
+      this.cdr.markForCheck();
+    });
     this.route.data.pipe(takeUntilDestroyed()).subscribe(data => { void this.load(String(data['section'])); });
   }
 
@@ -72,16 +79,20 @@ export class GameDataCatalogComponent {
   get selectedHits(): Row[] { return this.selected?.['hitDetails'] ? JSON.parse(String(this.selected['hitDetails'])) : []; }
   display(value: unknown) { return value === null || value === undefined || value === '' ? '—' : String(value); }
 
-  filter() {
+  filter(updateUrl = true) {
     const query = this.search.trim().toLowerCase();
     this.filteredRows = this.rows.filter(row => (!this.category || row[this.categoryField] === this.category) && (!query || Object.values(row).some(value => String(value ?? '').toLowerCase().includes(query))));
     this.selected = null;
+    if (updateUrl) {
+      void this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true,
+        queryParams: { q: this.search || null, category: this.category || null } });
+    }
   }
 
   async load(section = this.section) {
     const request = ++this.request;
     this.section = section;
-    this.search = this.category = this.error = '';
+    this.error = '';
     this.selected = null;
     this.rows = this.filteredRows = [];
     this.loading = true;
@@ -105,7 +116,7 @@ export class GameDataCatalogComponent {
       if (request !== this.request) return;
       this.rows = rows;
       this.colDefs = COLUMNS[section].map(field => ({ field, headerName: section === 'additions' && field === 'damage' ? 'Damage %' : this.label(field), minWidth: ['name', 'description', 'enemies', 'spells'].includes(field) ? 200 : 95, tooltipField: field, valueFormatter: params => this.display(params.value) }));
-      this.filter();
+      this.filter(false);
     } catch (error) {
       if (request === this.request) this.error = error instanceof Error ? error.message : 'Game data could not be loaded';
     } finally {

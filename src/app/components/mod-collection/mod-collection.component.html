@@ -18,10 +18,10 @@
 
   <div class="filters" role="search" aria-label="Find mods">
     <label class="search">
-      <input #searchInput type="search" aria-label="Search mods" placeholder="Search mods..." [value]="query()" (input)="query.set(searchInput.value)">
+      <input #searchInput type="search" aria-label="Search mods" placeholder="Search mods..." maxlength="200" [value]="query()" (input)="setFilters({ query: searchInput.value })">
     </label>
     <div class="select"><span>Version:</span>
-      <app-styled-select id="mods-version" label="Severed Chains version" [options]="versionOptions" [value]="version()" (valueChange)="version.set($event)" />
+      <app-styled-select id="mods-version" label="Severed Chains version" [options]="versionOptions" [value]="version()" (valueChange)="setFilters({ version: $event })" />
     </div>
     <div class="select"><span>Sort:</span>
       <app-styled-select id="mods-sort" label="Sort mods" [options]="sortOptions" [value]="sort()" (valueChange)="setSort($event)" />

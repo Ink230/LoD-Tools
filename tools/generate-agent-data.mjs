@@ -21,7 +21,7 @@ const manifest = {
   schemaVersion: 1,
   site: 'https://dragoonmods.com',
   freshness: 'Build-time snapshot. Browser tools use the current session catalog, including saved and freshly checked releases. A newer release may not be ZIP eligible.',
-  mods: '/agent/mods.json', markdown: '/agent/mods.md', guide: '/agent/guide.md', routes,
+  mods: '/agent/mods.json', markdown: '/agent/mods.md', guide: '/agent/guide.md', openapi: '/agent/openapi.json', routes,
   datasets: datasets.map(id => ({ id, url: `/assets/game-data/${id}.json`, page: `/data/${id}` })),
   provenance: '/assets/game-data/provenance.json',
   browserTools: 'Feature-detected document.modelContext WebMCP; no native API is required for ordinary navigation',
@@ -29,7 +29,7 @@ const manifest = {
 };
 const guide = `# Dragoon Mods agent guide
 
-Public information is available without JavaScript, accounts or API keys. Start with [the manifest](/agent/index.json), [mods JSON](/agent/mods.json) or [mods Markdown](/agent/mods.md).
+Public information is available without JavaScript, accounts or API keys. Start with [the manifest](/agent/index.json), [mods JSON](/agent/mods.json) or [mods Markdown](/agent/mods.md). [OpenAPI](/agent/openapi.json) describes the public read-only HTTP resources.
 
 ## Browser navigation
 
@@ -55,14 +55,37 @@ Asset Viewer and World Map Editor require files the user chooses. No agent tool 
 
 The repository includes a read-only local stdio MCP server: node tools/mcp-server.mjs after npm ci. It exposes search_mods, get_mod, query_game_data and list_pages, plus catalog/guide/provenance resources. It reads this checkout's snapshot; it neither controls a browser nor checks fresh GitHub releases. It has no public remote endpoint.
 
-WebMCP is experimental and feature-detected via document.modelContext.registerTool. Supporting browsers get search_mods and list_pages globally; the Mods page also provides get_mod_selection, set_mod_filters and set_mod_selection. Changes use the same validation and visible state as the UI. There is no automatic installation or download tool. Browsers without WebMCP use normal semantic HTML and the static endpoints above. No third-party polyfill or agent credential is loaded.
+WebMCP is experimental and feature-detected via document.modelContext.registerTool. Supporting browsers get search_mods, query_game_data and list_pages globally; the Mods page also provides get_mod_selection, set_mod_filters and set_mod_selection. Game-data queries use the six public tables with bounded pagination. Changes use the same validation and visible state as the UI. There is no automatic installation or download tool. Browsers without WebMCP use normal semantic HTML and the static endpoints above. No third-party polyfill or agent credential is loaded.
 `;
 const markdown = `# Dragoon Mods catalog\n\n${manifest.freshness}\n\n${mods.map(mod => `## ${mod.name}\n\nID: ${mod.id}\n\n${mod.description}\n\nAuthors: ${mod.authors.map(author => `[${author.name}](${author.url})`).join(', ')}\n\nTags: ${mod.tags.join(', ')}\n\n${mod.releases.map(release => `- ${release.compatibility || 'Check compatibility'}: ${release.version || 'unknown'}${release.url ? ` [release](${release.url})` : ' (no download)'}`).join('\n') || 'No published release listed'}\n\nCombined ZIP eligible at build time: ${mod.zipEligible}\n\n${mod.infoUrl ? `[More info](${mod.infoUrl})` : 'More info unavailable'}\n`).join('\n')}\n`;
+const openapi = {
+  openapi: '3.1.0', info: { title: 'Dragoon Mods public snapshots', version: '1.0.0', description: manifest.freshness },
+  servers: [{ url: manifest.site }],
+  paths: Object.fromEntries([
+    ['/agent/index.json', 'get_agent_manifest', 'Discover public routes and datasets', 'application/json', { type: 'object' }],
+    ['/agent/mods.json', 'get_mod_catalog', 'Read the complete curated mod snapshot and ZIP eligibility', 'application/json', {
+      type: 'object', required: ['schemaVersion', 'freshness', 'mods'], properties: {
+        schemaVersion: { type: 'integer', const: 1 }, freshness: { type: 'string' }, mods: { type: 'array', items: {
+          type: 'object', required: ['id', 'name', 'releases', 'zipEligible'], properties: {
+            id: { type: 'string' }, name: { type: 'string' }, releases: { type: 'array', items: { type: 'object' } }, zipEligible: { type: 'boolean' },
+          },
+        } },
+      },
+    }],
+    ['/agent/guide.md', 'get_site_guide', 'Read navigation and installation instructions', 'text/markdown', { type: 'string' }],
+    ['/agent/mods.md', 'get_mod_catalog_markdown', 'Read the curated catalog as Markdown', 'text/markdown', { type: 'string' }],
+    ['/assets/game-data/provenance.json', 'get_data_provenance', 'Read game-data source commits and limitations', 'application/json', { type: 'object' }],
+    ...datasets.map(id => [`/assets/game-data/${id}.json`, `get_${id}`, `Read the complete ${id} source snapshot`, 'application/json', { type: 'array', items: { type: 'object' } }]),
+  ].map(([path, operationId, summary, mimeType, schema]) => [path, { get: { operationId, summary, responses: {
+    200: { description: 'Public snapshot. Not a live GitHub release check.', content: { [mimeType]: { schema } } },
+  } } }])),
+};
 const files = {
   'agent/index.json': JSON.stringify(manifest, null, 2) + '\n',
   'agent/mods.json': JSON.stringify({ schemaVersion: 1, freshness: manifest.freshness, mods }, null, 2) + '\n',
   'agent/mods.md': markdown,
   'agent/guide.md': guide,
+  'agent/openapi.json': JSON.stringify(openapi, null, 2) + '\n',
   'llms.txt': '# Dragoon Mods\n\n> Severed Chains mods, installation help, game data and local asset tools\n\n## Agent resources\n\n- [Guide](https://dragoonmods.com/agent/guide.md): Navigation, versions, installation and browser tools\n- [Catalog](https://dragoonmods.com/agent/mods.md): Curated build-time mods and release links\n- [Manifest](https://dragoonmods.com/agent/index.json): JSON catalog and complete game-data endpoint discovery\n',
   'robots.txt': 'User-agent: *\nAllow: /\n\nSitemap: https://dragoonmods.com/sitemap.xml\n',
   'sitemap.xml': `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${routes.map(route => `<url><loc>https://dragoonmods.com${route.path}</loc></url>`).join('')}</urlset>\n`,

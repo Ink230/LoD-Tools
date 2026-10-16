@@ -1,5 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { Routes, RouteReuseStrategy, provideRouter } from '@angular/router';
+import { Routes, RouteReuseStrategy, provideRouter, withInMemoryScrolling } from '@angular/router';
 import { EditorRouteReuseStrategy } from './app/services/editor-route-reuse.strategy';
 import { AppComponent } from './app/components/app-default/app.component';
 
@@ -63,5 +63,5 @@ const routes: Routes = [
 ];
 
 bootstrapApplication(AppComponent, {
-  providers: [provideRouter(routes), { provide: RouteReuseStrategy, useClass: EditorRouteReuseStrategy }],
+  providers: [provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })), { provide: RouteReuseStrategy, useClass: EditorRouteReuseStrategy }],
 }).catch((err) => console.error(err));

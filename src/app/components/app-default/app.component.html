@@ -1,9 +1,10 @@
 <div class="container">
+  <a class="skip-link" [href]="contentHref">Skip to content</a>
   <header class="header">
     <app-editor-navigation />
     <span class="site-credit"><a href="https://github.com/Legend-of-Dragoon-Modding/Severed-Chains" target="_blank" rel="noopener noreferrer">SEVERED CHAINS</a> created by <a href="https://ko-fi.com/monoxide" target="_blank" rel="noopener noreferrer">LordMonoxide</a><app-sc-attribution /></span>
   </header>
-  <div class="content">
+  <div class="content" id="page-content" tabindex="-1">
     <router-outlet (attach)="resumeEditor($event)"></router-outlet>
   </div>
 <div class="footer">

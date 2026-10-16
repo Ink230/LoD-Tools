@@ -5,6 +5,7 @@
   "mods": "/agent/mods.json",
   "markdown": "/agent/mods.md",
   "guide": "/agent/guide.md",
+  "openapi": "/agent/openapi.json",
   "routes": [
     {
       "path": "/mods",

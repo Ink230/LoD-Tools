@@ -16,6 +16,15 @@ test('static discovery resolves complete datasets and preserves release constrai
   const downloads = await json('src/assets/mod-downloads.json');
   assert.equal(manifest.schemaVersion, 1);
   assert.equal(manifest.mcp.hostedEndpoint, null);
+  const openapi = await json('public/agent/openapi.json');
+  const operationIds = [];
+  for (const [path, methods] of Object.entries(openapi.paths)) {
+    assert.deepEqual(Object.keys(methods), ['get']);
+    operationIds.push(methods.get.operationId);
+    const content = await readFile(new URL((path.startsWith('/agent/') ? 'public' : 'src') + path, root), 'utf8');
+    assert.ok(content.length > 0);
+  }
+  assert.equal(new Set(operationIds).size, operationIds.length);
   assert.ok(mods.length > 0);
   assert.equal(new Set(mods.map(mod => mod.id)).size, mods.length);
   for (const mod of mods) {

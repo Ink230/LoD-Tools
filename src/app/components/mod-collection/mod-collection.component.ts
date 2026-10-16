@@ -1,4 +1,8 @@
 import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { registerBrowserTools, toolInput, toolString } from '../../services/browser-agent';
 import { StyledSelectComponent } from '../shared/styled-select/styled-select.component';
 import { WORLD_MAP_THEME_COLORS } from '../world-map-editor/world-map-theme';
 import { MOD_CATALOG, ModListing, ScCompatibility } from './mod-catalog';
@@ -17,6 +21,8 @@ import { ModReleasesService } from './mod-releases.service';
 export class ModCollectionComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly releases = inject(ModReleasesService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private downloadController?: AbortController;
   readonly themeColors = WORLD_MAP_THEME_COLORS;
   readonly query = signal('');
@@ -56,6 +62,44 @@ export class ModCollectionComponent {
 
   constructor() {
     this.destroyRef.onDestroy(() => this.downloadController?.abort());
+    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe(params => {
+      this.query.set((params.get('q') || '').slice(0, 200));
+      const version = params.get('version') || '';
+      this.version.set(this.versions.includes(version as ScCompatibility) ? version : '');
+      const sort = params.get('sort');
+      this.sort.set(sort === 'name' || sort === 'author' ? sort : 'featured');
+    });
+    this.destroyRef.onDestroy(registerBrowserTools(inject(DOCUMENT), [
+      {
+        name: 'get_mod_selection', description: 'Read selected mod IDs, current releases, loading state and download state on the Mods page.',
+        inputSchema: { type: 'object', properties: {}, additionalProperties: false }, annotations: { readOnlyHint: true, untrustedContentHint: true },
+        execute: async input => {
+          toolInput(input, []);
+          return JSON.stringify(this.selectionState());
+        },
+      },
+      {
+        name: 'set_mod_filters', description: 'Visibly change Mods search, compatibility and sort, and update the shareable URL. Does not change selections.',
+        inputSchema: { type: 'object', properties: { query: { type: 'string', maxLength: 200 }, version: { type: 'string', enum: ['', ...this.versions] }, sort: { type: 'string', enum: ['featured', 'name', 'author'] } }, additionalProperties: false },
+        annotations: { readOnlyHint: false },
+        execute: async input => {
+          const args = toolInput(input, ['query', 'version', 'sort']);
+          const query = toolString(args['query'], this.query());
+          const version = toolString(args['version'], this.version());
+          const sort = toolString(args['sort'], this.sort());
+          if (version && !this.versions.includes(version as ScCompatibility)) throw new Error('Unknown compatibility filter');
+          if (!['featured', 'name', 'author'].includes(sort)) throw new Error('Unknown sort');
+          await this.setFilters({ query, version, sort: sort as ModSort });
+          return JSON.stringify({ query: this.query(), version: this.version(), sort: this.sort(), count: this.filtered().length });
+        },
+      },
+      {
+        name: 'set_mod_selection', description: 'Replace selected mods with these IDs, or [] to clear. Requires finished release checks and matching ZIP cache. Does not download or install.',
+        inputSchema: { type: 'object', properties: { ids: { type: 'array', items: { type: 'string' }, maxItems: MOD_CATALOG.length, uniqueItems: true } }, required: ['ids'], additionalProperties: false },
+        annotations: { readOnlyHint: false },
+        execute: async input => JSON.stringify(this.setAgentSelection(input)),
+      },
+    ]));
     effect(() => {
       if (this.downloading() || this.loadingFresh()) return;
       const eligible = new Set(this.catalog().filter(mod => modDownload(mod)).map(mod => mod.id));
@@ -121,12 +165,34 @@ export class ModCollectionComponent {
   }
 
   setSort(value: string): void {
-    if (value === 'featured' || value === 'name' || value === 'rating' || value === 'author') this.sort.set(value);
+    if (value === 'featured' || value === 'name' || value === 'author') void this.setFilters({ sort: value });
   }
 
   clearFilters(): void {
-    this.query.set('');
-    this.version.set('');
-    this.sort.set('featured');
+    void this.setFilters({ query: '', version: '', sort: 'featured' });
+  }
+
+  async setFilters(filters: Partial<{ query: string; version: string; sort: ModSort }>): Promise<void> {
+    if (filters.query !== undefined) this.query.set(filters.query);
+    if (filters.version !== undefined) this.version.set(filters.version);
+    if (filters.sort !== undefined) this.sort.set(filters.sort);
+    await this.router.navigate([], { relativeTo: this.route, queryParamsHandling: 'merge', preserveFragment: true, replaceUrl: true,
+      queryParams: { q: this.query() || null, version: this.version() || null, sort: this.sort() === 'featured' ? null : this.sort() } });
+  }
+
+  selectionState() {
+    return { selected: this.selectedMods().map(mod => ({ id: mod.id, name: mod.name, release: mod.releases[0] })),
+      loadingFresh: this.loadingFresh(), downloading: this.downloading() };
+  }
+
+  setAgentSelection(input: unknown) {
+    const { ids } = toolInput(input, ['ids']);
+    if (!Array.isArray(ids) || ids.length > MOD_CATALOG.length || ids.some(id => typeof id !== 'string') || new Set(ids).size !== ids.length) throw new Error('Expected unique mod IDs');
+    if (this.loadingFresh() || this.downloading()) throw new Error('Wait for release checks and downloads to finish');
+    if (ids.some(id => !this.catalog().some(mod => mod.id === id && mod.section !== 'tools' && !!modDownload(mod)))) throw new Error('Selection contains unknown, standalone, unreleased or uncached mods');
+    this.selected.set(new Set(ids));
+    this.downloadError.set('');
+    this.downloadStatus.set('');
+    return this.selectionState();
   }
 }

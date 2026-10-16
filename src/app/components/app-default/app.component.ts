@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 import { EditorNavigationComponent } from '../editor-navigation/editor-navigation.component';
 import { ScAttributionComponent } from '../sc-attribution/sc-attribution.component';
+import { BrowserAgentService } from '../../services/browser-agent.service';
 
 @Component({
     selector: 'app-root',
@@ -10,6 +11,9 @@ import { ScAttributionComponent } from '../sc-attribution/sc-attribution.compone
     imports: [RouterOutlet, EditorNavigationComponent, ScAttributionComponent]
 })
 export class AppComponent {
+  private readonly browserAgent = inject(BrowserAgentService);
+  private readonly router = inject(Router);
+  get contentHref(): string { return this.router.url.split('#')[0] + '#page-content'; }
   resumeEditor(component: unknown) {
     (component as { resumeSession?: () => void }).resumeSession?.();
   }

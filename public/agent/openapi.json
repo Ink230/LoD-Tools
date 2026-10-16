@@ -1,0 +1,274 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Dragoon Mods public snapshots",
+    "version": "1.0.0",
+    "description": "Build-time snapshot. Browser tools use the current session catalog, including saved and freshly checked releases. A newer release may not be ZIP eligible."
+  },
+  "servers": [
+    {
+      "url": "https://dragoonmods.com"
+    }
+  ],
+  "paths": {
+    "/agent/index.json": {
+      "get": {
+        "operationId": "get_agent_manifest",
+        "summary": "Discover public routes and datasets",
+        "responses": {
+          "200": {
+            "description": "Public snapshot. Not a live GitHub release check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent/mods.json": {
+      "get": {
+        "operationId": "get_mod_catalog",
+        "summary": "Read the complete curated mod snapshot and ZIP eligibility",
+        "responses": {
+          "200": {
+            "description": "Public snapshot. Not a live GitHub release check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "schemaVersion",
+                    "freshness",
+                    "mods"
+                  ],
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "integer",
+                      "const": 1
+                    },
+                    "freshness": {
+                      "type": "string"
+                    },
+                    "mods": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "name",
+                          "releases",
+                          "zipEligible"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "releases": {
+                            "type": "array",
+                            "items": {
+                              "type": "object"
+                            }
+                          },
+                          "zipEligible": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent/guide.md": {
+      "get": {
+        "operationId": "get_site_guide",
+        "summary": "Read navigation and installation instructions",
+        "responses": {
+          "200": {
+            "description": "Public snapshot. Not a live GitHub release check.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent/mods.md": {
+      "get": {
+        "operationId": "get_mod_catalog_markdown",
+        "summary": "Read the curated catalog as Markdown",
+        "responses": {
+          "200": {
+            "description": "Public snapshot. Not a live GitHub release check.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/game-data/provenance.json": {
+      "get": {
+        "operationId": "get_data_provenance",
+        "summary": "Read game-data source commits and limitations",
+        "responses": {
+          "200": {
+            "description": "Public snapshot. Not a live GitHub release check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/game-data/spells.json": {
+      "get": {
+        "operationId": "get_spells",
+        "summary": "Read the complete spells source snapshot",
+        "responses": {
+          "200": {
+            "description": "Public snapshot. Not a live GitHub release check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/game-data/items.json": {
+      "get": {
+        "operationId": "get_items",
+        "summary": "Read the complete items source snapshot",
+        "responses": {
+          "200": {
+            "description": "Public snapshot. Not a live GitHub release check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/game-data/submaps.json": {
+      "get": {
+        "operationId": "get_submaps",
+        "summary": "Read the complete submaps source snapshot",
+        "responses": {
+          "200": {
+            "description": "Public snapshot. Not a live GitHub release check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/game-data/stages.json": {
+      "get": {
+        "operationId": "get_stages",
+        "summary": "Read the complete stages source snapshot",
+        "responses": {
+          "200": {
+            "description": "Public snapshot. Not a live GitHub release check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/game-data/encounters.json": {
+      "get": {
+        "operationId": "get_encounters",
+        "summary": "Read the complete encounters source snapshot",
+        "responses": {
+          "200": {
+            "description": "Public snapshot. Not a live GitHub release check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/game-data/enemies.json": {
+      "get": {
+        "operationId": "get_enemies",
+        "summary": "Read the complete enemies source snapshot",
+        "responses": {
+          "200": {
+            "description": "Public snapshot. Not a live GitHub release check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
