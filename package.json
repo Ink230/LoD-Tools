@@ -10,8 +10,11 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "prebuild": "node tools/cache-mod-downloads.mjs",
-    "prestart": "node tools/cache-mod-downloads.mjs"
+    "prebuild": "node tools/generate-agent-data.mjs && node tools/cache-mod-downloads.mjs",
+    "prestart": "node tools/generate-agent-data.mjs && node tools/cache-mod-downloads.mjs",
+    "generate:agents": "node tools/generate-agent-data.mjs",
+    "mcp": "node tools/mcp-server.mjs",
+    "test:agents": "node --test tools/agent-interfaces.test.mjs"
   },
   "private": true,
   "dependencies": {
@@ -39,6 +42,8 @@
     "@angular/cli": "~22.1.3",
     "@angular/compiler-cli": "^22.1.1",
     "@eslint/js": "^9.39.2",
+    "@modelcontextprotocol/client": "^2.3.1",
+    "@modelcontextprotocol/server": "^2.3.1",
     "@types/three": "^0.186.0",
     "angular-eslint": "22.1.0",
     "autoprefixer": "^10.4.20",
@@ -49,6 +54,7 @@
     "tailwindcss": "^3.4.19",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.67.0",
-    "vitest": "^4.0.8"
+    "vitest": "^4.0.8",
+    "zod": "^4.6.7"
   }
 }

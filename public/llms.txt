@@ -1,0 +1,9 @@
+# Dragoon Mods
+
+> Severed Chains mods, installation help, game data and local asset tools
+
+## Agent resources
+
+- [Guide](https://dragoonmods.com/agent/guide.md): Navigation, versions, installation and browser tools
+- [Catalog](https://dragoonmods.com/agent/mods.md): Curated build-time mods and release links
+- [Manifest](https://dragoonmods.com/agent/index.json): JSON catalog and complete game-data endpoint discovery

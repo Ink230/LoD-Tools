@@ -1,0 +1,17 @@
+[
+  { "path": "/mods", "title": "Mods", "description": "Find Severed Chains mods, compatibility, releases and installation help" },
+  { "path": "/mods/irongoon", "title": "Irongoon configuration", "description": "Configure Irongoon v0.5.1; requires the special SC build linked on the mod card" },
+  { "path": "/data/summary", "title": "Game data summary", "description": "Character stats and links to game data tables" },
+  { "path": "/data/character/dart", "title": "Character data", "description": "Character stats, additions and Dragoon data; replace dart with another character name" },
+  { "path": "/data/character-comparison", "title": "Character comparison", "description": "Compare character stats" },
+  { "path": "/data/dragoons", "title": "Dragoons", "description": "Dragoon stats and spells" },
+  { "path": "/data/additions", "title": "Additions", "description": "Addition levels, damage, SP and hit timing" },
+  { "path": "/data/spells", "title": "Spells", "description": "Spell properties and effects" },
+  { "path": "/data/items", "title": "Items", "description": "Item and equipment properties" },
+  { "path": "/data/submaps", "title": "Submaps", "description": "Submap names and encounter metadata" },
+  { "path": "/data/stages", "title": "Battle stages", "description": "Battle stage resource metadata" },
+  { "path": "/data/encounters", "title": "Encounters", "description": "Enemy formations and encounter properties" },
+  { "path": "/data/enemies", "title": "Enemies", "description": "Enemy stats, rewards and drops" },
+  { "path": "/world-map-editor", "title": "World map editor", "description": "Edit user-chosen local world map files; files remain in the browser" },
+  { "path": "/asset-viewer", "title": "Asset viewer", "description": "Inspect user-chosen local game assets; files remain in the browser" }
+]
