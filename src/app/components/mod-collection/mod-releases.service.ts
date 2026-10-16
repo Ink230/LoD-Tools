@@ -125,7 +125,9 @@ export class ModReleasesService {
   private async checkReleases(fetchRelease: typeof fetch): Promise<void> {
     this.loading.set(true);
     try {
-      await Promise.allSettled(MOD_CATALOG.filter(mod => modRepository(mod)).map(async mod => {
+      // Repositories without a listed release can legitimately return 404 from
+      // /latest. Avoid that expected failed request until a release is listed.
+      await Promise.allSettled(MOD_CATALOG.filter(mod => mod.releases.some(release => release.url) && modRepository(mod)).map(async mod => {
         const response = await fetchRelease(`https://api.github.com/repos/${modRepository(mod)}/releases/latest`, {
           headers: { Accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(10_000),
         });

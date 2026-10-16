@@ -74,6 +74,18 @@ describe('live mod releases', () => {
     expect(modRepository(MOD_CATALOG.find(mod => mod.id === 'upscale'))).toBeUndefined();
   });
 
+  it('skips repositories without a listed release while still checking released mods and tools', async () => {
+    const fetchRelease = vi.fn<typeof fetch>().mockResolvedValue(new Response('', { status: 404 }));
+    const service = new ModReleasesService();
+    await service.refresh(fetchRelease);
+    const requested = fetchRelease.mock.calls.map(([url]) => String(url));
+    expect(requested).not.toContain('https://api.github.com/repos/Legend-of-Dragoon-Modding/new-vertexcolor-material/releases/latest');
+    expect(requested).toContain('https://api.github.com/repos/Ink230/irongoon/releases/latest');
+    expect(requested).toContain('https://api.github.com/repos/Legend-of-Dragoon-Modding/Blender-Anim-To-TLoD/releases/latest');
+    expect(service.catalog()).toBe(MOD_CATALOG);
+    expect(service.loading()).toBe(false);
+  });
+
   it('starts with baked data and updates each response without mutating it or rechecking on route changes', async () => {
     const requests = new Map<string, (response: Response) => void>();
     const fetchRelease = vi.fn<typeof fetch>().mockImplementation(url => new Promise(resolve => { requests.set(String(url), resolve); }));
