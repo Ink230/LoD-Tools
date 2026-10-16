@@ -139,7 +139,7 @@ export class ModReleasesService {
         this.saveRelease(mod, release);
       }));
       const failures = checks.filter(check => check.status === 'rejected').length;
-      this.status.set(failures ? 'Some release checks are unavailable. Saved versions are shown for those mods.' : 'Latest published releases checked.');
+      this.status.set(failures ? 'Some release checks are unavailable. Saved versions are shown for those mods.' : '');
     } finally {
       this.loading.set(false);
     }

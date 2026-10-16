@@ -93,7 +93,7 @@ describe('live mod releases', () => {
     expect(updated.releaseNote).not.toContain('v0.4.18');
     expect(updated.releaseNote).toContain('v0.5.1 requires');
     expect(irongoon.releases[0].version).toBe('0.4.18');
-    expect(service.status()).toBe('Latest published releases checked.');
+    expect(service.status()).toBe('');
     const callCount = fetchRelease.mock.calls.length;
     await service.refresh(fetchRelease);
     expect(fetchRelease).toHaveBeenCalledTimes(callCount);
