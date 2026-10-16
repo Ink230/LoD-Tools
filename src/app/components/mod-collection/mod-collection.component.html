@@ -1,6 +1,14 @@
 <main aria-labelledby="collection-title">
   <header>
     <h1 id="collection-title">MODS</h1>
+    <div class="download-controls" role="group" aria-label="Download selected mods">
+      <span class="selection-count">{{ selected().size }} selected</span>
+      <button class="square" type="button" title="Clear all selections" aria-label="Clear all selections" [disabled]="!selected().size || downloading()" (click)="clearSelections()">×</button>
+      <button class="download-mods" type="button" title="Zip all mods selected and download them" [attr.aria-label]="downloading() ? 'Preparing selected mods' : 'Download Mods'" [attr.aria-busy]="downloading()" [disabled]="!selected().size || downloading()" (click)="downloadMods()">
+        @if (downloading()) { <span class="spinner" aria-hidden="true"></span> } @else { Download Mods }
+      </button>
+      <button class="square" type="button" title="How mod downloads work" aria-label="How mod downloads work" (click)="downloadHelp.showModal()">?</button>
+    </div>
   </header>
 
   <div class="filters" role="search" aria-label="Find mods">
@@ -12,14 +20,6 @@
     </div>
     <div class="select"><span>Sort:</span>
       <app-styled-select id="mods-sort" label="Sort mods" [options]="sortOptions" [value]="sort()" (valueChange)="setSort($event)" />
-    </div>
-    <div class="download-controls" role="group" aria-label="Download selected mods">
-      <span class="selection-count">{{ selected().size }} selected</span>
-      <button class="square" type="button" title="Clear all selections" aria-label="Clear all selections" [disabled]="!selected().size || downloading()" (click)="clearSelections()">×</button>
-      <button class="download-mods" type="button" title="Zip all mods selected and download them" [attr.aria-label]="downloading() ? 'Preparing selected mods' : 'Download Mods'" [attr.aria-busy]="downloading()" [disabled]="!selected().size || downloading()" (click)="downloadMods()">
-        @if (downloading()) { <span class="spinner" aria-hidden="true"></span> } @else { Download Mods }
-      </button>
-      <button class="square" type="button" title="How mod downloads work" aria-label="How mod downloads work" (click)="downloadHelp.showModal()">?</button>
     </div>
   </div>
   <p class="download-status" role="status">{{ downloadStatus() }}</p>
