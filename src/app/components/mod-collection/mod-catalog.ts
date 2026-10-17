@@ -72,7 +72,8 @@ export const MOD_CATALOG: readonly ModListing[] = [
   {
     id: 'lloyd', name: 'Lloyd Mod', authors: [ZYCHRONIX], section: 'developer',
     description: 'Lloyd joins your party as a playable character with full additions and dspells.',
-    releases: [{ compatibility: 'RB3' }], tags: ['QoL Major', 'Extension', 'Character'],
+    releases: [{ version: '1.0.1', compatibility: 'RB3', url: 'https://github.com/Zychronix/lloyd_mod/releases/tag/v1.0.1' }],
+    tags: ['QoL Major', 'Extension', 'Character'], infoUrl: 'https://github.com/Zychronix/lloyd_mod',
   },
   {
     id: 'additional-additions', name: 'Additional Additions', authors: [LORDMONOXIDE], section: 'developer',

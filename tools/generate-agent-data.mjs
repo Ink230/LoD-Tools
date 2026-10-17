@@ -39,7 +39,7 @@ Mod URLs accept q, version and sort query parameters, for example /mods?q=irongo
 
 ## Versions and installation
 
-Static data records the curated build-time baseline, not a promise of the latest GitHub release. The browser loads that baseline, overlays validated localStorage releases, then checks GitHub's latest published release. Compatibility is curated or inferred conservatively; unknown is not compatible. Tools are separate from installable mods. Lloyd has no release and Upscale is in development.
+Static data records the curated build-time baseline, not a promise of the latest GitHub release. The browser loads that baseline, overlays validated localStorage releases, then checks GitHub's latest published release. Compatibility is curated or inferred conservatively; unknown is not compatible. Tools are separate from installable mods. Upscale is in development.
 
 A mod is ZIP eligible only when the primary displayed release matches the site's pinned cache. A newer GitHub link can be available before its cached ZIP is available. While fresh versions load, checkboxes and Download Mods are disabled. Selection survives filtering and successful downloads. Agents can prepare a selection; the normal Download Mods button performs the download.
 

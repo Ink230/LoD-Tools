@@ -120,7 +120,9 @@
       "description": "Lloyd joins your party as a playable character with full additions and dspells.",
       "releases": [
         {
-          "compatibility": "RB3"
+          "version": "1.0.1",
+          "compatibility": "RB3",
+          "url": "https://github.com/Zychronix/lloyd_mod/releases/tag/v1.0.1"
         }
       ],
       "tags": [
@@ -128,6 +130,7 @@
         "Extension",
         "Character"
       ],
+      "infoUrl": "https://github.com/Zychronix/lloyd_mod",
       "pageUrl": "https://dragoonmods.com/mods#mod-lloyd",
       "zipEligible": false
     },

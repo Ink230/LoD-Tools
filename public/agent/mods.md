@@ -61,11 +61,11 @@ Authors: [Zychronix](https://github.com/Zychronix)
 
 Tags: QoL Major, Extension, Character
 
-- RB3: unknown (no download)
+- RB3: 1.0.1 [release](https://github.com/Zychronix/lloyd_mod/releases/tag/v1.0.1)
 
 Combined ZIP eligible at build time: false
 
-More info unavailable
+[More info](https://github.com/Zychronix/lloyd_mod)
 
 ## Additional Additions
 

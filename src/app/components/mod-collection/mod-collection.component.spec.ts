@@ -203,7 +203,7 @@ describe('mod collection controls', () => {
     expect(upscale.querySelector('.tags li').textContent).toBe('Graphics');
   });
 
-  it('shows Lloyd credits and disabled pending links and links the new community mods', async () => {
+  it('shows Lloyd credits and release links and links the new community mods', async () => {
     TestBed.configureTestingModule({ providers: [provideRouter([])] });
     const fixture = TestBed.createComponent(ModCollectionComponent);
     fixture.autoDetectChanges();
@@ -215,9 +215,9 @@ describe('mod collection controls', () => {
     expect(lloyd.querySelector('.author a')?.getAttribute('href')).toBe('https://github.com/Zychronix');
     expect(lloyd.querySelector('.author a')?.textContent).toBe('Zychronix');
     expect(lloyd.querySelector('.identity .compatibility')?.textContent).toBe('RB3');
-    expect(lloyd.querySelector('.release[aria-disabled="true"]')?.textContent).toBe('RB3 • unknown');
-    expect(lloyd.querySelector('.info-links [aria-disabled="true"]')?.textContent).toContain('More info');
-    expect(lloyd.querySelector('.actions a')).toBeNull();
+    expect(lloyd.querySelector('a.release')?.textContent).toContain('RB3 · v1.0.1');
+    expect(lloyd.querySelector('a.release')?.getAttribute('href')).toBe('https://github.com/Zychronix/lloyd_mod/releases/tag/v1.0.1');
+    expect(lloyd.querySelector('.info-links a')?.getAttribute('href')).toBe('https://github.com/Zychronix/lloyd_mod');
     for (const [id, infoUrl, releaseUrl] of [
       ['icon-turn-order', 'https://github.com/Zychronix/icon-turn-order', 'https://github.com/Zychronix/icon-turn-order/releases/tag/1.3'],
       ['battle-rewards', 'https://github.com/DennytXVII/BattleRewardsMod', 'https://github.com/DennytXVII/BattleRewardsMod/releases'],

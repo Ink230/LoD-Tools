@@ -70,7 +70,7 @@ describe('live mod releases', () => {
 
   it('uses the release repository rather than a related project repository', () => {
     expect(modRepository(MOD_CATALOG.find(mod => mod.id === 'archipelago'))).toBe('pkolb-dev/Archipelagoon');
-    expect(modRepository(MOD_CATALOG.find(mod => mod.id === 'lloyd'))).toBeUndefined();
+    expect(modRepository(MOD_CATALOG.find(mod => mod.id === 'lloyd'))).toBe('Zychronix/lloyd_mod');
     expect(modRepository(MOD_CATALOG.find(mod => mod.id === 'upscale'))).toBeUndefined();
   });
 
