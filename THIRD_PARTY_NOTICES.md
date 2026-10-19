@@ -8,7 +8,6 @@
 - Support LordMonoxide: https://ko-fi.com/monoxide
 
 Reverse-engineering credit belongs to Severed Chains, LordMonoxide, and contributors.
-Ink is an SC contributor.
 
 Parts of the Asset Viewer and World Map Editor use information, data, and behavior
 from Severed Chains. The browser implementation includes TypeScript adaptations
