@@ -13,6 +13,7 @@
       ],
       "section": "developer",
       "description": "Configures stats, rewards, shop prices, and additions. Includes difficulty presets.",
+      "latestReleaseCompatibility": "RB3",
       "releases": [
         {
           "version": "2.2.0",
@@ -267,6 +268,7 @@
       ],
       "section": "top-rated",
       "description": "Displays battle turn order using character and monster icons. A standalone version of the display from Dragoon Modifier.",
+      "latestReleaseCompatibility": "RB3",
       "releases": [
         {
           "version": "1.3",

@@ -57,12 +57,13 @@ export function applyLatestRelease(mod: ModListing, value: unknown): ModListing 
   const latest: ModRelease = {
     version: known?.version || version,
     url: release.html_url,
-    compatibility: mod.section === 'tools' ? undefined : known?.compatibility || (explicitRb3 ? 'RB3' : 'Check compatibility'),
+    compatibility: mod.section === 'tools' ? undefined : known?.compatibility || mod.latestReleaseCompatibility || (explicitRb3 ? 'RB3' : 'Check compatibility'),
   };
   const previous = mod.releases[0];
   const remaining = mod.releases.filter(item => item.url !== latest.url && (item.compatibility === 'Special build' || latest.compatibility === 'Special build'));
   // Keep notes about separately maintained special builds, without carrying an
-  // old primary version's compatibility claim onto the newly published release.
+  // old primary version's compatibility claim onto the newly published release
+  // unless the catalog explicitly certifies compatibility for future releases.
   const preservedNote = mod.releaseNote?.split(/(?<=[.!?])\s+/).filter(sentence => !previous?.version || !sentence.includes(`v${previous.version}`)).join(' ');
   const compatibilityNote = latest.compatibility === 'Check compatibility' ? 'Check the latest release notes for SC compatibility.' : '';
   return {

@@ -131,6 +131,21 @@ describe('live mod releases', () => {
     }
   });
 
+  it.each(['dragoon-modifier', 'icon-turn-order'])('preserves %s RB3 certification for fresh and cached future releases', async id => {
+    const mod = MOD_CATALOG.find(entry => entry.id === id);
+    const release = { ...newRelease, tag_name: 'v2.3.0', name: 'v2.3.0', body: '', html_url: mod.infoUrl + '/releases/tag/v2.3.0' };
+    const service = new ModReleasesService();
+    await service.refresh(vi.fn<typeof fetch>().mockImplementation(async url => String(url).includes('/' + modRepository(mod) + '/')
+      ? new Response(JSON.stringify(release)) : new Response('', { status: 404 })));
+    expect(service.catalog().find(entry => entry.id === mod.id).releases[0].compatibility).toBe('RB3');
+    const restored = new ModReleasesService().catalog().find(entry => entry.id === mod.id);
+    expect(restored.releases[0].version).toBe('2.3.0');
+    expect(restored.releases[0].compatibility).toBe('RB3');
+    expect(restored.releaseNote).toBeUndefined();
+    expect(applyLatestRelease(mod, { ...release, tag_name: 'v3.0.0', html_url: mod.infoUrl + '/releases/tag/v3.0.0' }).releases[0].compatibility).toBe('RB3');
+    expect(restored.releases[0].version).not.toBe(mod.releases[0].version);
+  });
+
   it('does not carry RB3 compatibility onto a new release without an affirmative declaration', () => {
     const unknown = applyLatestRelease(irongoon, { ...newRelease, name: 'v0.4.19', body: '' });
     expect(unknown.releases[0].compatibility).toBe('Check compatibility');
