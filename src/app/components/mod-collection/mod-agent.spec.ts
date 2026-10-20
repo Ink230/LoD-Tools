@@ -31,9 +31,9 @@ describe('mod agent actions and shareable state', () => {
   it('changes selections atomically and excludes tools, unknown IDs and unreleased mods', async () => {
     const harness = await RouterTestingHarness.create('/mods');
     const component = harness.routeDebugElement.componentInstance as ModCollectionComponent;
-    component.setAgentSelection({ ids: ['irongoon', 'no-stats'] });
-    expect(component.selectionState().selected.map(mod => mod.id)).toEqual(['irongoon', 'no-stats']);
-    for (const ids of [['irongoon', 'lloyd'], ['upscale'], ['unknown'], [MOD_CATALOG.find(mod => mod.section === 'tools').id], ['irongoon', 'irongoon']]) {
+    component.setAgentSelection({ ids: ['lloyd', 'dragoon-modifier'] });
+    expect(component.selectionState().selected.map(mod => mod.id)).toEqual(['dragoon-modifier', 'lloyd']);
+    for (const ids of [['irongoon', 'upscale'], ['upscale'], ['unknown'], [MOD_CATALOG.find(mod => mod.section === 'tools').id], ['irongoon', 'irongoon']]) {
       expect(() => component.setAgentSelection({ ids })).toThrow();
       expect(component.selected().size).toBe(2);
     }

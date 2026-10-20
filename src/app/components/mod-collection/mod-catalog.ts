@@ -45,7 +45,7 @@ export const MOD_CATALOG: readonly ModListing[] = [
     id: 'dragoon-modifier', name: 'Dragoon Modifier', authors: [ZYCHRONIX], section: 'developer',
     description: 'Configures stats, rewards, shop prices, and additions. Includes difficulty presets.',
     latestReleaseCompatibility: 'RB3',
-    releases: [{ version: '2.2.0', compatibility: 'RB3', url: 'https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/tag/v2.2.0' }],
+    releases: [{ version: '2.3.0', compatibility: 'RB3', url: 'https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/tag/v2.3.0' }],
     tags: ['Full Campaign'],
     infoUrl: 'https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier',
   },
@@ -108,7 +108,7 @@ export const MOD_CATALOG: readonly ModListing[] = [
     id: 'icon-turn-order', name: 'Icon Turn Order', authors: [ZYCHRONIX], section: 'top-rated',
     description: 'Displays battle turn order using character and monster icons. A standalone version of the display from Dragoon Modifier.',
     latestReleaseCompatibility: 'RB3',
-    releases: [{ version: '1.3', compatibility: 'RB3', url: 'https://github.com/Zychronix/icon-turn-order/releases/tag/1.3' }],
+    releases: [{ version: '1.4', compatibility: 'RB3', url: 'https://github.com/Zychronix/icon-turn-order/releases/tag/1.4' }],
     tags: ['QoL Minor'], infoUrl: 'https://github.com/Zychronix/icon-turn-order',
   },
 

@@ -91,6 +91,32 @@ describe('mod collection controls', () => {
     expect(page.querySelector('.extraction-caption span')?.textContent).toBe('Image 4 of 5');
   });
 
+  it('allows every released mod to be checked and unchecked', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(ModCollectionComponent);
+    fixture.autoDetectChanges();
+    await fixture.whenStable();
+    const page = fixture.nativeElement as HTMLElement;
+    const releasedMods = MOD_CATALOG.filter(mod => mod.section !== 'tools' && mod.releases[0]?.url);
+    expect(releasedMods).toHaveLength(10);
+    for (const mod of releasedMods) {
+      const checkbox = page.querySelector<HTMLInputElement>(`[aria-label="Select ${mod.name}"]`);
+      expect(checkbox.disabled, mod.id).toBe(false);
+      checkbox.click();
+      await fixture.whenStable();
+      expect(checkbox.checked, mod.id).toBe(true);
+      expect(fixture.componentInstance.selected().has(mod.id), mod.id).toBe(true);
+    }
+    expect(fixture.componentInstance.selectedMods()).toHaveLength(10);
+    for (const mod of releasedMods) {
+      const checkbox = page.querySelector<HTMLInputElement>(`[aria-label="Select ${mod.name}"]`);
+      checkbox.click();
+      await fixture.whenStable();
+      expect(checkbox.checked, mod.id).toBe(false);
+    }
+    expect(fixture.componentInstance.selected().size).toBe(0);
+  });
+
   it('keeps selections across filters and clears all selected mods', async () => {
     TestBed.configureTestingModule({ providers: [provideRouter([])] });
     const fixture = TestBed.createComponent(ModCollectionComponent);
@@ -100,7 +126,7 @@ describe('mod collection controls', () => {
     const checkbox = page.querySelector<HTMLInputElement>('[aria-label="Select Irongoon"]');
     expect(page.querySelectorAll('input[type="checkbox"]')).toHaveLength(11);
     expect(page.querySelectorAll('.tool-gallery input[type="checkbox"]')).toHaveLength(0);
-    expect(page.querySelector<HTMLInputElement>('[aria-label="Select Lloyd Mod"]').disabled).toBe(true);
+    expect(page.querySelector<HTMLInputElement>('[aria-label="Select Lloyd Mod"]').disabled).toBe(false);
     expect(page.querySelector<HTMLInputElement>('[aria-label="Select Upscale Mod"]').disabled).toBe(true);
     checkbox.click();
     await fixture.whenStable();
@@ -219,7 +245,7 @@ describe('mod collection controls', () => {
     expect(lloyd.querySelector('a.release')?.getAttribute('href')).toBe('https://github.com/Zychronix/lloyd_mod/releases/tag/v1.0.1');
     expect(lloyd.querySelector('.info-links a')?.getAttribute('href')).toBe('https://github.com/Zychronix/lloyd_mod');
     for (const [id, infoUrl, releaseUrl] of [
-      ['icon-turn-order', 'https://github.com/Zychronix/icon-turn-order', 'https://github.com/Zychronix/icon-turn-order/releases/tag/1.3'],
+      ['icon-turn-order', 'https://github.com/Zychronix/icon-turn-order', 'https://github.com/Zychronix/icon-turn-order/releases/tag/1.4'],
       ['battle-rewards', 'https://github.com/DennytXVII/BattleRewardsMod', 'https://github.com/DennytXVII/BattleRewardsMod/releases'],
       ['no-stats', 'https://github.com/Popoto-anonymous/No-Stats', 'https://github.com/Popoto-anonymous/No-Stats/releases/tag/Y2'],
     ]) {
@@ -230,8 +256,8 @@ describe('mod collection controls', () => {
     expect(page.querySelector('#mod-no-stats').closest('article').textContent).toContain('Check compatibility');
     expect(page.querySelector('#mod-no-stats').closest('article').querySelector('a.release')?.textContent).toContain('v1.1');
     const dragoonModifier = page.querySelector('#mod-dragoon-modifier').closest('article');
-    expect(dragoonModifier.querySelector('a.release')?.getAttribute('href')).toBe('https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/tag/v2.2.0');
-    expect(dragoonModifier.querySelector('a.release')?.textContent).toContain('RB3 · v2.2.0');
+    expect(dragoonModifier.querySelector('a.release')?.getAttribute('href')).toBe('https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/tag/v2.3.0');
+    expect(dragoonModifier.querySelector('a.release')?.textContent).toContain('RB3 · v2.3.0');
   });
 
   it('supports keyboard selection, Escape, and outside clicks in the styled filters', async () => {

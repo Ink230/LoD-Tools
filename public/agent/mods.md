@@ -12,7 +12,7 @@ Authors: [Zychronix](https://github.com/Zychronix)
 
 Tags: Full Campaign
 
-- RB3: 2.2.0 [release](https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/tag/v2.2.0)
+- RB3: 2.3.0 [release](https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/tag/v2.3.0)
 
 Combined ZIP eligible at build time: true
 
@@ -63,7 +63,7 @@ Tags: QoL Major, Extension, Character
 
 - RB3: 1.0.1 [release](https://github.com/Zychronix/lloyd_mod/releases/tag/v1.0.1)
 
-Combined ZIP eligible at build time: false
+Combined ZIP eligible at build time: true
 
 [More info](https://github.com/Zychronix/lloyd_mod)
 
@@ -141,7 +141,7 @@ Authors: [Zychronix](https://github.com/Zychronix)
 
 Tags: QoL Minor
 
-- RB3: 1.3 [release](https://github.com/Zychronix/icon-turn-order/releases/tag/1.3)
+- RB3: 1.4 [release](https://github.com/Zychronix/icon-turn-order/releases/tag/1.4)
 
 Combined ZIP eligible at build time: true
 

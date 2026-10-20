@@ -1,11 +1,10 @@
 [
   {
     "id": "dragoon-modifier",
-    "releaseUrl": "https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/tag/v2.2.0",
-    "url": "https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/download/v2.2.0/SC-DragoonModifier.-.v2.2.0.zip",
-    "filename": "SC-DragoonModifier.-.v2.2.0.zip",
-    "sha256": "174e1dfcd3954eda038815b923b0b0495d5e9eeea71dabdfaf803db7c5067e48",
-    "stripPrefix": "mods/"
+    "releaseUrl": "https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/tag/v2.3.0",
+    "url": "https://github.com/Legend-of-Dragoon-Modding/sc-dragoon-modifier/releases/download/v2.3.0/SC-DragoonModifier-v2.3.0.zip",
+    "filename": "SC-DragoonModifier-v2.3.0.zip",
+    "sha256": "c7bda86f85794aee8340fd9f41a3ed23213fc573956f1a720e79b29235b56020"
   },
   {
     "id": "irongoon",
@@ -20,6 +19,13 @@
     "url": "https://github.com/avionanx/tlot/releases/download/1.3.9/the-legend-of-tides-1.3.9-beta.zip",
     "filename": "the-legend-of-tides-1.3.9-beta.zip",
     "sha256": "b41dd71318dbd9ab8f3aa812ee4bab27f70df67f2f7233456c1278567f5fd979"
+  },
+  {
+    "id": "lloyd",
+    "releaseUrl": "https://github.com/Zychronix/lloyd_mod/releases/tag/v1.0.1",
+    "url": "https://github.com/Zychronix/lloyd_mod/releases/download/v1.0.1/lloyd-mod-v1.0.1.zip",
+    "filename": "lloyd-mod-v1.0.1.zip",
+    "sha256": "db75f98c293b9661f492e212a1bc35d28681c685d2970b8696e5ab7fc160d913"
   },
   {
     "id": "additional-additions",
@@ -44,10 +50,10 @@
   },
   {
     "id": "icon-turn-order",
-    "releaseUrl": "https://github.com/Zychronix/icon-turn-order/releases/tag/1.3",
-    "url": "https://github.com/Zychronix/icon-turn-order/releases/download/1.3/Icon.Turn.Order.-.v1.3.zip",
-    "filename": "Icon.Turn.Order.-.v1.3.zip",
-    "sha256": "f650e6cadbdb78de018b611cfbf92cb09eaed2492ad2e0d90c29161c7cdd4bd9"
+    "releaseUrl": "https://github.com/Zychronix/icon-turn-order/releases/tag/1.4",
+    "url": "https://github.com/Zychronix/icon-turn-order/releases/download/1.4/icon-turn-order-1.4.zip",
+    "filename": "icon-turn-order-1.4.zip",
+    "sha256": "f8aeb1974cb2e0baa9c5ebab5608d859c01d897d9301679763b3ce0e63589599"
   },
   {
     "id": "battle-rewards",
